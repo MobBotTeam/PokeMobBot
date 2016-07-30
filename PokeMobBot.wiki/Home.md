@@ -1,0 +1,36 @@
+# Welcome to the NecroBot wiki!
+[![](http://i.imgur.com/NwUlZC3.png)](http://necrobot.io/)
+## Sitemap
+* [Official Website] (http://necrobot.io/)
+* [Home](https://github.com/NecronomiconCoding/NecroBot/wiki)
+* [About NecroBot](https://github.com/NecronomiconCoding/NecroBot/wiki/About-necrobot)
+ * [Team members](https://github.com/NecronomiconCoding/NecroBot/wiki/About-necrobot#team-members)
+* [Chat & Rules](https://github.com/NecronomiconCoding/NecroBot/wiki/Chat-&-Rules)
+ * [Chatting using Discord](https://github.com/NecronomiconCoding/NecroBot/wiki/Chat-&-Rules#chatting-using-discord)
+ * [Rules](https://github.com/NecronomiconCoding/NecroBot/wiki/Chat-&-Rules#chatting-using-discord)
+ * [Some more info](https://github.com/NecronomiconCoding/NecroBot/wiki/Chat-&-Rules#some-more-info)
+* [Donations](https://github.com/NecronomiconCoding/NecroBot/wiki/Donations)
+ * [PayPal donations](https://github.com/NecronomiconCoding/NecroBot/wiki/Donations)
+ * [Bitcoin donations](https://github.com/NecronomiconCoding/NecroBot/wiki/Donations)
+* [FAQ](https://github.com/NecronomiconCoding/NecroBot/wiki/FAQ)
+* [Getting Started](https://github.com/NecronomiconCoding/NecroBot/wiki/Getting-Started)
+ * [Compiled Release Setup](https://github.com/NecronomiconCoding/NecroBot/wiki/Compiled-Releases)
+ * [Source Code Setup](https://github.com/NecronomiconCoding/NecroBot/wiki/Source-Code)
+ * [GPX Pathing Setup](https://github.com/NecronomiconCoding/NecroBot/wiki/GPX-Pathing-Setup)
+ * [Sniping Setup](https://github.com/NecronomiconCoding/NecroBot/wiki/Sniping-Setup)
+   - [Manual Locations](https://github.com/NecronomiconCoding/NecroBot/wiki/Manual-Locations-Sniping-Guide)
+    - [Automatic Locations](https://github.com/NecronomiconCoding/NecroBot/wiki/Automatic-Locations-Sniping-Guide)
+* [Config](https://github.com/NecronomiconCoding/NecroBot/wiki/Config)
+* [Resources](https://github.com/NecronomiconCoding/NecroBot/wiki/Resources)
+* [Todo](https://github.com/NecronomiconCoding/NecroBot/wiki/Todo)
+
+## License
+    This Project is licensed as GNU (GNU GENERAL PUBLIC LICENSE v3) 
+
+You can find all necessary Information [here](https://github.com/NecronomiconCoding/Pokemon-Go-Bot/blob/master/LICENSE.md).
+
+## Credits
+Thanks to Feroxs' hard work on the API & Console we are able to manage something like this.
+
+Without him, this would not have been available.
+![](http://i.imgur.com/JJkzE0p.png) Thanks to everyone who voluntaired by contributing to the Pull Requests!
