@@ -5,7 +5,7 @@ using System.Threading;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Utils
+namespace PoGo.PokeMobBot.Logic.Utils
 {
     public static class DelayingUtils
     {

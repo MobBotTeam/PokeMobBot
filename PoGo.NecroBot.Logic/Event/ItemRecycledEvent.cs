@@ -4,7 +4,7 @@ using POGOProtos.Inventory.Item;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Event
+namespace PoGo.PokeMobBot.Logic.Event
 {
     public class ItemRecycledEvent : IEvent
     {

@@ -1,13 +1,13 @@
 #region using directives
 
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
 using PokemonGo.RocketAPI;
 using POGOProtos.Networking.Responses;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.State
+namespace PoGo.PokeMobBot.Logic.State
 {
     public interface ISession
     {

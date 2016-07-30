@@ -2,17 +2,17 @@
 
 using System;
 using System.Globalization;
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Event;
-using PoGo.NecroBot.Logic.Logging;
-using PoGo.NecroBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.State;
 using POGOProtos.Enums;
 using POGOProtos.Inventory.Item;
 using POGOProtos.Networking.Responses;
 
 #endregion
 
-namespace PoGo.NecroBot.CLI
+namespace PoGo.PokeMobBot.CLI
 {
     public class ConsoleEventListener
     {

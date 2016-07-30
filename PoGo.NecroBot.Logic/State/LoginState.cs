@@ -4,14 +4,14 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.State
+namespace PoGo.PokeMobBot.Logic.State
 {
     public class LoginState : IState
     {

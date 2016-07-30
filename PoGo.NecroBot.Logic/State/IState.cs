@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.State
+namespace PoGo.PokeMobBot.Logic.State
 {
     public interface IState
     {

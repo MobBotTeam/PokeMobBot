@@ -3,17 +3,17 @@
 using System;
 using System.Globalization;
 using System.Threading;
-using PoGo.NecroBot.Logic;
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Event;
-using PoGo.NecroBot.Logic.Logging;
-using PoGo.NecroBot.Logic.State;
-using PoGo.NecroBot.Logic.Tasks;
-using PoGo.NecroBot.Logic.Utils;
+using PoGo.PokeMobBot.Logic;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Tasks;
+using PoGo.PokeMobBot.Logic.Utils;
 
 #endregion
 
-namespace PoGo.NecroBot.CLI
+namespace PoGo.PokeMobBot.CLI
 {
     internal class Program
     {

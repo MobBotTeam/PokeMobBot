@@ -6,7 +6,7 @@ using POGOProtos.Enums;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.PoGoUtils
+namespace PoGo.PokeMobBot.Logic.PoGoUtils
 {
     public struct BaseStats
     {

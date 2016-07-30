@@ -10,18 +10,18 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Event;
-using PoGo.NecroBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.Logging;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.State
+namespace PoGo.PokeMobBot.Logic.State
 {
     public class VersionCheckState : IState
     {
         public const string VersionUri =
-            "https://raw.githubusercontent.com/NecronomiconCoding/NecroBot/master/PoGo.NecroBot.Logic/Properties/AssemblyInfo.cs";
+            "https://raw.githubusercontent.com/NecronomiconCoding/NecroBot/master/PoGo.PokeMobBot.Logic/Properties/AssemblyInfo.cs";
 
         public const string LatestReleaseApi =
             "https://api.github.com/repos/NecronomiconCoding/NecroBot/releases/latest";

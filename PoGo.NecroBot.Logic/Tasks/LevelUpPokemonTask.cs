@@ -3,12 +3,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using PoGo.NecroBot.Logic.Logging;
-using PoGo.NecroBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Tasks
+namespace PoGo.PokeMobBot.Logic.Tasks
 {
     internal class LevelUpPokemonTask
     {

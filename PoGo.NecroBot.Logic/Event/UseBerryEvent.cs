@@ -1,4 +1,4 @@
-﻿namespace PoGo.NecroBot.Logic.Event
+﻿namespace PoGo.PokeMobBot.Logic.Event
 {
     public class UseBerryEvent : IEvent
     {

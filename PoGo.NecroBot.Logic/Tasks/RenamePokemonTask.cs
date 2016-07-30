@@ -4,14 +4,14 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Event;
-using PoGo.NecroBot.Logic.PoGoUtils;
-using PoGo.NecroBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.PoGoUtils;
+using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Tasks
+namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class RenamePokemonTask
     {

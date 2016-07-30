@@ -5,7 +5,7 @@ using POGOProtos.Networking.Responses;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Event
+namespace PoGo.PokeMobBot.Logic.Event
 {
     public class PokemonEvolveEvent : IEvent
     {

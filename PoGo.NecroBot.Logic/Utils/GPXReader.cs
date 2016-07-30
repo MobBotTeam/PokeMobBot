@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Logging;
-using PoGo.NecroBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
@@ -15,7 +15,7 @@ using PoGo.NecroBot.Logic.State;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Utils
+namespace PoGo.PokeMobBot.Logic.Utils
 {
     public class GpxReader
     {

@@ -2,14 +2,14 @@
 
 using System;
 using System.Threading.Tasks;
-using PoGo.NecroBot.Logic.Event;
-using PoGo.NecroBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.State;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Extensions;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Common
+namespace PoGo.PokeMobBot.Logic.Common
 {
     public class ApiFailureStrategy : IApiFailureStrategy
     {

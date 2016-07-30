@@ -13,7 +13,7 @@ using POGOProtos.Networking.Responses;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Utils
+namespace PoGo.PokeMobBot.Logic.Utils
 {
     public delegate void StatisticsDirtyDelegate();
 

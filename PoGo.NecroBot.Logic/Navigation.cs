@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using GeoCoordinatePortable;
-using PoGo.NecroBot.Logic.Utils;
+using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI;
 using POGOProtos.Networking.Responses;
 
@@ -17,7 +17,7 @@ using POGOProtos.Networking.Responses;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic
+namespace PoGo.PokeMobBot.Logic
 {
     public delegate void UpdatePositionDelegate(double lat, double lng);
 

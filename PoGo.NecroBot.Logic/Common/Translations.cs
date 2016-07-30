@@ -8,7 +8,7 @@ using Newtonsoft.Json.Converters;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Common
+namespace PoGo.PokeMobBot.Logic.Common
 {
     public interface ITranslation
     {

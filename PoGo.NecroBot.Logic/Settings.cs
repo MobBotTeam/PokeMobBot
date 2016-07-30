@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using PoGo.NecroBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.Logging;
 using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Enums;
 using POGOProtos.Enums;
@@ -13,7 +13,7 @@ using POGOProtos.Inventory.Item;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic
+namespace PoGo.PokeMobBot.Logic
 {
     internal class AuthSettings
     {

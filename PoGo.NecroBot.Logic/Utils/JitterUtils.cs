@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Utils
+namespace PoGo.PokeMobBot.Logic.Utils
 {
     public static class JitterUtils
     {

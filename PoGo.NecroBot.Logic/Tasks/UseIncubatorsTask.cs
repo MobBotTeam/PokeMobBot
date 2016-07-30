@@ -8,14 +8,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using PoGo.NecroBot.Logic.Event;
-using PoGo.NecroBot.Logic.PoGoUtils;
-using PoGo.NecroBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.PoGoUtils;
+using PoGo.PokeMobBot.Logic.State;
 using POGOProtos.Inventory.Item;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Tasks
+namespace PoGo.PokeMobBot.Logic.Tasks
 {
     internal class UseIncubatorsTask
     {

@@ -6,7 +6,7 @@ using POGOProtos.Inventory.Item;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic
+namespace PoGo.PokeMobBot.Logic
 {
     public class Location
     {

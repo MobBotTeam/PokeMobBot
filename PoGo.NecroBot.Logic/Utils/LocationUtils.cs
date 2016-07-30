@@ -5,7 +5,7 @@ using GeoCoordinatePortable;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Utils
+namespace PoGo.PokeMobBot.Logic.Utils
 {
     public static class LocationUtils
     {

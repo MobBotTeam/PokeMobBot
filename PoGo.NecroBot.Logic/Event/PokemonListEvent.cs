@@ -6,7 +6,7 @@ using POGOProtos.Data;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Event
+namespace PoGo.PokeMobBot.Logic.Event
 {
     public class PokemonListEvent : IEvent
     {

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Logging;
-using PoGo.NecroBot.Logic.PoGoUtils;
-using PoGo.NecroBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.PoGoUtils;
+using PoGo.PokeMobBot.Logic.State;
 using PokemonGo.RocketAPI;
 using POGOProtos.Data;
 using POGOProtos.Data.Player;
@@ -20,7 +20,7 @@ using POGOProtos.Settings.Master;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic
+namespace PoGo.PokeMobBot.Logic
 {
     public class Inventory
     {

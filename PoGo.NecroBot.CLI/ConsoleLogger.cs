@@ -2,13 +2,13 @@
 
 using System;
 using System.Text;
-using PoGo.NecroBot.Logic.Common;
-using PoGo.NecroBot.Logic.Logging;
-using PoGo.NecroBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
-namespace PoGo.NecroBot.CLI
+namespace PoGo.PokeMobBot.CLI
 {
     /// <summary>
     ///     The ConsoleLogger is a simple logger which writes all logs to the Console.

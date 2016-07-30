@@ -4,7 +4,7 @@ using POGOProtos.Enums;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Event
+namespace PoGo.PokeMobBot.Logic.Event
 {
     public class EggHatchedEvent : IEvent
     {

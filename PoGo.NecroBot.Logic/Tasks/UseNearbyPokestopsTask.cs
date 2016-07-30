@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PoGo.NecroBot.Logic.Event;
-using PoGo.NecroBot.Logic.State;
-using PoGo.NecroBot.Logic.Utils;
+using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI.Extensions;
 using POGOProtos.Map.Fort;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Tasks
+namespace PoGo.PokeMobBot.Logic.Tasks
 {
     internal class UseNearbyPokestopsTask
     {

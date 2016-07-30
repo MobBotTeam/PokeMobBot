@@ -1,11 +1,11 @@
 ﻿#region using directives
 
-using PoGo.NecroBot.Logic.State;
-using PoGo.NecroBot.Logic.Tasks;
+using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Tasks;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Service
+namespace PoGo.PokeMobBot.Logic.Service
 {
     public class BotService
     {
