@@ -16,7 +16,7 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/8m
 [![](https://camo.githubusercontent.com/bce14c8e2e39ba0464551b34602b4c60c182526b/68747470733a2f2f7777772e70617970616c6f626a656374732e636f6d2f656e5f55532f692f62746e2f62746e5f646f6e6174655f4c472e676966)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8JTWE86JC7UT6)<br/>
 
 <h6><em>[ all PayPal donations are distributed amongst our most active collaborators ]</em></h6><br/>
-You donate bitcoins to FeroxRev the men who worked really hard on the API library or you can donate it to the team.<br/><br/>
+You can donate Bitcoins to FeroxRev the man who worked really hard on the API library or you can donate it to the team.<br/><br/>
 <a name="btc">Donate Bitcoins to FeroxRev (the API library developer): *1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e*</a><br/>
 <a name="btc">Donate Bitcoins to the team: *1B1LYuufN4KHDt2DMBnM5RFe52yGF4CcG2*</a><br/>
 
