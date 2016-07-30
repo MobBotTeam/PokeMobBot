@@ -14,7 +14,7 @@ But all this is not  achievable without the kind support of your donations.
 <br><br>
 <h1>Pokemon Go Bot based on FeroxRevs API</h1>
 <!-- disclaimer -->
-![alt text][1.1] <strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong> ![alt text][1.1]
+![](http://i.imgur.com/M4fJ65n.png) <strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong> ![](http://i.imgur.com/M4fJ65n.png)
 ![](http://i.imgur.com/bkTrqKb.png)
 <br>
 Chatting about this Repository can be done on our Discord: https://discord.gg/8msqsWV <br/>
