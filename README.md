@@ -3,12 +3,12 @@
 [1.2]: http://i.imgur.com/NNcGs1n.png (BTC)
 <!-- title -->
 <h2>Dear Members</h1><br>
-We have changed our CEO Managment we have a New CEO with big plans for our new PocketMob bot and for you, the community, We want the best for out staff and for you the community with the current way things are being handled things can not advance  without the change of CEO, as the team is being held back from advancing in things like  bot features, Website forums,  all donations that has been received has been badly managed by the previous CEO We are currently seeking donations to make PocketMob bot bigger and better.
+We have changed our CEO Managment we have a New CEO with big plans for our new PocketMob bot and for you, the community, We want the best for out staff and for you the community with the current way things are being handled things can not advance  without the change of CEO, as the team is being held back from advancing in things like  bot features, Website forums,  all donations that has been received has been badly managed by the previous CEO We are currently seeking donations to make PocketMob bot bigger and better.<br>
 
 Our staff has been working hard since day one  to help you the members with your problems on discord to get the bot up and running, 
-Our staff has worked around the clock to make sure you received the help to fix the problem you get on your side, With a website forum, our team can assist you better and more efficient with a ticket system. 
+Our staff has worked around the clock to make sure you received the help to fix the problem you get on your side, With a website forum, our team can assist you better and more efficient with a ticket system. <br>
 
-Our development team has big features that they want to implement into PocketMob bot this is time-consuming in coding  and stressful work our development team goes through every day to produce quality work to make PocketMob bot more user-friendly and more efficient.
+Our development team has big features that they want to implement into PocketMob bot this is time-consuming in coding  and stressful work our development team goes through every day to produce quality work to make PocketMob bot more user-friendly and more efficient.<br>
 
 But all this is not  achievable without the kind support of your donations.
 <br><br><br><br>
