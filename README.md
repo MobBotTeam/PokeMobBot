@@ -3,12 +3,12 @@
 [1.2]: http://i.imgur.com/NNcGs1n.png (BTC)
 <!-- title -->
 <h2>Dear Members</h1><br>
-We have changed our Project Leader we have a New Project Leader with big plans for our new PokeMobBot and for you, the community, We want the best for out staff and for you the community with the current way things are being handled things can not advance  without the change of Project Leader, as the team is being held back from advancing in things like bot features, Website forums,  all donations that has been received has been badly managed by the previous Project Leader We are currently seeking donations to make PokeMobBot bigger and better.
+We have changed our Project Leader we have a New Project Leader with big plans for our new PokèMob bot and for you, the community, We want the best for out staff and for you the community with the current way things are being handled things can not advance  without the change of Project Leader, as the team is being held back from advancing in things like bot features, Website forums,  all donations that has been received has been badly managed by the previous Project Leader We are currently seeking donations to make PokèMob bot bigger and better.
 <br><br>
 Our staff has been working hard since day one  to help you the members with your problems on discord to get the bot up and running, 
 Our staff has worked around the clock to make sure you received the help to fix the problem you get on your side, With a website forum, our team can assist you better and more efficient with a ticket system.
 <br><br>
-Our development team has big features that they want to implement into PokeMobBot this is time-consuming in coding  and stressful work our development team goes through every day to produce quality work to make PokeMobBot more user-friendly and more efficient.<br><br>
+Our development team has big features that they want to implement into PokèMob bot this is time-consuming in coding  and stressful work our development team goes through every day to produce quality work to make PokèMob bot more user-friendly and more efficient.<br><br>
 
 But all this is not  achievable without the kind support of your donations.
 <br><br>
