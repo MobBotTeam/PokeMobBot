@@ -25,11 +25,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 await session.Client.Inventory.RecycleItem(item.ItemId, item.Count);
 
                 session.EventDispatcher.Send(new ItemRecycledEvent {Id = item.ItemId, Count = item.Count});
-
-                DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                if (session.LogicSettings.Teleport)
+                    await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                else
+                    DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
             }
-
-            await session.Inventory.RefreshCachedInventory();
+                await session.Inventory.RefreshCachedInventory();
         }
     }
 }

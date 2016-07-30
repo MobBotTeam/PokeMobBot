@@ -154,8 +154,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 session.EventDispatcher.Send(evt);
 
                 attemptCounter++;
-
-                DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
+                if(session.LogicSettings.Teleport)
+                    await Task.Delay(session.LogicSettings.DelayCatchPokemon);
+                else
+                 DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
             } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed ||
                      caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
         }

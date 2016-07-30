@@ -107,9 +107,9 @@ namespace PoGo.PokeMobBot.Logic
         public double DefaultAltitude = 10;
         public double DefaultLatitude = 40.785091;
         public double DefaultLongitude = -73.968285;
+        public bool Teleport = false;
         public int DelayBetweenPlayerActions = 5000;
         public int DelayBetweenPokemonCatch = 2000;
-        public bool Teleport = true;
         public int DelayCatchNearbyPokemon = 1000;
         public int DelayPositionCheckState = 1000;
         public int DelayCatchIncensePokemon = 1000;
@@ -120,7 +120,6 @@ namespace PoGo.PokeMobBot.Logic
         public int DelaySoftbanRetry = 1000;
         public int DelayPokestop = 1000;
         public int DelayRecyleItem = 1000;
-        public int DelayRenamePokemon = 1000;
         public int DelaySnipePokemon = 1000;
         public int DelayTransferPokemon = 1000;
         public bool DumpPokemonStats = false;
@@ -658,7 +657,6 @@ namespace PoGo.PokeMobBot.Logic
         public int DelaySoftbanRetry => _settings.DelaySoftbanRetry;
         public int DelayPokestop => _settings.DelayPokestop;
         public int DelayRecyleItem => _settings.DelayRecyleItem;
-        public int DelayRenamePokemon => _settings.DelayRenamePokemon;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
     }

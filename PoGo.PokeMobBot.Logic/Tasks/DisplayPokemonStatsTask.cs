@@ -60,8 +60,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     SortedBy = "CP",
                     PokemonList = pokemonPairedWithStatsCp
                 });
-
-            await Task.Delay(500);
+            if(session.LogicSettings.Teleport)
+                await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
+            else
+                await Task.Delay(500);
 
             session.EventDispatcher.Send(
                 new DisplayHighestsPokemonEvent
@@ -109,7 +111,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         dumpFileName);
                 }
             }
-            await Task.Delay(500);
+            if(session.LogicSettings.Teleport)
+                await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
+            else
+                await Task.Delay(500);
         }
     }
 }

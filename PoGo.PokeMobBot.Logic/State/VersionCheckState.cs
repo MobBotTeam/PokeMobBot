@@ -21,13 +21,13 @@ namespace PoGo.PokeMobBot.Logic.State
     public class VersionCheckState : IState
     {
         public const string VersionUri =
-            "https://raw.githubusercontent.com/NecronomiconCoding/NecroBot/master/PoGo.PokeMobBot.Logic/Properties/AssemblyInfo.cs";
+            "https://raw.githubusercontent.com/PocketMobsters/PokeMobBot/master/PoGo.PokeMobBot.Logic/Properties/AssemblyInfo.cs";
 
         public const string LatestReleaseApi =
-            "https://api.github.com/repos/NecronomiconCoding/NecroBot/releases/latest";
+            "https://api.github.com/repos/PocketMobsters/PokeMobBot/releases/latest";
 
         private const string LatestRelease =
-            "https://github.com/NecronomiconCoding/NecroBot/releases";
+            "https://github.com/PocketMobsters/PokeMobBot/releases";
 
         public static Version RemoteVersion;
 

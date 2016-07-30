@@ -298,8 +298,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             }
 
             session.EventDispatcher.Send(new SnipeModeEvent {Active = false});
-
-            await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions, cancellationToken);
+            if(session.LogicSettings.Teleport)
+                await Task.Delay(session.LogicSettings.DelaySnipePokemon);
+            else
+                await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions, cancellationToken);
         }
 
         private static ScanResult SnipeScanForPokemon(Location location)
@@ -372,8 +374,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     // most likely System.IO.IOException
                     session.EventDispatcher.Send(new ErrorEvent {Message = ex.ToString()});
                 }
-
-                await Task.Delay(5000, cancellationToken);
+                if(session.LogicSettings.Teleport)
+                    await Task.Delay(session.LogicSettings.DelaySnipePokemon);
+                else
+                    await Task.Delay(5000, cancellationToken);
             }
         }
     }

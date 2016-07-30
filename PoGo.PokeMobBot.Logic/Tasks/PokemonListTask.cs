@@ -22,7 +22,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     PokemonList = pkmWithIv.ToList()
                 });
-            await Task.Delay(500);
+            if(session.LogicSettings.Teleport)
+                await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
+            else
+                await Task.Delay(500);
         }
     }
 }

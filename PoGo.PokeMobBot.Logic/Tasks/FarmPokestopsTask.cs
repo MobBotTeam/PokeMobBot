@@ -78,8 +78,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                 session.EventDispatcher.Send(new FortTargetEvent {Name = fortInfo.Name, Distance = distance});
-
-                await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
+                if(session.LogicSettings.Teleport)
+                    await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
+                        session.Client.Settings.DefaultAltitude);
+                else
+                    await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
                     session.LogicSettings.WalkingSpeedInKilometerPerHour,
                     async () =>
                     {
@@ -90,12 +93,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         return true;
                     }, cancellationToken);
 
-                //Catch Lure Pokemon
-                if (pokeStop.LureInfo != null)
-                {
-                    await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
-                }
-
+                
                 FortSearchResponse fortSearch;
                 var timesZeroXPawarded = 0;
                 var fortTry = 0; //Current check
@@ -128,8 +126,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 Try = fortTry,
                                 Max = retryNumber - zeroCheck
                             });
-
-                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
+                            if(session.LogicSettings.Teleport)
+                                await Task.Delay(session.LogicSettings.DelaySoftbanRetry);
+                            else
+                                DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
                         }
                     }
                     else
@@ -151,7 +151,22 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 } while (fortTry < retryNumber - zeroCheck);
                     //Stop trying if softban is cleaned earlier or if 40 times fort looting failed.
 
-                await Task.Delay(1000, cancellationToken);
+
+                if(session.LogicSettings.Teleport)
+                    await Task.Delay(session.LogicSettings.DelayPokestop);
+                else
+                    await Task.Delay(1000, cancellationToken);
+
+
+                //Catch Lure Pokemon
+
+
+                if (pokeStop.LureInfo != null)
+                {
+                    await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                }
+                if(session.LogicSettings.Teleport)
+                    await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
 
                 await eggWalker.ApplyDistance(distance, cancellationToken);
 

@@ -137,7 +137,6 @@ namespace PoGo.PokeMobBot.Logic
         int DelaySoftbanRetry { get; }
         int DelayPokestop { get; }
         int DelayRecyleItem { get; }
-        int DelayRenamePokemon { get; }
         int DelaySnipePokemon { get; }
         int DelayTransferPokemon { get; }
     }
