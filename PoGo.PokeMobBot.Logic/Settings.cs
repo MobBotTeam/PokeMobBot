@@ -690,14 +690,12 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
-<<<<<<< HEAD
 
         public double RecycleInventoryAtUsagePercentage => _settings.RecycleInventoryAtUsagePercentage;
-=======
+        
         public bool HumanizeThrows => _settings.HumanizeThrows;
         public double ThrowAccuracyMin => _settings.ThrowAccuracyMin;
         public double ThrowAccuracyMax => _settings.ThrowAccuracyMax;
         public double ThrowSpinFrequency => _settings.ThrowSpinFrequency;
->>>>>>> PocketMobsters/master
     }
 }
