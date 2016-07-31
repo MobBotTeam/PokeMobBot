@@ -21,7 +21,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (session.LogicSettings.LevelUpByCPorIv.ToLower().Contains("iv"))
             {
                 var rand = new Random();
-                var randomNumber = rand.Next(0, DisplayPokemonStatsTask.PokemonId.Count - 1);
+                var randomNumber = rand.Next(1, DisplayPokemonStatsTask.PokemonId.Count);
 
                 var upgradeResult =
                     await session.Inventory.UpgradePokemon(DisplayPokemonStatsTask.PokemonId[randomNumber]);
@@ -43,7 +43,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 else
                 {
                     Logger.Write(
-                        "Pokemon Upgrade Faild due to unknown 'System.NullReferenceException'");
+                        "Pokemon Upgrade Faild due to unknown 'System.NullReferenceException'; pokemon number was: " + randomNumber);
+                    Logger.Write(
+                        "Pokemon ID was: " + DisplayPokemonStatsTask.PokemonId[randomNumber]);
+                    Logger.Write(
+                        "Pokemon nomber was: " + (DisplayPokemonStatsTask.PokemonId.Count - 1));
                 }
             }
 
