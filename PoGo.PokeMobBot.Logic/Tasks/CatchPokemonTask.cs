@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.Extensions;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
@@ -19,6 +20,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public static class CatchPokemonTask
     {
+        private static readonly Random Rng = new Random();
+
         public static async Task Execute(ISession session, dynamic encounter, MapPokemon pokemon,
             FortData currentFortData = null, ulong encounterId = 0)
         {
@@ -77,6 +80,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         ? pokemon.Longitude
                         : currentFortData.Longitude);
 
+                double normalizedRecticleSize, spinModifier;
+                if (session.LogicSettings.HumanizeThrows)
+                {
+                    normalizedRecticleSize =
+                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
+                        1.85 + 0.1; // 0.1..1.95
+                    spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
+                }
+                else
+                {
+                    normalizedRecticleSize = 1.95;
+                    spinModifier = 1.00;
+                }
                 caughtPokemonResponse =
                     await session.Client.Encounter.CatchPokemon(
                         encounter is EncounterResponse || encounter is IncenseEncounterResponse
@@ -84,13 +100,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             : encounterId,
                         encounter is EncounterResponse || encounter is IncenseEncounterResponse
                             ? pokemon.SpawnPointId
-                            : currentFortData.Id, pokeball);
+                            : currentFortData.Id, pokeball,
+                        normalizedRecticleSize,
+                        spinModifier);
 
+                var lat = encounter is EncounterResponse || encounter is IncenseEncounterResponse
+                            ? pokemon.Latitude : currentFortData.Latitude;
+                var lng = encounter is EncounterResponse || encounter is IncenseEncounterResponse
+                            ? pokemon.Longitude : currentFortData.Longitude;
                 var evt = new PokemonCaptureEvent
                 {
                     Status = caughtPokemonResponse.Status,
-                    Latitude = pokemon.Latitude,
-                    Longitude = pokemon.Longitude
+                    Latitude = lat,
+                    Longitude = lng
                 };
 
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
@@ -147,7 +169,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     Math.Round(
                         PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                             ? encounter.WildPokemon?.PokemonData
-                            : encounter?.PokemonData));
+                            : encounter?.PokemonData), 2);
                 evt.Probability =
                     Math.Round(probability*100, 2);
                 evt.Distance = distance;
