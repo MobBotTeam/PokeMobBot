@@ -18,6 +18,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            await session.Inventory.RefreshCachedInventory();
+
             var duplicatePokemons =
                 await
                     session.Inventory.GetDuplicatePokemonToTransfer(session.LogicSettings.KeepPokemonsThatCanEvolve,
