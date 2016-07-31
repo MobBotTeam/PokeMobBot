@@ -42,8 +42,6 @@ namespace PoGo.PokeMobBot.CLI
                 Environment.Exit(0);
             }
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
-            session.Client.ApiFailure = new ApiFailureStrategy(session);
-
 
             /*SimpleSession session = new SimpleSession
             {
