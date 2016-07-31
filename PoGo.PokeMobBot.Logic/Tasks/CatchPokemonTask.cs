@@ -86,7 +86,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             ? pokemon.SpawnPointId
                             : currentFortData.Id, pokeball);
 
-                var evt = new PokemonCaptureEvent {Status = caughtPokemonResponse.Status};
+                var evt = new PokemonCaptureEvent
+                {
+                    Status = caughtPokemonResponse.Status,
+                    Latitude = pokemon.Latitude,
+                    Longitude = pokemon.Longitude
+                };
 
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
                 {
