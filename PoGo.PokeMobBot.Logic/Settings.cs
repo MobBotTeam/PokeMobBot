@@ -17,15 +17,14 @@ namespace PoGo.PokeMobBot.Logic
 {
     internal class AuthSettings
     {
-        [JsonIgnore] private string _filePath;
-
+        [JsonIgnore]
+        private string _filePath;
         public AuthType AuthType;
-        public string GooglePassword;
-
         public string GoogleRefreshToken;
         public string GoogleUsername;
-        public string PtcPassword;
+        public string GooglePassword;
         public string PtcUsername;
+        public string PtcPassword;
 
         public void Load(string path)
         {
@@ -39,7 +38,7 @@ namespace PoGo.PokeMobBot.Logic
                     var input = File.ReadAllText(_filePath);
 
                     var settings = new JsonSerializerSettings();
-                    settings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
+                    settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
 
                     JsonConvert.PopulateObject(input, this, settings);
                 }
@@ -75,7 +74,7 @@ namespace PoGo.PokeMobBot.Logic
         public void Save(string path)
         {
             var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter {CamelCaseText = true});
+                new StringEnumConverter { CamelCaseText = true });
 
             var folder = Path.GetDirectoryName(path);
             if (folder != null && !Directory.Exists(folder))
@@ -97,17 +96,35 @@ namespace PoGo.PokeMobBot.Logic
 
     public class GlobalSettings
     {
-        public int AmountOfPokemonToDisplayOnStart = 10;
-
-        [JsonIgnore] internal AuthSettings Auth = new AuthSettings();
-
-        public bool AutomaticallyLevelUpPokemon = false;
-
+        //bot start
         public bool AutoUpdate = true;
-        public double DefaultAltitude = 10;
+        public bool TransferConfigAndAuthOnUpdate = true;
+        public bool DumpPokemonStats = false;
+        public int AmountOfPokemonToDisplayOnStart = 10;
+        public bool StartupWelcomeDelay = true;
+        public string TranslationLanguageCode = "en";
+        public int WebSocketPort = 14251;
+        [JsonIgnore]
+        internal AuthSettings Auth = new AuthSettings();
+        [JsonIgnore]
+        public string GeneralConfigPath;
+        [JsonIgnore]
+        public string ProfilePath;
+        [JsonIgnore]
+        public string ProfileConfigPath;
+
+        //coords and movement
+        public bool Teleport = false;
         public double DefaultLatitude = 40.785091;
         public double DefaultLongitude = -73.968285;
-        public bool Teleport = false;
+        public double DefaultAltitude = 10;
+        public double WalkingSpeedInKilometerPerHour = 15.0;
+        public int MaxSpawnLocationOffset = 10;
+        public int MaxTravelDistanceInMeters = 1000;
+        public bool UseGpxPathing = false;
+        public string GpxFile = "GPXPath.GPX";
+
+        //delays
         public int DelayBetweenPlayerActions = 5000;
         public int DelayBetweenPokemonCatch = 2000;
         public int DelayCatchNearbyPokemon = 1000;
@@ -122,15 +139,74 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem = 1000;
         public int DelaySnipePokemon = 1000;
         public int DelayTransferPokemon = 1000;
-        public bool DumpPokemonStats = false;
-        public float EvolveAboveIvValue = 95;
-        public bool EvolveAllPokemonAboveIv = false;
+
+        //incubator
+        public bool UseEggIncubators = true;
+
+        //rename
+        public bool RenamePokemon = false;
+        public bool RenameOnlyAboveIv = true;
+        public string RenameTemplate = "{1}_{0}";
+
+        //transfer
+        public bool TransferDuplicatePokemon = true;
+        public bool PrioritizeIvOverCp = true;
+        public int KeepMinCp = 1250;
+        public float KeepMinIvPercentage = 90;
+        public int KeepMinDuplicatePokemon = 1;
+        public bool KeepPokemonsThatCanEvolve = false;
+
+        //evolve
         public bool EvolveAllPokemonWithEnoughCandy = true;
+        public bool EvolveAllPokemonAboveIv = false;
+        public float EvolveAboveIvValue = 95;
+        public bool UseLuckyEggsWhileEvolving = false;
+        public int UseLuckyEggsMinPokemonAmount = 30;
 
-        [JsonIgnore] public string GeneralConfigPath;
+        //levelup
+        public bool AutomaticallyLevelUpPokemon = false;
+        public string LevelUpByCPorIv = "iv";
+        public float UpgradePokemonCpMinimum = 1000;
+        public float UpgradePokemonIvMinimum = 95;
 
-        public string GpxFile = "GPXPath.GPX";
+        //catch
+        public int MaxPokeballsPerPokemon = 6;
+        public int UseGreatBallAboveCp = 750;
+        public int UseUltraBallAboveCp = 1000;
+        public int UseMasterBallAboveCp = 1500;
+        public bool UsePokemonToNotCatchFilter = false;
+        public bool HumanizeThrows = false;
+        public double ThrowAccuracyMin = 0.50;
+        public double ThrowAccuracyMax = 1.00;
+        public double ThrowSpinFrequency = 0.75;
 
+        //favorite
+        public float FavoriteMinIvPercentage = 95;
+        public bool AutoFavoritePokemon = false;
+        //recycle
+        public int TotalAmountOfPokeballsToKeep = 100;
+        public int TotalAmountOfPotionsToKeep = 80;
+        public int TotalAmountOfRevivesToKeep = 60;
+
+        public int UseGreatBallAboveIv = 80;
+        public int UseUltraBallAboveIv = 90;
+        public double UseGreatBallBelowCatchProbability = 0.5;
+        public double UseUltraBallBelowCatchProbability = 0.4;
+        public double UseMasterBallBelowCatchProbability = 0.05;
+
+        public double RecycleInventoryAtUsagePercentage = 0.90;
+
+
+        //snipe
+        public int MinDelayBetweenSnipes = 60000;
+        public int MinPokeballsToSnipe = 20;
+        public int MinPokeballsWhileSnipe = 0;
+        public bool SnipeAtPokestops = false;
+        public bool SnipeIgnoreUnknownIv = false;
+        public bool UseTransferIvForSnipe = false;
+        public bool UseSnipeLocationServer = false;
+        public string SnipeLocationServer = "localhost";
+        public int SnipeLocationServerPort = 16969;
 
         public List<KeyValuePair<ItemId, int>> ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>
         {
@@ -155,18 +231,6 @@ namespace PoGo.PokeMobBot.Logic
             new KeyValuePair<ItemId, int>(ItemId.ItemPokemonStorageUpgrade, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemItemStorageUpgrade, 100)
         };
-
-        public int KeepMinCp = 1250;
-        public int KeepMinDuplicatePokemon = 1;
-        public float KeepMinIvPercentage = 90;
-        public bool KeepPokemonsThatCanEvolve = false;
-        public string LevelUpByCPorIv = "iv";
-        public int MaxPokeballsPerPokemon = 6;
-        public int MaxSpawnLocationOffset = 10;
-        public int MaxTravelDistanceInMeters = 1000;
-        public int MinDelayBetweenSnipes = 60000;
-        public int MinPokeballsToSnipe = 20;
-        public int MinPokeballsWhileSnipe = 0;
 
         public List<PokemonId> PokemonsNotToTransfer = new List<PokemonId>
         {
@@ -366,43 +430,8 @@ namespace PoGo.PokeMobBot.Logic
             PokemonId.Mewtwo
         };
 
-        public bool PrioritizeIvOverCp = true;
-
-        [JsonIgnore] public string ProfileConfigPath;
-
-        [JsonIgnore] public string ProfilePath;
-
-        public bool RenameOnlyAboveIv = true;
-        public bool RenamePokemon = false;
-        public string RenameTemplate = "{1}_{0}";
-        public bool SnipeAtPokestops = false;
-        public bool SnipeIgnoreUnknownIv = false;
-        public string SnipeLocationServer = "localhost";
-        public int SnipeLocationServerPort = 16969;
-        public bool StartupWelcomeDelay = true;
-        public int TotalAmountOfPokebalsToKeep = 120;
-        public int TotalAmountOfPotionsToKeep = 80;
-        public int TotalAmountOfRevivesToKeep = 60;
-        public bool TransferConfigAndAuthOnUpdate = true;
-        public bool TransferDuplicatePokemon = true;
-        public string TranslationLanguageCode = "en";
-        public float UpgradePokemonCpMinimum = 1000;
-        public float UpgradePokemonIvMinimum = 95;
-        public bool UseEggIncubators = true;
-        public bool UseGpxPathing = false;
-        public int UseGreatBallAboveCp = 750;
-        public int UseLuckyEggsMinPokemonAmount = 30;
-        public bool UseLuckyEggsWhileEvolving = false;
-        public int UseMasterBallAboveCp = 1500;
-        public bool UsePokemonToNotCatchFilter = false;
-        public bool UseSnipeLocationServer = false;
-        public bool UseTransferIvForSnipe = false;
-        public int UseUltraBallAboveCp = 1000;
-        public double WalkingSpeedInKilometerPerHour = 15.0;
-        public int WebSocketPort = 14251;
-
         public static GlobalSettings Default => new GlobalSettings();
-
+        
         public static GlobalSettings Load(string path)
         {
             GlobalSettings settings;
@@ -418,7 +447,7 @@ namespace PoGo.PokeMobBot.Logic
                     var input = File.ReadAllText(configFile);
 
                     var jsonSettings = new JsonSerializerSettings();
-                    jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
+                    jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
                     jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                     jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
 
@@ -475,7 +504,7 @@ namespace PoGo.PokeMobBot.Logic
         public void Save(string fullPath)
         {
             var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter {CamelCaseText = true});
+                new StringEnumConverter { CamelCaseText = true });
 
             var folder = Path.GetDirectoryName(fullPath);
             if (folder != null && !Directory.Exists(folder))
@@ -504,12 +533,8 @@ namespace PoGo.PokeMobBot.Logic
 
         public string GoogleRefreshToken
         {
-            get { return _settings.Auth.GoogleRefreshToken; }
-            set
-            {
-                _settings.Auth.GoogleRefreshToken = value;
-                _settings.Auth.Save();
-            }
+            get { return null; }
+            set { GoogleRefreshToken = null; }
         }
 
         AuthType ISettings.AuthType
@@ -523,7 +548,7 @@ namespace PoGo.PokeMobBot.Logic
         {
             get
             {
-                return _settings.DefaultLatitude + _rand.NextDouble()*((double) _settings.MaxSpawnLocationOffset/111111);
+                return _settings.DefaultLatitude + _rand.NextDouble() * ((double)_settings.MaxSpawnLocationOffset / 111111);
             }
 
             set { _settings.DefaultLatitude = value; }
@@ -534,8 +559,8 @@ namespace PoGo.PokeMobBot.Logic
             get
             {
                 return _settings.DefaultLongitude +
-                       _rand.NextDouble()*
-                       ((double) _settings.MaxSpawnLocationOffset/111111/Math.Cos(_settings.DefaultLatitude));
+                       _rand.NextDouble() *
+                       ((double)_settings.MaxSpawnLocationOffset / 111111 / Math.Cos(_settings.DefaultLatitude));
             }
 
             set { _settings.DefaultLongitude = value; }
@@ -604,6 +629,11 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseEggIncubators => _settings.UseEggIncubators;
         public int UseGreatBallAboveCp => _settings.UseGreatBallAboveCp;
         public int UseUltraBallAboveCp => _settings.UseUltraBallAboveCp;
+        public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
+        public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
+        public double UseMasterBallBelowCatchProbability => _settings.UseMasterBallBelowCatchProbability;
+        public double UseUltraBallBelowCatchProbability => _settings.UseUltraBallBelowCatchProbability;
+        public double UseGreatBallBelowCatchProbability => _settings.UseGreatBallBelowCatchProbability;
         public int UseMasterBallAboveCp => _settings.UseMasterBallAboveCp;
         public int DelayBetweenPokemonCatch => _settings.DelayBetweenPokemonCatch;
         public int DelayBetweenPlayerActions => _settings.DelayBetweenPlayerActions;
@@ -619,6 +649,8 @@ namespace PoGo.PokeMobBot.Logic
         public float EvolveAboveIvValue => _settings.EvolveAboveIvValue;
         public bool RenamePokemon => _settings.RenamePokemon;
         public bool RenameOnlyAboveIv => _settings.RenameOnlyAboveIv;
+        public float FavoriteMinIvPercentage => _settings.FavoriteMinIvPercentage;
+        public bool AutoFavoritePokemon => _settings.AutoFavoritePokemon;
         public string RenameTemplate => _settings.RenameTemplate;
         public int AmountOfPokemonToDisplayOnStart => _settings.AmountOfPokemonToDisplayOnStart;
         public bool DumpPokemonStats => _settings.DumpPokemonStats;
@@ -642,7 +674,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseTransferIvForSnipe => _settings.UseTransferIvForSnipe;
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
-        public int TotalAmountOfPokebalsToKeep => _settings.TotalAmountOfPokebalsToKeep;
+        public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
 
@@ -659,5 +691,10 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
+        public double RecycleInventoryAtUsagePercentage => _settings.RecycleInventoryAtUsagePercentage;
+        public bool HumanizeThrows => _settings.HumanizeThrows;
+        public double ThrowAccuracyMin => _settings.ThrowAccuracyMin;
+        public double ThrowAccuracyMax => _settings.ThrowAccuracyMax;
+        public double ThrowSpinFrequency => _settings.ThrowSpinFrequency;
     }
 }

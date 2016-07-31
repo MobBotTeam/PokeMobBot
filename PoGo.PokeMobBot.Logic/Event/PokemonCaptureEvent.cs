@@ -25,5 +25,7 @@ namespace PoGo.PokeMobBot.Logic.Event
         public double Probability;
         public int Stardust;
         public CatchPokemonResponse.Types.CatchStatus Status;
+        public double Latitude;
+        public double Longitude;
     }
 }

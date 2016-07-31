@@ -60,6 +60,7 @@
     <Compile Include="DataDumper\IDumper.cs" />
     <Compile Include="DataDumper\Dumper.cs" />
     <Compile Include="Common\Translations.cs" />
+    <Compile Include="Event\UseLuckyEggMinPokemonEvent.cs" />
     <Compile Include="Event\DisplayHighestsPokemonEvent.cs" />
     <Compile Include="Event\EggHatchedEvent.cs" />
     <Compile Include="Event\EggsListEvent.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Event\FortTargetEvent.cs" />
     <Compile Include="Event\FortFailedEvent.cs" />
     <Compile Include="Event\FortUsedEvent.cs" />
+    <Compile Include="Event\InventoryListEvent.cs" />
     <Compile Include="Event\ItemRecycledEvent.cs" />
     <Compile Include="Event\NoPokeballEvent.cs" />
     <Compile Include="Event\PlayerStatsEvent.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="Event\UpdatePositionEvent.cs" />
     <Compile Include="Event\UseBerryEvent.cs" />
     <Compile Include="Event\EggIncubatorStatusEvent.cs" />
+    <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Inventory.cs" />
     <Compile Include="Localization\Localizer.cs" />
     <Compile Include="Logging\Logger.cs" />
@@ -91,6 +94,7 @@
     <Compile Include="Service\BotService.cs" />
     <Compile Include="Tasks\PlayerStatsTask .cs" />
     <Compile Include="Tasks\EggsListTask.cs" />
+    <Compile Include="Tasks\InventoryListTask.cs" />
     <Compile Include="Tasks\LevelUpPokemonTask.cs" />
     <Compile Include="Tasks\PokemonListTask.cs" />
     <Compile Include="Tasks\Farm.cs" />

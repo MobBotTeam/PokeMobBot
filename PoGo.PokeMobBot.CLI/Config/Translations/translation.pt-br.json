@@ -49,6 +49,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Ovo da Sorte utilizado, restando: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} com sucesso para {1}xp"
@@ -252,7 +256,7 @@
     },
     {
       "Key": "lookingForIncensePokemon",
-      "Value": "Procurando por incenso de pokémon..."
+      "Value": "Procurando por pokémons em incensos..."
     },
     {
       "Key": "lookingForPokemon",
@@ -260,7 +264,7 @@
     },
     {
       "Key": "lookingForLurePokemon",
-      "Value": "Procurando por atrator de pokémons..."
+      "Value": "Procurando por pokémon em pokestops luradas..."
     },
     {
       "Key": "pokemonSkipped",
@@ -273,11 +277,11 @@
     {
       "Key": "invFullTransferManually",
       "Value":
-        "O inventário de Pokémons está cheio. Transfira seus pokémons manualmente altere TransferDuplicatePokemon para true nas configurações..."
+        "O inventário de Pokémons está cheio. Transfira seus pokémons manualmente ou altere TransferDuplicatePokemon para true nas configurações."
     },
     {
       "Key": "invFullPokestopLooting",
-      "Value": "O inventório está cheio, nenhum item saqueado!"
+      "Value": "O inventório está cheio, nenhum item coletado!"
     },
     {
       "Key": "encounterProblem",

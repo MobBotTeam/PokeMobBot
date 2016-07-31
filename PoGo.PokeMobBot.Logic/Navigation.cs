@@ -169,6 +169,16 @@ namespace PoGo.PokeMobBot.Logic
             return result;
         }
 
+        public async Task Teleport(GeoCoordinate targetLocation)
+        {
+            await _client.Player.UpdatePlayerLocation(
+                targetLocation.Latitude, 
+                targetLocation.Longitude,
+                _client.Settings.DefaultAltitude);
+
+            UpdatePositionEvent?.Invoke(targetLocation.Latitude, targetLocation.Longitude);
+        }
+
         public event UpdatePositionDelegate UpdatePositionEvent;
     }
 }

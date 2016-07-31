@@ -43,7 +43,7 @@ namespace PoGo.PokeMobBot.Logic
             ItemId.ItemMaxPotion
         };
 
-        private readonly List<ItemId> _revives = new List<ItemId> {ItemId.ItemRevive, ItemId.ItemMaxRevive};
+        private readonly List<ItemId> _revives = new List<ItemId> { ItemId.ItemRevive, ItemId.ItemMaxRevive };
         private GetInventoryResponse _cachedInventory;
         private DateTime _lastRefresh;
 
@@ -111,7 +111,8 @@ namespace PoGo.PokeMobBot.Logic
 
                     if (settings.CandyToEvolve > 0)
                     {
-                        var amountPossible = familyCandy.Candy_/settings.CandyToEvolve;
+                        var amountPossible = familyCandy.Candy_ / (settings.CandyToEvolve - 2);
+
                         if (amountPossible > amountToSkip)
                             amountToSkip = amountPossible;
                     }
@@ -224,12 +225,20 @@ namespace PoGo.PokeMobBot.Logic
                 .Where(p => p != null);
         }
 
+        public async Task<int> GetTotalItemCount()
+        {
+            var myItems = (await GetItems()).ToList();
+            int myItemCount = 0;
+            foreach (var myItem in myItems) myItemCount += myItem.Count;
+            return myItemCount;
+        }
+
         public async Task<IEnumerable<ItemData>> GetItemsToRecycle(ISession session)
         {
             var itemsToRecylce = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
-            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokebalsToKeep;
+            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             var amountOfPotionsToKeep = _logicSettings.TotalAmountOfPotionsToKeep;
             var amountOfRevivesToKeep = _logicSettings.TotalAmountOfRevivesToKeep;
 
@@ -298,7 +307,7 @@ namespace PoGo.PokeMobBot.Logic
 
         private List<ItemData> GetPokeballsToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
         {
-            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokebalsToKeep;
+            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             if (amountOfPokeballsToKeep < 1)
             {
                 Logger.Write(session.Translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect),
@@ -307,7 +316,7 @@ namespace PoGo.PokeMobBot.Logic
             }
 
             var allPokeballs = myItems.Where(s => _pokeballs.Contains(s.ItemId)).ToList();
-            allPokeballs.Sort((ball1, ball2) => ((int) ball1.ItemId).CompareTo((int) ball2.ItemId));
+            allPokeballs.Sort((ball1, ball2) => ((int)ball1.ItemId).CompareTo((int)ball2.ItemId));
 
             return TakeAmountOfItems(allPokeballs, amountOfPokeballsToKeep).ToList();
         }
@@ -324,15 +333,15 @@ namespace PoGo.PokeMobBot.Logic
             var inventory = await GetCachedInventory();
 
             var families = from item in inventory.InventoryDelta.InventoryItems
-                where item.InventoryItemData?.Candy != null
-                where item.InventoryItemData?.Candy.FamilyId != PokemonFamilyId.FamilyUnset
-                group item by item.InventoryItemData?.Candy.FamilyId
+                           where item.InventoryItemData?.Candy != null
+                           where item.InventoryItemData?.Candy.FamilyId != PokemonFamilyId.FamilyUnset
+                           group item by item.InventoryItemData?.Candy.FamilyId
                 into family
-                select new Candy
-                {
-                    FamilyId = family.First().InventoryItemData.Candy.FamilyId,
-                    Candy_ = family.First().InventoryItemData.Candy.Candy_
-                };
+                           select new Candy
+                           {
+                               FamilyId = family.First().InventoryItemData.Candy.FamilyId,
+                               Candy_ = family.First().InventoryItemData.Candy.Candy_
+                           };
 
 
             return families.ToList();
@@ -394,7 +403,7 @@ namespace PoGo.PokeMobBot.Logic
 
                 var pokemonCandyNeededAlready =
                     pokemonToEvolve.Count(
-                        p => pokemonSettings.Single(x => x.PokemonId == p.PokemonId).FamilyId == settings.FamilyId)*
+                        p => pokemonSettings.Single(x => x.PokemonId == p.PokemonId).FamilyId == settings.FamilyId) *
                     settings.CandyToEvolve;
 
                 if (familyCandy.Candy_ - pokemonCandyNeededAlready > settings.CandyToEvolve)
@@ -428,7 +437,7 @@ namespace PoGo.PokeMobBot.Logic
             }
 
             var allPotions = myItems.Where(s => _potions.Contains(s.ItemId)).ToList();
-            allPotions.Sort((i1, i2) => ((int) i1.ItemId).CompareTo((int) i2.ItemId));
+            allPotions.Sort((i1, i2) => ((int)i1.ItemId).CompareTo((int)i2.ItemId));
 
             return TakeAmountOfItems(allPotions, amountOfPotionsToKeep).ToList();
         }
@@ -444,7 +453,7 @@ namespace PoGo.PokeMobBot.Logic
             }
 
             var allRevives = myItems.Where(s => _revives.Contains(s.ItemId)).ToList();
-            allRevives.Sort((i1, i2) => ((int) i1.ItemId).CompareTo((int) i2.ItemId));
+            allRevives.Sort((i1, i2) => ((int)i1.ItemId).CompareTo((int)i2.ItemId));
 
             return TakeAmountOfItems(allRevives, amountOfRevivesToKeep).ToList();
         }
@@ -492,7 +501,7 @@ namespace PoGo.PokeMobBot.Logic
                         // Recycle remaining amount
                         var count = itemsToRemove;
                         itemsToRemove = 0;
-                        yield return new ItemData {ItemId = item.ItemId, Count = count};
+                        yield return new ItemData { ItemId = item.ItemId, Count = count };
                     }
                 }
             }
