@@ -16,7 +16,9 @@ namespace PoGo.PokeMobBot.Logic.State
 
             if (session.LogicSettings.AmountOfPokemonToDisplayOnStart > 0)
                 await DisplayPokemonStatsTask.Execute(session);
-
+            if(session.LogicSettings.Teleport)
+                await session.Client.Player.UpdatePlayerLocation(session.Settings.DefaultLatitude, session.Settings.DefaultLongitude,
+                            session.Client.Settings.DefaultAltitude);
             return new FarmState();
         }
     }
