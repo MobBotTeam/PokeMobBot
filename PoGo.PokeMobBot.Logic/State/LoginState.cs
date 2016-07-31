@@ -55,7 +55,7 @@ namespace PoGo.PokeMobBot.Logic.State
                         return null;
                 }
             }
-            catch (PtcOfflineException)
+            catch (Exception ex) when (ex is PtcOfflineException || ex is AccessTokenExpiredException)
             {
                 session.EventDispatcher.Send(new ErrorEvent
                 {
