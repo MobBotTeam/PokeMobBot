@@ -112,9 +112,16 @@ namespace PoGo.PokeMobBot.Logic
                     if (settings.CandyToEvolve > 0)
                     {
                         var amountPossible = familyCandy.Candy_ / (settings.CandyToEvolve - 2);
-
-                        if (amountPossible > amountToSkip)
-                            amountToSkip = amountPossible;
+                        if (_logicSettings.OnlyKeepIfOnEvolveList)
+                        {
+                            if (amountPossible > amountToSkip && _logicSettings.PokemonsToEvolve.Contains(pokemon.Key))
+                                amountToSkip = amountPossible;
+                        }
+                        else
+                        {
+                            if (amountPossible > amountToSkip)
+                                amountToSkip = amountPossible;
+                        }
                     }
 
                     if (prioritizeIVoverCp)
