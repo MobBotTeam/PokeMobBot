@@ -25,6 +25,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public static async Task Execute(ISession session, dynamic encounter, MapPokemon pokemon,
             FortData currentFortData = null, ulong encounterId = 0)
         {
+            if (encounter is EncounterResponse && pokemon == null)
+                throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse", "pokemon");
+
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
             do
