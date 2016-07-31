@@ -380,7 +380,7 @@ namespace PoGo.PokeMobBot.Logic
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
         public bool StartupWelcomeDelay = true;
-        public int TotalAmountOfPokebalsToKeep = 120;
+        public int TotalAmountOfPokebalsToKeep = 100;
         public int TotalAmountOfPotionsToKeep = 80;
         public int TotalAmountOfRevivesToKeep = 60;
         public bool TransferConfigAndAuthOnUpdate = true;
