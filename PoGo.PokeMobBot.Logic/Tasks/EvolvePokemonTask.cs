@@ -42,6 +42,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     else
                     {
                         // Wait until we have enough pokemon
+                        session.EventDispatcher.Send(new UseLuckyEggMinPokemonEvent
+                        {
+                            Diff = (session.LogicSettings.UseLuckyEggsMinPokemonAmount - pokemonToEvolve.Count),
+                            CurrCount = pokemonToEvolve.Count,
+                            MinPokemon = session.LogicSettings.UseLuckyEggsMinPokemonAmount
+                        });
                         return;
                     }
                 }
