@@ -1,14 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region using directives
+
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace PoGo.PokeMobBot.Logic.Event
+using POGOProtos.Inventory.Item;
+using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Event;
+using POGOProtos.Data.Player;
+using System.Collections.Generic;
+
+#endregion
+
+namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class PlayerStatsEvent : IEvent
 
     {
-        public List<POGOProtos.Data.Player.PlayerStats> PlayerStats { get; set; }
+        public List<PlayerStats> PlayerStats { get; set; }
     }
 }
