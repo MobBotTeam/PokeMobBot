@@ -45,6 +45,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "ใช้งาน Lucky Egg, จำนวนคงเหลือ: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} สำเร็จ ได้รับค่าประสปการณ์ {1}หน่วย"

@@ -49,6 +49,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Şanslı Yumurta(Lucky Egg) kullanıldı, kalan: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} başarılı, {1}xp kazanıldı."
