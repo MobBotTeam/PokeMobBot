@@ -30,8 +30,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 await session.Client.Inventory.RecycleItem(item.ItemId, item.Count);
 
                 session.EventDispatcher.Send(new ItemRecycledEvent { Id = item.ItemId, Count = item.Count });
-
-                DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                if (session.LogicSettings.Teleport)
+                    await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                else
+                    DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
             }
 
             if (session.LogicSettings.TotalAmountOfPokeballsToKeep != 0)
@@ -61,8 +63,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             int pokeBallsToRecycle = 0;
             int greatBallsToRecycle = 0;
-            int ultraBallsToRecycle = 0;
-            int masterBallsToRecycle = 0;
+            //int ultraBallsToRecycle = 0;
+            //int masterBallsToRecycle = 0;
+            //unused at the moment
+            //TODO: implement these with reasonable settings
+
 
             int totalBallsCount = pokeBallsCount + greatBallsCount + ultraBallsCount + masterBallsCount;
             if (totalBallsCount > session.LogicSettings.TotalAmountOfPokeballsToKeep)
@@ -83,7 +88,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemPokeBall, pokeBallsToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemPokeBall, Count = pokeBallsToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -102,51 +110,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemGreatBall, greatBallsToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemGreatBall, Count = greatBallsToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
-                // Don't Recycle Ultra Balls
-                /*
-                if (diff > 0)
-                {
-                    int ultraBallsToKeep = ultraBallsCount - diff;
-                    if (ultraBallsToKeep < 0)
-                    {
-                        ultraBallsToKeep = 0;
-                    }
-                    ultraBallsToRecycle = ultraBallsCount - ultraBallsToKeep;
-                    if (ultraBallsToRecycle != 0)
-                    {
-                        diff -= ultraBallsToRecycle;
-                        cancellationToken.ThrowIfCancellationRequested();
-                        await session.Client.Inventory.RecycleItem(ItemId.ItemUltraBall, ultraBallsToRecycle);
-                        session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemUltraBall, Count = ultraBallsToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
-                    }
-                }
-                */
-
-                // No Master Balls in Game, so far
-                /*
-                if (diff > 0)
-                {
-                    int masterBallsToKeep = masterBallsCount - diff;
-                    if (masterBallsToKeep < 0)
-                    {
-                        masterBallsToKeep = 0;
-                    }
-                    masterBallsToRecycle = masterBallsCount - masterBallsToKeep;
-                    if (masterBallsToRecycle != 0)
-                    {
-                        diff -= masterBallsToRecycle;
-                        cancellationToken.ThrowIfCancellationRequested();
-                        await session.Client.Inventory.RecycleItem(ItemId.ItemMasterBall, masterBallsToRecycle);
-                        session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemMasterBall, Count = masterBallsToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
-                    }
-                }
-                */
+                
             }
         }
 
@@ -181,7 +152,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemPotion, potionsToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemPotion, Count = potionsToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -200,7 +174,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemSuperPotion, superPotionsToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemSuperPotion, Count = superPotionsToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -219,7 +196,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemHyperPotion, hyperPotionsToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemHyperPotion, Count = hyperPotionsToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -238,7 +218,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemMaxPotion, maxPotionsToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemMaxPotion, Count = maxPotionsToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
             }
@@ -271,7 +254,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemRevive, revivesToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemRevive, Count = revivesToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -290,7 +276,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemMaxRevive, maxRevivesToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemMaxRevive, Count = maxRevivesToRecycle });
-                        DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                         DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
             }
