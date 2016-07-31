@@ -45,7 +45,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             else if (session.LogicSettings.LevelUpByCPorIv.ToLower().Contains("cp"))
             {
                 var rand = new Random();
-                var randomNumber = rand.Next(0, DisplayPokemonStatsTask.PokemonIdcp.Count - 1);
+                var randomNumber = rand.Next(1, DisplayPokemonStatsTask.PokemonIdcp.Count);
                 var upgradeResult =
                     await session.Inventory.UpgradePokemon(DisplayPokemonStatsTask.PokemonIdcp[randomNumber]);
                 if (upgradeResult.Result.ToString().ToLower().Contains("success"))
@@ -57,7 +57,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     Logger.Write("Pokemon Upgrade Failed Not Enough Resources");
                 }
-                else
+                else if (upgradeResult.UpgradedPokemon != null)
                 {
                     Logger.Write(
                         "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
