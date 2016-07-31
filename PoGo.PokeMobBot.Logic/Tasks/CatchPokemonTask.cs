@@ -117,12 +117,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
                 {
-                    var totalExp = 0;
+                    var totalExp = caughtPokemonResponse.CaptureAward.Xp.Sum();
 
-                    foreach (var xp in caughtPokemonResponse.CaptureAward.Xp)
-                    {
-                        totalExp += xp;
-                    }
                     var profile = await session.Client.Player.GetPlayer();
 
                     evt.Exp = totalExp;

@@ -165,7 +165,7 @@
       "Value": "POKEMON"
     },
     {
-      "Key": "logEntryTransfered",
+      "Key": "logEntryTransferred",
       "Value": "TRANSFERT"
     },
     {
@@ -401,7 +401,7 @@
       "Value": "[Sniper] Scan en cours sur {0}..."
     },
     { 
-	    "Key": "snipeScanEx"
+	    "Key": "snipeScanEx",
       "Value": "[Sniper] Scan de {0} avec {1} IV à {2}..."
     },
     {

@@ -111,11 +111,11 @@ namespace PoGo.PokeMobBot.Logic
         int TotalAmountOfPotionsToKeep { get; }
         int TotalAmountOfRevivesToKeep { get; }
 
-        ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
+        IEnumerable<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
 
-        ICollection<PokemonId> PokemonsToEvolve { get; }
+        IEnumerable<PokemonId> PokemonsToEvolve { get; }
 
-        ICollection<PokemonId> PokemonsNotToTransfer { get; }
+        IEnumerable<PokemonId> PokemonsNotToTransfer { get; }
 
         ICollection<PokemonId> PokemonsNotToCatch { get; }
 

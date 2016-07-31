@@ -110,27 +110,25 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     {
                         timesZeroXPawarded++;
 
-                        if (timesZeroXPawarded > zeroCheck)
+                        if (timesZeroXPawarded <= zeroCheck) continue;
+                        if ((int) fortSearch.CooldownCompleteTimestampMs != 0)
                         {
-                            if ((int) fortSearch.CooldownCompleteTimestampMs != 0)
-                            {
-                                break;
-                                    // Check if successfully looted, if so program can continue as this was "false alarm".
-                            }
-
-                            fortTry += 1;
-
-                            session.EventDispatcher.Send(new FortFailedEvent
-                            {
-                                Name = fortInfo.Name,
-                                Try = fortTry,
-                                Max = retryNumber - zeroCheck
-                            });
-                            if(session.LogicSettings.Teleport)
-                                await Task.Delay(session.LogicSettings.DelaySoftbanRetry);
-                            else
-                                DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
+                            break;
+                            // Check if successfully looted, if so program can continue as this was "false alarm".
                         }
+
+                        fortTry += 1;
+
+                        session.EventDispatcher.Send(new FortFailedEvent
+                        {
+                            Name = fortInfo.Name,
+                            Try = fortTry,
+                            Max = retryNumber - zeroCheck
+                        });
+                        if(session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelaySoftbanRetry);
+                        else
+                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
                     }
                     else
                     {

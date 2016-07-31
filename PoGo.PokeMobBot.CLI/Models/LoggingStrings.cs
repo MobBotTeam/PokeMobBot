@@ -27,7 +27,7 @@ namespace PoGo.PokeMobBot.CLI.Models
 
         internal static string Recycling;
 
-        internal static string Transfered;
+        internal static string Transferred;
 
         internal static string Update;
 
@@ -77,9 +77,9 @@ namespace PoGo.PokeMobBot.CLI.Models
                 session?.Translation.GetTranslation(
                     TranslationString.LogEntryRecycling) ?? "RECYCLING";
 
-            Transfered =
+            Transferred =
                 session?.Translation.GetTranslation(
-                    TranslationString.LogEntryTransfered) ?? "TRANSFERED";
+                    TranslationString.LogEntryTransferred) ?? "Transferred";
 
             Update =
                 session?.Translation.GetTranslation(

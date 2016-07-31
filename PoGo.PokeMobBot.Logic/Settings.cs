@@ -96,14 +96,6 @@ namespace PoGo.PokeMobBot.Logic
 
     public class GlobalSettings
     {
-        //bot start
-        public bool AutoUpdate = true;
-        public bool TransferConfigAndAuthOnUpdate = true;
-        public bool DumpPokemonStats = false;
-        public int AmountOfPokemonToDisplayOnStart = 10;
-        public bool StartupWelcomeDelay = true;
-        public string TranslationLanguageCode = "en";
-        public int WebSocketPort = 14251;
         [JsonIgnore]
         internal AuthSettings Auth = new AuthSettings();
         [JsonIgnore]
@@ -112,6 +104,15 @@ namespace PoGo.PokeMobBot.Logic
         public string ProfilePath;
         [JsonIgnore]
         public string ProfileConfigPath;
+
+        //bot start
+        public string TranslationLanguageCode = "en";
+        public bool AutoUpdate = true;
+        public bool TransferConfigAndAuthOnUpdate = true;
+        public bool StartupWelcomeDelay = true;
+        public bool DumpPokemonStats = false;
+        public int AmountOfPokemonToDisplayOnStart = 10;
+        public int WebSocketPort = 14251;
 
         //coords and movement
         public bool Teleport = false;
@@ -481,12 +482,7 @@ namespace PoGo.PokeMobBot.Logic
             settings.Save(configFile);
             settings.Auth.Load(Path.Combine(profileConfigPath, "auth.json"));
 
-            if (firstRun)
-            {
-                return null;
-            }
-
-            return settings;
+            return firstRun ? null : settings;
         }
 
         public void Save(string fullPath)
@@ -640,9 +636,9 @@ namespace PoGo.PokeMobBot.Logic
         public int AmountOfPokemonToDisplayOnStart => _settings.AmountOfPokemonToDisplayOnStart;
         public bool DumpPokemonStats => _settings.DumpPokemonStats;
         public string TranslationLanguageCode => _settings.TranslationLanguageCode;
-        public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter => _settings.ItemRecycleFilter;
-        public ICollection<PokemonId> PokemonsToEvolve => _settings.PokemonsToEvolve;
-        public ICollection<PokemonId> PokemonsNotToTransfer => _settings.PokemonsNotToTransfer;
+        public IEnumerable<KeyValuePair<ItemId, int>> ItemRecycleFilter => _settings.ItemRecycleFilter;
+        public IEnumerable<PokemonId> PokemonsToEvolve => _settings.PokemonsToEvolve;
+        public IEnumerable<PokemonId> PokemonsNotToTransfer => _settings.PokemonsNotToTransfer;
         public ICollection<PokemonId> PokemonsNotToCatch => _settings.PokemonsToIgnore;
         public ICollection<PokemonId> PokemonToUseMasterball => _settings.PokemonToUseMasterball;
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter => _settings.PokemonsTransferFilter;

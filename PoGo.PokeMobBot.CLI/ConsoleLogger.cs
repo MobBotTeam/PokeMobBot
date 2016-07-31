@@ -82,7 +82,7 @@ namespace PoGo.PokeMobBot.CLI
                     break;
                 case LogLevel.Transfer:
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Transfered}) {message}");
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Transferred}) {message}");
                     break;
                 case LogLevel.Evolve:
                     Console.ForegroundColor = ConsoleColor.Yellow;

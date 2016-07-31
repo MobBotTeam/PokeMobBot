@@ -94,7 +94,7 @@ namespace PoGo.PokeMobBot.Logic
             if (keepPokemonsThatCanEvolve)
             {
                 var results = new List<PokemonData>();
-                var pokemonsThatCanBeTransfered = pokemonList.GroupBy(p => p.PokemonId)
+                var pokemonsThatCanBeTransferred = pokemonList.GroupBy(p => p.PokemonId)
                     .Where(x => x.Count() > GetPokemonTransferFilter(x.Key).KeepMinDuplicatePokemon).ToList();
 
                 var myPokemonSettings = await GetPokemonSettings();
@@ -103,7 +103,7 @@ namespace PoGo.PokeMobBot.Logic
                 var myPokemonFamilies = await GetPokemonFamilies();
                 var pokemonFamilies = myPokemonFamilies.ToArray();
 
-                foreach (var pokemon in pokemonsThatCanBeTransfered)
+                foreach (var pokemon in pokemonsThatCanBeTransferred)
                 {
                     var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.Key);
                     var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
@@ -296,7 +296,7 @@ namespace PoGo.PokeMobBot.Logic
                 .Where(p => p != null);
         }
 
-        private List<ItemData> GetPokeballsToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        private IEnumerable<ItemData> GetPokeballsToRecycle(ISession session, IEnumerable<ItemData> myItems)
         {
             var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             if (amountOfPokeballsToKeep < 1)
@@ -417,7 +417,7 @@ namespace PoGo.PokeMobBot.Logic
                 _logicSettings.KeepMinDuplicatePokemon);
         }
 
-        private List<ItemData> GetPotionsToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        private IEnumerable<ItemData> GetPotionsToRecycle(ISession session, IEnumerable<ItemData> myItems)
         {
             var amountOfPotionsToKeep = _logicSettings.TotalAmountOfPotionsToKeep;
             if (amountOfPotionsToKeep < 1)
@@ -433,7 +433,7 @@ namespace PoGo.PokeMobBot.Logic
             return TakeAmountOfItems(allPotions, amountOfPotionsToKeep).ToList();
         }
 
-        private List<ItemData> GetRevivesToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        private IEnumerable<ItemData> GetRevivesToRecycle(ISession session, IEnumerable<ItemData> myItems)
         {
             var amountOfRevivesToKeep = _logicSettings.TotalAmountOfRevivesToKeep;
             if (amountOfRevivesToKeep < 1)
@@ -469,31 +469,25 @@ namespace PoGo.PokeMobBot.Logic
 
         private IEnumerable<ItemData> TakeAmountOfItems(IReadOnlyList<ItemData> items, int ammountToLeave)
         {
-            var itemsAvailable = 0;
-            foreach (var item in items)
-            {
-                itemsAvailable += item.Count;
-            }
+            var itemsAvailable = items.Sum(item => item.Count);
 
             var itemsToRemove = itemsAvailable - ammountToLeave;
 
             foreach (var item in items)
             {
-                if (itemsToRemove > 0 && item.Count > 0)
+                if (itemsToRemove <= 0 || item.Count <= 0) continue;
+                if (item.Count < itemsToRemove)
                 {
-                    if (item.Count < itemsToRemove)
-                    {
-                        // Recylce all of this type
-                        itemsToRemove -= item.Count;
-                        yield return item;
-                    }
-                    else
-                    {
-                        // Recycle remaining amount
-                        var count = itemsToRemove;
-                        itemsToRemove = 0;
-                        yield return new ItemData {ItemId = item.ItemId, Count = count};
-                    }
+                    // Recylce all of this type
+                    itemsToRemove -= item.Count;
+                    yield return item;
+                }
+                else
+                {
+                    // Recycle remaining amount
+                    var count = itemsToRemove;
+                    itemsToRemove = 0;
+                    yield return new ItemData {ItemId = item.ItemId, Count = count};
                 }
             }
         }

@@ -42,7 +42,7 @@ namespace PoGo.PokeMobBot.CLI
                 Console.ReadKey();
 
                 // opens explorer with location "config"
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = "config",
                     UseShellExecute = true,

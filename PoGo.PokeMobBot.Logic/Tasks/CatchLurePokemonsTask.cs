@@ -38,35 +38,35 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var encounterId = currentFortData.LureInfo.EncounterId;
                 var encounter = await session.Client.Encounter.EncounterLurePokemon(encounterId, fortId);
 
-                if (encounter.Result == DiskEncounterResponse.Types.Result.Success)
+                switch (encounter.Result)
                 {
-                    await CatchPokemonTask.Execute(session, encounter, null, currentFortData, encounterId);
-                }
-                else if (encounter.Result == DiskEncounterResponse.Types.Result.PokemonInventoryFull)
-                {
-                    if (session.LogicSettings.TransferDuplicatePokemon)
-                    {
+                    case DiskEncounterResponse.Types.Result.Success:
+                        await CatchPokemonTask.Execute(session, encounter, null, currentFortData, encounterId);
+                        break;
+                    case DiskEncounterResponse.Types.Result.PokemonInventoryFull:
+                        if (session.LogicSettings.TransferDuplicatePokemon)
+                        {
+                            session.EventDispatcher.Send(new WarnEvent
+                            {
+                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
+                            });
+                            await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                        }
+                        else
+                            session.EventDispatcher.Send(new WarnEvent
+                            {
+                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
+                            });
+                        break;
+                    default:
+                        if (encounter.Result.ToString().Contains("NotAvailable")) return;
                         session.EventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
+                            Message =
+                                session.Translation.GetTranslation(TranslationString.EncounterProblemLurePokemon,
+                                    encounter.Result)
                         });
-                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
-                    }
-                    else
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
-                        });
-                }
-                else
-                {
-                    if (encounter.Result.ToString().Contains("NotAvailable")) return;
-                    session.EventDispatcher.Send(new WarnEvent
-                    {
-                        Message =
-                            session.Translation.GetTranslation(TranslationString.EncounterProblemLurePokemon,
-                                encounter.Result)
-                    });
+                        break;
                 }
             }
         }

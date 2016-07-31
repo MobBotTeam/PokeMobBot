@@ -48,7 +48,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public void HandleEvent(TransferPokemonEvent evt, ISession session)
         {
-            _stats.TotalPokemonsTransfered++;
+            _stats.TotalPokemonsTransferred++;
             _stats.Dirty(session.Inventory);
         }
 
@@ -70,13 +70,11 @@ namespace PoGo.PokeMobBot.Logic
 
         public void HandleEvent(PokemonCaptureEvent evt, ISession session)
         {
-            if (evt.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
-            {
-                _stats.TotalExperience += evt.Exp;
-                _stats.TotalPokemons++;
-                _stats.TotalStardust = evt.Stardust;
-                _stats.Dirty(session.Inventory);
-            }
+            if (evt.Status != CatchPokemonResponse.Types.CatchStatus.CatchSuccess) return;
+            _stats.TotalExperience += evt.Exp;
+            _stats.TotalPokemons++;
+            _stats.TotalStardust = evt.Stardust;
+            _stats.Dirty(session.Inventory);
         }
 
         public void HandleEvent(NoPokeballEvent evt, ISession session)

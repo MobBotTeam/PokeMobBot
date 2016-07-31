@@ -2,8 +2,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-
-using POGOProtos.Inventory.Item;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Event;
 

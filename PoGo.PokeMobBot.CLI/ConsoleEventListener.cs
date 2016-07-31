@@ -36,11 +36,9 @@ namespace PoGo.PokeMobBot.CLI
         {
             Logger.Write(evt.ToString(), LogLevel.Warning);
 
-            if (evt.RequireInput)
-            {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.RequireInputText));
-                Console.ReadKey();
-            }
+            if (!evt.RequireInput) return;
+            Logger.Write(session.Translation.GetTranslation(TranslationString.RequireInputText));
+            Console.ReadKey();
         }
 
         public void HandleEvent(UseLuckyEggEvent evt, ISession session)
@@ -51,8 +49,7 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(UseLuckyEggMinPokemonEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff, evt.CurrCount, evt.MinPokemon),
-                LogLevel.Info);
+            Logger.Write(session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff, evt.CurrCount, evt.MinPokemon));
         }
 
         public void HandleEvent(PokemonEvolveEvent evt, ISession session)

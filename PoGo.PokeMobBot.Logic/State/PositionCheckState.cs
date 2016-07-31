@@ -78,45 +78,38 @@ namespace PoGo.PokeMobBot.Logic.State
 
         private static Tuple<double, double> LoadPositionFromDisk(ISession session)
         {
-            if (
-                File.Exists(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "Configs" +
-                            Path.DirectorySeparatorChar + "Coords.ini") &&
+            if (!File.Exists(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "Configs" +
+                             Path.DirectorySeparatorChar + "Coords.ini") ||
+                !File.ReadAllText(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "Configs" +
+                                  Path.DirectorySeparatorChar + "Coords.ini").Contains(":")) return null;
+            var latlngFromFile =
                 File.ReadAllText(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "Configs" +
-                                 Path.DirectorySeparatorChar + "Coords.ini").Contains(":"))
+                                 Path.DirectorySeparatorChar + "Coords.ini");
+            var latlng = latlngFromFile.Split(':');
+            if (latlng[0].Length == 0 || latlng[1].Length == 0) return null;
+            try
             {
-                var latlngFromFile =
-                    File.ReadAllText(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "Configs" +
-                                     Path.DirectorySeparatorChar + "Coords.ini");
-                var latlng = latlngFromFile.Split(':');
-                if (latlng[0].Length != 0 && latlng[1].Length != 0)
+                var latitude = Convert.ToDouble(latlng[0]);
+                var longitude = Convert.ToDouble(latlng[1]);
+
+                if (Math.Abs(latitude) <= 90 && Math.Abs(longitude) <= 180)
                 {
-                    try
-                    {
-                        var latitude = Convert.ToDouble(latlng[0]);
-                        var longitude = Convert.ToDouble(latlng[1]);
-
-                        if (Math.Abs(latitude) <= 90 && Math.Abs(longitude) <= 180)
-                        {
-                            return new Tuple<double, double>(latitude, longitude);
-                        }
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message = session.Translation.GetTranslation(TranslationString.CoordinatesAreInvalid)
-                        });
-                        return null;
-                    }
-                    catch (FormatException)
-                    {
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message = session.Translation.GetTranslation(TranslationString.CoordinatesAreInvalid)
-                        });
-                        return null;
-                    }
+                    return new Tuple<double, double>(latitude, longitude);
                 }
+                session.EventDispatcher.Send(new WarnEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.CoordinatesAreInvalid)
+                });
+                return null;
             }
-
-            return null;
+            catch (FormatException)
+            {
+                session.EventDispatcher.Send(new WarnEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.CoordinatesAreInvalid)
+                });
+                return null;
+            }
         }
     }
 }

@@ -157,7 +157,7 @@
       "Value": "PKMN"
     },
     {
-      "Key": "logEntryTransfered",
+      "Key": "logEntryTransferred",
       "Value": "TRANSFER"
     },
     {
@@ -374,7 +374,7 @@
     },
     {
       "Key": "statsTemplateString",
-      "Value": "{0} - Uitvoeringstijd {1} - Lvl: {2} | EXP/H: {3:n0} | P/H: {4:n0} | Stardust: {5:n0} | Transfered: {6:n0} | Recycled: {7:n0}"
+      "Value": "{0} - Uitvoeringstijd {1} - Lvl: {2} | EXP/H: {3:n0} | P/H: {4:n0} | Stardust: {5:n0} | Transferred: {6:n0} | Recycled: {7:n0}"
     },
     {
       "Key": "statsXpTemplateString",

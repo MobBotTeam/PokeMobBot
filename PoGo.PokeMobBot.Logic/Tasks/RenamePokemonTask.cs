@@ -40,18 +40,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 // If "RenameOnlyAboveIv" = true only rename pokemon with IV over "KeepMinIvPercentage"
                 // Favorites will be skipped
-                if ((!session.LogicSettings.RenameOnlyAboveIv || perfection >= session.LogicSettings.KeepMinIvPercentage) &&
-                    newNickname != oldNickname && pokemon.Favorite == 0)
-                {
-                    await session.Client.Inventory.NicknamePokemon(pokemon.Id, newNickname);
+                if ((session.LogicSettings.RenameOnlyAboveIv &&
+                     !(perfection >= session.LogicSettings.KeepMinIvPercentage)) || newNickname == oldNickname ||
+                    pokemon.Favorite != 0) continue;
+                await session.Client.Inventory.NicknamePokemon(pokemon.Id, newNickname);
 
-                    session.EventDispatcher.Send(new NoticeEvent
-                    {
-                        Message =
-                            session.Translation.GetTranslation(TranslationString.PokemonRename, pokemon.PokemonId,
-                                pokemon.Id, oldNickname, newNickname)
-                    });
-                }
+                session.EventDispatcher.Send(new NoticeEvent
+                {
+                    Message =
+                        session.Translation.GetTranslation(TranslationString.PokemonRename, pokemon.PokemonId,
+                            pokemon.Id, oldNickname, newNickname)
+                });
             }
         }
     }

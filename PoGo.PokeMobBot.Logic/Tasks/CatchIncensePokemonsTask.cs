@@ -55,33 +55,33 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             session.Client.Encounter.EncounterIncensePokemon((long) pokemon.EncounterId,
                                 pokemon.SpawnPointId);
 
-                    if (encounter.Result == IncenseEncounterResponse.Types.Result.IncenseEncounterSuccess)
+                    switch (encounter.Result)
                     {
-                        await CatchPokemonTask.Execute(session, encounter, pokemon);
-                    }
-                    else if (encounter.Result == IncenseEncounterResponse.Types.Result.PokemonInventoryFull)
-                    {
-                        if (session.LogicSettings.TransferDuplicatePokemon)
-                        {
+                        case IncenseEncounterResponse.Types.Result.IncenseEncounterSuccess:
+                            await CatchPokemonTask.Execute(session, encounter, pokemon);
+                            break;
+                        case IncenseEncounterResponse.Types.Result.PokemonInventoryFull:
+                            if (session.LogicSettings.TransferDuplicatePokemon)
+                            {
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
+                                });
+                                await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                            }
+                            else
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
+                                });
+                            break;
+                        default:
                             session.EventDispatcher.Send(new WarnEvent
                             {
-                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
+                                Message =
+                                    session.Translation.GetTranslation(TranslationString.EncounterProblem, encounter.Result)
                             });
-                            await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
-                        }
-                        else
-                            session.EventDispatcher.Send(new WarnEvent
-                            {
-                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
-                            });
-                    }
-                    else
-                    {
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message =
-                                session.Translation.GetTranslation(TranslationString.EncounterProblem, encounter.Result)
-                        });
+                            break;
                     }
                 }
             }

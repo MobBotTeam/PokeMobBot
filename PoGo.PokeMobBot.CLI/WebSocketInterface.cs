@@ -103,13 +103,16 @@ namespace PoGo.PokeMobBot.CLI
 
             try
             {
-                session.Send(Serialize(new UpdatePositionEvent()
+                session.Send(Serialize(new UpdatePositionEvent
                 {
                     Latitude = _session.Client.CurrentLatitude,
                     Longitude = _session.Client.CurrentLongitude
                 }));
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         public void Listen(IEvent evt, Session session)

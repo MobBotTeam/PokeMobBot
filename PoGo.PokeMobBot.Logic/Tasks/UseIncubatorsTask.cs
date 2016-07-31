@@ -120,10 +120,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-            if (File.Exists(filePath))
-                return JsonConvert.DeserializeObject<List<IncubatorUsage>>(File.ReadAllText(filePath, Encoding.UTF8));
-
-            return new List<IncubatorUsage>(0);
+            return File.Exists(filePath) ? JsonConvert.DeserializeObject<List<IncubatorUsage>>(File.ReadAllText(filePath, Encoding.UTF8)) : new List<IncubatorUsage>(0);
         }
 
         private static void SaveRememberedIncubators(List<IncubatorUsage> incubators, string filePath)

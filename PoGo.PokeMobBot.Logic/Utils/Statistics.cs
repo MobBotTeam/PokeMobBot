@@ -26,7 +26,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
         public int TotalExperience;
         public int TotalItemsRemoved;
         public int TotalPokemons;
-        public int TotalPokemonsTransfered;
+        public int TotalPokemonsTransferred;
         public int TotalStardust;
 
         public void Dirty(Inventory inventory)
@@ -45,30 +45,27 @@ namespace PoGo.PokeMobBot.Logic.Utils
         public StatsExport GetCurrentInfo(Inventory inventory)
         {
             var stats = inventory.GetPlayerStats().Result;
-            StatsExport output = null;
             var stat = stats.FirstOrDefault();
-            if (stat != null)
+            if (stat == null) return null;
+            var ep = stat.NextLevelXp - stat.PrevLevelXp - (stat.Experience - stat.PrevLevelXp);
+            var time = Math.Round(ep/(TotalExperience/GetRuntime()), 2);
+            var hours = 0.00;
+            var minutes = 0.00;
+            if (double.IsInfinity(time) == false && time > 0)
             {
-                var ep = stat.NextLevelXp - stat.PrevLevelXp - (stat.Experience - stat.PrevLevelXp);
-                var time = Math.Round(ep/(TotalExperience/GetRuntime()), 2);
-                var hours = 0.00;
-                var minutes = 0.00;
-                if (double.IsInfinity(time) == false && time > 0)
-                {
-                    time = Convert.ToDouble(TimeSpan.FromHours(time).ToString("h\\.mm"), CultureInfo.InvariantCulture);
-                    hours = Math.Truncate(time);
-                    minutes = Math.Round((time - hours)*100);
-                }
-
-                output = new StatsExport
-                {
-                    Level = stat.Level,
-                    HoursUntilLvl = hours,
-                    MinutesUntilLevel = minutes,
-                    CurrentXp = stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level),
-                    LevelupXp = stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)
-                };
+                time = Convert.ToDouble(TimeSpan.FromHours(time).ToString("h\\.mm"), CultureInfo.InvariantCulture);
+                hours = Math.Truncate(time);
+                minutes = Math.Round((time - hours)*100);
             }
+
+            var output = new StatsExport
+            {
+                Level = stat.Level,
+                HoursUntilLvl = hours,
+                MinutesUntilLevel = minutes,
+                CurrentXp = stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level),
+                LevelupXp = stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)
+            };
             return output;
         }
 
@@ -83,7 +80,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
                 _exportStats.MinutesUntilLevel, _exportStats.CurrentXp, _exportStats.LevelupXp);
             return string.Format(template, _playerName, FormatRuntime(), xpStats, TotalExperience/GetRuntime(),
                 TotalPokemons/GetRuntime(),
-                TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved);
+                TotalStardust, TotalPokemonsTransferred, TotalItemsRemoved);
         }
 
         public static int GetXpDiff(int level)

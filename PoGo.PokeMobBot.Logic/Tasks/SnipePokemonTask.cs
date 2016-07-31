@@ -99,18 +99,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             pokeBallsCount += await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
             pokeBallsCount += await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
-            if (pokeBallsCount < minPokeballs)
+            if (pokeBallsCount >= minPokeballs) return true;
+            session.EventDispatcher.Send(new NoticeEvent
             {
-                session.EventDispatcher.Send(new NoticeEvent
-                {
-                    Message =
-                        session.Translation.GetTranslation(TranslationString.NotEnoughPokeballsToSnipe, pokeBallsCount,
-                            minPokeballs)
-                });
-                return false;
-            }
-
-            return true;
+                Message =
+                    session.Translation.GetTranslation(TranslationString.NotEnoughPokeballsToSnipe, pokeBallsCount,
+                        minPokeballs)
+            });
+            return false;
         }
 
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
@@ -132,7 +128,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     {
                         var locationsToSnipe = SnipeLocations?.Where(q =>
                             (!session.LogicSettings.UseTransferIvForSnipe ||
-                             (q.Iv == 0 && !session.LogicSettings.SnipeIgnoreUnknownIv) ||
+                             (Math.Abs(q.Iv) < 0.00 && !session.LogicSettings.SnipeIgnoreUnknownIv) ||
                              (q.Iv >= session.Inventory.GetPokemonTransferFilter(q.Id).KeepMinIvPercentage)) &&
                             !LocsVisited.Contains(new PokemonLocation(q.Latitude, q.Longitude))
                             && !(q.TimeStamp != default(DateTime) &&
@@ -261,33 +257,33 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.Client.Player.UpdatePlayerLocation(currentLatitude, currentLongitude,
                         session.Client.CurrentAltitude);
 
-                if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
+                switch (encounter.Status)
                 {
-                    session.EventDispatcher.Send(new UpdatePositionEvent
-                    {
-                        Latitude = currentLatitude,
-                        Longitude = currentLongitude
-                    });
+                    case EncounterResponse.Types.Status.EncounterSuccess:
+                        session.EventDispatcher.Send(new UpdatePositionEvent
+                        {
+                            Latitude = currentLatitude,
+                            Longitude = currentLongitude
+                        });
 
-                    await CatchPokemonTask.Execute(session, encounter, pokemon);
-                }
-                else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
-                {
-                    session.EventDispatcher.Send(new WarnEvent
-                    {
-                        Message =
-                            session.Translation.GetTranslation(
-                                TranslationString.InvFullTransferManually)
-                    });
-                }
-                else
-                {
-                    session.EventDispatcher.Send(new WarnEvent
-                    {
-                        Message =
-                            session.Translation.GetTranslation(
-                                TranslationString.EncounterProblem, encounter.Status)
-                    });
+                        await CatchPokemonTask.Execute(session, encounter, pokemon);
+                        break;
+                    case EncounterResponse.Types.Status.PokemonInventoryFull:
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message =
+                                session.Translation.GetTranslation(
+                                    TranslationString.InvFullTransferManually)
+                        });
+                        break;
+                    default:
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message =
+                                session.Translation.GetTranslation(
+                                    TranslationString.EncounterProblem, encounter.Status)
+                        });
+                        break;
                 }
 
                 if (
