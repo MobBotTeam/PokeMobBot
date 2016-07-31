@@ -49,6 +49,12 @@ namespace PoGo.PokeMobBot.CLI
                 LogLevel.Egg);
         }
 
+        public void HandleEvent(UseLuckyEggMinPokemonEvent evt, ISession session)
+        {
+            Logger.Write(session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff, evt.CurrCount, evt.MinPokemon),
+                LogLevel.Info);
+        }
+
         public void HandleEvent(PokemonEvolveEvent evt, ISession session)
         {
             Logger.Write(evt.Result == EvolvePokemonResponse.Types.Result.Success

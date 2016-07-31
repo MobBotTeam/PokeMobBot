@@ -68,6 +68,19 @@ namespace PoGo.PokeMobBot.Logic.State
                 await Task.Delay(20000, cancellationToken);
                 return this;
             }
+            catch (AccessTokenExpiredException)
+            {
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.PtcOffline) // use ptcoffline for now.
+                });
+                session.EventDispatcher.Send(new NoticeEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 20)
+                });
+                await Task.Delay(20000, cancellationToken);
+                return this;
+            }
             catch (AccountNotVerifiedException)
             {
                 session.EventDispatcher.Send(new ErrorEvent
@@ -145,7 +158,7 @@ namespace PoGo.PokeMobBot.Logic.State
         public async Task DownloadProfile(ISession session)
         {
             session.Profile = await session.Client.Player.GetPlayer();
-            session.EventDispatcher.Send(new ProfileEvent {Profile = session.Profile});
+            session.EventDispatcher.Send(new ProfileEvent { Profile = session.Profile });
         }
     }
 }
