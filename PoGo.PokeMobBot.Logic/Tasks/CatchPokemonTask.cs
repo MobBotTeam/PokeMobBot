@@ -86,7 +86,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             ? pokemon.SpawnPointId
                             : currentFortData.Id, pokeball);
 
-                var evt = new PokemonCaptureEvent {Status = caughtPokemonResponse.Status};
+                var lat = encounter is EncounterResponse || encounter is IncenseEncounterResponse
+                            ? pokemon.Latitude : currentFortData.Latitude;
+                var lng = encounter is EncounterResponse || encounter is IncenseEncounterResponse
+                            ? pokemon.Longitude : currentFortData.Longitude;
+                var evt = new PokemonCaptureEvent
+                {
+                    Status = caughtPokemonResponse.Status,
+                    Latitude = lat,
+                    Longitude = lng
+                };
 
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
                 {
@@ -191,13 +200,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (greatBallsCount > 0 && pokemonCp >= session.LogicSettings.UseGreatBallAboveCp)
                 return ItemId.ItemGreatBall;
 
-            if (ultraBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage && probability < 0.40)
+            if (ultraBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage)
                 return ItemId.ItemUltraBall;
 
-            if (greatBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage && probability < 0.50)
-                return ItemId.ItemGreatBall;
-
-            if (greatBallsCount > 0 && pokemonCp >= 300)
+            if (greatBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage)
                 return ItemId.ItemGreatBall;
 
             if (pokeBallsCount > 0)

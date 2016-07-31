@@ -258,7 +258,7 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForRevivesToRecycle,
                 "Checking for revives to recycle, keeping {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.PokeballsToKeepIncorrect,
-                "TotalAmountOfPokebalsToKeep is configured incorrectly. The number is smaller than 1."),
+                "TotalAmountOfPokeballsToKeep is configured incorrectly. The number is smaller than 1."),
             new KeyValuePair<TranslationString, string>(TranslationString.PotionsToKeepIncorrect,
                 "TotalAmountOfPotionsToKeep is configured incorrectly. The number is smaller than 1."),
             new KeyValuePair<TranslationString, string>(TranslationString.RevivesToKeepIncorrect,
