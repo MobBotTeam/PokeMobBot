@@ -26,48 +26,35 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var pokemonUpgradeSettings = await session.Inventory.GetPokemonUpgradeSettings();
             var playerLevel = await session.Inventory.GetPlayerStats();
 
+            List<PokemonData> allPokemon = new List<PokemonData>();
+
+            // priority for upgrading
             if (session.LogicSettings.LevelUpByCPorIv?.ToLower() == "iv")
             {
-                var allPokemon = await session.Inventory.GetHighestsPerfect(session.Profile.PlayerData.MaxPokemonStorage);
-
-                // get everything that is higher than the iv min
-                foreach (var pokemon in allPokemon.Where(p => session.Inventory.GetPerfect(p) >= session.LogicSettings.UpgradePokemonIvMinimum))
-                {
-                    int pokeLevel = (int)PokemonInfo.GetLevel(pokemon);
-                    var currentPokemonSettings = pokemonSettings.FirstOrDefault(q => pokemon != null && q.PokemonId.Equals(pokemon.PokemonId));
-                    var family = pokemonFamilies.FirstOrDefault(q => currentPokemonSettings != null && q.FamilyId.Equals(currentPokemonSettings.FamilyId));
-                    int candyToEvolveTotal = GetCandyMinToKeep(pokemonSettings, currentPokemonSettings);
-
-                    // you can upgrade up to player level+2 right now
-                    // may need translation for stardust???
-                    if (pokeLevel < playerLevel?.FirstOrDefault().Level + pokemonUpgradeSettings.FirstOrDefault().AllowedLevelsAbovePlayer
-                        && family.Candy_ > pokemonUpgradeSettings.FirstOrDefault()?.CandyCost[pokeLevel]
-                        && family.Candy_ >= candyToEvolveTotal
-                        && session.Profile.PlayerData.Currencies.FirstOrDefault(c => c.Name.ToLower().Contains("stardust")).Amount >= pokemonUpgradeSettings.FirstOrDefault()?.StardustCost[pokeLevel])
-                    {
-                        await DoUpgrade(session, pokemon);
-                    }
-                }
+                allPokemon = session.Inventory.GetHighestsPerfect(session.Profile.PlayerData.MaxPokemonStorage).Result.ToList();
             }
             else if (session.LogicSettings.LevelUpByCPorIv?.ToLower() == "cp")
             {
-                var allPokemon = await session.Inventory.GetHighestsPerfect(session.Profile.PlayerData.MaxPokemonStorage);
+                allPokemon = session.Inventory.GetPokemons().Result.OrderByDescending(p => p.Cp).ToList();
+            }
 
-                // get everything that is higher than the cp min
-                foreach (var pokemon in allPokemon.Where(p => session.Inventory.GetPerfect(p) >= session.LogicSettings.UpgradePokemonCpMinimum))
+            // iterate on whatever meets both minimums
+            // to disable one or the other, set to 0
+            foreach (var pokemon in allPokemon.Where(p => session.Inventory.GetPerfect(p) >= session.LogicSettings.UpgradePokemonIvMinimum && p.Cp >= session.LogicSettings.UpgradePokemonCpMinimum))
+            {
+                int pokeLevel = (int)PokemonInfo.GetLevel(pokemon);
+                var currentPokemonSettings = pokemonSettings.FirstOrDefault(q => pokemon != null && q.PokemonId.Equals(pokemon.PokemonId));
+                var family = pokemonFamilies.FirstOrDefault(q => currentPokemonSettings != null && q.FamilyId.Equals(currentPokemonSettings.FamilyId));
+                int candyToEvolveTotal = GetCandyMinToKeep(pokemonSettings, currentPokemonSettings);
+
+                // you can upgrade up to player level+2 right now
+                // may need translation for stardust???
+                if (pokeLevel < playerLevel?.FirstOrDefault().Level + pokemonUpgradeSettings.FirstOrDefault().AllowedLevelsAbovePlayer
+                    && family.Candy_ > pokemonUpgradeSettings.FirstOrDefault()?.CandyCost[pokeLevel]
+                    && family.Candy_ >= candyToEvolveTotal
+                    && session.Profile.PlayerData.Currencies.FirstOrDefault(c => c.Name.ToLower().Contains("stardust")).Amount >= pokemonUpgradeSettings.FirstOrDefault()?.StardustCost[pokeLevel])
                 {
-                    int pokeLevel = (int)PokemonInfo.GetLevel(pokemon);
-                    var currentPokemonSettings = pokemonSettings.FirstOrDefault(q => pokemon != null && q.PokemonId.Equals(pokemon.PokemonId));
-                    var family = pokemonFamilies.FirstOrDefault(q => currentPokemonSettings != null && q.FamilyId.Equals(currentPokemonSettings.FamilyId));
-                    int candyToEvolveTotal = GetCandyMinToKeep(pokemonSettings, currentPokemonSettings);
-
-                    if (pokeLevel < playerLevel?.FirstOrDefault().Level + pokemonUpgradeSettings.FirstOrDefault().AllowedLevelsAbovePlayer
-                        && family.Candy_ > pokemonUpgradeSettings.FirstOrDefault()?.CandyCost[pokeLevel]
-                        && family.Candy_ >= candyToEvolveTotal
-                        && session.Profile.PlayerData.Currencies.FirstOrDefault(c => c.Name.ToLower().Contains("stardust")).Amount >= pokemonUpgradeSettings.FirstOrDefault()?.StardustCost[pokeLevel])
-                    {
-                        await DoUpgrade(session, pokemon);
-                    }
+                    await DoUpgrade(session, pokemon);
                 }
             }
         }
@@ -104,7 +91,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             }
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorInsufficientResources)
             {
-                Logger.Write("Pokemon Upgrade Failed Not Enough Resources");
+                Logger.Write("Pokemon upgrade failed, not enough resources, probably not enough stardust");
             }
             // pokemon max level
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorUpgradeNotAvailable)
