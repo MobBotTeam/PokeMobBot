@@ -127,6 +127,11 @@ namespace PoGo.PokeMobBot.Logic
         public bool EvolveAllPokemonAboveIv = false;
         public bool EvolveAllPokemonWithEnoughCandy = true;
 
+        public bool UseProxy = false;
+        public string ProxyUri = "proxy.com:1234";
+        public string ProxyLogin = "pLogin";
+        public string ProxyPass = "pPass";
+
         [JsonIgnore] public string GeneralConfigPath;
 
         public string GpxFile = "GPXPath.GPX";
@@ -574,6 +579,55 @@ namespace PoGo.PokeMobBot.Logic
             get { return _settings.Auth.GooglePassword; }
 
             set { _settings.Auth.GooglePassword = value; }
+        }
+
+        bool ISettings.UseProxy
+        {
+            get
+            {
+                return _settings.UseProxy;
+            }
+
+            set
+            {
+                _settings.UseProxy = value;
+            }
+        }
+        string ISettings.ProxyUri
+        {
+            get
+            {
+                return _settings.ProxyUri;
+            }
+
+            set
+            {
+                _settings.ProxyUri = value;
+            }
+        }
+        string ISettings.ProxyLogin
+        {
+            get
+            {
+                return _settings.ProxyLogin;
+            }
+
+            set
+            {
+                _settings.ProxyLogin = value;
+            }
+        }
+        string ISettings.ProxyPass
+        {
+            get
+            {
+                return _settings.ProxyPass;
+            }
+
+            set
+            {
+                _settings.ProxyPass = value;
+            }
         }
     }
 

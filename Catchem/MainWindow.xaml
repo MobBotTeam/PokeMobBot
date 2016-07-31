@@ -1,0 +1,195 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PokeBot"
+        xmlns:WindowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation" x:Class="PokeBot.MainWindow"
+        mc:Ignorable="d"
+        Title="Catchem" Height="600" Width="900" MinWidth="900" MinHeight="600">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FFB2EF9C" Offset="0"/>
+            <GradientStop Color="#FF43B8B5" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <Window.Resources>
+        <ControlTemplate TargetType="TextBoxBase" x:Key="pogo">
+            <Border CornerRadius="10" BorderThickness="1" BorderBrush="#FF5AC4B0"  Padding="5,3.5,10,0" Height="27" x:Name="Bd" Background="{TemplateBinding Panel.Background}">
+                <ScrollViewer Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+            </Border>
+        </ControlTemplate>
+        <ControlTemplate TargetType="PasswordBox" x:Key="pogo_password">
+            <Border CornerRadius="10" BorderThickness="1" BorderBrush="#FF5AC4B0"  Padding="5,3.5,10,0" Height="27" x:Name="Bd" Background="{TemplateBinding Panel.Background}">
+                <ScrollViewer Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+            </Border>
+        </ControlTemplate>
+        <Style TargetType="Button" x:Key="flatbutton">
+            <Setter Property="Background" Value="DarkCyan"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Width" Value="75"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border BorderThickness="0"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="13">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <TabControl x:Name="tabControl" Margin="263,0,0,0" RenderTransformOrigin="0.5,0.5" VerticalContentAlignment="Top">
+            <TabControl.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </TabControl.RenderTransform>
+            <TabItem Header="Settings">
+                <Grid x:Name="settings_grid" IsEnabled="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="361*"/>
+                        <ColumnDefinition Width="275*"/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox x:Name="groupBox" Grid.Column="1" Header="Proxy" VerticalAlignment="Top" Height="150">
+                        <Grid Margin="0,0,0,0" IsEnabled="True">
+                            <CheckBox x:Name="useProxyChb" Content="UseProxy" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Height="15" Width="101" Checked="useProxyChb_Checked"/>
+                            <TextBox Template="{StaticResource pogo}" x:Name="proxyUriBox" Height="29" Margin="94,89,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="proxyUriBox_TextChanged" Foreground="#FF56C2B0"/>
+                            <Label x:Name="label" Content="Proxy Uri" HorizontalAlignment="Left" Margin="10,89,0,0" VerticalAlignment="Top" Width="79"/>
+                            <Label x:Name="label1" Content="Proxy Pass" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Width="79"/>
+                            <Label x:Name="label2" Content="Proxy Login" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Width="79"/>
+                            <TextBox Template="{StaticResource pogo}" x:Name="proxyLoginBox" Height="34" Margin="94,21,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="proxyLoginBox_TextChanged" Foreground="#FF56C2B0" Text="Username"/>
+                            <PasswordBox Template="{StaticResource pogo_password}" x:Name="proxyPasswordBox" Margin="94,56,10,0" VerticalAlignment="Top" Height="28" PasswordChanged="proxyPasswordBox_PasswordChanged" Password="password" Foreground="#FF56C2B0"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox x:Name="groupBox1" Header="Auth" VerticalAlignment="Top" Height="150">
+                        <Grid Margin="0,0,0,0">
+                            <ComboBox x:Name="authBox" Margin="95,10,10,0" VerticalAlignment="Top" Height="23" SelectionChanged="authBox_SelectionChanged"/>
+                            <Label x:Name="label3" Content="Auth type" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="80"/>
+                            <PasswordBox Template="{StaticResource pogo_password}" x:Name="passwordBox" Margin="95,85,10,0" VerticalAlignment="Top" Height="29" PasswordChanged="passwordBox_PasswordChanged" Foreground="#FF56C2B0" Password="password"/>
+                            <Label x:Name="label1_Copy" Content="Password" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Width="80"/>
+                            <Label x:Name="label2_Copy" Content="Login" HorizontalAlignment="Left" Margin="10,53,0,0" VerticalAlignment="Top" Width="80"/>
+                            <TextBox Template="{StaticResource pogo}" x:Name="loginBox" Height="31" Margin="95,51,10,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" TextChanged="loginBox_TextChanged" Foreground="#FF56C2B0"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Map &amp; Console">
+                <Grid Background="#FFE5E5E5" Margin="0,2,0,-2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="239*"/>
+                        <RowDefinition Height="302*"/>
+                    </Grid.RowDefinitions>
+                    <RichTextBox x:Name="consoleBox" Background="#FF252525" Foreground="#FFCDCDCD">
+                        <FlowDocument>
+                            <Paragraph>
+                                <Run Text="Hello world"/>
+                            </Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
+                    <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Height="3" Grid.Row="1" VerticalAlignment="Top" Width="636" ResizeDirection="Rows"/>
+                    <WindowsPresentation:GMapControl x:Name="pokeMap" Margin="0,3,0,0" Grid.Row="1" MouseDoubleClick="pokeMap_MouseDoubleClick"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Information">
+                <Grid>
+                    <Label x:Name="playername" Content="%%PLAYERNAME%%" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="25" FontFamily="Calibri">
+                        <Label.Foreground>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                        <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Color="#FF57C2B0" Offset="0"/>
+                                <GradientStop Color="#FF29A662" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Label.Foreground>
+                    </Label>
+                    <Label x:Name="label5" Content="TEAM&#xD;&#xA;LOGO&#xD;&#xA;HERE" HorizontalAlignment="Left" Margin="220,140,0,0" VerticalAlignment="Top" FontFamily="Source Sans Pro Black" FontWeight="Bold" FontSize="70" Foreground="#7F6AABAE"/>
+                    <Label x:Name="label6" Content="STARDUST" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Foreground="#FF363636" FontSize="15" TextOptions.TextFormattingMode="Display" FontFamily="Source Sans Pro Semibold"/>
+                    <Label x:Name="label6_Copy" Content="AMOUNT" HorizontalAlignment="Left" Margin="11,69,0,0" VerticalAlignment="Top" Foreground="#FF324AB4" FontSize="15" TextOptions.TextFormattingMode="Display" FontFamily="Source Sans Pro Semibold"/>
+                    <Label x:Name="label6_Copy1" Content="+FARMED" HorizontalAlignment="Left" Margin="83,69,0,0" VerticalAlignment="Top" Foreground="#FFBF4F2E" FontSize="15" TextOptions.TextFormattingMode="Display" FontFamily="Source Sans Pro Semibold"/>
+                    <Label x:Name="label6_Copy2" Content="XP" HorizontalAlignment="Left" Margin="224,48,0,0" VerticalAlignment="Top" Foreground="#FF363636" FontSize="15" TextOptions.TextFormattingMode="Display" FontFamily="Source Sans Pro Semibold"/>
+                    <Label x:Name="label6_Copy3" Content="AMOUNT" HorizontalAlignment="Left" Margin="225,69,0,0" VerticalAlignment="Top" Foreground="#FF324AB4" FontSize="15" TextOptions.TextFormattingMode="Display" FontFamily="Source Sans Pro Semibold"/>
+                    <Label x:Name="label6_Copy4" Content="+FARMED" HorizontalAlignment="Left" Margin="297,69,0,0" VerticalAlignment="Top" Foreground="#FFBF4F2E" FontSize="15" TextOptions.TextFormattingMode="Display" FontFamily="Source Sans Pro Semibold"/>
+                    <Label x:Name="label6_Copy5" Content="COINS" HorizontalAlignment="Left" Margin="440,48,0,0" VerticalAlignment="Top" Foreground="#FF363636" FontSize="15" TextOptions.TextFormattingMode="Display" FontFamily="Source Sans Pro Semibold"/>
+                    <Label x:Name="label6_Copy6" Content="AMOUNT" HorizontalAlignment="Left" Margin="441,69,0,0" VerticalAlignment="Top" Foreground="#FF324AB4" FontSize="15" TextOptions.TextFormattingMode="Display" FontFamily="Source Sans Pro Semibold"/>
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Grid HorizontalAlignment="Left" Width="246">
+            <Rectangle Fill="#FFEEEEEE" HorizontalAlignment="Left" Width="246" Height="569" VerticalAlignment="Top"/>
+            <Button Style="{StaticResource ResourceKey=flatbutton}" x:Name="button" Content="ADD NEW BOT" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Height="30" Click="button_Click" Margin="65,45,0,-45" FontFamily="BOLD" TextOptions.TextFormattingMode="Display" FontWeight="Bold">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="#FFB0EE9C" Offset="0"/>
+                        <GradientStop Color="#FF53C0B1" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+            <Label x:Name="label4" Content="MENU" HorizontalAlignment="Left" Margin="9,2,0,-10" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="20" Height="38"/>
+        </Grid>
+        <Grid x:Name="InputBox" Visibility="Collapsed" >
+            <Grid Background="Black" Opacity="0.45"/>
+            <Border
+            MinWidth="250"
+            CornerRadius="7,7,7,7" Margin="321,222,309,158">
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform Angle="-90" CenterY="0.5" CenterX="0.5"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="#FFF8FFF7"/>
+                        <GradientStop Color="#FFEFFFED" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid>
+                    <TextBlock Margin="76,13,75,152" Text="Set profile name" FontFamily="Calibri Light" Width="99" Foreground="#FF7E7E7E" FontSize="15" />
+                    <TextBox Template="{StaticResource pogo}" MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="InputTextBox" Margin="21,46,19,106" Width="210" Text="Profile name here..." Foreground="#FF6CCDAC"/>
+                    <Button Style="{StaticResource flatbutton}" x:Name="YesButton" Content="YES" Click="YesButton_Click" Width="Auto" Height="31" Margin="21,86,19,62">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                        <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Color="#FF54C1B1" Offset="0"/>
+                                <GradientStop Color="#FFADED9D" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+                    <Button Style="{StaticResource flatbutton}" x:Name="NoButton" Margin="21,124,19,22" Content="CANCEL" Click="NoButton_Click" Width="Auto" Height="33" Background="#FFF7F7F7" Foreground="#FF66CAAD" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

@@ -137,5 +137,10 @@ namespace PoGo.PokeMobBot.CLI
         {
             _session = session;
         }
+
+        public void SendWindowMsg(string msgType, params object[] objData)
+        {
+            return;
+        }
     }
 }
