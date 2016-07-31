@@ -191,7 +191,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                             if (locationsToSnipe.Any())
                             {
-                                _lastSnipe = DateTime.Now;
                                 foreach (var pokemonLocation in locationsToSnipe)
                                 {
                                     if (
@@ -214,6 +213,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                     Message = session.Translation.GetTranslation(TranslationString.NoPokemonToSnipe)
                                 });
                             }
+
+                            _lastSnipe = DateTime.Now;
                         }
                     }
                 }
