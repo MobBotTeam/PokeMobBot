@@ -229,7 +229,7 @@ namespace PoGo.PokeMobBot.Logic
             var itemsToRecylce = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
-            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokebalsToKeep;
+            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             var amountOfPotionsToKeep = _logicSettings.TotalAmountOfPotionsToKeep;
             var amountOfRevivesToKeep = _logicSettings.TotalAmountOfRevivesToKeep;
 
@@ -298,7 +298,7 @@ namespace PoGo.PokeMobBot.Logic
 
         private List<ItemData> GetPokeballsToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
         {
-            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokebalsToKeep;
+            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             if (amountOfPokeballsToKeep < 1)
             {
                 Logger.Write(session.Translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect),

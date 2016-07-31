@@ -107,7 +107,7 @@ namespace PoGo.PokeMobBot.Logic
         bool UseTransferIvForSnipe { get; }
         bool SnipeIgnoreUnknownIv { get; }
         int MinDelayBetweenSnipes { get; }
-        int TotalAmountOfPokebalsToKeep { get; }
+        int TotalAmountOfPokeballsToKeep { get; }
         int TotalAmountOfPotionsToKeep { get; }
         int TotalAmountOfRevivesToKeep { get; }
 

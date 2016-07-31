@@ -380,7 +380,7 @@ namespace PoGo.PokeMobBot.Logic
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
         public bool StartupWelcomeDelay = true;
-        public int TotalAmountOfPokebalsToKeep = 120;
+        public int TotalAmountOfPokeballsToKeep = 120;
         public int TotalAmountOfPotionsToKeep = 80;
         public int TotalAmountOfRevivesToKeep = 60;
         public bool TransferConfigAndAuthOnUpdate = true;
@@ -642,7 +642,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseTransferIvForSnipe => _settings.UseTransferIvForSnipe;
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
-        public int TotalAmountOfPokebalsToKeep => _settings.TotalAmountOfPokebalsToKeep;
+        public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
 
