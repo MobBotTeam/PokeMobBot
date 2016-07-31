@@ -111,12 +111,7 @@ namespace PoGo.PokeMobBot.Logic
 
                     if (settings.CandyToEvolve > 0)
                     {
-<<<<<<< HEAD
                         var amountPossible = (familyCandy.Candy_ - 1)/(settings.CandyToEvolve - 1);
-=======
-                        var amountPossible = familyCandy.Candy_ / (settings.CandyToEvolve - 2);
-
->>>>>>> refs/remotes/upstream/master
                         if (amountPossible > amountToSkip)
                             amountToSkip = amountPossible;
                     }
