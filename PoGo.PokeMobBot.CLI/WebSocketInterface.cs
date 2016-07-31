@@ -28,7 +28,7 @@ namespace PoGo.PokeMobBot.CLI
             _server = new WebSocketServer();
             var setupComplete = _server.Setup(new ServerConfig
             {
-                Name = "NecroWebSocket",
+                Name = "MobBotWebSocket",
                 Ip = "Any",
                 Port = port,
                 Mode = SocketMode.Tcp,

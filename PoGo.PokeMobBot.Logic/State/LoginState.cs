@@ -55,24 +55,11 @@ namespace PoGo.PokeMobBot.Logic.State
                         return null;
                 }
             }
-            catch (PtcOfflineException)
+            catch (Exception ex) when (ex is PtcOfflineException || ex is AccessTokenExpiredException)
             {
                 session.EventDispatcher.Send(new ErrorEvent
                 {
                     Message = session.Translation.GetTranslation(TranslationString.PtcOffline)
-                });
-                session.EventDispatcher.Send(new NoticeEvent
-                {
-                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 20)
-                });
-                await Task.Delay(20000, cancellationToken);
-                return this;
-            }
-            catch (AccessTokenExpiredException)
-            {
-                session.EventDispatcher.Send(new ErrorEvent
-                {
-                    Message = session.Translation.GetTranslation(TranslationString.PtcOffline) // use ptcoffline for now.
                 });
                 session.EventDispatcher.Send(new NoticeEvent
                 {
