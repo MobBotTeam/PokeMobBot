@@ -14,7 +14,7 @@ using PoGo.PokeMobBot.Logic.PoGoUtils;
 
 #endregion
 
-namespace PoGo.NecroBot.Logic.Tasks
+namespace PoGo.PokeMobBot.Logic.Tasks
 {
     internal class LevelUpPokemonTask
     {
