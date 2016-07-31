@@ -126,6 +126,9 @@ namespace PoGo.PokeMobBot.Logic
         public float EvolveAboveIvValue = 95;
         public bool EvolveAllPokemonAboveIv = false;
         public bool EvolveAllPokemonWithEnoughCandy = true;
+        public double ThrowAccuracyMin = 1.00;
+        public double ThrowAccuracyMax = 1.00;
+        public double ThrowSpinFrequency = 1.00;
 
         [JsonIgnore] public string GeneralConfigPath;
 
@@ -455,6 +458,11 @@ namespace PoGo.PokeMobBot.Logic
                 settings.SnipeLocationServer = Default.SnipeLocationServer;
             }
 
+            Clamp(ref settings.ThrowAccuracyMin, 0.0, 1.0);
+            Clamp(ref settings.ThrowAccuracyMax, 0.0, 1.0);
+            Clamp(ref settings.ThrowSpinFrequency, 0.0, 1.0);
+            MinMax(ref settings.ThrowAccuracyMin, ref settings.ThrowAccuracyMax);
+
             settings.ProfilePath = profilePath;
             settings.ProfileConfigPath = profileConfigPath;
             settings.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
@@ -484,6 +492,34 @@ namespace PoGo.PokeMobBot.Logic
             }
 
             File.WriteAllText(fullPath, output);
+        }
+
+        /// <summary>
+        /// Ensures that a value falls within a certain range.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="min">Minimum allowable value.</param>
+        /// <param name="max">Maximum allowable value.</param>
+        private static void Clamp(ref double value, double min, double max)
+        {
+            if (value < min)
+                value = min;
+            if (value > max)
+                value = max;
+        }
+
+        /// <summary>
+        /// Ensures that the minimum and maximum values are in the correct order.
+        /// </summary>
+        /// <param name="min">Minimum parameter.</param>
+        /// <param name="max">Maximum parameter.</param>
+        private static void MinMax(ref double min, ref double max)
+        {
+            if (max >= min)
+                return;
+            double temp = min;
+            min = max;
+            max = temp;
         }
     }
 
@@ -659,5 +695,9 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
+
+        public double ThrowAccuracyMin => _settings.ThrowAccuracyMin;
+        public double ThrowAccuracyMax => _settings.ThrowAccuracyMax;
+        public double ThrowSpinFrequency => _settings.ThrowSpinFrequency;
     }
 }
