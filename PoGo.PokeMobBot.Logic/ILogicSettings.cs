@@ -144,5 +144,8 @@ namespace PoGo.PokeMobBot.Logic
         double ThrowAccuracyMin { get; }
         double ThrowAccuracyMax { get; }
         double ThrowSpinFrequency { get; }
+        int UseBerryMinCp { get;  }
+        float UseBerryMinIv { get;  }
+        double UseBerryBelowCatchProbability { get; }
     }
 }

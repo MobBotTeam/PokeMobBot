@@ -180,9 +180,15 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowAccuracyMax = 1.00;
         public double ThrowSpinFrequency = 0.75;
 
+        // berries
+        public int UseBerryMinCp = 450;
+        public float UseBerryMinIv = 95;
+        public double UseBerryBelowCatchProbability = 0.35;
+
         //favorite
         public float FavoriteMinIvPercentage = 95;
         public bool AutoFavoritePokemon = false;
+
         //recycle
         public int TotalAmountOfPokeballsToKeep = 100;
         public int TotalAmountOfPotionsToKeep = 80;
@@ -195,7 +201,6 @@ namespace PoGo.PokeMobBot.Logic
         public double UseMasterBallBelowCatchProbability = 0.05;
 
         public double RecycleInventoryAtUsagePercentage = 0.90;
-
 
         //snipe
         public int MinDelayBetweenSnipes = 60000;
@@ -696,5 +701,8 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowAccuracyMin => _settings.ThrowAccuracyMin;
         public double ThrowAccuracyMax => _settings.ThrowAccuracyMax;
         public double ThrowSpinFrequency => _settings.ThrowSpinFrequency;
+        public int UseBerryMinCp => _settings.UseBerryMinCp;
+        public float UseBerryMinIv => _settings.UseBerryMinIv;
+        public double UseBerryBelowCatchProbability => _settings.UseBerryBelowCatchProbability;
     }
 }
