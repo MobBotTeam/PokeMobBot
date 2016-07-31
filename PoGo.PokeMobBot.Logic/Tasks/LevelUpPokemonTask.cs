@@ -40,15 +40,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
                         upgradeResult.UpgradedPokemon.PokemonId);
                 }
-                else
-                {
-                    Logger.Write(
-                        "Pokemon Upgrade Faild due to unknown 'System.NullReferenceException'; pokemon number was: " + randomNumber);
-                    Logger.Write(
-                        "Pokemon ID was: " + DisplayPokemonStatsTask.PokemonId[randomNumber]);
-                    Logger.Write(
-                        "Pokemon nomber was: " + (DisplayPokemonStatsTask.PokemonId.Count - 1));
-                }
             }
 
             else if (session.LogicSettings.LevelUpByCPorIv.ToLower().Contains("cp"))
