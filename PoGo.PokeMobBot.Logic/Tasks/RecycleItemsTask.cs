@@ -33,7 +33,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayRecyleItem);
                 else
-                    DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
             }
 
             if (session.LogicSettings.TotalAmountOfPokeballsToKeep != 0)

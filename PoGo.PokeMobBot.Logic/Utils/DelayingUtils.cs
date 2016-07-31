@@ -1,7 +1,7 @@
 ﻿#region using directives
 
 using System;
-using System.Threading;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -11,20 +11,20 @@ namespace PoGo.PokeMobBot.Logic.Utils
     {
         private static readonly Random RandomDevice = new Random();
 
-        public static void Delay(int delay, int defdelay)
+        public static async Task Delay(int delay, int defdelay)
         {
             if (delay > defdelay)
             {
                 var randomFactor = 0.3f;
-                var randomMin = (int) (delay*(1 - randomFactor));
-                var randomMax = (int) (delay*(1 + randomFactor));
+                var randomMin = (int)(delay * (1 - randomFactor));
+                var randomMax = (int)(delay * (1 + randomFactor));
                 var randomizedDelay = RandomDevice.Next(randomMin, randomMax);
 
-                Thread.Sleep(randomizedDelay);
+                await Task.Delay(randomizedDelay);
             }
             else if (defdelay > 0)
             {
-                Thread.Sleep(defdelay);
+                await Task.Delay(defdelay);
             }
         }
     }
