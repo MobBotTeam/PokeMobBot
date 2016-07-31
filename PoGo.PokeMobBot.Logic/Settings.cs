@@ -343,7 +343,7 @@ namespace PoGo.PokeMobBot.Logic
             {PokemonId.Krabby, new TransferFilter(1500, 95, 1)},
             {PokemonId.Exeggutor, new TransferFilter(2000, 90, 1)},
             {PokemonId.Lickitung, new TransferFilter(1500, 80, 1)},
-            {PokemonId.Chansey, new TransferFilter(1500, 90, 1)},
+            {PokemonId.Chansey, new TransferFilter(1500, 95, 1)},
             {PokemonId.Kangaskhan, new TransferFilter(1500, 40, 1)},
             {PokemonId.Goldeen, new TransferFilter(1500, 95, 1)},
             {PokemonId.Staryu, new TransferFilter(1500, 95, 1)},
