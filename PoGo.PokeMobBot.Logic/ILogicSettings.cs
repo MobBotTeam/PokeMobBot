@@ -91,7 +91,9 @@ namespace PoGo.PokeMobBot.Logic
         bool DumpPokemonStats { get; }
         bool RenamePokemon { get; }
         bool RenameOnlyAboveIv { get; }
+        int TemplateUsage { get; }
         string RenameTemplate { get; }
+        string RenameTemplate2 { get; }
         int AmountOfPokemonToDisplayOnStart { get; }
         string TranslationLanguageCode { get; }
         string ProfilePath { get; }

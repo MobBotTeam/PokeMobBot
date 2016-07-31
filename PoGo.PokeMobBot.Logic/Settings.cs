@@ -146,7 +146,9 @@ namespace PoGo.PokeMobBot.Logic
         //rename
         public bool RenamePokemon = false;
         public bool RenameOnlyAboveIv = true;
+        public int TemplateUsage = 1;
         public string RenameTemplate = "{1}_{0}";
+        public string RenameTemplate2 = "{0}{1}{2}";
 
         //transfer
         public bool TransferDuplicatePokemon = true;
@@ -484,6 +486,11 @@ namespace PoGo.PokeMobBot.Logic
                 settings.RenameTemplate = Default.RenameTemplate;
             }
 
+            if (settings.RenameTemplate2 == null)
+            {
+                settings.RenameTemplate2 = Default.RenameTemplate2;
+            }
+
             if (settings.SnipeLocationServer == null)
             {
                 settings.SnipeLocationServer = Default.SnipeLocationServer;
@@ -657,6 +664,8 @@ namespace PoGo.PokeMobBot.Logic
         public float FavoriteMinIvPercentage => _settings.FavoriteMinIvPercentage;
         public bool AutoFavoritePokemon => _settings.AutoFavoritePokemon;
         public string RenameTemplate => _settings.RenameTemplate;
+        public string RenameTemplate2 => _settings.RenameTemplate2;
+        public int TemplateUsage => _settings.TemplateUsage;
         public int AmountOfPokemonToDisplayOnStart => _settings.AmountOfPokemonToDisplayOnStart;
         public bool DumpPokemonStats => _settings.DumpPokemonStats;
         public string TranslationLanguageCode => _settings.TranslationLanguageCode;

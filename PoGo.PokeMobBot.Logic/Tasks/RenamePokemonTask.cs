@@ -35,22 +35,45 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     pokemonName = pokemonName.Substring(0, nameLength);
                 }
-                var newNickname = string.Format(session.LogicSettings.RenameTemplate, pokemonName, perfection);
-                var oldNickname = pokemon.Nickname.Length != 0 ? pokemon.Nickname : pokemon.PokemonId.ToString();
 
-                // If "RenameOnlyAboveIv" = true only rename pokemon with IV over "KeepMinIvPercentage"
-                // Favorites will be skipped
-                if ((!session.LogicSettings.RenameOnlyAboveIv || perfection >= session.LogicSettings.KeepMinIvPercentage) &&
-                    newNickname != oldNickname && pokemon.Favorite == 0)
+                if (session.LogicSettings.TemplateUsage == 1)
                 {
-                    await session.Client.Inventory.NicknamePokemon(pokemon.Id, newNickname);
+                    var newNickname = string.Format(session.LogicSettings.RenameTemplate, pokemonName, perfection);
+                    var oldNickname = pokemon.Nickname.Length != 0 ? pokemon.Nickname : pokemon.PokemonId.ToString();
 
-                    session.EventDispatcher.Send(new NoticeEvent
+                    // If "RenameOnlyAboveIv" = true only rename pokemon with IV over "KeepMinIvPercentage"
+                    // Favorites will be skipped
+                    if ((!session.LogicSettings.RenameOnlyAboveIv || perfection >= session.LogicSettings.KeepMinIvPercentage) &&
+                        newNickname != oldNickname && pokemon.Favorite == 0)
                     {
-                        Message =
-                            session.Translation.GetTranslation(TranslationString.PokemonRename, pokemon.PokemonId,
-                                pokemon.Id, oldNickname, newNickname)
-                    });
+                        await session.Client.Inventory.NicknamePokemon(pokemon.Id, newNickname);
+
+                        session.EventDispatcher.Send(new NoticeEvent
+                        {
+                            Message =
+                                session.Translation.GetTranslation(TranslationString.PokemonRename, pokemon.PokemonId,
+                                    pokemon.Id, oldNickname, newNickname)
+                        });
+                    }
+                } else if (session.LogicSettings.TemplateUsage == 2)
+                {
+                    var newNickname = string.Format(session.LogicSettings.RenameTemplate2, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon), perfection);
+                    var oldNickname = pokemon.Nickname.Length != 0 ? pokemon.Nickname : pokemon.PokemonId.ToString();
+
+                    // If "RenameOnlyAboveIv" = true only rename pokemon with IV over "KeepMinIvPercentage"
+                    // Favorites will be skipped
+                    if ((!session.LogicSettings.RenameOnlyAboveIv || perfection >= session.LogicSettings.KeepMinIvPercentage) &&
+                        newNickname != oldNickname && pokemon.Favorite == 0)
+                    {
+                        await session.Client.Inventory.NicknamePokemon(pokemon.Id, newNickname);
+
+                        session.EventDispatcher.Send(new NoticeEvent
+                        {
+                            Message =
+                                session.Translation.GetTranslation(TranslationString.PokemonRename, pokemon.PokemonId,
+                                    pokemon.Id, oldNickname, newNickname)
+                        });
+                    }
                 }
             }
         }
