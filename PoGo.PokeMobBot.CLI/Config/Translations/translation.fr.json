@@ -48,7 +48,7 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Utilisation d'un Oeuf Chance, temps restant : {0}"
     },
-	{
+    {
       "Key": "eventUseLuckyEggMinPokemonCheck",
       "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
     },
@@ -264,11 +264,11 @@
       "Key": "zeroPokeballInv",
       "Value": "Vous n'avez plus de pokéballs, capture de pokémons impossible !"
     },
-	  {
+    {
       "Key": "currentPokeballInv",
       "Value": "[Inventaire] Pokeballs: {0} | Superballs: {1} | Hyperballs: {2} | Masterballs: {3}"
     },
-	  {
+   {
       "Key": "checkingForBallsToRecycle",
       "Value": "Recherche de PokeBalls à supprimer. En garder {0}"
     },
@@ -276,11 +276,11 @@
       "Key": "checkingForPotionsToRecycle",
       "Value": "Recherche de Potions à supprimer. En garder {0}"
     },
-	  {
+   {
       "Key": "checkingForRevivesToRecycle",
       "Value": "Recherche de Rappels à supprimer. En garder {0}"
     },
-	  {
+    {
       "Key": "pokeballsToKeepIncorrect",
       "Value": "TotalAmountOfPokebalsToKeep est mal configuré. Le nombre est inférieur à 1."
     },
@@ -401,7 +401,7 @@
       "Value": "[Sniper] Scan en cours sur {0}..."
     },
     { 
-	    "Key": "snipeScanEx"
+      "Key": "snipeScanEx",
       "Value": "[Sniper] Scan de {0} avec {1} IV à {2}..."
     },
     {
