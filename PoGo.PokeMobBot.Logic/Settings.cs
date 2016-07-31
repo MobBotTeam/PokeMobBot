@@ -18,13 +18,12 @@ namespace PoGo.PokeMobBot.Logic
     internal class AuthSettings
     {
         [JsonIgnore] private string _filePath;
-
         public AuthType AuthType;
-        public string GooglePassword;
         public string GoogleRefreshToken;
         public string GoogleUsername;
-        public string PtcPassword;
+        public string GooglePassword;
         public string PtcUsername;
+        public string PtcPassword;
 
         public void Load(string path)
         {
