@@ -36,9 +36,18 @@ namespace PoGo.PokeMobBot.CLI
             if (settings == null)
             {
                 Logger.Write("This is your first start and the bot has generated the default config!", LogLevel.Warning);
-                Logger.Write("We will now shutdown to let you configure the bot and then launch it again.",
-                    LogLevel.Warning);
-                Thread.Sleep(2000);
+                Logger.Write("After pressing a key the config folder will open and this commandline will close", LogLevel.Warning);
+
+                //pauses console until keyinput
+                Console.ReadKey();
+
+                // opens explorer with location "config"
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = "config",
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
                 Environment.Exit(0);
             }
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));

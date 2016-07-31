@@ -93,7 +93,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         normalizedRecticleSize,
                         spinModifier);
 
-                var evt = new PokemonCaptureEvent {Status = caughtPokemonResponse.Status};
+                var evt = new PokemonCaptureEvent
+                {
+                    Status = caughtPokemonResponse.Status,
+                    Latitude = pokemon.Latitude,
+                    Longitude = pokemon.Longitude
+                };
 
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
                 {
@@ -198,13 +203,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (greatBallsCount > 0 && pokemonCp >= session.LogicSettings.UseGreatBallAboveCp)
                 return ItemId.ItemGreatBall;
 
-            if (ultraBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage && probability < 0.40)
+            if (ultraBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage)
                 return ItemId.ItemUltraBall;
 
-            if (greatBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage && probability < 0.50)
-                return ItemId.ItemGreatBall;
-
-            if (greatBallsCount > 0 && pokemonCp >= 300)
+            if (greatBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage)
                 return ItemId.ItemGreatBall;
 
             if (pokeBallsCount > 0)

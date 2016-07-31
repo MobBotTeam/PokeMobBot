@@ -87,6 +87,9 @@ namespace PoGo.PokeMobBot.CLI
                 case "EggsList":
                     await EggsListTask.Execute(_session);
                     break;
+                case "InventoryList":
+                    await InventoryListTask.Execute(_session);
+                    break;
             }
         }
 
@@ -97,6 +100,16 @@ namespace PoGo.PokeMobBot.CLI
 
             if (_lastPokeStopList != null)
                 session.Send(Serialize(_lastPokeStopList));
+
+            try
+            {
+                session.Send(Serialize(new UpdatePositionEvent()
+                {
+                    Latitude = _session.Client.CurrentLatitude,
+                    Longitude = _session.Client.CurrentLongitude
+                }));
+            }
+            catch { }
         }
 
         public void Listen(IEvent evt, Session session)
