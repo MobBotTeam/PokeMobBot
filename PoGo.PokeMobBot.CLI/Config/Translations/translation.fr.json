@@ -48,6 +48,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Utilisation d'un Oeuf Chance, temps restant : {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} +{1}XP"

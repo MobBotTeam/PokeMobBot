@@ -50,6 +50,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Huevo Suerte usado. Te quedan {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0}, obtienes {1}px"
