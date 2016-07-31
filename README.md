@@ -33,7 +33,7 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/8m
 <h6><em>[ all PayPal donations are distributed amongst our most active collaborators ]</em></h6><br/>
 You can donate Bitcoins to FeroxRev the man who worked really hard on the API library or you can donate it to the team.<br/><br/>
 <a name="btc">Donate Bitcoins to FeroxRev (the API library developer): *1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e*</a><br/>
-<a name="btc">Donate Bitcoins to the team: *1B1LYuufN4KHDt2DMBnM5RFe52yGF4CcG2*</a><br/>
+<a name="btc">Donate Bitcoins to the team: *1Auyt153MRwAQNG73zYGiJhQfeefdRN7tZ*</a><br/>
 
 
 
