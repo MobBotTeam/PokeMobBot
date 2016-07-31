@@ -77,11 +77,18 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
+<<<<<<< HEAD
                 session.EventDispatcher.Send(new FortTargetEvent {Name = fortInfo.Name, Distance = distance});
                 if (session.LogicSettings.Teleport)
                 {
                     await session.Navigation.Teleport(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude));
                 }
+=======
+                session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance,Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
+                if (session.LogicSettings.Teleport)
+                    await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
+                        session.Client.Settings.DefaultAltitude);
+>>>>>>> refs/remotes/origin/master
                 else
                 {
                     await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
@@ -145,7 +152,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Items = StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded),
                             Latitude = pokeStop.Latitude,
                             Longitude = pokeStop.Longitude,
-                            InventoryFull = fortSearch.Result == FortSearchResponse.Types.Result.InventoryFull
+                            InventoryFull = fortSearch.Result == FortSearchResponse.Types.Result.InventoryFull,
+                            Description = fortInfo.Description,
+                            url = fortInfo.ImageUrls[0]                            
                         });
 
                         break; //Continue with program as loot was succesfull.
