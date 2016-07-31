@@ -61,7 +61,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 Message = session.Translation.GetTranslation(TranslationString.DownloadingUpdate)
             });
             var remoteReleaseUrl =
-                $"https://github.com/NecronomiconCoding/NecroBot/releases/download/v{RemoteVersion}/";
+                $"https://github.com/PocketMobsters/PokeMobBot/releases/download/v{RemoteVersion}/";
             const string zipName = "Release.zip";
             var downloadLink = remoteReleaseUrl + zipName;
             var baseDir = Directory.GetCurrentDirectory();
