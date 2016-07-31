@@ -84,7 +84,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if(session.LogicSettings.Teleport)
                 await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
             else
-                DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
+                await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
         }
     }
 }
