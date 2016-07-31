@@ -78,10 +78,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                 session.EventDispatcher.Send(new FortTargetEvent {Name = fortInfo.Name, Distance = distance});
-                if(session.LogicSettings.Teleport)
-                    await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
-                        session.Client.Settings.DefaultAltitude);
+                if (session.LogicSettings.Teleport)
+                {
+                    await session.Navigation.Teleport(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude));
+                }
                 else
+                {
                     await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
                     session.LogicSettings.WalkingSpeedInKilometerPerHour,
                     async () =>
@@ -92,7 +94,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         await CatchIncensePokemonsTask.Execute(session, cancellationToken);
                         return true;
                     }, cancellationToken);
-
+                }
                 
                 FortSearchResponse fortSearch;
                 var timesZeroXPawarded = 0;

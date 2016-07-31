@@ -19,7 +19,7 @@ namespace PoGo.PokeMobBot.Logic.Logging
             using (
                 var log =
                     File.AppendText(Path.Combine(_path,
-                        $"NecroBot-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt"))
+                        $"PokeMobBot-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt"))
                 )
             {
                 log.WriteLine(message);
