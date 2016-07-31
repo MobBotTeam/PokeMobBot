@@ -153,7 +153,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             ? encounter.WildPokemon?.PokemonData
                             : encounter?.PokemonData));
                 evt.Probability =
-                    Math.Round(probability*100, 2);
+                    Math.Round(probability * 100, 2);
                 evt.Distance = distance;
                 evt.Pokeball = pokeball;
                 evt.Attempt = attemptCounter;
