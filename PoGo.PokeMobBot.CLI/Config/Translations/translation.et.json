@@ -81,6 +81,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Kasutasin Lucky Egg'i, veel alles: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} evolve'iti {1} XP eest!"

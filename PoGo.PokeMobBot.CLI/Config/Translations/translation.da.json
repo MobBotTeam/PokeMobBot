@@ -81,6 +81,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Lucky Egg brugt. Tilbage : {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} succesful udviklet, for at få {1}XP!"
