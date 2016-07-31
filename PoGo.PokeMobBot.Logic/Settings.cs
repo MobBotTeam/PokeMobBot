@@ -19,7 +19,6 @@ namespace PoGo.PokeMobBot.Logic
     {
         [JsonIgnore] private string _filePath;
         public AuthType AuthType;
-        public string GoogleRefreshToken;
         public string GoogleUsername;
         public string GooglePassword;
         public string PtcUsername;
@@ -185,6 +184,8 @@ namespace PoGo.PokeMobBot.Logic
         public double UseGreatBallBelowCatchProbability = 0.5;
         public double UseUltraBallBelowCatchProbability = 0.4;
         public double UseMasterBallBelowCatchProbability = 0.05;
+
+        public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
         public int MinDelayBetweenSnipes = 60000;
@@ -680,5 +681,7 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
+
+        public double RecycleInventoryAtUsagePercentage => _settings.RecycleInventoryAtUsagePercentage;
     }
 }
