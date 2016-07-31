@@ -183,7 +183,7 @@ namespace PoGo.PokeMobBot.Logic
         // berries
         public int UseBerryMinCp = 450;
         public float UseBerryMinIv = 95;
-        public double BelowCatchProbability = 0.35;
+        public double UseBerryBelowCatchProbability = 0.35;
 
         //favorite
         public float FavoriteMinIvPercentage = 95;
@@ -703,6 +703,6 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowSpinFrequency => _settings.ThrowSpinFrequency;
         public int UseBerryMinCp => _settings.UseBerryMinCp;
         public float UseBerryMinIv => _settings.UseBerryMinIv;
-        public double UseBerryBelowCatchProbability => _settings.BelowCatchProbability;
+        public double UseBerryBelowCatchProbability => _settings.UseBerryBelowCatchProbability;
     }
 }
