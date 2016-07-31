@@ -95,6 +95,11 @@ namespace PoGo.PokeMobBot.Logic
 
     public class GlobalSettings
     {
+        [JsonIgnore] internal AuthSettings Auth = new AuthSettings();
+        [JsonIgnore] public string GeneralConfigPath;
+        [JsonIgnore] public string ProfilePath;
+        [JsonIgnore] public string ProfileConfigPath;
+
         //bot start
         public bool AutoUpdate = true;
         public bool TransferConfigAndAuthOnUpdate = true;
@@ -103,10 +108,6 @@ namespace PoGo.PokeMobBot.Logic
         public bool StartupWelcomeDelay = true;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
-        [JsonIgnore] internal AuthSettings Auth = new AuthSettings();
-        [JsonIgnore] public string GeneralConfigPath;
-        [JsonIgnore] public string ProfilePath;
-        [JsonIgnore] public string ProfileConfigPath;
 
         //coords and movement
         public bool Teleport = false;
@@ -121,19 +122,20 @@ namespace PoGo.PokeMobBot.Logic
 
         //delays
         public int DelayBetweenPlayerActions = 5000;
+        public int DelayPositionCheckState = 1000;
+        public int DelayPokestop = 1000;
+        public int DelayCatchPokemon = 1000;
         public int DelayBetweenPokemonCatch = 2000;
         public int DelayCatchNearbyPokemon = 1000;
-        public int DelayPositionCheckState = 1000;
-        public int DelayCatchIncensePokemon = 1000;
         public int DelayCatchLurePokemon = 1000;
-        public int DelayCatchPokemon = 1000;
+        public int DelayCatchIncensePokemon = 1000;
+        public int DelayTransferPokemon = 1000;
         public int DelayDisplayPokemon = 1000;
         public int DelayUseLuckyEgg = 1000;
         public int DelaySoftbanRetry = 1000;
-        public int DelayPokestop = 1000;
         public int DelayRecyleItem = 1000;
         public int DelaySnipePokemon = 1000;
-        public int DelayTransferPokemon = 1000;
+        public int MinDelayBetweenSnipes = 60000;
 
         //incubator
         public bool UseEggIncubators = true;
@@ -177,12 +179,11 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfRevivesToKeep = 60;
 
         //snipe
-        public int MinDelayBetweenSnipes = 60000;
-        public int MinPokeballsToSnipe = 20;
-        public int MinPokeballsWhileSnipe = 0;
         public bool SnipeAtPokestops = false;
         public bool SnipeIgnoreUnknownIv = false;
         public bool UseTransferIvForSnipe = false;
+        public int MinPokeballsToSnipe = 20;
+        public int MinPokeballsWhileSnipe = 0;
         public bool UseSnipeLocationServer = false;
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
