@@ -343,7 +343,7 @@ namespace PoGo.PokeMobBot.Logic
             {PokemonId.Krabby, new TransferFilter(1500, 95, 1)},
             {PokemonId.Exeggutor, new TransferFilter(2000, 80, 1)},
             {PokemonId.Lickitung, new TransferFilter(1500, 80, 1)},
-            {PokemonId.Chansey, new TransferFilter(1500, 80, 1)},
+            {PokemonId.Chansey, new TransferFilter(1500, 90, 1)},
             {PokemonId.Kangaskhan, new TransferFilter(1500, 40, 1)},
             {PokemonId.Goldeen, new TransferFilter(1500, 95, 1)},
             {PokemonId.Staryu, new TransferFilter(1500, 95, 1)},
@@ -360,9 +360,9 @@ namespace PoGo.PokeMobBot.Logic
             {PokemonId.Vaporeon, new TransferFilter(1750, 95, 1)},
             {PokemonId.Jolteon, new TransferFilter(1750, 95, 1)},
             {PokemonId.Flareon, new TransferFilter(1750, 95, 1)},
-            {PokemonId.Porygon, new TransferFilter(1250, 80, 1)},
+            {PokemonId.Porygon, new TransferFilter(1500, 85, 1)},
             {PokemonId.Aerodactyl, new TransferFilter(1750, 80, 1)},
-            {PokemonId.Snorlax, new TransferFilter(1750, 90, 1)},
+            {PokemonId.Snorlax, new TransferFilter(1750, 95, 1)},
             {PokemonId.Dragonite, new TransferFilter(1750, 90, 1)}
         };
 
