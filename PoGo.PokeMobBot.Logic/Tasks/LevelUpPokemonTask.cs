@@ -34,13 +34,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     Logger.Write("Pokemon Upgrade Failed Not Enough Resources");
                 }
-                else
+                else if (upgradeResult.UpgradedPokemon != null)
                 {
                     Logger.Write(
                         "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
                         upgradeResult.UpgradedPokemon.PokemonId);
                 }
+                else
+                {
+                    Logger.Write(
+                        "Pokemon Upgrade Faild due to unknown 'System.NullReferenceException'");
+                }
             }
+
             else if (session.LogicSettings.LevelUpByCPorIv.ToLower().Contains("cp"))
             {
                 var rand = new Random();
