@@ -1,4 +1,4 @@
-﻿#region using directives
+#region using directives
 
 using System;
 using System.Linq;
@@ -197,8 +197,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (greatBallsCount > 0 && iV >= session.LogicSettings.KeepMinIvPercentage && probability < 0.50)
                 return ItemId.ItemGreatBall;
 
-            if (greatBallsCount > 0 && pokemonCp >= 300)
-                return ItemId.ItemGreatBall;
 
             if (pokeBallsCount > 0)
                 return ItemId.ItemPokeBall;
