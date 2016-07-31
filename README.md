@@ -13,7 +13,7 @@ The goal in sight is to become more transparent as a team and community. Impleme
 <br /><br />
 All in all, none of this would have been achievable without the support of you all, and we thank you. You all have turned this project into a beast of its own and we're excited to see the future together.
 <br /><br />
-Kind regards,
+Kind regards,<br />
 PokèMobBot Team
 
 
