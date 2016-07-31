@@ -90,6 +90,9 @@ namespace PoGo.PokeMobBot.CLI
                 case "InventoryList":
                     await InventoryListTask.Execute(_session);
                     break;
+                case "PlayerStats":
+                    await PlayerStatsTask.Execute(_session);
+                    break;
             }
         }
 

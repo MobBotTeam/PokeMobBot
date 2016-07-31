@@ -10,5 +10,6 @@ namespace PoGo.PokeMobBot.Logic.Event
     public class PokeStopListEvent : IEvent
     {
         public List<FortData> Forts;
+
     }
 }
