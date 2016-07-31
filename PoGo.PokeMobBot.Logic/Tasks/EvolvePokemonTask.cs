@@ -42,7 +42,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     else
                     {
                         // Wait until we have enough pokemon
-                        //Message = $"Not enough Pokemon to trigger a lucky egg. Waiting for {session.LogicSettings.UseLuckyEggsMinPokemonAmount - pokemonToEvolve.Count} more ({pokemonToEvolve.Count}/{session.LogicSettings.UseLuckyEggsMinPokemonAmount})"
                         session.EventDispatcher.Send(new UseLuckyEggMinPokemonEvent
                         {
                             Diff = (session.LogicSettings.UseLuckyEggsMinPokemonAmount - pokemonToEvolve.Count),
