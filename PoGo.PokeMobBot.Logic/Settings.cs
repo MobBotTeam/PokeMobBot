@@ -155,6 +155,7 @@ namespace PoGo.PokeMobBot.Logic
         public float KeepMinIvPercentage = 90;
         public int KeepMinDuplicatePokemon = 1;
         public bool KeepPokemonsThatCanEvolve = false;
+        public bool OnlyKeepIfOnEvolveList = false;
 
         //evolve
         public bool EvolveAllPokemonWithEnoughCandy = true;
@@ -625,6 +626,7 @@ namespace PoGo.PokeMobBot.Logic
         public double WalkingSpeedInKilometerPerHour => _settings.WalkingSpeedInKilometerPerHour;
         public bool EvolveAllPokemonWithEnoughCandy => _settings.EvolveAllPokemonWithEnoughCandy;
         public bool KeepPokemonsThatCanEvolve => _settings.KeepPokemonsThatCanEvolve;
+        public bool OnlyKeepIfOnEvolveList => _settings.OnlyKeepIfOnEvolveList;
         public bool TransferDuplicatePokemon => _settings.TransferDuplicatePokemon;
         public bool UseEggIncubators => _settings.UseEggIncubators;
         public int UseGreatBallAboveCp => _settings.UseGreatBallAboveCp;
