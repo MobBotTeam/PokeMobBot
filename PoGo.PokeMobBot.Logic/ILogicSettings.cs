@@ -139,13 +139,12 @@ namespace PoGo.PokeMobBot.Logic
         int DelayRecyleItem { get; }
         int DelaySnipePokemon { get; }
         int DelayTransferPokemon { get; }
-<<<<<<< HEAD
+
         double RecycleInventoryAtUsagePercentage { get; }
-=======
+
         bool HumanizeThrows { get; }
         double ThrowAccuracyMin { get; }
         double ThrowAccuracyMax { get; }
         double ThrowSpinFrequency { get; }
->>>>>>> PocketMobsters/master
     }
 }
