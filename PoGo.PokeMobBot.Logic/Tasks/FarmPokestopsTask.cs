@@ -77,7 +77,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
-                session.EventDispatcher.Send(new FortTargetEvent {Name = fortInfo.Name, Distance = distance});
+                session.EventDispatcher.Send(new FortTargetEvent {Name = fortInfo.Name, Distance = distance, Latitude = pokeStop.Latitude, Longitude = pokeStop.Longitude});
                 if(session.LogicSettings.Teleport)
                     await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
                         session.Client.Settings.DefaultAltitude);
