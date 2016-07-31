@@ -52,17 +52,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     return;
                 }
 
-                var isLowProbability = probability < 0.35;
+                var isLowProbability = probability < session.LogicSettings.UseBerryBelowCatchProbability;
                 var isHighCp = encounter != null &&
                                (encounter is EncounterResponse
                                    ? encounter.WildPokemon?.PokemonData?.Cp
-                                   : encounter.PokemonData?.Cp) > 400;
+                                   : encounter.PokemonData?.Cp) > session.LogicSettings.UseBerryMinCp;
                 var isHighPerfection =
                     PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
-                        : encounter?.PokemonData) >= session.LogicSettings.KeepMinIvPercentage;
+                        : encounter?.PokemonData) >= session.LogicSettings.UseBerryMinIv;
 
-                if ((isLowProbability && isHighCp) || isHighPerfection)
+                if (isLowProbability && (( session.LogicSettings.PrioritizeIvOverCp && isHighPerfection) || isHighCp))
                 {
                     await
                         UseBerry(session,
