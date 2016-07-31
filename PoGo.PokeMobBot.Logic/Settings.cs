@@ -17,15 +17,14 @@ namespace PoGo.PokeMobBot.Logic
 {
     internal class AuthSettings
     {
-        [JsonIgnore] private string _filePath;
-
+        [JsonIgnore]
+        private string _filePath;
         public AuthType AuthType;
-        public string GooglePassword;
-
         public string GoogleRefreshToken;
         public string GoogleUsername;
-        public string PtcPassword;
+        public string GooglePassword;
         public string PtcUsername;
+        public string PtcPassword;
 
         public void Load(string path)
         {
@@ -39,7 +38,7 @@ namespace PoGo.PokeMobBot.Logic
                     var input = File.ReadAllText(_filePath);
 
                     var settings = new JsonSerializerSettings();
-                    settings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
+                    settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
 
                     JsonConvert.PopulateObject(input, this, settings);
                 }
@@ -75,7 +74,7 @@ namespace PoGo.PokeMobBot.Logic
         public void Save(string path)
         {
             var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter {CamelCaseText = true});
+                new StringEnumConverter { CamelCaseText = true });
 
             var folder = Path.GetDirectoryName(path);
             if (folder != null && !Directory.Exists(folder))
@@ -97,17 +96,35 @@ namespace PoGo.PokeMobBot.Logic
 
     public class GlobalSettings
     {
-        public int AmountOfPokemonToDisplayOnStart = 10;
-
-        [JsonIgnore] internal AuthSettings Auth = new AuthSettings();
-
-        public bool AutomaticallyLevelUpPokemon = false;
-
+        //bot start
         public bool AutoUpdate = true;
-        public double DefaultAltitude = 10;
+        public bool TransferConfigAndAuthOnUpdate = true;
+        public bool DumpPokemonStats = false;
+        public int AmountOfPokemonToDisplayOnStart = 10;
+        public bool StartupWelcomeDelay = true;
+        public string TranslationLanguageCode = "en";
+        public int WebSocketPort = 14251;
+        [JsonIgnore]
+        internal AuthSettings Auth = new AuthSettings();
+        [JsonIgnore]
+        public string GeneralConfigPath;
+        [JsonIgnore]
+        public string ProfilePath;
+        [JsonIgnore]
+        public string ProfileConfigPath;
+
+        //coords and movement
+        public bool Teleport = false;
         public double DefaultLatitude = 40.785091;
         public double DefaultLongitude = -73.968285;
-        public bool Teleport = false;
+        public double DefaultAltitude = 10;
+        public double WalkingSpeedInKilometerPerHour = 15.0;
+        public int MaxSpawnLocationOffset = 10;
+        public int MaxTravelDistanceInMeters = 1000;
+        public bool UseGpxPathing = false;
+        public string GpxFile = "GPXPath.GPX";
+
+        //delays
         public int DelayBetweenPlayerActions = 5000;
         public int DelayBetweenPokemonCatch = 2000;
         public int DelayCatchNearbyPokemon = 1000;
@@ -122,19 +139,62 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem = 1000;
         public int DelaySnipePokemon = 1000;
         public int DelayTransferPokemon = 1000;
-        public bool DumpPokemonStats = false;
-        public float EvolveAboveIvValue = 95;
-        public bool EvolveAllPokemonAboveIv = false;
+
+        //incubator
+        public bool UseEggIncubators = true;
+
+        //rename
+        public bool RenamePokemon = false;
+        public bool RenameOnlyAboveIv = true;
+        public string RenameTemplate = "{1}_{0}";
+
+        //transfer
+        public bool TransferDuplicatePokemon = true;
+        public bool PrioritizeIvOverCp = true;
+        public int KeepMinCp = 1250;
+        public float KeepMinIvPercentage = 90;
+        public int KeepMinDuplicatePokemon = 1;
+        public bool KeepPokemonsThatCanEvolve = false;
+
+        //evolve
         public bool EvolveAllPokemonWithEnoughCandy = true;
+        public bool EvolveAllPokemonAboveIv = false;
+        public float EvolveAboveIvValue = 95;
+        public bool UseLuckyEggsWhileEvolving = false;
+        public int UseLuckyEggsMinPokemonAmount = 30;
+
+        //levelup
+        public bool AutomaticallyLevelUpPokemon = false;
+        public string LevelUpByCPorIv = "iv";
+        public float UpgradePokemonCpMinimum = 1000;
+        public float UpgradePokemonIvMinimum = 95;
+
+        //catch
+        public int MaxPokeballsPerPokemon = 6;
+        public int UseGreatBallAboveCp = 750;
+        public int UseUltraBallAboveCp = 1000;
+        public int UseMasterBallAboveCp = 1500;
+        public bool UsePokemonToNotCatchFilter = false;
         public bool HumanizeThrows = false;
         public double ThrowAccuracyMin = 0.50;
         public double ThrowAccuracyMax = 1.00;
         public double ThrowSpinFrequency = 0.75;
 
-        [JsonIgnore] public string GeneralConfigPath;
+        //recycle
+        public int TotalAmountOfPokeballsToKeep = 100;
+        public int TotalAmountOfPotionsToKeep = 80;
+        public int TotalAmountOfRevivesToKeep = 60;
 
-        public string GpxFile = "GPXPath.GPX";
-
+        //snipe
+        public int MinDelayBetweenSnipes = 60000;
+        public int MinPokeballsToSnipe = 20;
+        public int MinPokeballsWhileSnipe = 0;
+        public bool SnipeAtPokestops = false;
+        public bool SnipeIgnoreUnknownIv = false;
+        public bool UseTransferIvForSnipe = false;
+        public bool UseSnipeLocationServer = false;
+        public string SnipeLocationServer = "localhost";
+        public int SnipeLocationServerPort = 16969;
 
         public List<KeyValuePair<ItemId, int>> ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>
         {
@@ -159,18 +219,6 @@ namespace PoGo.PokeMobBot.Logic
             new KeyValuePair<ItemId, int>(ItemId.ItemPokemonStorageUpgrade, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemItemStorageUpgrade, 100)
         };
-
-        public int KeepMinCp = 1250;
-        public int KeepMinDuplicatePokemon = 1;
-        public float KeepMinIvPercentage = 90;
-        public bool KeepPokemonsThatCanEvolve = false;
-        public string LevelUpByCPorIv = "iv";
-        public int MaxPokeballsPerPokemon = 6;
-        public int MaxSpawnLocationOffset = 10;
-        public int MaxTravelDistanceInMeters = 1000;
-        public int MinDelayBetweenSnipes = 60000;
-        public int MinPokeballsToSnipe = 20;
-        public int MinPokeballsWhileSnipe = 0;
 
         public List<PokemonId> PokemonsNotToTransfer = new List<PokemonId>
         {
@@ -370,43 +418,8 @@ namespace PoGo.PokeMobBot.Logic
             PokemonId.Mewtwo
         };
 
-        public bool PrioritizeIvOverCp = true;
-
-        [JsonIgnore] public string ProfileConfigPath;
-
-        [JsonIgnore] public string ProfilePath;
-
-        public bool RenameOnlyAboveIv = true;
-        public bool RenamePokemon = false;
-        public string RenameTemplate = "{1}_{0}";
-        public bool SnipeAtPokestops = false;
-        public bool SnipeIgnoreUnknownIv = false;
-        public string SnipeLocationServer = "localhost";
-        public int SnipeLocationServerPort = 16969;
-        public bool StartupWelcomeDelay = true;
-        public int TotalAmountOfPokebalsToKeep = 120;
-        public int TotalAmountOfPotionsToKeep = 80;
-        public int TotalAmountOfRevivesToKeep = 60;
-        public bool TransferConfigAndAuthOnUpdate = true;
-        public bool TransferDuplicatePokemon = true;
-        public string TranslationLanguageCode = "en";
-        public float UpgradePokemonCpMinimum = 1000;
-        public float UpgradePokemonIvMinimum = 95;
-        public bool UseEggIncubators = true;
-        public bool UseGpxPathing = false;
-        public int UseGreatBallAboveCp = 750;
-        public int UseLuckyEggsMinPokemonAmount = 30;
-        public bool UseLuckyEggsWhileEvolving = false;
-        public int UseMasterBallAboveCp = 1500;
-        public bool UsePokemonToNotCatchFilter = false;
-        public bool UseSnipeLocationServer = false;
-        public bool UseTransferIvForSnipe = false;
-        public int UseUltraBallAboveCp = 1000;
-        public double WalkingSpeedInKilometerPerHour = 15.0;
-        public int WebSocketPort = 14251;
-
         public static GlobalSettings Default => new GlobalSettings();
-
+        
         public static GlobalSettings Load(string path)
         {
             GlobalSettings settings;
@@ -422,7 +435,7 @@ namespace PoGo.PokeMobBot.Logic
                     var input = File.ReadAllText(configFile);
 
                     var jsonSettings = new JsonSerializerSettings();
-                    jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
+                    jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
                     jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                     jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
 
@@ -459,11 +472,6 @@ namespace PoGo.PokeMobBot.Logic
                 settings.SnipeLocationServer = Default.SnipeLocationServer;
             }
 
-            Clamp(ref settings.ThrowAccuracyMin, 0.0, 1.0);
-            Clamp(ref settings.ThrowAccuracyMax, 0.0, 1.0);
-            Clamp(ref settings.ThrowSpinFrequency, 0.0, 1.0);
-            MinMax(ref settings.ThrowAccuracyMin, ref settings.ThrowAccuracyMax);
-
             settings.ProfilePath = profilePath;
             settings.ProfileConfigPath = profileConfigPath;
             settings.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
@@ -484,7 +492,7 @@ namespace PoGo.PokeMobBot.Logic
         public void Save(string fullPath)
         {
             var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter {CamelCaseText = true});
+                new StringEnumConverter { CamelCaseText = true });
 
             var folder = Path.GetDirectoryName(fullPath);
             if (folder != null && !Directory.Exists(folder))
@@ -493,34 +501,6 @@ namespace PoGo.PokeMobBot.Logic
             }
 
             File.WriteAllText(fullPath, output);
-        }
-
-        /// <summary>
-        /// Ensures that a value falls within a certain range.
-        /// </summary>
-        /// <param name="value">Value to check.</param>
-        /// <param name="min">Minimum allowable value.</param>
-        /// <param name="max">Maximum allowable value.</param>
-        private static void Clamp(ref double value, double min, double max)
-        {
-            if (value < min)
-                value = min;
-            if (value > max)
-                value = max;
-        }
-
-        /// <summary>
-        /// Ensures that the minimum and maximum values are in the correct order.
-        /// </summary>
-        /// <param name="min">Minimum parameter.</param>
-        /// <param name="max">Maximum parameter.</param>
-        private static void MinMax(ref double min, ref double max)
-        {
-            if (max >= min)
-                return;
-            double temp = min;
-            min = max;
-            max = temp;
         }
     }
 
@@ -560,7 +540,7 @@ namespace PoGo.PokeMobBot.Logic
         {
             get
             {
-                return _settings.DefaultLatitude + _rand.NextDouble()*((double) _settings.MaxSpawnLocationOffset/111111);
+                return _settings.DefaultLatitude + _rand.NextDouble() * ((double)_settings.MaxSpawnLocationOffset / 111111);
             }
 
             set { _settings.DefaultLatitude = value; }
@@ -571,8 +551,8 @@ namespace PoGo.PokeMobBot.Logic
             get
             {
                 return _settings.DefaultLongitude +
-                       _rand.NextDouble()*
-                       ((double) _settings.MaxSpawnLocationOffset/111111/Math.Cos(_settings.DefaultLatitude));
+                       _rand.NextDouble() *
+                       ((double)_settings.MaxSpawnLocationOffset / 111111 / Math.Cos(_settings.DefaultLatitude));
             }
 
             set { _settings.DefaultLongitude = value; }
@@ -679,7 +659,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseTransferIvForSnipe => _settings.UseTransferIvForSnipe;
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
-        public int TotalAmountOfPokebalsToKeep => _settings.TotalAmountOfPokebalsToKeep;
+        public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
 
