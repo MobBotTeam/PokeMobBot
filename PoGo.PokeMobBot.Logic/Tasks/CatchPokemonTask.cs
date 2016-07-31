@@ -86,11 +86,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             ? pokemon.SpawnPointId
                             : currentFortData.Id, pokeball);
 
+                var lat = encounter is EncounterResponse || encounter is IncenseEncounterResponse
+                            ? pokemon.Latitude : currentFortData.Latitude;
+                var lng = encounter is EncounterResponse || encounter is IncenseEncounterResponse
+                            ? pokemon.Longitude : currentFortData.Longitude;
                 var evt = new PokemonCaptureEvent
                 {
                     Status = caughtPokemonResponse.Status,
-                    Latitude = pokemon.Latitude,
-                    Longitude = pokemon.Longitude
+                    Latitude = lat,
+                    Longitude = lng
                 };
 
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
