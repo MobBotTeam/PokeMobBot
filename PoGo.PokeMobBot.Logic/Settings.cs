@@ -168,15 +168,15 @@ namespace PoGo.PokeMobBot.Logic
         public float UpgradePokemonIvMinimum = 95;
 
         //catch
+        public bool HumanizeThrows = false;
+        public double ThrowAccuracyMin = 0.50;
+        public double ThrowAccuracyMax = 1.00;
+        public double ThrowSpinFrequency = 0.75;
         public int MaxPokeballsPerPokemon = 6;
         public int UseGreatBallAboveCp = 750;
         public int UseUltraBallAboveCp = 1000;
         public int UseMasterBallAboveCp = 1500;
         public bool UsePokemonToNotCatchFilter = false;
-        public bool HumanizeThrows = false;
-        public double ThrowAccuracyMin = 0.50;
-        public double ThrowAccuracyMax = 1.00;
-        public double ThrowSpinFrequency = 0.75;
 
         //recycle
         public int TotalAmountOfPokeballsToKeep = 100;
