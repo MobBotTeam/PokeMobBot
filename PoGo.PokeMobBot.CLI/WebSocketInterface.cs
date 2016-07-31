@@ -87,6 +87,9 @@ namespace PoGo.PokeMobBot.CLI
                 case "EggsList":
                     await EggsListTask.Execute(_session);
                     break;
+                    case "PlayerStats":
+                    await PlayerStatsTask.Execute(_session);                   
+                    break;                   
             }
         }
 
