@@ -80,8 +80,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         ? pokemon.Longitude
                         : currentFortData.Longitude);
 
-                double normalizedRecticleSize = Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax) * 1.85 + 0.1; // 0.1..1.95
-                double spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
+                double normalizedRecticleSize, spinModifier;
+                if (session.LogicSettings.HumanizeThrows)
+                {
+                    normalizedRecticleSize =
+                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
+                        1.85 + 0.1; // 0.1..1.95
+                    spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
+                }
+                else
+                {
+                    normalizedRecticleSize = 1.95;
+                    spinModifier = 1.00;
+                }
                 caughtPokemonResponse =
                     await session.Client.Encounter.CatchPokemon(
                         encounter is EncounterResponse || encounter is IncenseEncounterResponse

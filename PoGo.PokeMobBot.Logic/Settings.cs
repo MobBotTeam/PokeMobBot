@@ -126,9 +126,10 @@ namespace PoGo.PokeMobBot.Logic
         public float EvolveAboveIvValue = 95;
         public bool EvolveAllPokemonAboveIv = false;
         public bool EvolveAllPokemonWithEnoughCandy = true;
-        public double ThrowAccuracyMin = 1.00;
+        public bool HumanizeThrows = false;
+        public double ThrowAccuracyMin = 0.50;
         public double ThrowAccuracyMax = 1.00;
-        public double ThrowSpinFrequency = 1.00;
+        public double ThrowSpinFrequency = 0.75;
 
         [JsonIgnore] public string GeneralConfigPath;
 
@@ -695,7 +696,7 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
-
+        public bool HumanizeThrows => _settings.HumanizeThrows;
         public double ThrowAccuracyMin => _settings.ThrowAccuracyMin;
         public double ThrowAccuracyMax => _settings.ThrowAccuracyMax;
         public double ThrowSpinFrequency => _settings.ThrowSpinFrequency;
