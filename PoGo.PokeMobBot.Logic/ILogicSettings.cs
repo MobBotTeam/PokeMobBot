@@ -91,7 +91,9 @@ namespace PoGo.PokeMobBot.Logic
         bool DumpPokemonStats { get; }
         bool RenamePokemon { get; }
         bool RenameOnlyAboveIv { get; }
+        int TemplateUsage { get; }
         string RenameTemplate { get; }
+        string RenameTemplate2 { get; }
         int AmountOfPokemonToDisplayOnStart { get; }
         string TranslationLanguageCode { get; }
         string ProfilePath { get; }
@@ -139,6 +141,7 @@ namespace PoGo.PokeMobBot.Logic
         int DelayRecyleItem { get; }
         int DelaySnipePokemon { get; }
         int DelayTransferPokemon { get; }
+        double RecycleInventoryAtUsagePercentage { get; }
         bool HumanizeThrows { get; }
         double ThrowAccuracyMin { get; }
         double ThrowAccuracyMax { get; }

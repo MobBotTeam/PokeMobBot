@@ -146,7 +146,9 @@ namespace PoGo.PokeMobBot.Logic
         //rename
         public bool RenamePokemon = false;
         public bool RenameOnlyAboveIv = true;
+        public int TemplateUsage = 1;
         public string RenameTemplate = "{1}_{0}";
+        public string RenameTemplate2 = "{0}{1}{2}";
 
         //transfer
         public bool TransferDuplicatePokemon = true;
@@ -180,10 +182,22 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowAccuracyMax = 1.00;
         public double ThrowSpinFrequency = 0.75;
 
+        //favorite
+        public float FavoriteMinIvPercentage = 95;
+        public bool AutoFavoritePokemon = false;
         //recycle
         public int TotalAmountOfPokeballsToKeep = 100;
         public int TotalAmountOfPotionsToKeep = 80;
         public int TotalAmountOfRevivesToKeep = 60;
+
+        public int UseGreatBallAboveIv = 80;
+        public int UseUltraBallAboveIv = 90;
+        public double UseGreatBallBelowCatchProbability = 0.5;
+        public double UseUltraBallBelowCatchProbability = 0.4;
+        public double UseMasterBallBelowCatchProbability = 0.05;
+
+        public double RecycleInventoryAtUsagePercentage = 0.90;
+
 
         //snipe
         public int MinDelayBetweenSnipes = 60000;
@@ -467,6 +481,11 @@ namespace PoGo.PokeMobBot.Logic
                 settings.RenameTemplate = Default.RenameTemplate;
             }
 
+            if (settings.RenameTemplate2 == null)
+            {
+                settings.RenameTemplate2 = Default.RenameTemplate2;
+            }
+
             if (settings.SnipeLocationServer == null)
             {
                 settings.SnipeLocationServer = Default.SnipeLocationServer;
@@ -521,12 +540,8 @@ namespace PoGo.PokeMobBot.Logic
 
         public string GoogleRefreshToken
         {
-            get { return _settings.Auth.GoogleRefreshToken; }
-            set
-            {
-                _settings.Auth.GoogleRefreshToken = value;
-                _settings.Auth.Save();
-            }
+            get { return null; }
+            set { GoogleRefreshToken = null; }
         }
 
         AuthType ISettings.AuthType
@@ -621,6 +636,11 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseEggIncubators => _settings.UseEggIncubators;
         public int UseGreatBallAboveCp => _settings.UseGreatBallAboveCp;
         public int UseUltraBallAboveCp => _settings.UseUltraBallAboveCp;
+        public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
+        public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
+        public double UseMasterBallBelowCatchProbability => _settings.UseMasterBallBelowCatchProbability;
+        public double UseUltraBallBelowCatchProbability => _settings.UseUltraBallBelowCatchProbability;
+        public double UseGreatBallBelowCatchProbability => _settings.UseGreatBallBelowCatchProbability;
         public int UseMasterBallAboveCp => _settings.UseMasterBallAboveCp;
         public int DelayBetweenPokemonCatch => _settings.DelayBetweenPokemonCatch;
         public int DelayBetweenPlayerActions => _settings.DelayBetweenPlayerActions;
@@ -636,7 +656,11 @@ namespace PoGo.PokeMobBot.Logic
         public float EvolveAboveIvValue => _settings.EvolveAboveIvValue;
         public bool RenamePokemon => _settings.RenamePokemon;
         public bool RenameOnlyAboveIv => _settings.RenameOnlyAboveIv;
+        public float FavoriteMinIvPercentage => _settings.FavoriteMinIvPercentage;
+        public bool AutoFavoritePokemon => _settings.AutoFavoritePokemon;
         public string RenameTemplate => _settings.RenameTemplate;
+        public string RenameTemplate2 => _settings.RenameTemplate2;
+        public int TemplateUsage => _settings.TemplateUsage;
         public int AmountOfPokemonToDisplayOnStart => _settings.AmountOfPokemonToDisplayOnStart;
         public bool DumpPokemonStats => _settings.DumpPokemonStats;
         public string TranslationLanguageCode => _settings.TranslationLanguageCode;
@@ -676,6 +700,7 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
+        public double RecycleInventoryAtUsagePercentage => _settings.RecycleInventoryAtUsagePercentage;
         public bool HumanizeThrows => _settings.HumanizeThrows;
         public double ThrowAccuracyMin => _settings.ThrowAccuracyMin;
         public double ThrowAccuracyMax => _settings.ThrowAccuracyMax;
