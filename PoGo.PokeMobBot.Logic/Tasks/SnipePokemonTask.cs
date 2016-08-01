@@ -691,7 +691,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             if (Writer == null)
                 return;
-            Logger.Write($"Sending info to feeder: {info.Latitude:0.00000000},{info.Longitude:0.00000000} {info.Iv:0.00}% IV {info.Id} {info.Move1} {info.Move2}");
             Writer.WriteLine(JsonConvert.SerializeObject(info));
             Writer.Flush();
         }
