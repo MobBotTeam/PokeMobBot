@@ -128,9 +128,11 @@ namespace PoGo.PokeMobBot.Logic
         int MaxPokeballsPerPokemon { get; }        
         
         //pokeballs
-        int UseGreatBallAboveCp { get; }
-        int UseMasterBallAboveCp { get; }
-        int UseUltraBallAboveCp { get; }        
+        int UseGreatBallAboveIv { get; }
+        int UseUltraBallAboveIv { get; }
+        double UseGreatBallBelowCatchProbability { get; }
+        double UseUltraBallBelowCatchProbability { get; }
+        double UseMasterBallBelowCatchProbability { get; }
         bool UsePokemonToNotCatchFilter { get; }
         
         //berries
@@ -159,12 +161,10 @@ namespace PoGo.PokeMobBot.Logic
         int SnipeLocationServerPort { get; }
         string SnipeLocationServer { get; }
         
-        // Paths
+        //paths
         string GeneralConfigPath { get; }
         string ProfileConfigPath { get; }
         string ProfilePath { get; }
-        
-        
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
 
@@ -178,9 +178,6 @@ namespace PoGo.PokeMobBot.Logic
 
         Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter { get; }
         SnipeSettings PokemonToSnipe { get; }
-
-        
-
 
     }
 }
