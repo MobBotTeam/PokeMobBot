@@ -137,6 +137,7 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem = 1000;
         public int DelaySnipePokemon = 1000;
         public int MinDelayBetweenSnipes = 60000;
+        public double SnipingScanOffset = 0.003;
 
         //incubator
         public bool UseEggIncubators = true;
@@ -173,6 +174,8 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowAccuracyMax = 1.00;
         public double ThrowSpinFrequency = 0.75;
         public int MaxPokeballsPerPokemon = 6;
+
+        //pokeballs
         public int UseGreatBallAboveCp = 750;
         public int UseUltraBallAboveCp = 1500;
         public int UseMasterBallAboveCp = 2500;
@@ -189,8 +192,8 @@ namespace PoGo.PokeMobBot.Logic
         public double UseBerryBelowCatchProbability = 0.35;
 
         //favorite
-        public bool AutoFavoritePokemon = false;
         public float FavoriteMinIvPercentage = 95;
+        public bool AutoFavoritePokemon = false;
 
         //recycle
         public int TotalAmountOfPokeballsToKeep = 100;
@@ -205,6 +208,7 @@ namespace PoGo.PokeMobBot.Logic
         public int MinPokeballsToSnipe = 20;
         public int MinPokeballsWhileSnipe = 0;
         public bool UseSnipeLocationServer = false;
+        public bool UseSnipeOnlineLocationServer = false;
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
 
@@ -326,7 +330,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter = new Dictionary<PokemonId, TransferFilter>
         {
-            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v3
+            //criteria: based on NY Central Park and Tokyo variety + sniping optimization
             {PokemonId.Venusaur, new TransferFilter(1500, 40, 1)},
             {PokemonId.Charizard, new TransferFilter(1500, 20, 1)},
             {PokemonId.Blastoise, new TransferFilter(1500, 20, 1)},
@@ -680,16 +684,20 @@ namespace PoGo.PokeMobBot.Logic
         public int MinPokeballsToSnipe => _settings.MinPokeballsToSnipe;
         public int MinPokeballsWhileSnipe => _settings.MinPokeballsWhileSnipe;
         public int MaxPokeballsPerPokemon => _settings.MaxPokeballsPerPokemon;
+
         public SnipeSettings PokemonToSnipe => _settings.PokemonToSnipe;
         public string SnipeLocationServer => _settings.SnipeLocationServer;
         public int SnipeLocationServerPort => _settings.SnipeLocationServerPort;
         public bool UseSnipeLocationServer => _settings.UseSnipeLocationServer;
+        public bool UseSnipeOnlineLocationServer => _settings.UseSnipeOnlineLocationServer;
         public bool UseTransferIvForSnipe => _settings.UseTransferIvForSnipe;
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
+        public double SnipingScanOffset => _settings.SnipingScanOffset;
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
+
         public bool Teleport => _settings.Teleport;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
@@ -711,6 +719,5 @@ namespace PoGo.PokeMobBot.Logic
         public int UseBerryMinCp => _settings.UseBerryMinCp;
         public float UseBerryMinIv => _settings.UseBerryMinIv;
         public double UseBerryBelowCatchProbability => _settings.UseBerryBelowCatchProbability;
-
     }
 }
