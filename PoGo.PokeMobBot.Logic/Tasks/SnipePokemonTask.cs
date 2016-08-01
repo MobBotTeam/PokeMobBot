@@ -307,12 +307,24 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 }
                 else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
                 {
-                    session.EventDispatcher.Send(new WarnEvent
+                    if (session.LogicSettings.EvolveAllPokemonAboveIv || session.LogicSettings.EvolveAllPokemonWithEnoughCandy)
                     {
-                        Message =
-                            session.Translation.GetTranslation(
-                                TranslationString.InvFullTransferManually)
-                    });
+                        await EvolvePokemonTask.Execute(session, cancellationToken);
+                    }
+
+                    if (session.LogicSettings.TransferDuplicatePokemon)
+                    {
+                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                    }
+                    else
+                    {
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message =
+                                session.Translation.GetTranslation(
+                                    TranslationString.InvFullTransferManually)
+                        });
+                    }
                 }
                 else
                 {
@@ -424,7 +436,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     var a = new SniperInfo
                     {
                         Id = id,
-                        Iv = 100,
+                        Iv = 00,
                         Latitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[0]),
                         Longitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[1]),
                         TimeStamp = DateTime.Now
