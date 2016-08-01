@@ -383,35 +383,35 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     switch(resp.StatusCode)
                     {
                         case HttpStatusCode.NotFound:
-                            session.EventDispatcher.Send(new WarnEvent { Message = "404 Not Found: Not able to retrieve file from server!" });
+                            session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound) });
                             break;
                         case HttpStatusCode.GatewayTimeout:
-                            session.EventDispatcher.Send(new WarnEvent { Message = "504 Gateway Time-out: The server didn't respond in time." });
+                            session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.WebErrorGatewayTimeout) });
                             break;
                         case HttpStatusCode.BadGateway:
-                            session.EventDispatcher.Send(new WarnEvent { Message = "502 Bad Gateway: Server is under heavy load!" });
+                            session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.WebErrorBadGateway) });
                             break;
                         default:
                             session.EventDispatcher.Send(new WarnEvent { Message = ex.ToString() });
                             break;
                     }
-                }
+                    }
                 else if(ex.Status == WebExceptionStatus.Timeout)
-                {
+                    {
                     session.EventDispatcher.Send(new WarnEvent { Message = "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!" });
-                }
-                else
-                {
+                    }
+                    else
+                    {
                     session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
-                }
+                    }
 
                 scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
-            }
+                }
             catch (Exception ex)
-            {
+                {
                 session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                 scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
-            }
+                }
 
             return scanResult;
         }
@@ -528,29 +528,29 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         {
                             var resp = (HttpWebResponse)ex.Response;
                             switch (resp.StatusCode)
-                            {
+                                {
                                 case HttpStatusCode.NotFound:
-                                    session.EventDispatcher.Send(new WarnEvent { Message = "404 Not Found: Not able to retrieve file from server!" });
+                                    session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound) });
                                     break;
                                 case HttpStatusCode.GatewayTimeout:
-                                    session.EventDispatcher.Send(new WarnEvent { Message = "504 Gateway Time-out: The server didn't respond in time." });
+                                    session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.WebErrorGatewayTimeout) });
                                     break;
                                 case HttpStatusCode.BadGateway:
-                                    session.EventDispatcher.Send(new WarnEvent { Message = "502 Bad Gateway: Server is under heavy load!" });
+                                    session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.WebErrorBadGateway) });
                                     break;
                                 default:
                                     session.EventDispatcher.Send(new WarnEvent { Message = ex.ToString() });
                                     break;
                             }
-                        }
+                            }
                         else if (ex.Status == WebExceptionStatus.Timeout)
-                        {
+                                {
                             session.EventDispatcher.Send(new WarnEvent { Message = "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!" });
-                        }
-                        else
-                        {
+                            }
+                            else
+                            {
                             session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
-                        }
+                            }
 
                         scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
                     }

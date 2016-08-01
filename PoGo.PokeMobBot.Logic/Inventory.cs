@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
 using PoGo.PokeMobBot.Logic.State;
@@ -244,7 +245,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public async Task<IEnumerable<ItemData>> GetItemsToRecycle(ISession session)
         {
-            var itemsToRecylce = new List<ItemData>();
+            var itemsToRecycle = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
             var currentAmountOfPokeballs = await GetItemAmountByType(ItemId.ItemPokeBall);
@@ -252,11 +253,14 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfUltraballs = await GetItemAmountByType(ItemId.ItemUltraBall);
             var currentAmountOfMasterballs = await GetItemAmountByType(ItemId.ItemMasterBall);
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
-                currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
-                currentAmountOfMasterballs));
+            session.EventDispatcher.Send(new ErrorEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
+                    currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
+                    currentAmountOfMasterballs)
+            });
 
-            var otherItemsToRecylce = myItems
+            var otherItemsToRecycle = myItems
                 .Where(x => _logicSettings.ItemRecycleFilter.Any(f => f.Key == x.ItemId && x.Count > f.Value))
                 .Select(
                     x =>
@@ -267,9 +271,9 @@ namespace PoGo.PokeMobBot.Logic
                             Unseen = x.Unseen
                         });
 
-            itemsToRecylce.AddRange(otherItemsToRecylce);
+            itemsToRecycle.AddRange(otherItemsToRecycle);
 
-            return itemsToRecylce;
+            return itemsToRecycle;
         }
 
         public double GetPerfect(PokemonData poke)
@@ -291,8 +295,10 @@ namespace PoGo.PokeMobBot.Logic
             var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             if (amountOfPokeballsToKeep < 1)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect),
-                    LogLevel.Error, ConsoleColor.Red);
+                session.EventDispatcher.Send(new ErrorEvent()
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect)
+                });
                 return new List<ItemData>();
             }
 
@@ -307,8 +313,10 @@ namespace PoGo.PokeMobBot.Logic
             var amountOfBerriesToKeep = _logicSettings.TotalAmountOfBerriesToKeep;
             if (amountOfBerriesToKeep < 1)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.BerriesToKeepIncorrect),
-                    LogLevel.Error, ConsoleColor.Red);
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.BerriesToKeepIncorrect)
+                });
                 return new List<ItemData>();
             }
 
@@ -434,8 +442,10 @@ namespace PoGo.PokeMobBot.Logic
             var amountOfPotionsToKeep = _logicSettings.TotalAmountOfPotionsToKeep;
             if (amountOfPotionsToKeep < 1)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.PotionsToKeepIncorrect),
-                    LogLevel.Error, ConsoleColor.Red);
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.PotionsToKeepIncorrect)
+                });
                 return new List<ItemData>();
             }
 
@@ -450,8 +460,10 @@ namespace PoGo.PokeMobBot.Logic
             var amountOfRevivesToKeep = _logicSettings.TotalAmountOfRevivesToKeep;
             if (amountOfRevivesToKeep < 1)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.RevivesToKeepIncorrect),
-                    LogLevel.Error, ConsoleColor.Red);
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.RevivesToKeepIncorrect)
+                });
                 return new List<ItemData>();
             }
 
@@ -495,7 +507,7 @@ namespace PoGo.PokeMobBot.Logic
                 {
                     if (item.Count < itemsToRemove)
                     {
-                        // Recylce all of this type
+                        // Recycle all of this type
                         itemsToRemove -= item.Count;
                         yield return item;
                     }
