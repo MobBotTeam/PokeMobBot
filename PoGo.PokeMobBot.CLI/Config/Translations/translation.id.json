@@ -250,6 +250,10 @@
       "Key": "finishedUnpackingFiles",
       "Value": "Selesai mengbongkar file - file..."
     },
+	{
+      "Key": "FinishedTransferringConfig",
+      "Value": "Menyelesaikan perpindahan konfig ke versi baru..."
+    },
     {
       "Key": "updateFinished",
       "Value": "Update telah selesai, anda dapat menutup window ini sekarang."
