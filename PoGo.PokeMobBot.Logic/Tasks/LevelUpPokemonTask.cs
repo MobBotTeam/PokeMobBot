@@ -1,10 +1,16 @@
 ﻿#region using directives
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using POGOProtos.Inventory;
+using POGOProtos.Settings.Master;
+using POGOProtos.Data;
 using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.PoGoUtils;
 
 #endregion
 
@@ -12,65 +18,100 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class LevelUpPokemonTask
     {
-        private readonly DisplayPokemonStatsTask _displayPokemonStatsTask;
+        private readonly PokemonInfo _pokemonInfo;
         private readonly ILogger _logger;
 
-        public LevelUpPokemonTask(DisplayPokemonStatsTask displayPokemonStatsTask, ILogger logger)
+        public LevelUpPokemonTask(ILogger logger, PokemonInfo pokemonInfo)
         {
-            _displayPokemonStatsTask = displayPokemonStatsTask;
             _logger = logger;
+            _pokemonInfo = pokemonInfo;
         }
 
         public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
-            if (_displayPokemonStatsTask.PokemonId.Count == 0 || _displayPokemonStatsTask.PokemonIdcp.Count == 0)
-            {
-                return;
-            }
-            if (session.LogicSettings.LevelUpByCPorIv.ToLower().Contains("iv"))
-            {
-                var rand = new Random();
-                var randomNumber = rand.Next(0, _displayPokemonStatsTask.PokemonId.Count - 1);
+            // get the families and the pokemons settings to do some actual smart stuff like checking if you have enough candy in the first place
+            var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
+            var pokemonSettings = await session.Inventory.GetPokemonSettings();
+            var pokemonUpgradeSettings = await session.Inventory.GetPokemonUpgradeSettings();
+            var playerLevel = await session.Inventory.GetPlayerStats();
 
-                var upgradeResult =
-                    await session.Inventory.UpgradePokemon(_displayPokemonStatsTask.PokemonId[randomNumber]);
-                if (upgradeResult.Result.ToString().ToLower().Contains("success"))
+            List<PokemonData> allPokemon = new List<PokemonData>();
+
+            // priority for upgrading
+            if (session.LogicSettings.LevelUpByCPorIv?.ToLower() == "iv")
+            {
+                allPokemon = session.Inventory.GetHighestsPerfect(session.Profile.PlayerData.MaxPokemonStorage).Result.ToList();
+            }
+            else if (session.LogicSettings.LevelUpByCPorIv?.ToLower() == "cp")
+            {
+                allPokemon = session.Inventory.GetPokemons().Result.OrderByDescending(p => p.Cp).ToList();
+            }
+
+            // iterate on whatever meets both minimums
+            // to disable one or the other, set to 0
+            foreach (var pokemon in allPokemon.Where(p => session.Inventory.GetPerfect(p) >= session.LogicSettings.UpgradePokemonIvMinimum && p.Cp >= session.LogicSettings.UpgradePokemonCpMinimum))
+            {
+                int pokeLevel = (int)_pokemonInfo.GetLevel(pokemon);
+                var currentPokemonSettings = pokemonSettings.FirstOrDefault(q => pokemon != null && q.PokemonId.Equals(pokemon.PokemonId));
+                var family = pokemonFamilies.FirstOrDefault(q => currentPokemonSettings != null && q.FamilyId.Equals(currentPokemonSettings.FamilyId));
+                int candyToEvolveTotal = GetCandyMinToKeep(pokemonSettings, currentPokemonSettings);
+
+                // you can upgrade up to player level+2 right now
+                // may need translation for stardust???
+                if (pokeLevel < playerLevel?.FirstOrDefault().Level + pokemonUpgradeSettings.FirstOrDefault().AllowedLevelsAbovePlayer
+                    && family.Candy_ > pokemonUpgradeSettings.FirstOrDefault()?.CandyCost[pokeLevel]
+                    && family.Candy_ >= candyToEvolveTotal
+                    && session.Profile.PlayerData.Currencies.FirstOrDefault(c => c.Name.ToLower().Contains("stardust")).Amount >= pokemonUpgradeSettings.FirstOrDefault()?.StardustCost[pokeLevel])
                 {
-                    _logger.Write("Pokemon Upgraded:" + upgradeResult.UpgradedPokemon.PokemonId + ":" +
-                                 upgradeResult.UpgradedPokemon.Cp);
-                }
-                else if (upgradeResult.Result.ToString().ToLower().Contains("insufficient"))
-                {
-                    _logger.Write("Pokemon Upgrade Failed Not Enough Resources");
-                }
-                else
-                {
-                    _logger.Write(
-                        "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
-                        upgradeResult.UpgradedPokemon.PokemonId);
+                    await DoUpgrade(session, pokemon);
                 }
             }
-            else if (session.LogicSettings.LevelUpByCPorIv.ToLower().Contains("cp"))
+        }
+
+        private int GetCandyMinToKeep(IEnumerable<PokemonSettings> pokemonSettings, PokemonSettings currentPokemonSettings)
+        {
+            // total up required candy for evolution, for yourself and your ancestors to allow for others to be evolved before upgrading
+            // always keeps a minimum amount in reserve, should never have 0 except for cases where a pokemon is in both first and final form (ie onix)
+            var ancestor = pokemonSettings.FirstOrDefault(q => q.PokemonId == currentPokemonSettings.ParentPokemonId);
+            var ancestor2 = pokemonSettings.FirstOrDefault(q => q.PokemonId == ancestor?.ParentPokemonId);
+
+            int candyToEvolveTotal = currentPokemonSettings.CandyToEvolve;
+            if (ancestor != null)
             {
-                var rand = new Random();
-                var randomNumber = rand.Next(0, _displayPokemonStatsTask.PokemonIdcp.Count - 1);
-                var upgradeResult =
-                    await session.Inventory.UpgradePokemon(_displayPokemonStatsTask.PokemonIdcp[randomNumber]);
-                if (upgradeResult.Result.ToString().ToLower().Contains("success"))
-                {
-                    _logger.Write("Pokemon Upgraded:" + upgradeResult.UpgradedPokemon.PokemonId + ":" +
-                                 upgradeResult.UpgradedPokemon.Cp);
-                }
-                else if (upgradeResult.Result.ToString().ToLower().Contains("insufficient"))
-                {
-                    _logger.Write("Pokemon Upgrade Failed Not Enough Resources");
-                }
-                else
-                {
-                    _logger.Write(
-                        "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
-                        upgradeResult.UpgradedPokemon.PokemonId);
-                }
+                candyToEvolveTotal += ancestor.CandyToEvolve;
+            }
+
+            if (ancestor2 != null)
+            {
+                candyToEvolveTotal += ancestor2.CandyToEvolve;
+            }
+
+            return candyToEvolveTotal;
+        }
+
+        private async Task DoUpgrade(ISession session, PokemonData pokemon)
+        {
+            var upgradeResult = await session.Inventory.UpgradePokemon(pokemon.Id);
+
+            if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.Success)
+            {
+                _logger.Write("Pokemon Upgraded:" + upgradeResult.UpgradedPokemon.PokemonId + ":" +
+                                upgradeResult.UpgradedPokemon.Cp);
+            }
+            else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorInsufficientResources)
+            {
+                _logger.Write("Pokemon upgrade failed, not enough resources, probably not enough stardust");
+            }
+            // pokemon max level
+            else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorUpgradeNotAvailable)
+            {
+                _logger.Write("Pokemon upgrade unavailable for: " + pokemon.PokemonId + ":" + pokemon.Cp + "/" + _pokemonInfo.CalculateMaxCp(pokemon));
+            }
+            else
+            {
+                _logger.Write(
+                    "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
+                    pokemon.PokemonId);
             }
         }
     }

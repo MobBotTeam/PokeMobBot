@@ -322,6 +322,10 @@
     {
       "Key": "pokemonIgnoreFilter",
       "Value": "[Pokémon-Ignore-Filter] - Ignoriere {0} wie in den Einstellungen angegeben!"
+    },
+    {
+      "Key": "UseBerry",
+      "Value": "Benutze Himbeere. Verbleibend: {0}"
     }
   ]
 }

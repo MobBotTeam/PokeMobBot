@@ -35,6 +35,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public async Task Execute(ISession session, dynamic encounter, MapPokemon pokemon,
             FortData currentFortData = null, ulong encounterId = 0)
         {
+            if (encounter is EncounterResponse && pokemon == null)
+                throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse", "pokemon");
+
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
             do
@@ -59,17 +62,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     return;
                 }
 
-                var isLowProbability = probability < 0.35;
+                var isLowProbability = probability < session.LogicSettings.UseBerryBelowCatchProbability;
                 var isHighCp = encounter != null &&
                                (encounter is EncounterResponse
                                    ? encounter.WildPokemon?.PokemonData?.Cp
-                                   : encounter.PokemonData?.Cp) > 400;
+                                   : encounter.PokemonData?.Cp) > session.LogicSettings.UseBerryMinCp;
                 var isHighPerfection =
                     _pokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
-                        : encounter?.PokemonData) >= session.LogicSettings.KeepMinIvPercentage;
+                        : encounter?.PokemonData) >= session.LogicSettings.UseBerryMinIv;
 
-                if ((isLowProbability && isHighCp) || isHighPerfection)
+                if (isLowProbability && (( session.LogicSettings.PrioritizeIvOverCp && isHighPerfection) || isHighCp))
                 {
                     await
                         UseBerry(session,

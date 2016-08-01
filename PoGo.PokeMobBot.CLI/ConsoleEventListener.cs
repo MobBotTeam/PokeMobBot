@@ -193,7 +193,7 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(UseBerryEvent evt, ISession session)
         {
-            _logger.Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, evt.Count),
+            _logger.Write(session.Translation.GetTranslation(TranslationString.UseBerry, evt.Count),
                 LogLevel.Berry);
         }
 

@@ -24,23 +24,25 @@ namespace PoGo.PokeMobBot.CLI
         private readonly PokemonListTask _pokemonListTask;
         private readonly EggsListTask _eggsListTask;
         private readonly InventoryListTask _inventoryListTask;
+        private readonly PlayerStatsTask _playerStatsTask;
+        private readonly ILogger _logger;
         private PokeStopListEvent _lastPokeStopList;
         private ProfileEvent _lastProfile;
-        private readonly ILogger _logger;
 
-        public WebSocketInterface(GlobalSettings settings, Session session, PokemonListTask pokemonListTask, EggsListTask eggsListTask, InventoryListTask inventoryListTask, ILogger logger)
+        public WebSocketInterface(GlobalSettings settings, Session session, PokemonListTask pokemonListTask, EggsListTask eggsListTask, InventoryListTask inventoryListTask, ILogger logger, PlayerStatsTask playerStatsTask)
         {
             _session = session;
             _pokemonListTask = pokemonListTask;
             _eggsListTask = eggsListTask;
             _inventoryListTask = inventoryListTask;
             _logger = logger;
+            _playerStatsTask = playerStatsTask;
 
             var translations = session.Translation;
             _server = new WebSocketServer();
             var setupComplete = _server.Setup(new ServerConfig
             {
-                Name = "NecroWebSocket",
+                Name = "MobBotWebSocket",
                 Ip = "Any",
                 Port = settings.WebSocketPort,
                 Mode = SocketMode.Tcp,
@@ -101,6 +103,9 @@ namespace PoGo.PokeMobBot.CLI
                     break;
                 case "InventoryList":
                     await _inventoryListTask.Execute(_session);
+                    break;
+                case "PlayerStats":
+                    await _playerStatsTask.Execute(_session);
                     break;
             }
         }

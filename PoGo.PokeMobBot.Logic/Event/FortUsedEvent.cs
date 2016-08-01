@@ -10,5 +10,7 @@
         public double Latitude;
         public double Longitude;
         public string Name;
+        public string Description;
+        public string url;
     }
 }

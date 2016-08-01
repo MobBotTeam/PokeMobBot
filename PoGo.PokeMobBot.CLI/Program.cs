@@ -22,8 +22,16 @@ namespace PoGo.PokeMobBot.CLI
 {
     internal class Program
     {
+        // http://stackoverflow.com/questions/2586612/how-to-keep-a-net-console-app-running Save some CPU Cycles, speed things up
+        static ManualResetEvent _quitEvent = new ManualResetEvent(false);
+
         private static void Main(string[] args)
         {
+            Console.CancelKeyPress += (sender, eArgs) => {
+                _quitEvent.Set();
+                eArgs.Cancel = true;
+            };
+
             var culture = CultureInfo.CreateSpecificCulture("en-US");
 
             CultureInfo.DefaultThreadCurrentCulture = culture;
@@ -115,16 +123,7 @@ namespace PoGo.PokeMobBot.CLI
                 snipePokemonTask.AsyncStart(session);
             }
 
-            //Non-blocking key reader
-            //This will allow to process console key presses in another code parts
-            while (true)
-            {
-                if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Enter)
-                {
-                    break;
-                }
-                Thread.Sleep(5);
-            }
+            _quitEvent.WaitOne();
         }
     }
 }

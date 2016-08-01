@@ -1,1 +1,1 @@
-Checkout: https://github.com/NecronomiconCoding/NecroBot/wiki/Todo
+Checkout: https://github.com/PocketMobsters/PokeMobBot/wiki/Todo

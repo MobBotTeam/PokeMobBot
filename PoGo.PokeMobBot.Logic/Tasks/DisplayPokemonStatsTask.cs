@@ -79,32 +79,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     SortedBy = "IV",
                     PokemonList = pokemonPairedWithStatsIv
                 });
-
-            foreach (var pokemon in pokemonPairedWithStatsIvForUpgrade)
-            {
-                var dgdfs = pokemon.ToString();
-
-                var tokens = dgdfs.Split(new[] {"id"}, StringSplitOptions.None);
-                var splitone = tokens[1].Split('"');
-                var iv = session.Inventory.GetPerfect(pokemon.Item1);
-                if (iv >= session.LogicSettings.UpgradePokemonIvMinimum)
-                {
-                    PokemonId.Add(ulong.Parse(splitone[2]));
-                }
-            }
-            foreach (var t in pokemonPairedWithStatsCpForUpgrade)
-            {
-                var dgdfs = t.ToString();
-                var tokens = dgdfs.Split(new[] {"id"}, StringSplitOptions.None);
-                var splitone = tokens[1].Split('"');
-                var tokensSplit = tokens[1].Split(new[] {"cp"}, StringSplitOptions.None);
-                var tokenSplitAgain = tokensSplit[1].Split(' ');
-                var tokenSplitAgain2 = tokenSplitAgain[1].Split(',');
-                if (float.Parse(tokenSplitAgain2[0]) >= session.LogicSettings.UpgradePokemonCpMinimum)
-                {
-                    PokemonIdcp.Add(ulong.Parse(splitone[2]));
-                }
-            }
+            
             var allPokemonInBag = session.LogicSettings.PrioritizeIvOverCp
                 ? await session.Inventory.GetHighestsPerfect(1000)
                 : await session.Inventory.GetHighestsCp(1000);
@@ -112,11 +87,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 const string dumpFileName = "PokeBagStats";
                 _dumper.ClearDumpFile(session, dumpFileName);
+                _dumper.ClearDumpFile(session, dumpFileName, "csv");
+                _dumper.Dump(session, "Name,Level,CP,IV,Move1,Move2", dumpFileName, "csv");
                 foreach (var pokemon in allPokemonInBag)
                 {
                     _dumper.Dump(session,
                         $"NAME: {pokemon.PokemonId.ToString().PadRight(16, ' ')}Lvl: {_pokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {_pokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}",
                         dumpFileName);
+                    _dumper.Dump(session,
+                        $"{pokemon.PokemonId},{_pokemonInfo.GetLevel(pokemon).ToString("00")},{pokemon.Cp},{_pokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%,{pokemon.Move1},{pokemon.Move2}",
+                        dumpFileName, "csv");
                 }
             }
             if(session.LogicSettings.Teleport)
