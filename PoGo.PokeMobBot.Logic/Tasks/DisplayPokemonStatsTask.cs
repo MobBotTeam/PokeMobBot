@@ -75,22 +75,23 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var allPokemonInBag = session.LogicSettings.PrioritizeIvOverCp
                 ? await session.Inventory.GetHighestsPerfect(1000)
                 : await session.Inventory.GetHighestsCp(1000);
-            if (session.LogicSettings.DumpPokemonStats)
-            {
-                const string dumpFileName = "PokeBagStats";
-                Dumper.ClearDumpFile(session, dumpFileName);
-                Dumper.ClearDumpFile(session, dumpFileName, "csv");
-                Dumper.Dump(session, "Name,Level,CP,IV,Move1,Move2", dumpFileName, "csv");
-                foreach (var pokemon in allPokemonInBag)
-                {
-                    Dumper.Dump(session,
-                        $"NAME: {pokemon.PokemonId.ToString().PadRight(16, ' ')}Lvl: {PokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}",
-                        dumpFileName);
-                    Dumper.Dump(session,
-                        $"{pokemon.PokemonId},{PokemonInfo.GetLevel(pokemon).ToString("00")},{pokemon.Cp},{PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%,{pokemon.Move1},{pokemon.Move2}",
-                        dumpFileName, "csv");
-                }
-            }
+            //if (session.LogicSettings.DumpPokemonStats)
+            //{
+            //    const string dumpFileName = "PokeBagStats";
+            //    Dumper.ClearDumpFile(session, dumpFileName);
+
+            //    Dumper.ClearDumpFile(session, dumpFileName, "csv");
+            //    Dumper.Dump(session, "Name,Level,CP,IV,Move1,Move2", dumpFileName, "csv");
+            //    foreach (var pokemon in allPokemonInBag)
+            //    {
+            //        Dumper.Dump(session,
+            //            $"NAME: {pokemon.PokemonId.ToString().PadRight(16, ' ')}Lvl: {PokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}",
+            //            dumpFileName);
+            //        Dumper.Dump(session,
+            //            $"{pokemon.PokemonId},{PokemonInfo.GetLevel(pokemon).ToString("00")},{pokemon.Cp},{PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%,{pokemon.Move1},{pokemon.Move2}",
+            //            dumpFileName, "csv");
+            //    }
+            //}
             if(session.LogicSettings.Teleport)
                 await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
             else
