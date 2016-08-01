@@ -85,8 +85,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 foreach (var pokemon in allPokemonInBag)
                 {
-                    toDumpTXT += $"NAME: {pokemon.PokemonId.ToString().PadRight(16, ' ')}Lvl: {PokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}\r\n";
-                    toDumpCSV += $"{pokemon.PokemonId},{PokemonInfo.GetLevel(pokemon).ToString("00")},{pokemon.Cp},{PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%,{pokemon.Move1},{pokemon.Move2}\r\n";
+                    toDumpTXT += $"NAME: {session.Translation.GetPokemonName(pokemon.PokemonId).PadRight(16, ' ')}Lvl: {PokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}\r\n";
+                    toDumpCSV += $"{session.Translation.GetPokemonName(pokemon.PokemonId)},{PokemonInfo.GetLevel(pokemon).ToString("00")},{pokemon.Cp},{PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%,{pokemon.Move1},{pokemon.Move2}\r\n";
                 }
 
                 Dumper.Dump(session, toDumpTXT, dumpFileName);

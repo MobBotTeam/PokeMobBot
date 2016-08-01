@@ -33,7 +33,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 session.EventDispatcher.Send(new NoticeEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PokemonSkipped, pokemonId)
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonSkipped, session.Translation.GetPokemonName(pokemonId))
                 });
             }
             else
