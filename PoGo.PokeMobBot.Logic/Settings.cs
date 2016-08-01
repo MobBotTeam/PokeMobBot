@@ -173,7 +173,7 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowAccuracyMax = 1.00;
         public double ThrowSpinFrequency = 0.75;
         public int MaxPokeballsPerPokemon = 6;
-        public int UseGreatBallAboveCp = 1000;
+        public int UseGreatBallAboveCp = 750;
         public int UseUltraBallAboveCp = 1500;
         public int UseMasterBallAboveCp = 2500;
         public int UseGreatBallAboveIv = 80;
