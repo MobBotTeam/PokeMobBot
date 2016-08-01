@@ -60,7 +60,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             int totalBallsCount = pokeBallsCount + greatBallsCount + ultraBallsCount + masterBallsCount;
             if (totalBallsCount > session.LogicSettings.TotalAmountOfPokeballsToKeep)
             {
-                int diff = totalBallsCount - session.LogicSettings.TotalAmountOfPokeballsToKeep;
+                diff = totalBallsCount - session.LogicSettings.TotalAmountOfPokeballsToKeep;
                 if (diff > 0)
                 {
                     await removeItems(pokeBallsCount, ItemId.ItemPokeBall, cancellationToken, session);
@@ -90,7 +90,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             int totalPotionsCount = potionCount + superPotionCount + hyperPotionsCount + maxPotionCount;
             if (totalPotionsCount > session.LogicSettings.TotalAmountOfPotionsToKeep)
             {
-                int diff = totalPotionsCount - session.LogicSettings.TotalAmountOfPotionsToKeep;
+                diff = totalPotionsCount - session.LogicSettings.TotalAmountOfPotionsToKeep;
                 if (diff > 0)
                 {
                     await removeItems(potionCount, ItemId.ItemPotion, cancellationToken, session);
@@ -157,7 +157,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             int totalRevivesCount = reviveCount + maxReviveCount;
             if (totalRevivesCount > session.LogicSettings.TotalAmountOfRevivesToKeep)
             {
-                int diff = totalRevivesCount - session.LogicSettings.TotalAmountOfRevivesToKeep;
+                diff = totalRevivesCount - session.LogicSettings.TotalAmountOfRevivesToKeep;
                 if (diff > 0)
                 {
                     await removeItems(reviveCount, ItemId.ItemRevive, cancellationToken, session);
