@@ -10,6 +10,7 @@ namespace PoGo.PokeMobBot.Logic
 {
     public class Location
     {
+
         public Location()
         {
         }
@@ -70,6 +71,8 @@ namespace PoGo.PokeMobBot.Logic
         
         //coords and movement
         bool Teleport { get; }
+        bool SaferTeleport { get; }
+        int MaxTeleportDistance { get; }
         double WalkingSpeedInKilometerPerHour { get; }
         int MaxTravelDistanceInMeters { get; }
         bool UseGpxPathing { get; }
@@ -148,7 +151,6 @@ namespace PoGo.PokeMobBot.Logic
         int TotalAmountOfPokeballsToKeep { get; }
         int TotalAmountOfPotionsToKeep { get; }
         int TotalAmountOfRevivesToKeep { get; }
-        int TotalAmountOfBerriesToKeep { get; }
         double RecycleInventoryAtUsagePercentage { get; }
         
         //snipe
@@ -184,4 +186,5 @@ namespace PoGo.PokeMobBot.Logic
         SnipeSettings PokemonToSnipe { get; }
 
     }
+
 }

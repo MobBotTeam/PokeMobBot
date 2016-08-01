@@ -112,6 +112,8 @@ namespace PoGo.PokeMobBot.Logic
 
         //coords and movement
         public bool Teleport = false;
+        public bool SaferTeleport = false;
+        public int MaxTeleportDistance = 35;
         public double DefaultLatitude = 40.785091;
         public double DefaultLongitude = -73.968285;
         public double DefaultAltitude = 10;
@@ -196,7 +198,6 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfPokeballsToKeep = 100;
         public int TotalAmountOfPotionsToKeep = 80;
         public int TotalAmountOfRevivesToKeep = 60;
-        public int TotalAmountOfBerriesToKeep = 80;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -691,10 +692,11 @@ namespace PoGo.PokeMobBot.Logic
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
         public double SnipingScanOffset => _settings.SnipingScanOffset;
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
-        public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public bool Teleport => _settings.Teleport;
+        public bool SaferTeleport => _settings.SaferTeleport;
+        public int MaxTeleportDistance => _settings.MaxTeleportDistance;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
         public int DelayPositionCheckState => _settings.DelayPositionCheckState;

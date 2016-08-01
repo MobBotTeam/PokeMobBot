@@ -22,6 +22,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     public static class FarmPokestopsTask
     {
         public static int TimesZeroXPawarded;
+        private static GeoCoordinate targetLocation;
+        private static int maxDistance;
 
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
@@ -35,10 +37,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (session.LogicSettings.MaxTravelDistanceInMeters != 0 &&
                 distanceFromStart > session.LogicSettings.MaxTravelDistanceInMeters)
             {
-                session.EventDispatcher.Send(new WarnEvent()
-                {
-                    Message = session.Translation.GetTranslation(TranslationString.FarmPokestopsOutsideRadius, distanceFromStart)
-                });
+                Logger.Write(
+                    session.Translation.GetTranslation(TranslationString.FarmPokestopsOutsideRadius, distanceFromStart),
+                    LogLevel.Warning);
+
                 await Task.Delay(1000, cancellationToken);
 
                 await session.Navigation.HumanLikeWalking(
@@ -80,8 +82,54 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance,Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
                 if (session.LogicSettings.Teleport)
-                    await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
+                {
+                    if (session.LogicSettings.SaferTeleport)
+                    {
+
+                        var maxDistance = session.LogicSettings.MaxTeleportDistance;
+                        var targetLocation = new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude);
+                        var sourceLocation = new GeoCoordinate(session.Client.CurrentLatitude, session.Client.CurrentLongitude);
+                        double currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
+                        var nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
+                        var waypoint = LocationUtils.CreateWaypoint(sourceLocation, maxDistance, nextWaypointBearing);
+
+
+                        while (currentDistanceToTarget > maxDistance)
+                        {
+                             targetLocation = new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude);
+                             sourceLocation = new GeoCoordinate(session.Client.CurrentLatitude, session.Client.CurrentLongitude);
+                             currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
+                            nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
+                            waypoint = LocationUtils.CreateWaypoint(sourceLocation, maxDistance, nextWaypointBearing);
+
+
+
+                            var requestSendDateTime = DateTime.Now;
+                            var result =
+                               
+                               await session.Client.Player.UpdatePlayerLocation(
+                        waypoint.Latitude,
+                        waypoint.Longitude,
                         session.Client.Settings.DefaultAltitude);
+                            currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
+                            Logging.Logger.Write("We are teleporting " + maxDistance + " meters closer to the target. We are now " + currentDistanceToTarget + " away");
+
+
+                        }
+                        await session.Client.Player.UpdatePlayerLocation(
+                                      pokeStop.Latitude,
+                                      pokeStop.Longitude,
+                                      session.Client.Settings.DefaultAltitude);
+                    }
+
+                    targetLocation = new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude);
+                    await session.Client.Player.UpdatePlayerLocation(
+                        targetLocation.Latitude,
+                        targetLocation.Longitude,
+                        session.Client.Settings.DefaultAltitude);
+                    
+                  
+                }
 
                 else
                 {
