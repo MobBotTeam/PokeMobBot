@@ -17,6 +17,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();			
+			
             var currentTotalItems = await session.Inventory.GetTotalItemCount();
             if (session.Profile.PlayerData.MaxItemStorage * session.LogicSettings.RecycleInventoryAtUsagePercentage > currentTotalItems)
                 return;
@@ -56,6 +59,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         private static async Task OptimizedRecycleBalls(ISession session, CancellationToken cancellationToken)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();			
+			
             var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
             var greatBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemGreatBall);
             var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
@@ -123,6 +129,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         private static async Task OptimizedRecyclePotions(ISession session, CancellationToken cancellationToken)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();			
+			
             var potionCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPotion);
             var superPotionCount = await session.Inventory.GetItemAmountByType(ItemId.ItemSuperPotion);
             var hyperPotionsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemHyperPotion);
@@ -229,6 +238,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         private static async Task OptimizedRecycleRevives(ISession session, CancellationToken cancellationToken)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();			
+			
             var reviveCount = await session.Inventory.GetItemAmountByType(ItemId.ItemRevive);
             var maxReviveCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMaxRevive);
 

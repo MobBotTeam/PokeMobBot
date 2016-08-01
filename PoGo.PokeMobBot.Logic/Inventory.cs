@@ -235,6 +235,9 @@ namespace PoGo.PokeMobBot.Logic
 
         public async Task<IEnumerable<ItemData>> GetItemsToRecycle(ISession session)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();			
+			
             var itemsToRecylce = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
@@ -306,7 +309,7 @@ namespace PoGo.PokeMobBot.Logic
         }
 
         private List<ItemData> GetPokeballsToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
-        {
+        {			
             var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             if (amountOfPokeballsToKeep < 1)
             {
@@ -329,7 +332,7 @@ namespace PoGo.PokeMobBot.Logic
         }
 
         public async Task<List<Candy>> GetPokemonFamilies()
-        {
+        {		
             var inventory = await GetCachedInventory();
 
             var families = from item in inventory.InventoryDelta.InventoryItems

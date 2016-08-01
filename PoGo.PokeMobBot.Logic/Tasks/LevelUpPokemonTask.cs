@@ -20,6 +20,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();			
+			
             // get the families and the pokemons settings to do some actual smart stuff like checking if you have enough candy in the first place
             var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
             var pokemonSettings = await session.Inventory.GetPokemonSettings();
