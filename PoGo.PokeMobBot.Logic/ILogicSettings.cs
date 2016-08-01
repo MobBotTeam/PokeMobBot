@@ -151,6 +151,7 @@ namespace PoGo.PokeMobBot.Logic
         int TotalAmountOfPokeballsToKeep { get; }
         int TotalAmountOfPotionsToKeep { get; }
         int TotalAmountOfRevivesToKeep { get; }
+        int TotalAmountOfBerriesToKeep { get; }
         double RecycleInventoryAtUsagePercentage { get; }
         
         //snipe

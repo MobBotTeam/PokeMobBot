@@ -198,6 +198,7 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfPokeballsToKeep = 100;
         public int TotalAmountOfPotionsToKeep = 80;
         public int TotalAmountOfRevivesToKeep = 60;
+        public int TotalAmountOfBerriesToKeep = 80;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -680,6 +681,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool StartupWelcomeDelay => _settings.StartupWelcomeDelay;
         public bool SnipeAtPokestops => _settings.SnipeAtPokestops;
         public int MinPokeballsToSnipe => _settings.MinPokeballsToSnipe;
+        public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
         public int MinPokeballsWhileSnipe => _settings.MinPokeballsWhileSnipe;
         public int MaxPokeballsPerPokemon => _settings.MaxPokeballsPerPokemon;
         public SnipeSettings PokemonToSnipe => _settings.PokemonToSnipe;
@@ -692,6 +694,7 @@ namespace PoGo.PokeMobBot.Logic
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
         public double SnipingScanOffset => _settings.SnipingScanOffset;
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
+        public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public bool Teleport => _settings.Teleport;
