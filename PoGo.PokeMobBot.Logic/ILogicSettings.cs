@@ -83,6 +83,8 @@ namespace PoGo.PokeMobBot.Logic
         int DelayCatchNearbyPokemon { get; }
         int DelayCatchPokemon { get; }
         int DelayDisplayPokemon { get; }
+        int DelayEvolvePokemon { get; }
+        double DelayEvolveVariation { get; }
         int DelayPokestop { get; }
         int DelayPositionCheckState { get; }
         int DelayRecyleItem { get; }
@@ -160,6 +162,7 @@ namespace PoGo.PokeMobBot.Logic
         int MinPokeballsWhileSnipe { get; }
         int SnipeLocationServerPort { get; }
         string SnipeLocationServer { get; }
+        int SnipeRequestTimeoutSeconds { get; }
         
         //paths
         string GeneralConfigPath { get; }

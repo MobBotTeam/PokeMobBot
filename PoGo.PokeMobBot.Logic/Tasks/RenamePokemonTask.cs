@@ -26,7 +26,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var perfection = Math.Round(PokemonInfo.CalculatePokemonPerfection(pokemon));
-                var pokemonName = pokemon.PokemonId.ToString();
+                var pokemonName = session.Translation.GetPokemonName(pokemon.PokemonId);
                 // iv number + templating part + pokemonName <= 12
                 var nameLength = 12 -
                                  (perfection.ToString(CultureInfo.InvariantCulture).Length +
@@ -36,7 +36,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     pokemonName = pokemonName.Substring(0, nameLength);
                 }
                 var newNickname = string.Format(session.LogicSettings.RenameTemplate, pokemonName, perfection);
-                var oldNickname = pokemon.Nickname.Length != 0 ? pokemon.Nickname : pokemon.PokemonId.ToString();
+                var oldNickname = pokemon.Nickname.Length != 0 ? pokemon.Nickname : session.Translation.GetPokemonName(pokemon.PokemonId);
 
                 // If "RenameOnlyAboveIv" = true only rename pokemon with IV over "KeepMinIvPercentage"
                 // Favorites will be skipped
@@ -48,7 +48,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.EventDispatcher.Send(new NoticeEvent
                     {
                         Message =
-                            session.Translation.GetTranslation(TranslationString.PokemonRename, pokemon.PokemonId,
+                            session.Translation.GetTranslation(TranslationString.PokemonRename, session.Translation.GetPokemonName(pokemon.PokemonId),
                                 pokemon.Id, oldNickname, newNickname)
                     });
                 }

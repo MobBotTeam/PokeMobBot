@@ -106,7 +106,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool TransferConfigAndAuthOnUpdate = true;
         public bool DumpPokemonStats = false;
         public int AmountOfPokemonToDisplayOnStart = 10;
-        public bool StartupWelcomeDelay = true;
+        public bool StartupWelcomeDelay = false;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
 
@@ -130,6 +130,8 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayCatchNearbyPokemon = 1000;
         public int DelayCatchLurePokemon = 1000;
         public int DelayCatchIncensePokemon = 1000;
+        public int DelayEvolvePokemon = 1000;
+        public double DelayEvolveVariation = 0.3;
         public int DelayTransferPokemon = 1000;
         public int DelayDisplayPokemon = 1000;
         public int DelayUseLuckyEgg = 1000;
@@ -206,6 +208,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseSnipeOnlineLocationServer = false;
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
+        public int SnipeRequestTimeoutSeconds = 10;
 
         public List<KeyValuePair<ItemId, int>> ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>
         {
@@ -626,6 +629,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public string ProfilePath => _settings.ProfilePath;
         public string ProfileConfigPath => _settings.ProfileConfigPath;
+        public int SnipeRequestTimeoutSeconds => _settings.SnipeRequestTimeoutSeconds*1000;
         public string GeneralConfigPath => _settings.GeneralConfigPath;
         public bool AutoUpdate => _settings.AutoUpdate;
         public bool TransferConfigAndAuthOnUpdate => _settings.TransferConfigAndAuthOnUpdate;
@@ -701,6 +705,8 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
+        public int DelayEvolvePokemon => _settings.DelayEvolvePokemon;
+        public double DelayEvolveVariation => _settings.DelayEvolveVariation;
         public double RecycleInventoryAtUsagePercentage => _settings.RecycleInventoryAtUsagePercentage;
         public bool HumanizeThrows => _settings.HumanizeThrows;
         public double ThrowAccuracyMin => _settings.ThrowAccuracyMin;

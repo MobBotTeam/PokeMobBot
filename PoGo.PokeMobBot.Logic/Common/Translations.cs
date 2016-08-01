@@ -10,11 +10,15 @@ using Newtonsoft.Json.Converters;
 
 namespace PoGo.PokeMobBot.Logic.Common
 {
+    using POGOProtos.Enums;
+
     public interface ITranslation
     {
         string GetTranslation(TranslationString translationString, params object[] data);
 
         string GetTranslation(TranslationString translationString);
+
+        string GetPokemonName(PokemonId pkmnId);
     }
 
     public enum TranslationString
@@ -316,8 +320,170 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "Not enough Pokeballs to start sniping! ({0}/{1})"),
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestMove1Header, "MOVE1"),
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestMove2Header, "MOVE2"),
-            new KeyValuePair<TranslationString, string>(TranslationString.UseBerry, 
+            new KeyValuePair<TranslationString, string>(TranslationString.UseBerry,
                 "Using Razzberry. Berries left: {0}")
+        };
+
+        [JsonProperty("Pokemon",
+            ItemTypeNameHandling = TypeNameHandling.Arrays,
+            ItemConverterType = typeof(KeyValuePairConverter),
+            ObjectCreationHandling = ObjectCreationHandling.Replace,
+            DefaultValueHandling = DefaultValueHandling.Populate)]
+        //Default Translations (ENGLISH)        
+        private readonly List<KeyValuePair<int, string>> _pokemons = new List<KeyValuePair<int, string>>
+        {
+            new KeyValuePair<int, string>(0, "Missingno"),
+            new KeyValuePair<int, string>(1, "Bulbasaur"),
+            new KeyValuePair<int, string>(2, "Ivysaur"),
+            new KeyValuePair<int, string>(3, "Venusaur"),
+            new KeyValuePair<int, string>(4, "Charmander"),
+            new KeyValuePair<int, string>(5, "Charmeleon"),
+            new KeyValuePair<int, string>(6, "Charizard"),
+            new KeyValuePair<int, string>(7, "Squirtle"),
+            new KeyValuePair<int, string>(8, "Wartortle"),
+            new KeyValuePair<int, string>(9, "Blastoise"),
+            new KeyValuePair<int, string>(10, "Caterpie"),
+            new KeyValuePair<int, string>(11, "Metapod"),
+            new KeyValuePair<int, string>(12, "Butterfree"),
+            new KeyValuePair<int, string>(13, "Weedle"),
+            new KeyValuePair<int, string>(14, "Kakuna"),
+            new KeyValuePair<int, string>(15, "Beedrill"),
+            new KeyValuePair<int, string>(16, "Pidgey"),
+            new KeyValuePair<int, string>(17, "Pidgeotto"),
+            new KeyValuePair<int, string>(18, "Pidgeot"),
+            new KeyValuePair<int, string>(19, "Rattata"),
+            new KeyValuePair<int, string>(20, "Raticate"),
+            new KeyValuePair<int, string>(21, "Spearow"),
+            new KeyValuePair<int, string>(22, "Fearow"),
+            new KeyValuePair<int, string>(23, "Ekans"),
+            new KeyValuePair<int, string>(24, "Arbok"),
+            new KeyValuePair<int, string>(25, "Pikachu"),
+            new KeyValuePair<int, string>(26, "Raichu"),
+            new KeyValuePair<int, string>(27, "Sandshrew"),
+            new KeyValuePair<int, string>(28, "Sandslash"),
+            new KeyValuePair<int, string>(29, "Nidoran♀"),
+            new KeyValuePair<int, string>(30, "Nidorina"),
+            new KeyValuePair<int, string>(31, "Nidoqueen"),
+            new KeyValuePair<int, string>(32, "Nidoran♂"),
+            new KeyValuePair<int, string>(33, "Nidorino"),
+            new KeyValuePair<int, string>(34, "Nidoking"),
+            new KeyValuePair<int, string>(35, "Clefairy"),
+            new KeyValuePair<int, string>(36, "Clefable"),
+            new KeyValuePair<int, string>(37, "Vulpix"),
+            new KeyValuePair<int, string>(38, "Ninetales"),
+            new KeyValuePair<int, string>(39, "Jigglypuff"),
+            new KeyValuePair<int, string>(40, "Wigglytuff"),
+            new KeyValuePair<int, string>(41, "Zubat"),
+            new KeyValuePair<int, string>(42, "Golbat"),
+            new KeyValuePair<int, string>(43, "Oddish"),
+            new KeyValuePair<int, string>(44, "Gloom"),
+            new KeyValuePair<int, string>(45, "Vileplume"),
+            new KeyValuePair<int, string>(46, "Paras"),
+            new KeyValuePair<int, string>(47, "Parasect"),
+            new KeyValuePair<int, string>(48, "Venonat"),
+            new KeyValuePair<int, string>(49, "Venomoth"),
+            new KeyValuePair<int, string>(50, "Diglett"),
+            new KeyValuePair<int, string>(51, "Dugtrio"),
+            new KeyValuePair<int, string>(52, "Meowth"),
+            new KeyValuePair<int, string>(53, "Persian"),
+            new KeyValuePair<int, string>(54, "Psyduck"),
+            new KeyValuePair<int, string>(55, "Golduck"),
+            new KeyValuePair<int, string>(56, "Mankey"),
+            new KeyValuePair<int, string>(57, "Primeape"),
+            new KeyValuePair<int, string>(58, "Growlithe"),
+            new KeyValuePair<int, string>(59, "Arcanine"),
+            new KeyValuePair<int, string>(60, "Poliwag"),
+            new KeyValuePair<int, string>(61, "Poliwhirl"),
+            new KeyValuePair<int, string>(62, "Poliwrath"),
+            new KeyValuePair<int, string>(63, "Abra"),
+            new KeyValuePair<int, string>(64, "Kadabra"),
+            new KeyValuePair<int, string>(65, "Alakazam"),
+            new KeyValuePair<int, string>(66, "Machop"),
+            new KeyValuePair<int, string>(67, "Machoke"),
+            new KeyValuePair<int, string>(68, "Machamp"),
+            new KeyValuePair<int, string>(69, "Bellsprout"),
+            new KeyValuePair<int, string>(70, "Weepinbell"),
+            new KeyValuePair<int, string>(71, "Victreebel"),
+            new KeyValuePair<int, string>(72, "Tentacool"),
+            new KeyValuePair<int, string>(73, "Tentacruel"),
+            new KeyValuePair<int, string>(74, "Geodude"),
+            new KeyValuePair<int, string>(75, "Graveler"),
+            new KeyValuePair<int, string>(76, "Golem"),
+            new KeyValuePair<int, string>(77, "Ponyta"),
+            new KeyValuePair<int, string>(78, "Rapidash"),
+            new KeyValuePair<int, string>(79, "Slowpoke"),
+            new KeyValuePair<int, string>(80, "Slowbro"),
+            new KeyValuePair<int, string>(81, "Magnemite"),
+            new KeyValuePair<int, string>(82, "Magneton"),
+            new KeyValuePair<int, string>(83, "Farfetch'd"),
+            new KeyValuePair<int, string>(84, "Doduo"),
+            new KeyValuePair<int, string>(85, "Dodrio"),
+            new KeyValuePair<int, string>(86, "Seel"),
+            new KeyValuePair<int, string>(87, "Dewgong"),
+            new KeyValuePair<int, string>(88, "Grimer"),
+            new KeyValuePair<int, string>(89, "Muk"),
+            new KeyValuePair<int, string>(90, "Shellder"),
+            new KeyValuePair<int, string>(91, "Cloyster"),
+            new KeyValuePair<int, string>(92, "Gastly"),
+            new KeyValuePair<int, string>(93, "Haunter"),
+            new KeyValuePair<int, string>(94, "Gengar"),
+            new KeyValuePair<int, string>(95, "Onix"),
+            new KeyValuePair<int, string>(96, "Drowzee"),
+            new KeyValuePair<int, string>(97, "Hypno"),
+            new KeyValuePair<int, string>(98, "Krabby"),
+            new KeyValuePair<int, string>(99, "Kingler"),
+            new KeyValuePair<int, string>(100, "Voltorb"),
+            new KeyValuePair<int, string>(101, "Electrode"),
+            new KeyValuePair<int, string>(102, "Exeggcute"),
+            new KeyValuePair<int, string>(103, "Exeggutor"),
+            new KeyValuePair<int, string>(104, "Cubone"),
+            new KeyValuePair<int, string>(105, "Marowak"),
+            new KeyValuePair<int, string>(106, "Hitmonlee"),
+            new KeyValuePair<int, string>(107, "Hitmonchan"),
+            new KeyValuePair<int, string>(108, "Lickitung"),
+            new KeyValuePair<int, string>(109, "Koffing"),
+            new KeyValuePair<int, string>(110, "Weezing"),
+            new KeyValuePair<int, string>(111, "Rhyhorn"),
+            new KeyValuePair<int, string>(112, "Rhydon"),
+            new KeyValuePair<int, string>(113, "Chansey"),
+            new KeyValuePair<int, string>(114, "Tangela"),
+            new KeyValuePair<int, string>(115, "Kangaskhan"),
+            new KeyValuePair<int, string>(116, "Horsea"),
+            new KeyValuePair<int, string>(117, "Seadra"),
+            new KeyValuePair<int, string>(118, "Goldeen"),
+            new KeyValuePair<int, string>(119, "Seaking"),
+            new KeyValuePair<int, string>(120, "Staryu"),
+            new KeyValuePair<int, string>(121, "Starmie"),
+            new KeyValuePair<int, string>(122, "Mr. Mime"),
+            new KeyValuePair<int, string>(123, "Scyther"),
+            new KeyValuePair<int, string>(124, "Jynx"),
+            new KeyValuePair<int, string>(125, "Electabuzz"),
+            new KeyValuePair<int, string>(126, "Magmar"),
+            new KeyValuePair<int, string>(127, "Pinsir"),
+            new KeyValuePair<int, string>(128, "Tauros"),
+            new KeyValuePair<int, string>(129, "Magikarp"),
+            new KeyValuePair<int, string>(130, "Gyarados"),
+            new KeyValuePair<int, string>(131, "Lapras"),
+            new KeyValuePair<int, string>(132, "Ditto"),
+            new KeyValuePair<int, string>(133, "Eevee"),
+            new KeyValuePair<int, string>(134, "Vaporeon"),
+            new KeyValuePair<int, string>(135, "Jolteon"),
+            new KeyValuePair<int, string>(136, "Flareon"),
+            new KeyValuePair<int, string>(137, "Porygon"),
+            new KeyValuePair<int, string>(138, "Omanyte"),
+            new KeyValuePair<int, string>(139, "Omastar"),
+            new KeyValuePair<int, string>(140, "Kabuto"),
+            new KeyValuePair<int, string>(141, "Kabutops"),
+            new KeyValuePair<int, string>(142, "Aerodactyl"),
+            new KeyValuePair<int, string>(143, "Snorlax"),
+            new KeyValuePair<int, string>(144, "Articuno"),
+            new KeyValuePair<int, string>(145, "Zapdos"),
+            new KeyValuePair<int, string>(146, "Moltres"),
+            new KeyValuePair<int, string>(147, "Dratini"),
+            new KeyValuePair<int, string>(148, "Dragonair"),
+            new KeyValuePair<int, string>(149, "Dragonite"),
+            new KeyValuePair<int, string>(150, "Mewtwo"),
+            new KeyValuePair<int, string>(151, "Mew")
         };
 
         public string GetTranslation(TranslationString translationString, params object[] data)
@@ -334,6 +500,15 @@ namespace PoGo.PokeMobBot.Logic.Common
             return translation != default(string) ? translation : $"Translation for {translationString} is missing";
         }
 
+        public string GetPokemonName(PokemonId pkmnId)
+        {
+            var name = _pokemons.FirstOrDefault(p => p.Key == (int)pkmnId).Value;
+
+            return name != default(string)
+                ? name
+                : $"Translation for pokemon name {pkmnId} is missing";
+        }
+
         public static Translation Load(ILogicSettings logicSettings)
         {
             var translationsLanguageCode = logicSettings.TranslationLanguageCode;
@@ -346,15 +521,23 @@ namespace PoGo.PokeMobBot.Logic.Common
                 var input = File.ReadAllText(fullPath);
 
                 var jsonSettings = new JsonSerializerSettings();
-                jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
+                jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
                 translations = JsonConvert.DeserializeObject<Translation>(input, jsonSettings);
                 //TODO make json to fill default values as it won't do it now
-                new Translation()._translationStrings.Where(
+
+                var defaultTranslation = new Translation();
+
+                defaultTranslation._translationStrings.Where(
                     item => translations._translationStrings.All(a => a.Key != item.Key))
                     .ToList()
                     .ForEach(translations._translationStrings.Add);
+
+                defaultTranslation._pokemons.Where(
+                    item => translations._pokemons.All(a => a.Key != item.Key))
+                    .ToList()
+                    .ForEach(translations._pokemons.Add);
             }
             else
             {
@@ -367,7 +550,7 @@ namespace PoGo.PokeMobBot.Logic.Common
         public void Save(string fullPath)
         {
             var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter {CamelCaseText = true});
+                new StringEnumConverter { CamelCaseText = true });
 
             var folder = Path.GetDirectoryName(fullPath);
             if (folder != null && !Directory.Exists(folder))
