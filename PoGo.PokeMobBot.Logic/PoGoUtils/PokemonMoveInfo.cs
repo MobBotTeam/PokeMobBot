@@ -14,56 +14,57 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
         public PokemonId Pokemon { get; set; }
         public PokemonMove Move1 { get; set; }
         public PokemonMove Move2 { get; set; }
-        public int RankVsNormal { get; set; }
-        public int RankVsFire { get; set; }
-        public int RankVsWater { get; set; }
-        public int RankVsElectric { get; set; }
-        public int RankVsGrass { get; set; }
-        public int RankVsIce { get; set; }
-        public int RankVsFighting { get; set; }
-        public int RankVsPoison { get; set; }
-        public int RankVsGround { get; set; }
-        public int RankVsFlying { get; set; }
-        public int RankVsPsychic { get; set; }
-        public int RankVsBug { get; set; }
-        public int RankVsRock { get; set; }
-        public int RankVsGhost { get; set; }
-        public int RankVsDragon { get; set; }
-        public int RankVsDark { get; set; }
-        public int RankVsSteel { get; set; }
-        public int RankVsFairy { get; set; }
-        public int RankVsNone { get; set; }
-        public int RankVsAverage { get; set; }
+        public static Dictionary<string,int> RankVsType
+        {get; set;}
         public int[] RankVsTypes
         {
             get
             {
-                return new int[] {RankVsNormal,RankVsFire,RankVsWater,RankVsElectric,RankVsGrass,
-RankVsIce,RankVsFighting,RankVsPoison,RankVsGround,RankVsFlying,RankVsPsychic,RankVsBug,RankVsRock,
-RankVsGhost,RankVsDragon,RankVsDark,RankVsSteel,RankVsFairy,RankVsNone,RankVsAverage};
+                return new int[] {
+                    RankVsType[PokemonType.Normal.ToString()],
+                    RankVsType[PokemonType.Fire.ToString()],
+                    RankVsType[PokemonType.Water.ToString()],
+                    RankVsType[PokemonType.Electric.ToString()],
+                    RankVsType[PokemonType.Grass.ToString()],
+                    RankVsType[PokemonType.Ice.ToString()],
+                    RankVsType[PokemonType.Fighting.ToString()],
+                    RankVsType[PokemonType.Poison.ToString()],
+                    RankVsType[PokemonType.Ground.ToString()],
+                    RankVsType[PokemonType.Flying.ToString()],
+                    RankVsType[PokemonType.Psychic.ToString()],
+                    RankVsType[PokemonType.Bug.ToString()],
+                    RankVsType[PokemonType.Rock.ToString()],
+                    RankVsType[PokemonType.Ghost.ToString()],
+                    RankVsType[PokemonType.Dragon.ToString()],
+                    RankVsType[PokemonType.Dark.ToString()],
+                    RankVsType[PokemonType.Steel.ToString()],
+                    RankVsType[PokemonType.Fairy.ToString()],
+                    RankVsType[PokemonType.None.ToString()],
+                    RankVsType["Average"]
+                };
             }
             set
             {
-                RankVsNormal = value[0];
-                RankVsFire = value[1];
-                RankVsWater = value[2];
-                RankVsElectric = value[3];
-                RankVsGrass = value[4];
-                RankVsIce = value[5];
-                RankVsFighting = value[6];
-                RankVsPoison = value[7];
-                RankVsGround = value[8];
-                RankVsFlying = value[9];
-                RankVsPsychic = value[10];
-                RankVsBug = value[11];
-                RankVsRock = value[12];
-                RankVsGhost = value[13];
-                RankVsDragon = value[14];
-                RankVsDark = value[15];
-                RankVsSteel = value[16];
-                RankVsFairy = value[17];
-                RankVsNone = value[18];
-                RankVsAverage = value[19];
+                RankVsType[PokemonType.Normal.ToString()] = value[0];
+                RankVsType[PokemonType.Fire.ToString()] = value[1];
+                RankVsType[PokemonType.Water.ToString()] = value[2];
+                RankVsType[PokemonType.Electric.ToString()] = value[3];
+                RankVsType[PokemonType.Grass.ToString()] = value[4];
+                RankVsType[PokemonType.Ice.ToString()] = value[5];
+                RankVsType[PokemonType.Fighting.ToString()] = value[6];
+                RankVsType[PokemonType.Poison.ToString()] = value[7];
+                RankVsType[PokemonType.Ground.ToString()] = value[8];
+                RankVsType[PokemonType.Flying.ToString()] = value[9];
+                RankVsType[PokemonType.Psychic.ToString()] = value[10];
+                RankVsType[PokemonType.Bug.ToString()] = value[11];
+                RankVsType[PokemonType.Rock.ToString()] = value[12];
+                RankVsType[PokemonType.Ghost.ToString()] = value[13];
+                RankVsType[PokemonType.Dragon.ToString()] = value[14];
+                RankVsType[PokemonType.Dark.ToString()] = value[15];
+                RankVsType[PokemonType.Steel.ToString()] = value[16];
+                RankVsType[PokemonType.Fairy.ToString()] = value[17];
+                RankVsType[PokemonType.None.ToString()] = value[18];
+                RankVsType["Average"] = value[19];
             }
             
             
