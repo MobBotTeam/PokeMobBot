@@ -21,11 +21,14 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps");
             var file = Path.Combine(path,
-                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH:mm:ss")}.{extension}");
+                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}.{extension}");
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-
-            // Clears all contents of a file first if overwrite is true
-            File.WriteAllText(file, string.Empty);
+            try
+            {
+                // Clears all contents of a file first if overwrite is true
+                File.WriteAllText(file, string.Empty);
+            }
+            catch (IOException) { }
         }
 
         /// <summary>
@@ -52,16 +55,19 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         private static void DumpToFile(ISession session, string data, string filename, string extension = "txt")
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps",
-                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH:mm:ss")}.{extension}");
-
-            using (
-                var dumpFile =
-                    File.AppendText(path)
-                )
+                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}.{extension}");
+            try
             {
-                dumpFile.WriteLine(data);
-                dumpFile.Flush();
+                using (
+                    var dumpFile =
+                        File.AppendText(path)
+                    )
+                {
+                    dumpFile.WriteLine(data);
+                    dumpFile.Flush();
+                }
             }
+            catch (IOException) { }
         }
 
         /// <summary>
