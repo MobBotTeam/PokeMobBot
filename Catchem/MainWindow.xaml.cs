@@ -1,8 +1,11 @@
 ﻿using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using PoGo.PokeMobBot.Logic;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Utils;
 using POGOProtos.Enums;
 using PokemonGo.RocketAPI.Enums;
 using System;
@@ -21,7 +24,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PokeBot
+namespace Catchem
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -30,11 +33,25 @@ namespace PokeBot
     {
         public static MainWindow botWindow;
         private bool windowClosing = false;
-        private BotWindowData bot = null;
         string subPath = "Profiles";
-        List<GlobalSettings> settings = new List<GlobalSettings>();
 
         private Dictionary<ISession, BotWindowData> openedSessions = new Dictionary<ISession, BotWindowData>(); //may be not session... but some uniq obj for every running bot
+        private ISession curSession = null;
+
+        private BotWindowData bot
+        {
+            get
+            {
+                if (curSession != null)
+                {
+                    if (openedSessions.ContainsKey(curSession))
+                    {
+                        return openedSessions[curSession];
+                    }
+                }
+                return null;
+            }
+        }
 
         //string Async Queues
         Queue<Tuple<string, Color>> logQueue = new Queue<Tuple<string, Color>>();
@@ -110,7 +127,7 @@ namespace PokeBot
             {
                 if (item != subPath + "\\Logs")
                 {
-                    settings.Add(GlobalSettings.Load(item));
+                    initBot(GlobalSettings.Load(item));
                 }
             }
         } 
@@ -215,12 +232,29 @@ namespace PokeBot
         {
             public List<Tuple<string, Color>> log = new List<Tuple<string, Color>>();
             public Dictionary<string, GMapMarker> mapMarkers = new Dictionary<string, GMapMarker>();
-            public double Lat = 55.754853;
+            public StateMachine machine = null;
+            public Statistics stats = null;
+            public StatisticsAggregator aggregator = null;
+            public WpfEventListener listener = null;
+            public ClientSettings settings = null;
+            public LogicSettings logic = null;
+
+            public double Lat = 55.43213;
             public double Lng = 37.633987;
             public bool gotNewCoord = false;
             public bool moveRequired = false;
             public double _lat, _lng;
             public double _latStep = 0, _lngStep = 0;
+
+            public BotWindowData(StateMachine sm, Statistics st, StatisticsAggregator sa, WpfEventListener wel, ClientSettings cs, LogicSettings l)
+            {
+                machine = sm;
+                stats = st;
+                aggregator = sa;
+                listener = wel;
+                settings = cs;
+                logic = l;
+            }
         }
 
         internal class NewMapObject
@@ -290,9 +324,43 @@ namespace PokeBot
             String input = InputTextBox.Text;
 
             var dir = Directory.CreateDirectory(subPath + "\\" + input);
-            settings.Add(GlobalSettings.Load(dir.FullName));
+            var settings = GlobalSettings.Load(dir.FullName);
+
             // Clear InputBox.
             InputTextBox.Text = String.Empty;
+        }
+
+        private void initBot(GlobalSettings settings)
+        {
+            var newBot = CreateBowWindowData(settings);
+
+            var session = new Session(newBot.settings, newBot.logic);
+            session.Client.ApiFailure = new ApiFailureStrategy(session);
+
+            session.EventDispatcher.EventReceived += evt => newBot.listener.Listen(evt, session);
+            session.EventDispatcher.EventReceived += evt => newBot.aggregator.Listen(evt, session);
+
+            session.Navigation.UpdatePositionEvent +=
+                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
+
+            newBot.machine.SetFailureState(new LoginState());
+
+            openedSessions.Add(session, CreateBowWindowData(settings));
+        }
+
+        private BotWindowData CreateBowWindowData(GlobalSettings _s)
+        {
+            var stats = new Statistics();
+            //stats.DirtyEvent +=
+            //    () =>
+            //        Console.Title =
+            //            stats.GetTemplatedStats(
+            //                session.Translation.GetTranslation(TranslationString.StatsTemplateString),
+            //                session.Translation.GetTranslation(TranslationString.StatsXpTemplateString));
+
+            return new BotWindowData(new StateMachine(), stats, new StatisticsAggregator(stats), 
+                new WpfEventListener(), new ClientSettings(_s), new LogicSettings(_s));
+
         }
 
         private void NoButton_Click(object sender, RoutedEventArgs e)

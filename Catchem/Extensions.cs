@@ -12,7 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace PokeBot
+namespace Catchem
 {
     public static class Extensions
     {

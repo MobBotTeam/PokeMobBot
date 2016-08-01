@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PokeBot"
-        xmlns:WindowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation" x:Class="PokeBot.MainWindow"
+        xmlns:local="clr-namespace:Catchem"
+        xmlns:WindowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation" x:Class="Catchem.MainWindow"
         mc:Ignorable="d"
         Title="Catchem" Height="600" Width="900" MinWidth="900" MinHeight="600">
     <Window.Background>
@@ -148,6 +148,7 @@
                 </Button.Background>
             </Button>
             <Label x:Name="label4" Content="MENU" HorizontalAlignment="Left" Margin="9,2,0,-10" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="20" Height="38"/>
+            <StackPanel x:Name="botPanel" HorizontalAlignment="Left" Margin="0,90,0,0" Width="246"/>
         </Grid>
         <Grid x:Name="InputBox" Visibility="Collapsed" >
             <Grid Background="Black" Opacity="0.45"/>

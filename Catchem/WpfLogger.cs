@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace PokeBot
+namespace Catchem
 {
     public class WpfLogger : ILogger
     {
