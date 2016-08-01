@@ -131,7 +131,7 @@ namespace Catchem
             {
                 if (item != subPath + "\\Logs")
                 {
-                    initBot(GlobalSettings.Load(item), item);
+                    initBot(GlobalSettings.Load(item), System.IO.Path.GetFileName(item));
                 }
             }
         } 
@@ -234,6 +234,8 @@ namespace Catchem
 
         private class BotWindowData
         {
+            public string profileName = string.Empty;
+
             public List<Tuple<string, Color>> log = new List<Tuple<string, Color>>();
             public Dictionary<string, GMapMarker> mapMarkers = new Dictionary<string, GMapMarker>();
             public StateMachine machine = null;
@@ -242,6 +244,7 @@ namespace Catchem
             public WpfEventListener listener = null;
             public ClientSettings settings = null;
             public LogicSettings logic = null;
+            public GlobalSettings globalSettings = null;
 
             public Label runTime;
             public Label level;
@@ -256,8 +259,12 @@ namespace Catchem
             public double _lat, _lng;
             public double _latStep = 0, _lngStep = 0;
 
-            public BotWindowData(StateMachine sm, Statistics st, StatisticsAggregator sa, WpfEventListener wel, ClientSettings cs, LogicSettings l)
+            public BotWindowData(string name, GlobalSettings gs, StateMachine sm, Statistics st, StatisticsAggregator sa, WpfEventListener wel, ClientSettings cs, LogicSettings l)
             {
+                profileName = name;
+                settings = new ClientSettings(gs);
+                logic = new LogicSettings(gs);
+                globalSettings = gs;
                 machine = sm;
                 stats = st;
                 aggregator = sa;
@@ -300,37 +307,52 @@ namespace Catchem
         #region Controll's events
         private void authBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            if (bot == null) return;
+            bot.globalSettings.Auth.AuthType = (AuthType)(sender as ComboBox).SelectedItem;
         }
 
         private void loginBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            if (bot == null) return;
+            if (bot.globalSettings.Auth.AuthType == AuthType.Google)
+                bot.globalSettings.Auth.GoogleUsername = (sender as TextBox).Text;
+            else
+                bot.globalSettings.Auth.PtcUsername = (sender as TextBox).Text;
         }
 
         private void passwordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-
+            if (bot == null) return;
+            if (bot.globalSettings.Auth.AuthType == AuthType.Google)
+                bot.globalSettings.Auth.GooglePassword = (sender as PasswordBox).Password;
+            else
+                bot.globalSettings.Auth.PtcPassword = (sender as PasswordBox).Password;
         }
 
         private void proxyUriBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            if (bot == null) return;
+            bot.globalSettings.ProxyUri = (sender as TextBox).Text;
         }
 
         private void useProxyChb_Checked(object sender, RoutedEventArgs e)
         {
-
+            if (bot == null) return;
+            bot.globalSettings.UseProxy = (bool)(sender as CheckBox).IsChecked;
+            proxyUriBox.IsEnabled = proxyPasswordBox.IsEnabled = proxyLoginBox.IsEnabled = bot.globalSettings.UseProxy;
+            
         }
 
         private void proxyLoginBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            if (bot == null) return;
+            bot.globalSettings.ProxyLogin = (sender as TextBox).Text;
         }
 
         private void proxyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-
+            if (bot == null) return;
+            bot.globalSettings.ProxyPass = (sender as PasswordBox).Password;
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
@@ -348,6 +370,10 @@ namespace Catchem
 
             var dir = Directory.CreateDirectory(subPath + "\\" + input);
             var settings = GlobalSettings.Load(dir.FullName);
+            if (settings == null)
+            {
+                settings = GlobalSettings.Load(dir.FullName);
+            }
             initBot(settings, input);
             // Clear InputBox.
             InputTextBox.Text = String.Empty;
@@ -355,7 +381,7 @@ namespace Catchem
 
         private void initBot(GlobalSettings settings, string profileName = "Unknown")
         {
-            var newBot = CreateBowWindowData(settings);
+            var newBot = CreateBowWindowData(settings, profileName);
 
             var session = new Session(newBot.settings, newBot.logic);
             session.Client.ApiFailure = new ApiFailureStrategy(session);
@@ -380,7 +406,7 @@ namespace Catchem
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Fill = new SolidColorBrush(Color.FromArgb(255, 97, 97, 97))
-            };           
+            };
             botGrid.Children.Add(rec);
 
             var r = this.FindResource("flatbutton") as Style;
@@ -451,7 +477,7 @@ namespace Catchem
             botPanel.Children.Add(botGrid);
 
 
-            bStart.Click += delegate(object o, RoutedEventArgs args)
+            bStart.Click += delegate (object o, RoutedEventArgs args)
             {
                 newBot.machine.AsyncStart(new VersionCheckState(), session);
                 if (session.LogicSettings.UseSnipeLocationServer)
@@ -460,6 +486,8 @@ namespace Catchem
 
             rec.MouseLeftButtonDown += delegate (object o, MouseButtonEventArgs args)
             {
+                if (bot != null)
+                    bot.globalSettings.StoreData(subPath + "\\" + bot.profileName);
                 this.curSession = session;
                 foreach (var item in botPanel.GetLogicalChildCollection<Rectangle>())
                 {
@@ -468,10 +496,35 @@ namespace Catchem
                     else
                         item.Fill = new SolidColorBrush(Color.FromArgb(255, 97, 97, 225));
                 }
+                rebuildUI();
             };
         }
 
-        private BotWindowData CreateBowWindowData(GlobalSettings _s)
+        private void rebuildUI()
+        {
+            if (bot == null) return;
+
+            settings_grid.IsEnabled = true;
+
+            authBox.SelectedItem = bot.globalSettings.Auth.AuthType;
+            if (bot.globalSettings.Auth.AuthType == AuthType.Google)
+            {
+                loginBox.Text = bot.globalSettings.Auth.GoogleUsername;
+                passwordBox.Password = bot.globalSettings.Auth.GooglePassword;
+            }
+            else
+            {
+                loginBox.Text = bot.globalSettings.Auth.PtcUsername;
+                passwordBox.Password = bot.globalSettings.Auth.PtcPassword;
+            }
+
+            useProxyChb.IsChecked = bot.globalSettings.UseProxy;
+            proxyUriBox.Text = bot.globalSettings.ProxyUri;
+            proxyLoginBox.Text = bot.globalSettings.ProxyLogin;
+            proxyPasswordBox.Password = bot.globalSettings.ProxyPass;
+        }
+
+        private BotWindowData CreateBowWindowData(GlobalSettings _s, string name)
         {
             var stats = new Statistics();
             //stats.DirtyEvent +=
@@ -481,7 +534,7 @@ namespace Catchem
             //                session.Translation.GetTranslation(TranslationString.StatsTemplateString),
             //                session.Translation.GetTranslation(TranslationString.StatsXpTemplateString));
 
-            return new BotWindowData(new StateMachine(), stats, new StatisticsAggregator(stats), 
+            return new BotWindowData(name, _s, new StateMachine(), stats, new StatisticsAggregator(stats), 
                 new WpfEventListener(), new ClientSettings(_s), new LogicSettings(_s));
 
         }
@@ -522,6 +575,13 @@ namespace Catchem
             {
                 forceMoveMarker.Position = mapPos;
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            windowClosing = true;
+            if (bot == null) return;
+            bot.globalSettings.StoreData(subPath + "\\" + bot.profileName);
         }
     }
 }

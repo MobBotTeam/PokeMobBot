@@ -34,7 +34,7 @@ namespace PoGo.PokeMobBot.CLI
         /// <param name="message">The message to log. The current time will be prepended.</param>
         /// <param name="level">Optional. Default <see cref="LogLevel.Info" />.</param>
         /// <param name="color">Optional. Default is auotmatic</param>
-        public void Write(string message, LogLevel level = LogLevel.Info, ConsoleColor color = ConsoleColor.Black)
+        public void Write(string message, LogLevel level = LogLevel.Info, ConsoleColor color = ConsoleColor.Black, ISession session = null)
         {
             //Remember to change to a font that supports your language, otherwise it'll still show as ???
             Console.OutputEncoding = Encoding.UTF8;
@@ -138,7 +138,7 @@ namespace PoGo.PokeMobBot.CLI
             _session = session;
         }
 
-        public void SendWindowMsg(string msgType, params object[] objData)
+        public void SendWindowMsg(string msgType, ISession session, params object[] objData)
         {
             return;
         }

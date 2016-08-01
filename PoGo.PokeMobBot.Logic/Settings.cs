@@ -15,7 +15,7 @@ using POGOProtos.Inventory.Item;
 
 namespace PoGo.PokeMobBot.Logic
 {
-    internal class AuthSettings
+    public class AuthSettings
     {
         [JsonIgnore] private string _filePath;
 
@@ -99,7 +99,8 @@ namespace PoGo.PokeMobBot.Logic
     {
         public int AmountOfPokemonToDisplayOnStart = 10;
 
-        [JsonIgnore] internal AuthSettings Auth = new AuthSettings();
+        [JsonIgnore]
+        public AuthSettings Auth = new AuthSettings();
 
         public bool AutomaticallyLevelUpPokemon = false;
 
@@ -490,7 +491,16 @@ namespace PoGo.PokeMobBot.Logic
 
             File.WriteAllText(fullPath, output);
         }
+        public void StoreData(string path)
+        {
+            var profilePath = Path.Combine(Directory.GetCurrentDirectory(), path);
+            var profileConfigPath = Path.Combine(profilePath, "config");
+            var configFile = Path.Combine(profileConfigPath, "config.json");
+            Save(configFile);
+            Auth.Save(Path.Combine(profileConfigPath, "auth.json"));
+        }
     }
+
 
     public class ClientSettings : ISettings
     {
