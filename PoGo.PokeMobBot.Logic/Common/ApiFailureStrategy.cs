@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.State;
+using PokemonGo.RocketAPI.Common;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Extensions;
 

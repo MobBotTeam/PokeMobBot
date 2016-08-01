@@ -126,5 +126,7 @@
       "Key": "incubatorStatusUpdate",
       "Value": "Incubator oppdatering: {0:0.00}km igjen"
     }
+  ],
+  "Pokemon": [
   ]
 }

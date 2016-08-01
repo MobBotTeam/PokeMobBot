@@ -35,6 +35,15 @@ namespace PoGo.PokeMobBot.Logic
             ItemId.ItemMasterBall
         };
 
+        private readonly List<ItemId> _berries = new List<ItemId>
+        {
+            ItemId.ItemBlukBerry,
+            ItemId.ItemPinapBerry,
+            ItemId.ItemNanabBerry,
+            ItemId.ItemRazzBerry,
+            ItemId.ItemWeparBerry
+        };
+
         private readonly List<ItemId> _potions = new List<ItemId>
         {
             ItemId.ItemPotion,
@@ -238,10 +247,6 @@ namespace PoGo.PokeMobBot.Logic
             var itemsToRecylce = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
-            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
-            var amountOfPotionsToKeep = _logicSettings.TotalAmountOfPotionsToKeep;
-            var amountOfRevivesToKeep = _logicSettings.TotalAmountOfRevivesToKeep;
-
             var currentAmountOfPokeballs = await GetItemAmountByType(ItemId.ItemPokeBall);
             var currentAmountOfGreatballs = await GetItemAmountByType(ItemId.ItemGreatBall);
             var currentAmountOfUltraballs = await GetItemAmountByType(ItemId.ItemUltraBall);
@@ -250,30 +255,6 @@ namespace PoGo.PokeMobBot.Logic
             Logger.Write(session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
                 currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
                 currentAmountOfMasterballs));
-
-            if (!_logicSettings.ItemRecycleFilter.Any(s => _pokeballs.Contains(s.Key)))
-            {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForBallsToRecycle,
-                    amountOfPokeballsToKeep));
-                var pokeballsToRecycle = GetPokeballsToRecycle(session, myItems);
-                itemsToRecylce.AddRange(pokeballsToRecycle);
-            }
-
-            if (!_logicSettings.ItemRecycleFilter.Any(s => _potions.Contains(s.Key)))
-            {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForPotionsToRecycle,
-                    amountOfPotionsToKeep));
-                var potionsToRecycle = GetPotionsToRecycle(session, myItems);
-                itemsToRecylce.AddRange(potionsToRecycle);
-            }
-
-            if (!_logicSettings.ItemRecycleFilter.Any(s => _revives.Contains(s.Key)))
-            {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForRevivesToRecycle,
-                    amountOfRevivesToKeep));
-                var revivesToRecycle = GetRevivesToRecycle(session, myItems);
-                itemsToRecylce.AddRange(revivesToRecycle);
-            }
 
             var otherItemsToRecylce = myItems
                 .Where(x => _logicSettings.ItemRecycleFilter.Any(f => f.Key == x.ItemId && x.Count > f.Value))
@@ -319,6 +300,22 @@ namespace PoGo.PokeMobBot.Logic
             allPokeballs.Sort((ball1, ball2) => ((int)ball1.ItemId).CompareTo((int)ball2.ItemId));
 
             return TakeAmountOfItems(allPokeballs, amountOfPokeballsToKeep).ToList();
+        }
+
+        private List<ItemData> GetBerriesToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        {
+            var amountOfBerriesToKeep = _logicSettings.TotalAmountOfBerriesToKeep;
+            if (amountOfBerriesToKeep < 1)
+            {
+                Logger.Write(session.Translation.GetTranslation(TranslationString.BerriesToKeepIncorrect),
+                    LogLevel.Error, ConsoleColor.Red);
+                return new List<ItemData>();
+            }
+
+            var allPokeballs = myItems.Where(s => _pokeballs.Contains(s.ItemId)).ToList();
+            allPokeballs.Sort((ball1, ball2) => ((int)ball1.ItemId).CompareTo((int)ball2.ItemId));
+
+            return TakeAmountOfItems(allPokeballs, amountOfBerriesToKeep).ToList();
         }
 
         public async Task<int> GetPokedexCount()

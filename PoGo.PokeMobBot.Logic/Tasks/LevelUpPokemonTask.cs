@@ -20,6 +20,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
+
             // get the families and the pokemons settings to do some actual smart stuff like checking if you have enough candy in the first place
             var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
             var pokemonSettings = await session.Inventory.GetPokemonSettings();
@@ -86,7 +89,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.Success)
             {
-                Logger.Write("Pokemon Upgraded:" + upgradeResult.UpgradedPokemon.PokemonId + ":" +
+                Logger.Write("Pokemon Upgraded:" + session.Translation.GetPokemonName(upgradeResult.UpgradedPokemon.PokemonId) + ":" +
                                 upgradeResult.UpgradedPokemon.Cp);
             }
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorInsufficientResources)
@@ -96,13 +99,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             // pokemon max level
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorUpgradeNotAvailable)
             {
-                Logger.Write("Pokemon upgrade unavailable for: " + pokemon.PokemonId + ":" + pokemon.Cp + "/" + PokemonInfo.CalculateMaxCp(pokemon));
+                Logger.Write("Pokemon upgrade unavailable for: " + session.Translation.GetPokemonName(pokemon.PokemonId) + ":" + pokemon.Cp + "/" + PokemonInfo.CalculateMaxCp(pokemon));
             }
             else
             {
                 Logger.Write(
                     "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
-                    pokemon.PokemonId);
+                    session.Translation.GetPokemonName(pokemon.PokemonId));
             }
         }
     }

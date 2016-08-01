@@ -20,6 +20,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
+
             Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForIncensePokemon), LogLevel.Debug);
 
             var incensePokemon = await session.Client.Map.GetIncensePokemons();
@@ -39,7 +42,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
                     Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonIgnoreFilter,
-                        pokemon.PokemonId));
+                        session.Translation.GetPokemonName(pokemon.PokemonId)));
                 }
                 else
                 {

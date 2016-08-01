@@ -25,6 +25,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
+
             Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForPokemon), LogLevel.Debug);
 
             var pokemons = await GetNearbyPokemons(session);
@@ -46,7 +49,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.UsePokemonToNotCatchFilter &&
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
-                    Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonSkipped, pokemon.PokemonId));
+                    Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonSkipped, session.Translation.GetPokemonName(pokemon.PokemonId)));
                     continue;
                 }
 
