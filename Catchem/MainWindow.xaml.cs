@@ -5,6 +5,7 @@ using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Tasks;
 using PoGo.PokeMobBot.Logic.Utils;
 using POGOProtos.Enums;
 using PokemonGo.RocketAPI.Enums;
@@ -23,6 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Catchem
 {
@@ -79,7 +81,7 @@ namespace Catchem
             authBox.ItemsSource = Enum.GetValues(typeof(AuthType));
         }
 
-        private void InitializeMap()
+        private async void InitializeMap()
         {
             pokeMap.Bearing = 0;
 
@@ -116,7 +118,9 @@ namespace Catchem
             GMap.NET.MapProviders.GMapProvider.WebProxy.Credentials = System.Net.CredentialCache.DefaultCredentials;
 
             if (bot != null)
-                pokeMap.Position = new GMap.NET.PointLatLng(bot.Lat, bot.Lng);            
+                pokeMap.Position = new GMap.NET.PointLatLng(bot.Lat, bot.Lng);
+
+            await Task.Delay(10);         
         }
              
         void InitBots()
@@ -127,7 +131,7 @@ namespace Catchem
             {
                 if (item != subPath + "\\Logs")
                 {
-                    initBot(GlobalSettings.Load(item));
+                    initBot(GlobalSettings.Load(item), item);
                 }
             }
         } 
@@ -138,7 +142,7 @@ namespace Catchem
             switch (msgType)
             {
                 case "log":
-                    PushNewConsoleRow(session, msgType, (Color)objData[0]);
+                    PushNewConsoleRow(session, (string)objData[0], (Color)objData[1]);
                     break;
                 default:
                     break;
@@ -221,7 +225,7 @@ namespace Catchem
                 if (logQueue.Count > 0)
                 {
                     var t = logQueue.Dequeue();
-                    consoleBox.AppendText(t.Item1, t.Item2);
+                    consoleBox.AppendParagraph(t.Item1, t.Item2);
                 }
                 await Task.Delay(10);
             }
@@ -239,6 +243,12 @@ namespace Catchem
             public ClientSettings settings = null;
             public LogicSettings logic = null;
 
+            public Label runTime;
+            public Label level;
+
+            private DispatcherTimer timer;
+            private TimeSpan ts;
+
             public double Lat = 55.43213;
             public double Lng = 37.633987;
             public bool gotNewCoord = false;
@@ -254,7 +264,20 @@ namespace Catchem
                 listener = wel;
                 settings = cs;
                 logic = l;
+
+                ts = new TimeSpan();
+                timer = new DispatcherTimer();
+                timer.Interval = new TimeSpan(0, 0, 1);
+                timer.Tick += delegate(object o, EventArgs args)
+                {
+                    ts.Add(new TimeSpan(0, 0, 1));
+                    runTime.Content = ts.ToString();
+                };
             }
+
+            public void timerStart() => timer?.Start();
+
+            public void timerStop() => timer?.Stop();
         }
 
         internal class NewMapObject
@@ -325,12 +348,12 @@ namespace Catchem
 
             var dir = Directory.CreateDirectory(subPath + "\\" + input);
             var settings = GlobalSettings.Load(dir.FullName);
-
+            initBot(settings, input);
             // Clear InputBox.
             InputTextBox.Text = String.Empty;
         }
 
-        private void initBot(GlobalSettings settings)
+        private void initBot(GlobalSettings settings, string profileName = "Unknown")
         {
             var newBot = CreateBowWindowData(settings);
 
@@ -345,7 +368,107 @@ namespace Catchem
 
             newBot.machine.SetFailureState(new LoginState());
 
-            openedSessions.Add(session, CreateBowWindowData(settings));
+            openedSessions.Add(session, newBot);
+
+            Grid botGrid = new Grid()
+            {
+                Height = 120,
+                Margin = new Thickness(0, 10, 0, 0)
+            };
+            Rectangle rec = new Rectangle()
+            {
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Fill = new SolidColorBrush(Color.FromArgb(255, 97, 97, 97))
+            };           
+            botGrid.Children.Add(rec);
+
+            var r = this.FindResource("flatbutton") as Style;
+            Button bStop = new Button()
+            {
+                Style = r,
+                Content = "Stop",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Width = 100,
+                Height = 30,
+                Margin = new Thickness(10, 80, 0, 0),
+                Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFEEB29C"), (Color)ColorConverter.ConvertFromString("#FFC05353"), new Point(1, 0.5), new Point(0, 0.05))
+
+            };
+            Button bStart = new Button()
+            {
+                Style = r,
+                Content = "Start",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Width = 100,
+                Height = 30,
+                Margin = new Thickness(136, 80, 0, 0),
+                Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFB0EE9C"), (Color)ColorConverter.ConvertFromString("#FF53C0B1"), new Point(1, 0.5), new Point(0, 0.05))
+            };
+            botGrid.Children.Add(bStop);
+            botGrid.Children.Add(bStart);
+
+            Label lbProfile = new Label()
+            {
+                Content = profileName,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF59C3B0")),
+                FontSize = 18,
+                Height = 38,
+            };
+            botGrid.Children.Add(lbProfile);
+
+            Label lbLevel = new Label()
+            {
+                Content = "0",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF59C3B0")),
+                FontSize = 14,
+                Height = 38,
+                Margin = new Thickness(0, 37, 0, 0)
+            };
+            botGrid.Children.Add(lbLevel);
+
+            Label lvRuntime = new Label()
+            {
+                Content = "00:00",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF59C3B0")),
+                FontSize = 14,
+                Height = 38,
+                Margin = new Thickness(152, 37, 0, 0)
+            };
+            botGrid.Children.Add(lvRuntime);
+
+            newBot.level = lbLevel;
+            newBot.runTime = lvRuntime;
+
+            botPanel.Children.Add(botGrid);
+
+
+            bStart.Click += delegate(object o, RoutedEventArgs args)
+            {
+                newBot.machine.AsyncStart(new VersionCheckState(), session);
+                if (session.LogicSettings.UseSnipeLocationServer)
+                    SnipePokemonTask.AsyncStart(session);
+            };
+
+            rec.MouseLeftButtonDown += delegate (object o, MouseButtonEventArgs args)
+            {
+                this.curSession = session;
+                foreach (var item in botPanel.GetLogicalChildCollection<Rectangle>())
+                {
+                    if (item != o)
+                        item.Fill = new SolidColorBrush(Color.FromArgb(255, 97, 97, 97));
+                    else
+                        item.Fill = new SolidColorBrush(Color.FromArgb(255, 97, 97, 225));
+                }
+            };
         }
 
         private BotWindowData CreateBowWindowData(GlobalSettings _s)

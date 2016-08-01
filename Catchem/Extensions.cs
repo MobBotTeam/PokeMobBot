@@ -1,5 +1,6 @@
 ﻿using POGOProtos.Enums;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -16,16 +17,49 @@ namespace Catchem
 {
     public static class Extensions
     {
+        public static List<T> GetLogicalChildCollection<T>(this UIElement parent) where T : DependencyObject
+        {
+            List<T> logicalCollection = new List<T>();
+            GetLogicalChildCollection(parent as DependencyObject, logicalCollection);
+            return logicalCollection;
+        }
+
+        private static void GetLogicalChildCollection<T>(DependencyObject parent, List<T> logicalCollection) where T : DependencyObject
+        {
+            IEnumerable children = LogicalTreeHelper.GetChildren(parent);
+            foreach (object child in children)
+            {
+                if (child is DependencyObject)
+                {
+                    DependencyObject depChild = child as DependencyObject;
+                    if (child is T)
+                    {
+                        logicalCollection.Add(child as T);
+                    }
+                    GetLogicalChildCollection(depChild, logicalCollection);
+                }
+            }
+        }
+
         public static void AppendText(this RichTextBox box, string text, System.Windows.Media.Color color)
         {
-            BrushConverter bc = new BrushConverter();
             TextRange tr = new TextRange(box.Document.ContentEnd, box.Document.ContentEnd);
             tr.Text = text;
             try
             {
-                tr.ApplyPropertyValue(TextElement.ForegroundProperty, color);
+                tr.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(color));
             }
             catch (FormatException) { }
+        }
+
+        public static void AppendParagraph(this RichTextBox box, string text, System.Windows.Media.Color color)
+        {
+            var paragraph = new Paragraph();
+            paragraph.Inlines.Add(text);
+            paragraph.Foreground = new SolidColorBrush(color);
+            box.Document.Blocks.Add(paragraph);
+
+            box.ScrollToEnd();
         }
 
         public static System.Windows.Controls.Image ToImage(this PokemonId pid)

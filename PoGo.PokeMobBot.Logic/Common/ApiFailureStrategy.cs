@@ -51,7 +51,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                     {
                         await
                             _session.Client.Login.DoPtcLogin(_session.Settings.PtcUsername,
-                                _session.Settings.PtcPassword);
+                                _session.Settings.PtcPassword, _session.Proxy);
                     }
                     catch (AggregateException ae)
                     {
@@ -61,7 +61,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                 case AuthType.Google:
                     await
                         _session.Client.Login.DoGoogleLogin(_session.Settings.GoogleUsername,
-                            _session.Settings.GooglePassword);
+                            _session.Settings.GooglePassword, _session.Proxy);
                     break;
                 default:
                     _session.EventDispatcher.Send(new ErrorEvent

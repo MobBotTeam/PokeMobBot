@@ -4,6 +4,7 @@ using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PokemonGo.RocketAPI;
 using POGOProtos.Networking.Responses;
+using System.Net;
 
 #endregion
 
@@ -19,6 +20,8 @@ namespace PoGo.PokeMobBot.Logic.State
         ILogicSettings LogicSettings { get; }
         ITranslation Translation { get; }
         IEventDispatcher EventDispatcher { get; }
+
+        IWebProxy Proxy { get; }
     }
 
 
@@ -47,6 +50,28 @@ namespace PoGo.PokeMobBot.Logic.State
         public ITranslation Translation { get; }
 
         public IEventDispatcher EventDispatcher { get; }
+
+        public IWebProxy Proxy
+        {
+            get
+            {
+                if (Settings.UseProxy)
+                {
+                    NetworkCredential proxyCreds = new NetworkCredential(
+                        Settings.ProxyLogin,
+                        Settings.ProxyPass
+                    );
+                    WebProxy prox = new WebProxy(Settings.ProxyUri)
+                    {
+                        UseDefaultCredentials = false,
+                        Credentials = proxyCreds,
+                    };
+                    return prox;
+                }
+                return null;
+            }
+
+        }
 
         public void Reset(ISettings settings, ILogicSettings logicSettings)
         {

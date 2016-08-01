@@ -33,7 +33,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     try
                     {
-                        _session.Client.Login.DoPtcLogin(_session.Settings.PtcUsername, _session.Settings.PtcPassword)
+                        _session.Client.Login.DoPtcLogin(_session.Settings.PtcUsername, _session.Settings.PtcPassword, _session.Proxy)
                             .Wait();
                     }
                     catch (AggregateException ae)
@@ -44,7 +44,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 else
                 {
                     _session.Client.Login.DoGoogleLogin(_session.Settings.GoogleUsername,
-                        _session.Settings.GooglePassword).Wait();
+                        _session.Settings.GooglePassword, _session.Proxy).Wait();
                 }
             }
             catch (PtcOfflineException)

@@ -40,7 +40,7 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-        </Style>
+        </Style>        
     </Window.Resources>
     <Grid>
         <TabControl x:Name="tabControl" Margin="263,0,0,0" RenderTransformOrigin="0.5,0.5" VerticalContentAlignment="Top">
@@ -87,11 +87,8 @@
                         <RowDefinition Height="239*"/>
                         <RowDefinition Height="302*"/>
                     </Grid.RowDefinitions>
-                    <RichTextBox x:Name="consoleBox" Background="#FF252525" Foreground="#FFCDCDCD">
+                    <RichTextBox x:Name="consoleBox" Background="#FF252525" Foreground="#FFCDCDCD" VerticalScrollBarVisibility="Visible">
                         <FlowDocument>
-                            <Paragraph>
-                                <Run Text="Hello world"/>
-                            </Paragraph>
                         </FlowDocument>
                     </RichTextBox>
                     <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Height="3" Grid.Row="1" VerticalAlignment="Top" Width="636" ResizeDirection="Rows"/>
@@ -148,84 +145,7 @@
                 </Button.Background>
             </Button>
             <Label x:Name="label4" Content="MENU" HorizontalAlignment="Left" Margin="9,2,0,-10" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="20" Height="38"/>
-            <StackPanel x:Name="botPanel" HorizontalAlignment="Left" Margin="0,90,0,0" Width="246">
-                <Grid Height="120" Margin="0,10,0,0">
-                    <Rectangle Fill="#FF636161"/>
-                    <Button Style="{StaticResource ResourceKey=flatbutton}" x:Name="startBot" Content="Start" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="30" Click="button_Click" Margin="136,80,0,0" FontFamily="BOLD" TextOptions.TextFormattingMode="Display" FontWeight="Bold">
-                        <Button.Background>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <LinearGradientBrush.RelativeTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
-                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
-                                        <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
-                                        <TranslateTransform/>
-                                    </TransformGroup>
-                                </LinearGradientBrush.RelativeTransform>
-                                <GradientStop Color="#FFB0EE9C" Offset="0"/>
-                                <GradientStop Color="#FF53C0B1" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
-                    </Button>
-                    <Button Style="{StaticResource ResourceKey=flatbutton}" x:Name="stopBot" Content="Stop" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="30" Click="button_Click" Margin="10,80,0,0" FontFamily="BOLD" TextOptions.TextFormattingMode="Display" FontWeight="Bold">
-                        <Button.Background>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <LinearGradientBrush.RelativeTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
-                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
-                                        <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
-                                        <TranslateTransform/>
-                                    </TransformGroup>
-                                </LinearGradientBrush.RelativeTransform>
-                                <GradientStop Color="#FFEEB29C" Offset="0"/>
-                                <GradientStop Color="#FFC05353" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
-                    </Button>
-                    <Label x:Name="label4_Copy" Content="ProfileName" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="16" Height="38"/>
-                    <Label x:Name="label4_Copy1" Content="%Level%" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="14" Height="38" Margin="0,37,0,0"/>
-                    <Label x:Name="label4_Copy2" Content="%RunTime%" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="14" Height="38" Margin="152,37,0,0"/>
-                </Grid>
-                <Grid Height="120" Margin="0,10,0,0">
-                    <Rectangle Fill="#FF636161"/>
-                    <Button Style="{StaticResource ResourceKey=flatbutton}" x:Name="startBot2" Content="Start" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="30" Click="button_Click" Margin="136,80,0,0" FontFamily="BOLD" TextOptions.TextFormattingMode="Display" FontWeight="Bold">
-                        <Button.Background>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <LinearGradientBrush.RelativeTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
-                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
-                                        <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
-                                        <TranslateTransform/>
-                                    </TransformGroup>
-                                </LinearGradientBrush.RelativeTransform>
-                                <GradientStop Color="#FFB0EE9C" Offset="0"/>
-                                <GradientStop Color="#FF53C0B1" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
-                    </Button>
-                    <Button Style="{StaticResource ResourceKey=flatbutton}" x:Name="stopBot2" Content="Stop" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="30" Click="button_Click" Margin="10,80,0,0" FontFamily="BOLD" TextOptions.TextFormattingMode="Display" FontWeight="Bold">
-                        <Button.Background>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <LinearGradientBrush.RelativeTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
-                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
-                                        <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
-                                        <TranslateTransform/>
-                                    </TransformGroup>
-                                </LinearGradientBrush.RelativeTransform>
-                                <GradientStop Color="#FFEEB29C" Offset="0"/>
-                                <GradientStop Color="#FFC05353" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
-                    </Button>
-                    <Label x:Name="label4_Copy_2" Content="ProfileName2" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="16" Height="38"/>
-                    <Label x:Name="label4_Copy1_2" Content="%Level%" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="14" Height="38" Margin="0,37,0,0"/>
-                    <Label x:Name="label4_Copy2_2" Content="%RunTime%" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF59C3B0" FontSize="14" Height="38" Margin="152,37,0,0"/>
-                </Grid>
-            </StackPanel>
+            <StackPanel x:Name="botPanel" HorizontalAlignment="Left" Margin="0,90,0,0" Width="246"/>
         </Grid>
         <Grid x:Name="InputBox" Visibility="Collapsed" >
             <Grid Background="Black" Opacity="0.45"/>

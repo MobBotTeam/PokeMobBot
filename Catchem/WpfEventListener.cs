@@ -19,26 +19,26 @@ namespace Catchem
         public void HandleEvent(ProfileEvent evt, ISession session)
         {
             Logger.Write(session.Translation.GetTranslation(TranslationString.EventProfileLogin,
-                evt.Profile.PlayerData.Username ?? ""));
+                evt.Profile.PlayerData.Username ?? ""), session: session);
         }
 
         public void HandleEvent(ErrorEvent evt, ISession session)
         {
-            Logger.Write(evt.ToString(), LogLevel.Error);
+            Logger.Write(evt.ToString(), LogLevel.Error, session: session);
         }
 
         public void HandleEvent(NoticeEvent evt, ISession session)
         {
-            Logger.Write(evt.ToString());
+            Logger.Write(evt.ToString(), session: session);
         }
 
         public void HandleEvent(WarnEvent evt, ISession session)
         {
-            Logger.Write(evt.ToString(), LogLevel.Warning);
+            Logger.Write(evt.ToString(), LogLevel.Warning, session: session);
 
             if (evt.RequireInput)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.RequireInputText));
+                Logger.Write(session.Translation.GetTranslation(TranslationString.RequireInputText), session: session);
                 Console.ReadKey();
             }
         }
@@ -46,7 +46,7 @@ namespace Catchem
         public void HandleEvent(UseLuckyEggEvent evt, ISession session)
         {
             Logger.Write(session.Translation.GetTranslation(TranslationString.EventUsedLuckyEgg, evt.Count),
-                LogLevel.Egg);
+                LogLevel.Egg, session: session);
         }
 
         public void HandleEvent(PokemonEvolveEvent evt, ISession session)
@@ -55,7 +55,7 @@ namespace Catchem
                 ? session.Translation.GetTranslation(TranslationString.EventPokemonEvolvedSuccess, evt.Id, evt.Exp)
                 : session.Translation.GetTranslation(TranslationString.EventPokemonEvolvedFailed, evt.Id, evt.Result,
                     evt.Id),
-                LogLevel.Evolve);
+                LogLevel.Evolve, session: session);
         }
 
         public void HandleEvent(TransferPokemonEvent evt, ISession session)
@@ -63,13 +63,13 @@ namespace Catchem
             Logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventPokemonTransferred, evt.Id, evt.Cp,
                     evt.Perfection.ToString("0.00"), evt.BestCp, evt.BestPerfection.ToString("0.00"), evt.FamilyCandies),
-                LogLevel.Transfer);
+                LogLevel.Transfer, session: session);
         }
 
         public void HandleEvent(ItemRecycledEvent evt, ISession session)
         {
             Logger.Write(session.Translation.GetTranslation(TranslationString.EventItemRecycled, evt.Count, evt.Id),
-                LogLevel.Recycling);
+                LogLevel.Recycling, session: session);
         }
 
         public void HandleEvent(EggIncubatorStatusEvent evt, ISession session)
@@ -77,14 +77,14 @@ namespace Catchem
             Logger.Write(evt.WasAddedNow
                 ? session.Translation.GetTranslation(TranslationString.IncubatorPuttingEgg, evt.KmRemaining)
                 : session.Translation.GetTranslation(TranslationString.IncubatorStatusUpdate, evt.KmRemaining),
-                LogLevel.Egg);
+                LogLevel.Egg, session: session);
         }
 
         public void HandleEvent(EggHatchedEvent evt, ISession session)
         {
             Logger.Write(session.Translation.GetTranslation(TranslationString.IncubatorEggHatched,
                 evt.PokemonId.ToString(), evt.Level, evt.Cp, evt.MaxCp, evt.Perfection),
-                LogLevel.Egg);
+                LogLevel.Egg, session: session);
         }
 
         public void HandleEvent(FortUsedEvent evt, ISession session)
@@ -95,14 +95,14 @@ namespace Catchem
             Logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventFortUsed, evt.Name, evt.Exp, evt.Gems,
                     itemString),
-                LogLevel.Pokestop);
+                LogLevel.Pokestop, session: session);
         }
 
         public void HandleEvent(FortFailedEvent evt, ISession session)
         {
             Logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventFortFailed, evt.Name, evt.Try, evt.Max),
-                LogLevel.Pokestop, ConsoleColor.DarkRed);
+                LogLevel.Pokestop, ConsoleColor.DarkRed, session: session);
         }
 
         public void HandleEvent(FortTargetEvent evt, ISession session)
@@ -110,7 +110,7 @@ namespace Catchem
             Logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventFortTargeted, evt.Name,
                     Math.Round(evt.Distance)),
-                LogLevel.Info, ConsoleColor.DarkRed);
+                LogLevel.Info, ConsoleColor.DarkRed, session: session);
         }
 
         public void HandleEvent(PokemonCaptureEvent evt, ISession session)
@@ -169,19 +169,19 @@ namespace Catchem
                 session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType, evt.Id,
                     evt.Level, evt.Cp, evt.MaxCp, evt.Perfection.ToString("0.00"), evt.Probability,
                     evt.Distance.ToString("F2"),
-                    returnRealBallName(evt.Pokeball), evt.BallAmount, familyCandies), LogLevel.Caught);
+                    returnRealBallName(evt.Pokeball), evt.BallAmount, familyCandies), LogLevel.Caught, session: session);
         }
 
         public void HandleEvent(NoPokeballEvent evt, ISession session)
         {
             Logger.Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, evt.Id, evt.Cp),
-                LogLevel.Caught);
+                LogLevel.Caught, session: session);
         }
 
         public void HandleEvent(UseBerryEvent evt, ISession session)
         {
             Logger.Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, evt.Count),
-                LogLevel.Berry);
+                LogLevel.Berry, session: session);
         }
 
         public void HandleEvent(SnipeScanEvent evt, ISession session)
@@ -191,7 +191,7 @@ namespace Catchem
                     $"{evt.Bounds.Latitude},{evt.Bounds.Longitude}")
                 : session.Translation.GetTranslation(TranslationString.SnipeScanEx, evt.PokemonId,
                     evt.Iv > 0 ? evt.Iv.ToString(CultureInfo.InvariantCulture) : "unknown",
-                    $"{evt.Bounds.Latitude},{evt.Bounds.Longitude}"));
+                    $"{evt.Bounds.Latitude},{evt.Bounds.Longitude}"), session: session);
         }
 
         public void HandleEvent(DisplayHighestsPokemonEvent evt, ISession session)
@@ -226,12 +226,12 @@ namespace Catchem
             foreach (var pokemon in evt.PokemonList)
                 Logger.Write(
                     $"# CP {pokemon.Item1.Cp.ToString().PadLeft(4, ' ')}/{pokemon.Item2.ToString().PadLeft(4, ' ')} | ({pokemon.Item3.ToString("0.00")}% {strPerfect})\t| Lvl {pokemon.Item4.ToString("00")}\t {strName}: {pokemon.Item1.PokemonId.ToString().PadRight(10, ' ')}\t MOVE1: {pokemon.Item5.ToString().PadRight(20, ' ')} MOVE2: {pokemon.Item6}",
-                    LogLevel.Info, ConsoleColor.Yellow);
+                    LogLevel.Info, ConsoleColor.Yellow, session);
         }
 
         public void HandleEvent(UpdateEvent evt, ISession session)
         {
-            Logger.Write(evt.ToString(), LogLevel.Update);
+            Logger.Write(evt.ToString(), LogLevel.Update, session: session);
         }
 
         public void Listen(IEvent evt, ISession session)

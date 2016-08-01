@@ -37,7 +37,7 @@ namespace PoGo.PokeMobBot.Logic.State
 
             await CleanupOldFiles();
             var autoUpdate = session.LogicSettings.AutoUpdate;
-            var needupdate = IsLatest();
+            var needupdate = IsLatest(session);
             if (!needupdate || !autoUpdate)
             {
                 if (!needupdate)
@@ -71,7 +71,7 @@ namespace PoGo.PokeMobBot.Logic.State
             var destinationDir = baseDir + Path.DirectorySeparatorChar;
             Console.WriteLine(downloadLink);
 
-            if (!DownloadFile(downloadLink, downloadFilePath))
+            if (!DownloadFile(downloadLink, downloadFilePath, session))
                 return new LoginState();
 
             session.EventDispatcher.Send(new UpdateEvent
@@ -136,9 +136,9 @@ namespace PoGo.PokeMobBot.Logic.State
             await Task.Delay(200);
         }
 
-        public static bool DownloadFile(string url, string dest)
+        public static bool DownloadFile(string url, string dest, ISession session)
         {
-            using (var client = new WebClient())
+            using (var client = new WebClient() { Proxy = session.Proxy })
             {
                 try
                 {
@@ -153,9 +153,9 @@ namespace PoGo.PokeMobBot.Logic.State
             }
         }
 
-        private static string DownloadServerVersion()
+        private static string DownloadServerVersion(ISession session)
         {
-            using (var wC = new WebClient())
+            using (var wC = new WebClient() { Proxy = session.Proxy })
             {
                 return wC.DownloadString(VersionUri);
             }
@@ -167,12 +167,12 @@ namespace PoGo.PokeMobBot.Logic.State
         }
 
 
-        public bool IsLatest()
+        public bool IsLatest(ISession session)
         {
             try
             {
                 var regex = new Regex(@"\[assembly\: AssemblyVersion\(""(\d{1,})\.(\d{1,})\.(\d{1,})""\)\]");
-                var match = regex.Match(DownloadServerVersion());
+                var match = regex.Match(DownloadServerVersion(session));
 
                 if (!match.Success)
                     return false;
