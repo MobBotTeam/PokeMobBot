@@ -81,7 +81,7 @@ namespace PoGo.PokeMobBot.CLI
 
         private async void HandleMessage(WebSocketSession session, string message)
         {
-            Models.SocketMessage msgObj;
+            Models.SocketMessage msgObj = null;
             var command = message;
             try
             {
@@ -106,6 +106,12 @@ namespace PoGo.PokeMobBot.CLI
                     break;
                 case "PlayerStats":
                     await PlayerStatsTask.Execute(_session, action);
+                    break;
+                case "TransferPokemon":
+                    await TransferPokemonTask.Execute(_session, msgObj?.Data);
+                    break;
+                case "EvolvePokemon":
+                    await EvolveSpecificPokemonTask.Execute(_session, msgObj?.Data);
                     break;
             }
         }
