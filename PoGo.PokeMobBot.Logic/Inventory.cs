@@ -244,7 +244,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public async Task<IEnumerable<ItemData>> GetItemsToRecycle(ISession session)
         {
-            var itemsToRecylce = new List<ItemData>();
+            var itemsToRecycle = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
             var currentAmountOfPokeballs = await GetItemAmountByType(ItemId.ItemPokeBall);
@@ -256,7 +256,7 @@ namespace PoGo.PokeMobBot.Logic
                 currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
                 currentAmountOfMasterballs));
 
-            var otherItemsToRecylce = myItems
+            var otherItemsToRecycle = myItems
                 .Where(x => _logicSettings.ItemRecycleFilter.Any(f => f.Key == x.ItemId && x.Count > f.Value))
                 .Select(
                     x =>
@@ -267,9 +267,9 @@ namespace PoGo.PokeMobBot.Logic
                             Unseen = x.Unseen
                         });
 
-            itemsToRecylce.AddRange(otherItemsToRecylce);
+            itemsToRecycle.AddRange(otherItemsToRecycle);
 
-            return itemsToRecylce;
+            return itemsToRecycle;
         }
 
         public double GetPerfect(PokemonData poke)
@@ -495,7 +495,7 @@ namespace PoGo.PokeMobBot.Logic
                 {
                     if (item.Count < itemsToRemove)
                     {
-                        // Recylce all of this type
+                        // Recycle all of this type
                         itemsToRemove -= item.Count;
                         yield return item;
                     }
