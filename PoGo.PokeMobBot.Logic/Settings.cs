@@ -206,10 +206,10 @@ namespace PoGo.PokeMobBot.Logic
         public int MinPokeballsToSnipe = 20;
         public int MinPokeballsWhileSnipe = 0;
         public bool UseSnipeLocationServer = false;
-        public bool UseSnipeOnlineLocationServer = false;
+        public bool UsePokeSnipersLocationServer = false;
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
-        public int SnipeRequestTimeoutSeconds = 10;
+        public int SnipeRequestTimeoutSeconds = 5;
 
         public List<KeyValuePair<ItemId, int>> ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>
         {
@@ -680,7 +680,7 @@ namespace PoGo.PokeMobBot.Logic
         public string SnipeLocationServer => _settings.SnipeLocationServer;
         public int SnipeLocationServerPort => _settings.SnipeLocationServerPort;
         public bool UseSnipeLocationServer => _settings.UseSnipeLocationServer;
-        public bool UseSnipeOnlineLocationServer => _settings.UseSnipeOnlineLocationServer;
+        public bool UsePokeSnipersLocationServer => _settings.UsePokeSnipersLocationServer;
         public bool UseTransferIvForSnipe => _settings.UseTransferIvForSnipe;
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
