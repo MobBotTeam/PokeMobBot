@@ -32,6 +32,11 @@ namespace PoGo.PokeMobBot.CLI
             Logger.Write(evt.ToString());
         }
 
+        public void HandleEvent(DebugEvent evt, ISession session)
+        {
+            Logger.Write(evt.ToString(), LogLevel.Debug);
+        }
+
         public void HandleEvent(WarnEvent evt, ISession session)
         {
             Logger.Write(evt.ToString(), LogLevel.Warning);

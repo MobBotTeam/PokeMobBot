@@ -22,7 +22,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             // Refresh inventory so that the player stats are fresh
             await session.Inventory.RefreshCachedInventory();
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForLurePokemon), LogLevel.Debug);
+            session.EventDispatcher.Send(new DebugEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.LookingForLurePokemon)
+            });
 
             var fortId = currentFortData.Id;
 
