@@ -48,11 +48,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     var payload = new SniperInfo
                     {
-                        TimeStamp = DateTime.Now,
                         Latitude = currentFortData.Latitude,
                         Longitude = currentFortData.Longitude,
                         Iv = PokemonInfo.CalculatePokemonPerfection(encounter.PokemonData),
                         Id = encounter.PokemonData.PokemonId,
+                        Move1 = encounter.PokemonData.Move1,
+                        Move2 = encounter.PokemonData.Move2,
                     };
                     SnipePokemonTask.Feedback(payload);
                 }
