@@ -20,7 +20,7 @@ namespace PoGo.PokeMobBot.Logic
         [JsonIgnore]
         private string _filePath;
         public AuthType AuthType;
-        public string GoogleRefreshToken;
+        public string GoogleRefreshToken = "";
         public string GoogleUsername;
         public string GooglePassword;
         public string PtcUsername;
