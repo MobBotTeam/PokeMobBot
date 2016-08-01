@@ -31,24 +31,28 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var luckyEggs = inventoryContent.Where(p => p.ItemId == ItemId.ItemLuckyEgg);
                 var luckyEgg = luckyEggs.FirstOrDefault();
 
-                //maybe there can be a warning message as an else condition of luckyEgg checks, like; 
-                //"There is no Lucky Egg, so, your UseLuckyEggsMinPokemonAmount setting bypassed."
-                if (session.LogicSettings.UseLuckyEggsWhileEvolving && luckyEgg != null && luckyEgg.Count > 0)
+                //Check to see if LuckyEgg effect is still active
+                if (session.LogicSettings.UseLuckyEggsWhileEvolving && _lastLuckyEggTime.AddMinutes(30).Ticks < DateTime.Now.Ticks)
                 {
-                    if (pokemonToEvolve.Count >= session.LogicSettings.UseLuckyEggsMinPokemonAmount)
+                    //maybe there can be a warning message as an else condition of luckyEgg checks, like; 
+                    //"There is no Lucky Egg, so, your UseLuckyEggsMinPokemonAmount setting bypassed."
+                    if (luckyEgg != null && luckyEgg.Count > 0)
                     {
-                        await UseLuckyEgg(session);
-                    }
-                    else
-                    {
-                        // Wait until we have enough pokemon
-                        session.EventDispatcher.Send(new UseLuckyEggMinPokemonEvent
+                        if (pokemonToEvolve.Count >= session.LogicSettings.UseLuckyEggsMinPokemonAmount)
                         {
-                            Diff = session.LogicSettings.UseLuckyEggsMinPokemonAmount - pokemonToEvolve.Count,
-                            CurrCount = pokemonToEvolve.Count,
-                            MinPokemon = session.LogicSettings.UseLuckyEggsMinPokemonAmount
-                        });
-                        return;
+                            await UseLuckyEgg(session);
+                        }
+                        else
+                        {
+                            // Wait until we have enough pokemon
+                            session.EventDispatcher.Send(new UseLuckyEggMinPokemonEvent
+                            {
+                                Diff = session.LogicSettings.UseLuckyEggsMinPokemonAmount - pokemonToEvolve.Count,
+                                CurrCount = pokemonToEvolve.Count,
+                                MinPokemon = session.LogicSettings.UseLuckyEggsMinPokemonAmount
+                            });
+                            return;
+                        }
                     }
                 }
 
