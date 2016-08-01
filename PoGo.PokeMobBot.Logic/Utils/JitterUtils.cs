@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace PoGo.PokeMobBot.Logic.Utils
 {
-    public static class JitterUtils
+    public class JitterUtils
     {
-        private static readonly Random RandomDevice = new Random();
+        private readonly Random _randomDevice = new Random();
 
-        public static Task RandomDelay(int min, int max)
+        public Task RandomDelay(int min, int max)
         {
-            return Task.Delay(RandomDevice.Next(min, max));
+            return Task.Delay(_randomDevice.Next(min, max));
         }
     }
 }

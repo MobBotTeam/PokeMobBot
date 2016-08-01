@@ -8,7 +8,7 @@ using PoGo.PokeMobBot.Logic.State;
 
 namespace PoGo.PokeMobBot.Logic.DataDumper
 {
-    public static class Dumper
+    public class Dumper
     {
         /// <summary>
         ///     Clears the specified dumpfile.
@@ -16,7 +16,7 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         /// <param name="session"></param>
         /// <param name="filename" />
         /// File to clear/param>
-        public static void ClearDumpFile(ISession session, string filename)
+        public void ClearDumpFile(ISession session, string filename)
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps");
             var file = Path.Combine(path,
@@ -33,7 +33,7 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         /// <param name="session"></param>
         /// <param name="data">Dumps the string data to the file</param>
         /// <param name="filename">Filename to be used for naming the file.</param>
-        public static void Dump(ISession session, string data, string filename)
+        public void Dump(ISession session, string data, string filename)
         {
             string uniqueFileName = $"{filename}";
 
@@ -46,7 +46,7 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         /// <param name="session"></param>
         /// <param name="data">Dumps the string data to the file</param>
         /// <param name="filename">Filename to be used for naming the file.</param>
-        private static void DumpToFile(ISession session, string data, string filename)
+        private void DumpToFile(ISession session, string data, string filename)
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps",
                 $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt");
@@ -66,7 +66,7 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         /// </summary>
         /// <param name="dumper"></param>
         /// <param name="subPath"></param>
-        public static void SetDumper(IDumper dumper, string subPath = "")
+        public void SetDumper(IDumper dumper, string subPath = "")
         {
         }
     }

@@ -331,7 +331,7 @@ namespace PoGo.PokeMobBot.Logic.Common
             return translation != default(string) ? translation : $"Translation for {translationString} is missing";
         }
 
-        public static Translation Load(ILogicSettings logicSettings)
+        public Translation Load(ILogicSettings logicSettings)
         {
             var translationsLanguageCode = logicSettings.TranslationLanguageCode;
             var translationPath = Path.Combine(logicSettings.GeneralConfigPath, "translations");

@@ -14,7 +14,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class TransferDuplicatePokemonTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly DelayingUtils _delayingUtils;
+
+        public TransferDuplicatePokemonTask(PokemonInfo pokemonInfo, DelayingUtils delayingUtils)
+        {
+            _pokemonInfo = pokemonInfo;
+            _delayingUtils = delayingUtils;
+        }
+
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -33,7 +42,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (duplicatePokemon.Cp >=
                     session.Inventory.GetPokemonTransferFilter(duplicatePokemon.PokemonId).KeepMinCp ||
-                    PokemonInfo.CalculatePokemonPerfection(duplicatePokemon) >
+                    _pokemonInfo.CalculatePokemonPerfection(duplicatePokemon) >
                     session.Inventory.GetPokemonTransferFilter(duplicatePokemon.PokemonId).KeepMinIvPercentage)
                 {
                     continue;
@@ -54,16 +63,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 session.EventDispatcher.Send(new TransferPokemonEvent
                 {
                     Id = duplicatePokemon.PokemonId,
-                    Perfection = PokemonInfo.CalculatePokemonPerfection(duplicatePokemon),
+                    Perfection = _pokemonInfo.CalculatePokemonPerfection(duplicatePokemon),
                     Cp = duplicatePokemon.Cp,
                     BestCp = bestPokemonOfType.Cp,
-                    BestPerfection = PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType),
+                    BestPerfection = _pokemonInfo.CalculatePokemonPerfection(bestPokemonOfType),
                     FamilyCandies = family.Candy_
                 });
                 if(session.LogicSettings.Teleport)
-                    await Task.Delay(session.LogicSettings.DelayTransferPokemon);
+                    await Task.Delay(session.LogicSettings.DelayTransferPokemon, cancellationToken);
                 else
-                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 0);
+                    await _delayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 0);
             }
         }
     }

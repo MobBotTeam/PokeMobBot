@@ -26,6 +26,8 @@ namespace PoGo.PokeMobBot.Logic
     {
         private readonly Client _client;
         private readonly ILogicSettings _logicSettings;
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly ILogger _logger;
 
         private readonly List<ItemId> _pokeballs = new List<ItemId>
         {
@@ -47,10 +49,12 @@ namespace PoGo.PokeMobBot.Logic
         private GetInventoryResponse _cachedInventory;
         private DateTime _lastRefresh;
 
-        public Inventory(Client client, ILogicSettings logicSettings)
+        public Inventory(Client client, ILogicSettings logicSettings, PokemonInfo pokemonInfo, ILogger logger)
         {
             _client = client;
             _logicSettings = logicSettings;
+            _pokemonInfo = pokemonInfo;
+            _logger = logger;
         }
 
         public async Task DeletePokemonFromInvById(ulong id)
@@ -84,7 +88,7 @@ namespace PoGo.PokeMobBot.Logic
                 myPokemon.Where(
                     p => p.DeployedFortId == string.Empty &&
                          p.Favorite == 0 && (p.Cp < GetPokemonTransferFilter(p.PokemonId).KeepMinCp ||
-                                             PokemonInfo.CalculatePokemonPerfection(p) <
+                                             _pokemonInfo.CalculatePokemonPerfection(p) <
                                              GetPokemonTransferFilter(p.PokemonId).KeepMinIvPercentage))
                     .ToList();
             if (filter != null)
@@ -119,7 +123,7 @@ namespace PoGo.PokeMobBot.Logic
                     if (prioritizeIVoverCp)
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
-                            .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                            .OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
                             .ThenBy(n => n.StaminaMax)
                             .Skip(amountToSkip)
                             .ToList());
@@ -143,7 +147,7 @@ namespace PoGo.PokeMobBot.Logic
                     .Where(x => x.Any())
                     .SelectMany(
                         p =>
-                            p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                            p.OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
                                 .ThenBy(n => n.StaminaMax)
                                 .Skip(GetPokemonTransferFilter(p.Key).KeepMinDuplicatePokemon)
                                 .ToList());
@@ -191,7 +195,7 @@ namespace PoGo.PokeMobBot.Logic
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
-                .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                .OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
                 .FirstOrDefault();
         }
 
@@ -206,7 +210,7 @@ namespace PoGo.PokeMobBot.Logic
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection).Take(limit);
+            return pokemons.OrderByDescending(_pokemonInfo.CalculatePokemonPerfection).Take(limit);
         }
 
 
@@ -238,13 +242,13 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfUltraballs = await GetItemAmountByType(ItemId.ItemUltraBall);
             var currentAmountOfMasterballs = await GetItemAmountByType(ItemId.ItemMasterBall);
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
+            _logger.Write(session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
                 currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
                 currentAmountOfMasterballs));
 
             if (!_logicSettings.ItemRecycleFilter.Any(s => _pokeballs.Contains(s.Key)))
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForBallsToRecycle,
+                _logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForBallsToRecycle,
                     amountOfPokeballsToKeep));
                 var pokeballsToRecycle = GetPokeballsToRecycle(session, myItems);
                 itemsToRecylce.AddRange(pokeballsToRecycle);
@@ -252,7 +256,7 @@ namespace PoGo.PokeMobBot.Logic
 
             if (!_logicSettings.ItemRecycleFilter.Any(s => _potions.Contains(s.Key)))
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForPotionsToRecycle,
+                _logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForPotionsToRecycle,
                     amountOfPotionsToKeep));
                 var potionsToRecycle = GetPotionsToRecycle(session, myItems);
                 itemsToRecylce.AddRange(potionsToRecycle);
@@ -260,7 +264,7 @@ namespace PoGo.PokeMobBot.Logic
 
             if (!_logicSettings.ItemRecycleFilter.Any(s => _revives.Contains(s.Key)))
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForRevivesToRecycle,
+                _logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForRevivesToRecycle,
                     amountOfRevivesToKeep));
                 var revivesToRecycle = GetRevivesToRecycle(session, myItems);
                 itemsToRecylce.AddRange(revivesToRecycle);
@@ -284,7 +288,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public double GetPerfect(PokemonData poke)
         {
-            var result = PokemonInfo.CalculatePokemonPerfection(poke);
+            var result = _pokemonInfo.CalculatePokemonPerfection(poke);
             return result;
         }
 
@@ -301,7 +305,7 @@ namespace PoGo.PokeMobBot.Logic
             var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             if (amountOfPokeballsToKeep < 1)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect),
+                _logger.Write(session.Translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect),
                     LogLevel.Error, ConsoleColor.Red);
                 return new List<ItemData>();
             }
@@ -366,13 +370,13 @@ namespace PoGo.PokeMobBot.Logic
                     myPokemons.Where(
                         p => (_logicSettings.EvolveAllPokemonWithEnoughCandy && pokemonIds.Contains(p.PokemonId)) ||
                              (_logicSettings.EvolveAllPokemonAboveIv &&
-                              (PokemonInfo.CalculatePokemonPerfection(p) >= _logicSettings.EvolveAboveIvValue)));
+                              (_pokemonInfo.CalculatePokemonPerfection(p) >= _logicSettings.EvolveAboveIvValue)));
             }
             else if (_logicSettings.EvolveAllPokemonAboveIv)
             {
                 myPokemons =
                     myPokemons.Where(
-                        p => PokemonInfo.CalculatePokemonPerfection(p) >= _logicSettings.EvolveAboveIvValue);
+                        p => _pokemonInfo.CalculatePokemonPerfection(p) >= _logicSettings.EvolveAboveIvValue);
             }
             var pokemons = myPokemons.ToList();
 
@@ -422,7 +426,7 @@ namespace PoGo.PokeMobBot.Logic
             var amountOfPotionsToKeep = _logicSettings.TotalAmountOfPotionsToKeep;
             if (amountOfPotionsToKeep < 1)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.PotionsToKeepIncorrect),
+                _logger.Write(session.Translation.GetTranslation(TranslationString.PotionsToKeepIncorrect),
                     LogLevel.Error, ConsoleColor.Red);
                 return new List<ItemData>();
             }
@@ -438,7 +442,7 @@ namespace PoGo.PokeMobBot.Logic
             var amountOfRevivesToKeep = _logicSettings.TotalAmountOfRevivesToKeep;
             if (amountOfRevivesToKeep < 1)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.RevivesToKeepIncorrect),
+                _logger.Write(session.Translation.GetTranslation(TranslationString.RevivesToKeepIncorrect),
                     LogLevel.Error, ConsoleColor.Red);
                 return new List<ItemData>();
             }

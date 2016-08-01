@@ -16,48 +16,55 @@ namespace PoGo.PokeMobBot.CLI
 {
     public class ConsoleEventListener
     {
+        private readonly ILogger _logger;
+
+        public ConsoleEventListener(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         public void HandleEvent(ProfileEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventProfileLogin,
+            _logger.Write(session.Translation.GetTranslation(TranslationString.EventProfileLogin,
                 evt.Profile.PlayerData.Username ?? ""));
         }
 
         public void HandleEvent(ErrorEvent evt, ISession session)
         {
-            Logger.Write(evt.ToString(), LogLevel.Error);
+            _logger.Write(evt.ToString(), LogLevel.Error);
         }
 
         public void HandleEvent(NoticeEvent evt, ISession session)
         {
-            Logger.Write(evt.ToString());
+            _logger.Write(evt.ToString());
         }
 
         public void HandleEvent(WarnEvent evt, ISession session)
         {
-            Logger.Write(evt.ToString(), LogLevel.Warning);
+            _logger.Write(evt.ToString(), LogLevel.Warning);
 
             if (evt.RequireInput)
             {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.RequireInputText));
+                _logger.Write(session.Translation.GetTranslation(TranslationString.RequireInputText));
                 Console.ReadKey();
             }
         }
 
         public void HandleEvent(UseLuckyEggEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventUsedLuckyEgg, evt.Count),
+            _logger.Write(session.Translation.GetTranslation(TranslationString.EventUsedLuckyEgg, evt.Count),
                 LogLevel.Egg);
         }
 
         public void HandleEvent(UseLuckyEggMinPokemonEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff, evt.CurrCount, evt.MinPokemon),
+            _logger.Write(session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff, evt.CurrCount, evt.MinPokemon),
                 LogLevel.Info);
         }
 
         public void HandleEvent(PokemonEvolveEvent evt, ISession session)
         {
-            Logger.Write(evt.Result == EvolvePokemonResponse.Types.Result.Success
+            _logger.Write(evt.Result == EvolvePokemonResponse.Types.Result.Success
                 ? session.Translation.GetTranslation(TranslationString.EventPokemonEvolvedSuccess, evt.Id, evt.Exp)
                 : session.Translation.GetTranslation(TranslationString.EventPokemonEvolvedFailed, evt.Id, evt.Result,
                     evt.Id),
@@ -66,7 +73,7 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(TransferPokemonEvent evt, ISession session)
         {
-            Logger.Write(
+            _logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventPokemonTransferred, evt.Id, evt.Cp,
                     evt.Perfection.ToString("0.00"), evt.BestCp, evt.BestPerfection.ToString("0.00"), evt.FamilyCandies),
                 LogLevel.Transfer);
@@ -74,13 +81,13 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(ItemRecycledEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventItemRecycled, evt.Count, evt.Id),
+            _logger.Write(session.Translation.GetTranslation(TranslationString.EventItemRecycled, evt.Count, evt.Id),
                 LogLevel.Recycling);
         }
 
         public void HandleEvent(EggIncubatorStatusEvent evt, ISession session)
         {
-            Logger.Write(evt.WasAddedNow
+            _logger.Write(evt.WasAddedNow
                 ? session.Translation.GetTranslation(TranslationString.IncubatorPuttingEgg, evt.KmRemaining)
                 : session.Translation.GetTranslation(TranslationString.IncubatorStatusUpdate, evt.KmRemaining),
                 LogLevel.Egg);
@@ -88,7 +95,7 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(EggHatchedEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.IncubatorEggHatched,
+            _logger.Write(session.Translation.GetTranslation(TranslationString.IncubatorEggHatched,
                 evt.PokemonId.ToString(), evt.Level, evt.Cp, evt.MaxCp, evt.Perfection),
                 LogLevel.Egg);
         }
@@ -98,7 +105,7 @@ namespace PoGo.PokeMobBot.CLI
             var itemString = evt.InventoryFull
                 ? session.Translation.GetTranslation(TranslationString.InvFullPokestopLooting)
                 : evt.Items;
-            Logger.Write(
+            _logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventFortUsed, evt.Name, evt.Exp, evt.Gems,
                     itemString),
                 LogLevel.Pokestop);
@@ -106,14 +113,14 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(FortFailedEvent evt, ISession session)
         {
-            Logger.Write(
+            _logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventFortFailed, evt.Name, evt.Try, evt.Max),
                 LogLevel.Pokestop, ConsoleColor.DarkRed);
         }
 
         public void HandleEvent(FortTargetEvent evt, ISession session)
         {
-            Logger.Write(
+            _logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventFortTargeted, evt.Name,
                     Math.Round(evt.Distance)),
                 LogLevel.Info, ConsoleColor.DarkRed);
@@ -171,7 +178,7 @@ namespace PoGo.PokeMobBot.CLI
                 ? session.Translation.GetTranslation(TranslationString.Candies, evt.FamilyCandies)
                 : "";
 
-            Logger.Write(
+            _logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType, evt.Id,
                     evt.Level, evt.Cp, evt.MaxCp, evt.Perfection.ToString("0.00"), evt.Probability,
                     evt.Distance.ToString("F2"),
@@ -180,19 +187,19 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(NoPokeballEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, evt.Id, evt.Cp),
+            _logger.Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, evt.Id, evt.Cp),
                 LogLevel.Caught);
         }
 
         public void HandleEvent(UseBerryEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, evt.Count),
+            _logger.Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, evt.Count),
                 LogLevel.Berry);
         }
 
         public void HandleEvent(SnipeScanEvent evt, ISession session)
         {
-            Logger.Write(evt.PokemonId == PokemonId.Missingno
+            _logger.Write(evt.PokemonId == PokemonId.Missingno
                 ? session.Translation.GetTranslation(TranslationString.SnipeScan,
                     $"{evt.Bounds.Latitude},{evt.Bounds.Longitude}")
                 : session.Translation.GetTranslation(TranslationString.SnipeScanEx, evt.PokemonId,
@@ -228,16 +235,16 @@ namespace PoGo.PokeMobBot.CLI
             var strPerfect = session.Translation.GetTranslation(TranslationString.CommonWordPerfect);
             var strName = session.Translation.GetTranslation(TranslationString.CommonWordName).ToUpper();
 
-            Logger.Write($"====== {strHeader} ======", LogLevel.Info, ConsoleColor.Yellow);
+            _logger.Write($"====== {strHeader} ======", LogLevel.Info, ConsoleColor.Yellow);
             foreach (var pokemon in evt.PokemonList)
-                Logger.Write(
+                _logger.Write(
                     $"# CP {pokemon.Item1.Cp.ToString().PadLeft(4, ' ')}/{pokemon.Item2.ToString().PadLeft(4, ' ')} | ({pokemon.Item3.ToString("0.00")}% {strPerfect})\t| Lvl {pokemon.Item4.ToString("00")}\t {strName}: {pokemon.Item1.PokemonId.ToString().PadRight(10, ' ')}\t MOVE1: {pokemon.Item5.ToString().PadRight(20, ' ')} MOVE2: {pokemon.Item6}",
                     LogLevel.Info, ConsoleColor.Yellow);
         }
 
         public void HandleEvent(UpdateEvent evt, ISession session)
         {
-            Logger.Write(evt.ToString(), LogLevel.Update);
+            _logger.Write(evt.ToString(), LogLevel.Update);
         }
 
         public void Listen(IEvent evt, ISession session)

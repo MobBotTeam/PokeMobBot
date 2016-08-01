@@ -2,14 +2,19 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.Threading;
+using log4net.Repository.Hierarchy;
+using Ninject;
 using PoGo.PokeMobBot.Logic;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.Repository;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
 using PoGo.PokeMobBot.Logic.Utils;
+using PokemonGo.RocketAPI;
 
 #endregion
 
@@ -28,15 +33,25 @@ namespace PoGo.PokeMobBot.CLI
             if (args.Length > 0)
                 subPath = args[0];
 
-            Logger.SetLogger(new ConsoleLogger(LogLevel.Info), subPath);
+            IKernel kernel = new StandardKernel();
+            kernel.Bind<Client>().To<Client>().InSingletonScope();
+            kernel.Bind<ISettings>().To<ClientSettings>();
+            kernel.Bind<ILogicSettings>().To<LogicSettings>();
+            kernel.Bind<ISession>().To<Session>().InSingletonScope();
+            kernel.Bind<ILogger>().To<ConsoleLogger>().WithConstructorArgument(LogLevel.Info);
 
-            var settings = GlobalSettings.Load(subPath);
+            var logger = kernel.Get<ILogger>();
+
+            var globalSettingsRepository = kernel.Get<GlobalSettingsRepository>();
+
+            var settings = globalSettingsRepository.Get(subPath);
+            kernel.Bind<GlobalSettings>().ToConstant(settings);
 
 
             if (settings == null)
             {
-                Logger.Write("This is your first start and the bot has generated the default config!", LogLevel.Warning);
-                Logger.Write("After pressing a key the config folder will open and this commandline will close", LogLevel.Warning);
+                logger.Write("This is your first start and the bot has generated the default config!", LogLevel.Warning);
+                logger.Write("After pressing a key the config folder will open and this commandline will close", LogLevel.Warning);
 
                 //pauses console until keyinput
                 Console.ReadKey();
@@ -50,7 +65,8 @@ namespace PoGo.PokeMobBot.CLI
                 });
                 Environment.Exit(0);
             }
-            var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
+            //var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
+            var session = kernel.Get<Session>();
             session.Client.ApiFailure = new ApiFailureStrategy(session);
 
 
@@ -80,23 +96,24 @@ namespace PoGo.PokeMobBot.CLI
                             session.Translation.GetTranslation(TranslationString.StatsXpTemplateString));
 
             var aggregator = new StatisticsAggregator(stats);
-            var listener = new ConsoleEventListener();
-            var websocket = new WebSocketInterface(settings.WebSocketPort, session);
+            var listener = kernel.Get<ConsoleEventListener>();
+            var websocket = kernel.Get<WebSocketInterface>();
 
             session.EventDispatcher.EventReceived += evt => listener.Listen(evt, session);
             session.EventDispatcher.EventReceived += evt => aggregator.Listen(evt, session);
             session.EventDispatcher.EventReceived += evt => websocket.Listen(evt, session);
 
-            machine.SetFailureState(new LoginState());
-
-            Logger.SetLoggerContext(session);
+            machine.SetFailureState(kernel.Get<LoginState>());
 
             session.Navigation.UpdatePositionEvent +=
-                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
+                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
 
-            machine.AsyncStart(new VersionCheckState(), session);
+            machine.AsyncStart(kernel.Get<VersionCheckState>(), session);
             if (session.LogicSettings.UseSnipeLocationServer)
-                SnipePokemonTask.AsyncStart(session);
+            {
+                var snipePokemonTask = kernel.Get<SnipePokemonTask>();
+                snipePokemonTask.AsyncStart(session);
+            }
 
             //Non-blocking key reader
             //This will allow to process console key presses in another code parts

@@ -15,7 +15,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class RenamePokemonTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly PokemonInfo _pokemonInfo;
+
+        public RenamePokemonTask(PokemonInfo pokemonInfo)
+        {
+            _pokemonInfo = pokemonInfo;
+        }
+
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -25,7 +32,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var perfection = Math.Round(PokemonInfo.CalculatePokemonPerfection(pokemon));
+                var perfection = Math.Round(_pokemonInfo.CalculatePokemonPerfection(pokemon));
                 var pokemonName = pokemon.PokemonId.ToString();
                 // iv number + templating part + pokemonName <= 12
                 var nameLength = 12 -

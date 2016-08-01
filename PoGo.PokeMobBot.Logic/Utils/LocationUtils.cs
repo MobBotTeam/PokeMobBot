@@ -7,9 +7,9 @@ using GeoCoordinatePortable;
 
 namespace PoGo.PokeMobBot.Logic.Utils
 {
-    public static class LocationUtils
+    public class LocationUtils
     {
-        public static double CalculateDistanceInMeters(double sourceLat, double sourceLng, double destLat,
+        public double CalculateDistanceInMeters(double sourceLat, double sourceLng, double destLat,
             double destLng)
             // from http://stackoverflow.com/questions/6366408/calculating-distance-between-two-latitude-and-longitude-geocoordinates
         {
@@ -19,13 +19,13 @@ namespace PoGo.PokeMobBot.Logic.Utils
             return sourceLocation.GetDistanceTo(targetLocation);
         }
 
-        public static double CalculateDistanceInMeters(GeoCoordinate sourceLocation, GeoCoordinate destinationLocation)
+        public double CalculateDistanceInMeters(GeoCoordinate sourceLocation, GeoCoordinate destinationLocation)
         {
             return CalculateDistanceInMeters(sourceLocation.Latitude, sourceLocation.Longitude,
                 destinationLocation.Latitude, destinationLocation.Longitude);
         }
 
-        public static GeoCoordinate CreateWaypoint(GeoCoordinate sourceLocation, double distanceInMeters,
+        public GeoCoordinate CreateWaypoint(GeoCoordinate sourceLocation, double distanceInMeters,
             double bearingDegrees)
             //from http://stackoverflow.com/a/17545955
         {
@@ -53,7 +53,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
             return new GeoCoordinate(ToDegrees(targetLatitudeRadians), ToDegrees(targetLongitudeRadians));
         }
 
-        public static GeoCoordinate CreateWaypoint(GeoCoordinate sourceLocation, double distanceInMeters,
+        public GeoCoordinate CreateWaypoint(GeoCoordinate sourceLocation, double distanceInMeters,
             double bearingDegrees, double altitude)
             //from http://stackoverflow.com/a/17545955
         {
@@ -81,7 +81,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
             return new GeoCoordinate(ToDegrees(targetLatitudeRadians), ToDegrees(targetLongitudeRadians), altitude);
         }
 
-        public static double DegreeBearing(GeoCoordinate sourceLocation, GeoCoordinate targetLocation)
+        public double DegreeBearing(GeoCoordinate sourceLocation, GeoCoordinate targetLocation)
             // from http://stackoverflow.com/questions/2042599/direction-between-2-latitude-longitude-points-in-c-sharp
         {
             var dLon = ToRad(targetLocation.Longitude - sourceLocation.Longitude);
@@ -93,18 +93,18 @@ namespace PoGo.PokeMobBot.Logic.Utils
             return ToBearing(Math.Atan2(dLon, dPhi));
         }
 
-        public static double ToBearing(double radians)
+        public double ToBearing(double radians)
         {
             // convert radians to degrees (as bearing: 0...360)
             return (ToDegrees(radians) + 360)%360;
         }
 
-        public static double ToDegrees(double radians)
+        public double ToDegrees(double radians)
         {
             return radians*180/Math.PI;
         }
 
-        public static double ToRad(double degrees)
+        public double ToRad(double degrees)
         {
             return degrees*(Math.PI/180);
         }

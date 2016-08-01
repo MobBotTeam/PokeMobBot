@@ -13,10 +13,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class PokemonListTask
     {
-        public static async Task Execute(ISession session)
+        private readonly PokemonInfo _pokemonInfo;
+
+        public PokemonListTask(PokemonInfo pokemonInfo)
+        {
+            _pokemonInfo = pokemonInfo;
+        }
+
+        public async Task Execute(ISession session)
         {
             var allPokemonInBag = await session.Inventory.GetHighestsCp(1000);
-            var pkmWithIv = allPokemonInBag.Select(p => Tuple.Create(p, PokemonInfo.CalculatePokemonPerfection(p)));
+            var pkmWithIv = allPokemonInBag.Select(p => Tuple.Create(p, _pokemonInfo.CalculatePokemonPerfection(p)));
             session.EventDispatcher.Send(
                 new PokemonListEvent
                 {

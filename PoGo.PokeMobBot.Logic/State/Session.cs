@@ -24,13 +24,15 @@ namespace PoGo.PokeMobBot.Logic.State
 
     public class Session : ISession
     {
-        public Session(ISettings settings, ILogicSettings logicSettings)
+        public Session(ISettings settings, ILogicSettings logicSettings, Translation translation, Inventory inventory, Navigation navigation, Client client)
         {
             Settings = settings;
             LogicSettings = logicSettings;
             EventDispatcher = new EventDispatcher();
-            Translation = Common.Translation.Load(logicSettings);
-            Reset(settings, LogicSettings);
+            Translation = translation;
+            Inventory = inventory;
+            Navigation = navigation;
+            Client = client;
         }
 
         public ISettings Settings { get; }
@@ -47,13 +49,5 @@ namespace PoGo.PokeMobBot.Logic.State
         public ITranslation Translation { get; }
 
         public IEventDispatcher EventDispatcher { get; }
-
-        public void Reset(ISettings settings, ILogicSettings logicSettings)
-        {
-            Client = new Client(Settings) {AuthType = settings.AuthType};
-            // ferox wants us to set this manually
-            Inventory = new Inventory(Client, logicSettings);
-            Navigation = new Navigation(Client);
-        }
     }
 }

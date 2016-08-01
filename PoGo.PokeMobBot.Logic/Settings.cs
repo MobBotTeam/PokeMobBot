@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.AccessControl;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PoGo.PokeMobBot.Logic.Logging;
@@ -15,7 +16,7 @@ using POGOProtos.Inventory.Item;
 
 namespace PoGo.PokeMobBot.Logic
 {
-    internal class AuthSettings
+    public class AuthSettings
     {
         [JsonIgnore]
         private string _filePath;
@@ -25,73 +26,6 @@ namespace PoGo.PokeMobBot.Logic
         public string GooglePassword;
         public string PtcUsername;
         public string PtcPassword;
-
-        public void Load(string path)
-        {
-            try
-            {
-                _filePath = path;
-
-                if (File.Exists(_filePath))
-                {
-                    //if the file exists, load the settings
-                    var input = File.ReadAllText(_filePath);
-
-                    var settings = new JsonSerializerSettings();
-                    settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
-
-                    JsonConvert.PopulateObject(input, this, settings);
-                }
-                else
-                {
-                    Save(_filePath);
-                }
-            }
-            catch (JsonReaderException exception)
-            {
-                if (exception.Message.Contains("Unexpected character") && exception.Message.Contains("PtcUsername"))
-                    Logger.Write("JSON Exception: You need to properly configure your PtcUsername using quotations.",
-                        LogLevel.Error);
-                else if (exception.Message.Contains("Unexpected character") && exception.Message.Contains("PtcPassword"))
-                    Logger.Write(
-                        "JSON Exception: You need to properly configure your PtcPassword using quotations.",
-                        LogLevel.Error);
-                else if (exception.Message.Contains("Unexpected character") &&
-                         exception.Message.Contains("GoogleUsername"))
-                    Logger.Write(
-                        "JSON Exception: You need to properly configure your GoogleUsername using quotations.",
-                        LogLevel.Error);
-                else if (exception.Message.Contains("Unexpected character") &&
-                         exception.Message.Contains("GooglePassword"))
-                    Logger.Write(
-                        "JSON Exception: You need to properly configure your GooglePassword using quotations.",
-                        LogLevel.Error);
-                else
-                    Logger.Write("JSON Exception: " + exception.Message, LogLevel.Error);
-            }
-        }
-
-        public void Save(string path)
-        {
-            var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter { CamelCaseText = true });
-
-            var folder = Path.GetDirectoryName(path);
-            if (folder != null && !Directory.Exists(folder))
-            {
-                Directory.CreateDirectory(folder);
-            }
-
-            File.WriteAllText(path, output);
-        }
-
-        public void Save()
-        {
-            if (!string.IsNullOrEmpty(_filePath))
-            {
-                Save(_filePath);
-            }
-        }
     }
 
     public class GlobalSettings
@@ -105,7 +39,7 @@ namespace PoGo.PokeMobBot.Logic
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
         [JsonIgnore]
-        internal AuthSettings Auth = new AuthSettings();
+        internal AuthSettings Auth;
         [JsonIgnore]
         public string GeneralConfigPath;
         [JsonIgnore]
@@ -418,75 +352,11 @@ namespace PoGo.PokeMobBot.Logic
             PokemonId.Mewtwo
         };
 
-        public static GlobalSettings Default => new GlobalSettings();
-        
-        public static GlobalSettings Load(string path)
+        private readonly ILogger _logger;
+
+        public GlobalSettings(AuthSettings auth)
         {
-            GlobalSettings settings;
-            var profilePath = Path.Combine(Directory.GetCurrentDirectory(), path);
-            var profileConfigPath = Path.Combine(profilePath, "config");
-            var configFile = Path.Combine(profileConfigPath, "config.json");
-
-            if (File.Exists(configFile))
-            {
-                try
-                {
-                    //if the file exists, load the settings
-                    var input = File.ReadAllText(configFile);
-
-                    var jsonSettings = new JsonSerializerSettings();
-                    jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
-                    jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
-                    jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-
-                    settings = JsonConvert.DeserializeObject<GlobalSettings>(input, jsonSettings);
-                }
-                catch (JsonReaderException exception)
-                {
-                    Logger.Write("JSON Exception: " + exception.Message, LogLevel.Error);
-                    return null;
-                }
-            }
-            else
-            {
-                settings = new GlobalSettings();
-            }
-
-            if (settings.WebSocketPort == 0)
-            {
-                settings.WebSocketPort = 14251;
-            }
-
-            if (settings.PokemonToSnipe == null)
-            {
-                settings.PokemonToSnipe = Default.PokemonToSnipe;
-            }
-
-            if (settings.RenameTemplate == null)
-            {
-                settings.RenameTemplate = Default.RenameTemplate;
-            }
-
-            if (settings.SnipeLocationServer == null)
-            {
-                settings.SnipeLocationServer = Default.SnipeLocationServer;
-            }
-
-            settings.ProfilePath = profilePath;
-            settings.ProfileConfigPath = profileConfigPath;
-            settings.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
-
-            var firstRun = !File.Exists(configFile);
-
-            settings.Save(configFile);
-            settings.Auth.Load(Path.Combine(profileConfigPath, "auth.json"));
-
-            if (firstRun)
-            {
-                return null;
-            }
-
-            return settings;
+            Auth = auth;
         }
 
         public void Save(string fullPath)
@@ -525,7 +395,7 @@ namespace PoGo.PokeMobBot.Logic
             set
             {
                 _settings.Auth.GoogleRefreshToken = value;
-                _settings.Auth.Save();
+                //_settings.Auth.Save(); // TODO: fix
             }
         }
 

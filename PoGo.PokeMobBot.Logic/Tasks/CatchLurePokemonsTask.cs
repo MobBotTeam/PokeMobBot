@@ -13,13 +13,24 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class CatchLurePokemonsTask
+    public class CatchLurePokemonsTask
     {
-        public static async Task Execute(ISession session, FortData currentFortData, CancellationToken cancellationToken)
+        private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
+        private readonly CatchPokemonTask _catchPokemonTask;
+        private readonly ILogger _logger;
+
+        public CatchLurePokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, ILogger logger)
+        {
+            _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
+            _catchPokemonTask = catchPokemonTask;
+            _logger = logger;
+        }
+
+        public async Task Execute(ISession session, FortData currentFortData, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForLurePokemon), LogLevel.Debug);
+            _logger.Write(session.Translation.GetTranslation(TranslationString.LookingForLurePokemon), LogLevel.Debug);
 
             var fortId = currentFortData.Id;
 
@@ -40,7 +51,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (encounter.Result == DiskEncounterResponse.Types.Result.Success)
                 {
-                    await CatchPokemonTask.Execute(session, encounter, null, currentFortData, encounterId);
+                    await _catchPokemonTask.Execute(session, encounter, null, currentFortData, encounterId);
                 }
                 else if (encounter.Result == DiskEncounterResponse.Types.Result.PokemonInventoryFull)
                 {
@@ -50,7 +61,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         {
                             Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
                         });
-                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+
+                        await _transferDuplicatePokemonTask.Execute(session, cancellationToken);
                     }
                     else
                         session.EventDispatcher.Send(new WarnEvent

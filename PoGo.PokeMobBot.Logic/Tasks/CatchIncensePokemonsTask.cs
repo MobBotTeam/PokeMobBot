@@ -14,13 +14,26 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class CatchIncensePokemonsTask
+    public class CatchIncensePokemonsTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
+        private readonly CatchPokemonTask _catchPokemonTask;
+        private readonly LocationUtils _locationUtils;
+        private readonly ILogger _logger;
+
+        public CatchIncensePokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, LocationUtils locationUtils, ILogger logger)
+        {
+            _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
+            _catchPokemonTask = catchPokemonTask;
+            _locationUtils = locationUtils;
+            _logger = logger;
+        }
+
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForIncensePokemon), LogLevel.Debug);
+            _logger.Write(session.Translation.GetTranslation(TranslationString.LookingForIncensePokemon), LogLevel.Debug);
 
             var incensePokemon = await session.Client.Map.GetIncensePokemons();
             if (incensePokemon.Result == GetIncensePokemonResponse.Types.Result.IncenseEncounterAvailable)
@@ -38,15 +51,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.UsePokemonToNotCatchFilter &&
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
-                    Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonIgnoreFilter,
+                    _logger.Write(session.Translation.GetTranslation(TranslationString.PokemonIgnoreFilter,
                         pokemon.PokemonId));
                 }
                 else
                 {
-                    var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                    var distance = _locationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                         session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
                     if(session.LogicSettings.Teleport)
-                        await Task.Delay(session.LogicSettings.DelayCatchIncensePokemon);
+                        await Task.Delay(session.LogicSettings.DelayCatchIncensePokemon, cancellationToken);
                     else
                         await Task.Delay(distance > 100 ? 3000 : 500, cancellationToken);
 
@@ -57,7 +70,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                     if (encounter.Result == IncenseEncounterResponse.Types.Result.IncenseEncounterSuccess)
                     {
-                        await CatchPokemonTask.Execute(session, encounter, pokemon);
+                        await _catchPokemonTask.Execute(session, encounter, pokemon);
                     }
                     else if (encounter.Result == IncenseEncounterResponse.Types.Result.PokemonInventoryFull)
                     {
@@ -67,7 +80,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             {
                                 Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
                             });
-                            await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                            await _transferDuplicatePokemonTask.Execute(session, cancellationToken);
                         }
                         else
                             session.EventDispatcher.Send(new WarnEvent

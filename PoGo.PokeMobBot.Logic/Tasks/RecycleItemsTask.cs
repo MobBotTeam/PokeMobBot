@@ -12,7 +12,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class RecycleItemsTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly DelayingUtils _delayingUtils;
+
+        public RecycleItemsTask(DelayingUtils delayingUtils)
+        {
+            _delayingUtils = delayingUtils;
+        }
+
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -26,9 +33,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 session.EventDispatcher.Send(new ItemRecycledEvent {Id = item.ItemId, Count = item.Count});
                 if (session.LogicSettings.Teleport)
-                    await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                    await Task.Delay(session.LogicSettings.DelayRecyleItem, cancellationToken);
                 else
-                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                    await _delayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
             }
                 await session.Inventory.RefreshCachedInventory();
         }

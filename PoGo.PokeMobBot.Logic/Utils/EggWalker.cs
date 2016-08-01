@@ -9,17 +9,18 @@ using PoGo.PokeMobBot.Logic.Tasks;
 
 namespace PoGo.PokeMobBot.Logic.Utils
 {
-    internal class EggWalker
+    public class EggWalker
     {
-        private readonly double _checkInterval;
+        private readonly double _checkInterval = 1000; // TODO: check for real value
         private readonly ISession _session;
+        private readonly UseIncubatorsTask _useIncubatorsTask;
 
         private double _distanceTraveled;
 
-        public EggWalker(double checkIncubatorsIntervalMeters, ISession session)
+        public EggWalker(ISession session, UseIncubatorsTask useIncubatorsTask)
         {
-            _checkInterval = checkIncubatorsIntervalMeters;
             _session = session;
+            _useIncubatorsTask = useIncubatorsTask;
         }
 
         public async Task ApplyDistance(double distanceTraveled, CancellationToken cancellationToken)
@@ -32,7 +33,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
             _distanceTraveled += distanceTraveled;
             if (_distanceTraveled > _checkInterval)
             {
-                await UseIncubatorsTask.Execute(_session, cancellationToken);
+                await _useIncubatorsTask.Execute(_session, cancellationToken);
                 _distanceTraveled = 0;
             }
         }

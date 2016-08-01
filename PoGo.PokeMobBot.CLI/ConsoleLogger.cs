@@ -23,7 +23,7 @@ namespace PoGo.PokeMobBot.CLI
         /// All levels above won't be logged.
         /// </summary>
         /// <param name="maxLogLevel"></param>
-        internal ConsoleLogger(LogLevel maxLogLevel)
+        public ConsoleLogger(LogLevel maxLogLevel)
         {
             _maxLogLevel = maxLogLevel;
         }

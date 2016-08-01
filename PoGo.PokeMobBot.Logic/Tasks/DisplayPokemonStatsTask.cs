@@ -15,12 +15,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class DisplayPokemonStatsTask
     {
-        public static List<ulong> PokemonId = new List<ulong>();
+        private readonly Dumper _dumper;
+        private readonly PokemonInfo _pokemonInfo;
 
+        public List<ulong> PokemonId = new List<ulong>();
+        
+        public List<ulong> PokemonIdcp = new List<ulong>();
 
-        public static List<ulong> PokemonIdcp = new List<ulong>();
+        public DisplayPokemonStatsTask(Dumper dumper, PokemonInfo pokemonInfo)
+        {
+            _dumper = dumper;
+            _pokemonInfo = pokemonInfo;
+        }
 
-        public static async Task Execute(ISession session)
+        public async Task Execute(ISession session)
         {
             var highestsPokemonCp =
                 await session.Inventory.GetHighestsCp(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
@@ -29,30 +37,30 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var pokemonPairedWithStatsCp =
                 highestsPokemonCp.Select(
                     pokemon =>
-                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon),
-                            PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
-                            PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).ToList();
+                        Tuple.Create(pokemon, _pokemonInfo.CalculateMaxCp(pokemon),
+                            _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
+                            _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).ToList();
             var pokemonPairedWithStatsCpForUpgrade =
                 highestsPokemonCpForUpgrade.Select(
                     pokemon =>
-                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon),
-                            PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
-                            PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).ToList();
+                        Tuple.Create(pokemon, _pokemonInfo.CalculateMaxCp(pokemon),
+                            _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
+                            _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).ToList();
             var highestsPokemonPerfect =
                 await session.Inventory.GetHighestsPerfect(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
 
             var pokemonPairedWithStatsIv =
                 highestsPokemonPerfect.Select(
                     pokemon =>
-                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon),
-                            PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
-                            PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).ToList();
+                        Tuple.Create(pokemon, _pokemonInfo.CalculateMaxCp(pokemon),
+                            _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
+                            _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).ToList();
             var pokemonPairedWithStatsIvForUpgrade =
                 highestsPokemonIvForUpgrade.Select(
                     pokemon =>
-                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon),
-                            PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
-                            PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).ToList();
+                        Tuple.Create(pokemon, _pokemonInfo.CalculateMaxCp(pokemon),
+                            _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
+                            _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).ToList();
 
             session.EventDispatcher.Send(
                 new DisplayHighestsPokemonEvent
@@ -103,11 +111,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (session.LogicSettings.DumpPokemonStats)
             {
                 const string dumpFileName = "PokeBagStats";
-                Dumper.ClearDumpFile(session, dumpFileName);
+                _dumper.ClearDumpFile(session, dumpFileName);
                 foreach (var pokemon in allPokemonInBag)
                 {
-                    Dumper.Dump(session,
-                        $"NAME: {pokemon.PokemonId.ToString().PadRight(16, ' ')}Lvl: {PokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}",
+                    _dumper.Dump(session,
+                        $"NAME: {pokemon.PokemonId.ToString().PadRight(16, ' ')}Lvl: {_pokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {_pokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}",
                         dumpFileName);
                 }
             }

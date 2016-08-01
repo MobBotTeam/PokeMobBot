@@ -12,7 +12,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class EggsListTask
     {
-        public static async Task Execute(ISession session)
+        public async Task Execute(ISession session)
         {
             var incubators = (await session.Inventory.GetEggIncubators())
                 .Where(x => x.UsesRemaining > 0 || x.ItemId == ItemId.ItemIncubatorBasicUnlimited)

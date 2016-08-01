@@ -19,15 +19,48 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class FarmPokestopsTask
+    public class FarmPokestopsTask
     {
-        public static int TimesZeroXPawarded;
+        private readonly RecycleItemsTask _recycleItemsTask;
+        private readonly EvolvePokemonTask _evolvePokemonTask;
+        private readonly LevelUpPokemonTask _levelUpPokemonTask;
+        private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
+        private readonly RenamePokemonTask _renamePokemonTask;
+        private readonly SnipePokemonTask _snipePokemonTask;
+        private readonly EggWalker _eggWalker;
+        private readonly CatchNearbyPokemonsTask _catchNearbyPokemonsTask;
+        private readonly CatchIncensePokemonsTask _catchIncensePokemonsTask;
+        private readonly CatchLurePokemonsTask _catchLurePokemonsTask;
+        private readonly DelayingUtils _delayingUtils;
+        private readonly LocationUtils _locationUtils;
+        private readonly StringUtils _stringUtils;
+        private readonly ILogger _logger;
 
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        public int TimesZeroXPawarded;
+
+        public FarmPokestopsTask(RecycleItemsTask recycleItemsTask, EvolvePokemonTask evolvePokemonTask, LevelUpPokemonTask levelUpPokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, SnipePokemonTask snipePokemonTask, EggWalker eggWalker, CatchNearbyPokemonsTask catchNearbyPokemonsTask, CatchIncensePokemonsTask catchIncensePokemonsTask, CatchLurePokemonsTask catchLurePokemonsTask, DelayingUtils delayingUtils, LocationUtils locationUtils, StringUtils stringUtils, ILogger logger)
+        {
+            _logger = logger;
+            _recycleItemsTask = recycleItemsTask;
+            _evolvePokemonTask = evolvePokemonTask;
+            _levelUpPokemonTask = levelUpPokemonTask;
+            _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
+            _renamePokemonTask = renamePokemonTask;
+            _snipePokemonTask = snipePokemonTask;
+            _eggWalker = eggWalker;
+            _catchNearbyPokemonsTask = catchNearbyPokemonsTask;
+            _catchIncensePokemonsTask = catchIncensePokemonsTask;
+            _catchLurePokemonsTask = catchLurePokemonsTask;
+            _delayingUtils = delayingUtils;
+            _locationUtils = locationUtils;
+            _stringUtils = stringUtils;
+        }
+
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var distanceFromStart = LocationUtils.CalculateDistanceInMeters(
+            var distanceFromStart = _locationUtils.CalculateDistanceInMeters(
                 session.Settings.DefaultLatitude, session.Settings.DefaultLongitude,
                 session.Client.CurrentLatitude, session.Client.CurrentLongitude);
 
@@ -35,7 +68,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (session.LogicSettings.MaxTravelDistanceInMeters != 0 &&
                 distanceFromStart > session.LogicSettings.MaxTravelDistanceInMeters)
             {
-                Logger.Write(
+                _logger.Write(
                     session.Translation.GetTranslation(TranslationString.FarmPokestopsOutsideRadius, distanceFromStart),
                     LogLevel.Warning);
 
@@ -48,7 +81,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var pokestopList = await GetPokeStops(session);
             var stopsHit = 0;
-            var eggWalker = new EggWalker(1000, session);
 
             if (pokestopList.Count <= 0)
             {
@@ -68,12 +100,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 pokestopList =
                     pokestopList.OrderBy(
                         i =>
-                            LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                            _locationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                                 session.Client.CurrentLongitude, i.Latitude, i.Longitude)).ToList();
                 var pokeStop = pokestopList[0];
                 pokestopList.RemoveAt(0);
 
-                var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                var distance = _locationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                     session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
@@ -87,9 +119,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     async () =>
                     {
                         // Catch normal map Pokemon
-                        await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                        await _catchNearbyPokemonsTask.Execute(session, cancellationToken);
                         //Catch Incense Pokemon
-                        await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                        await _catchIncensePokemonsTask.Execute(session, cancellationToken);
                         return true;
                     }, cancellationToken);
 
@@ -127,9 +159,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 Max = retryNumber - zeroCheck
                             });
                             if(session.LogicSettings.Teleport)
-                                await Task.Delay(session.LogicSettings.DelaySoftbanRetry);
+                                await Task.Delay(session.LogicSettings.DelaySoftbanRetry, cancellationToken);
                             else
-                                await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
+                                await _delayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
                         }
                     }
                     else
@@ -140,7 +172,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Name = fortInfo.Name,
                             Exp = fortSearch.ExperienceAwarded,
                             Gems = fortSearch.GemsAwarded,
-                            Items = StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded),
+                            Items = _stringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded),
                             Latitude = pokeStop.Latitude,
                             Longitude = pokeStop.Longitude,
                             InventoryFull = fortSearch.Result == FortSearchResponse.Types.Result.InventoryFull
@@ -163,12 +195,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (pokeStop.LureInfo != null)
                 {
-                    await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                    await _catchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
                 }
                 if(session.LogicSettings.Teleport)
-                    await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                    await _catchNearbyPokemonsTask.Execute(session, cancellationToken);
 
-                await eggWalker.ApplyDistance(distance, cancellationToken);
+                await _eggWalker.ApplyDistance(distance, cancellationToken);
 
                 if (++stopsHit%5 == 0) //TODO: OR item/pokemon bag is full
                 {
@@ -177,34 +209,34 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     {
                         await session.Inventory.RefreshCachedInventory();
                     }
-                    await RecycleItemsTask.Execute(session, cancellationToken);
+                    await _recycleItemsTask.Execute(session, cancellationToken);
                     if (session.LogicSettings.EvolveAllPokemonWithEnoughCandy ||
                         session.LogicSettings.EvolveAllPokemonAboveIv)
                     {
-                        await EvolvePokemonTask.Execute(session, cancellationToken);
+                        await _evolvePokemonTask.Execute(session, cancellationToken);
                     }
                     if (session.LogicSettings.AutomaticallyLevelUpPokemon)
                     {
-                        await LevelUpPokemonTask.Execute(session, cancellationToken);
+                        await _levelUpPokemonTask.Execute(session, cancellationToken);
                     }
                     if (session.LogicSettings.TransferDuplicatePokemon)
                     {
-                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                        await _transferDuplicatePokemonTask.Execute(session, cancellationToken);
                     }
                     if (session.LogicSettings.RenamePokemon)
                     {
-                        await RenamePokemonTask.Execute(session, cancellationToken);
+                        await _renamePokemonTask.Execute(session, cancellationToken);
                     }
                 }
 
                 if (session.LogicSettings.SnipeAtPokestops || session.LogicSettings.UseSnipeLocationServer)
                 {
-                    await SnipePokemonTask.Execute(session, cancellationToken);
+                    await _snipePokemonTask.Execute(session, cancellationToken);
                 }
             }
         }
 
-        private static async Task<List<FortData>> GetPokeStops(ISession session)
+        private async Task<List<FortData>> GetPokeStops(ISession session)
         {
             var mapObjects = await session.Client.Map.GetMapObjects();
 
@@ -215,7 +247,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         i.Type == FortType.Checkpoint &&
                         i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
                         ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
-                            LocationUtils.CalculateDistanceInMeters(
+                            _locationUtils.CalculateDistanceInMeters(
                                 session.Settings.DefaultLatitude, session.Settings.DefaultLongitude,
                                 i.Latitude, i.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters) ||
                         session.LogicSettings.MaxTravelDistanceInMeters == 0

@@ -16,13 +16,26 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class CatchNearbyPokemonsTask
+    public class CatchNearbyPokemonsTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
+        private readonly CatchPokemonTask _catchPokemonTask;
+        private readonly LocationUtils _locationUtils;
+        private readonly ILogger _logger;
+
+        public CatchNearbyPokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, LocationUtils locationUtils, ILogger logger)
+        {
+            _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
+            _catchPokemonTask = catchPokemonTask;
+            _locationUtils = locationUtils;
+            _logger = logger;
+        }
+
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForPokemon), LogLevel.Debug);
+            _logger.Write(session.Translation.GetTranslation(TranslationString.LookingForPokemon), LogLevel.Debug);
 
             var pokemons = await GetNearbyPokemons(session);
             foreach (var pokemon in pokemons)
@@ -36,18 +49,18 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (pokeBallsCount + greatBallsCount + ultraBallsCount + masterBallsCount == 0)
                 {
-                    Logger.Write(session.Translation.GetTranslation(TranslationString.ZeroPokeballInv));
+                    _logger.Write(session.Translation.GetTranslation(TranslationString.ZeroPokeballInv));
                     return;
                 }
 
                 if (session.LogicSettings.UsePokemonToNotCatchFilter &&
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
-                    Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonSkipped, pokemon.PokemonId));
+                    _logger.Write(session.Translation.GetTranslation(TranslationString.PokemonSkipped, pokemon.PokemonId));
                     continue;
                 }
 
-                var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                var distance = _locationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                     session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
                 await Task.Delay(distance > 100 ? 3000 : 500, cancellationToken);
 
@@ -56,7 +69,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
                 {
-                    await CatchPokemonTask.Execute(session, encounter, pokemon);
+                    await _catchPokemonTask.Execute(session, encounter, pokemon);
                 }
                 else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
                 {
@@ -66,7 +79,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         {
                             Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
                         });
-                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                        await _transferDuplicatePokemonTask.Execute(session, cancellationToken);
                     }
                     else
                         session.EventDispatcher.Send(new WarnEvent
@@ -87,21 +100,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (!Equals(pokemons.ElementAtOrDefault(pokemons.Count() - 1), pokemon))
                 {
                     if(session.LogicSettings.Teleport)
-                        await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch);
+                        await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch, cancellationToken);
                     else
                         await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch, cancellationToken);
                 }
             }
         }
 
-        private static async Task<IOrderedEnumerable<MapPokemon>> GetNearbyPokemons(ISession session)
+        private async Task<IOrderedEnumerable<MapPokemon>> GetNearbyPokemons(ISession session)
         {
             var mapObjects = await session.Client.Map.GetMapObjects();
 
             var pokemons = mapObjects.MapCells.SelectMany(i => i.CatchablePokemons)
                 .OrderBy(
                     i =>
-                        LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                        _locationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                             session.Client.CurrentLongitude,
                             i.Latitude, i.Longitude));
 

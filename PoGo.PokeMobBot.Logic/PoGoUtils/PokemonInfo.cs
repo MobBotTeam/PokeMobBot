@@ -25,9 +25,9 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
         }
     }
 
-    public static class PokemonInfo
+    public class PokemonInfo
     {
-        public static int CalculateCp(PokemonData poke)
+        public int CalculateCp(PokemonData poke)
         {
             return
                 Math.Max(
@@ -36,7 +36,7 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
                                    Math.Pow(poke.CpMultiplier + poke.AdditionalCpMultiplier, 2)), 10);
         }
 
-        public static double CalculateCpMultiplier(PokemonData poke)
+        public double CalculateCpMultiplier(PokemonData poke)
         {
             var baseStats = GetBaseStats(poke.PokemonId);
             return (baseStats.BaseAttack + poke.IndividualAttack)*
@@ -44,7 +44,7 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
                    Math.Sqrt(baseStats.BaseStamina + poke.IndividualStamina);
         }
 
-        public static int CalculateMaxCp(PokemonData poke)
+        public int CalculateMaxCp(PokemonData poke)
         {
             return
                 Math.Max(
@@ -53,14 +53,14 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
                                    Math.Pow(poke.CpMultiplier + poke.AdditionalCpMultiplier, 2)), 10);
         }
 
-        public static double CalculateMaxCpMultiplier(PokemonData poke)
+        public double CalculateMaxCpMultiplier(PokemonData poke)
         {
             var baseStats = GetBaseStats(poke.PokemonId);
             return (baseStats.BaseAttack + 15)*Math.Sqrt(baseStats.BaseDefense + 15)*
                    Math.Sqrt(baseStats.BaseStamina + 15);
         }
 
-        public static int CalculateMinCp(PokemonData poke)
+        public int CalculateMinCp(PokemonData poke)
         {
             return
                 Math.Max(
@@ -69,13 +69,13 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
                                    Math.Pow(poke.CpMultiplier + poke.AdditionalCpMultiplier, 2)), 10);
         }
 
-        public static double CalculateMinCpMultiplier(PokemonData poke)
+        public double CalculateMinCpMultiplier(PokemonData poke)
         {
             var baseStats = GetBaseStats(poke.PokemonId);
             return baseStats.BaseAttack*Math.Sqrt(baseStats.BaseDefense)*Math.Sqrt(baseStats.BaseStamina);
         }
 
-        public static double CalculatePokemonPerfection(PokemonData poke)
+        public double CalculatePokemonPerfection(PokemonData poke)
         {
             if (Math.Abs(poke.CpMultiplier + poke.AdditionalCpMultiplier) <= 0)
                 return (poke.IndividualAttack + poke.IndividualDefense + poke.IndividualStamina)/45.0*100.0;
@@ -88,7 +88,7 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
             return (curCp - minCp)/(maxCp - minCp)*100.0;
         }
 
-        public static BaseStats GetBaseStats(PokemonId id)
+        public BaseStats GetBaseStats(PokemonId id)
         {
             switch ((int) id)
             {
@@ -399,7 +399,7 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
             }
         }
 
-        public static double GetLevel(PokemonData poke)
+        public double GetLevel(PokemonData poke)
         {
             switch ((int) ((poke.CpMultiplier + poke.AdditionalCpMultiplier)*1000.0))
             {
@@ -567,19 +567,19 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
             }
         }
 
-        public static PokemonMove GetPokemonMove1(PokemonData poke)
+        public PokemonMove GetPokemonMove1(PokemonData poke)
         {
             var move1 = poke.Move1;
             return move1;
         }
 
-        public static PokemonMove GetPokemonMove2(PokemonData poke)
+        public PokemonMove GetPokemonMove2(PokemonData poke)
         {
             var move2 = poke.Move2;
             return move2;
         }
 
-        public static int GetPowerUpLevel(PokemonData poke)
+        public int GetPowerUpLevel(PokemonData poke)
         {
             return (int) (GetLevel(poke)*2.0);
         }

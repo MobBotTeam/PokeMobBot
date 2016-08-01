@@ -15,9 +15,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class EvolvePokemonTask
     {
-        private static DateTime _lastLuckyEggTime;
+        private DateTime _lastLuckyEggTime;
+        private readonly DelayingUtils _delayingUtils;
 
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        public EvolvePokemonTask(DelayingUtils delayingUtils)
+        {
+            _delayingUtils = delayingUtils;
+        }
+
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -67,7 +73,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             }
         }
 
-        public static async Task UseLuckyEgg(ISession session)
+        public async Task UseLuckyEgg(ISession session)
         {
             var inventoryContent = await session.Inventory.GetItems();
 
@@ -84,7 +90,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if(session.LogicSettings.Teleport)
                 await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
             else
-                await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
+                await _delayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
         }
     }
 }

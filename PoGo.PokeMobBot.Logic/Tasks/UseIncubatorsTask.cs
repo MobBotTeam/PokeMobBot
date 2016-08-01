@@ -17,9 +17,16 @@ using POGOProtos.Inventory.Item;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    internal class UseIncubatorsTask
+    public class UseIncubatorsTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly PokemonInfo _pokemonInfo;
+
+        public UseIncubatorsTask(PokemonInfo pokemonInfo)
+        {
+            _pokemonInfo = pokemonInfo;
+        }
+
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -57,10 +64,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     Id = hatched.Id,
                     PokemonId = hatched.PokemonId,
-                    Level = PokemonInfo.GetLevel(hatched),
+                    Level = _pokemonInfo.GetLevel(hatched),
                     Cp = hatched.Cp,
-                    MaxCp = PokemonInfo.CalculateMaxCp(hatched),
-                    Perfection = Math.Round(PokemonInfo.CalculatePokemonPerfection(hatched), 2)
+                    MaxCp = _pokemonInfo.CalculateMaxCp(hatched),
+                    Perfection = Math.Round(_pokemonInfo.CalculatePokemonPerfection(hatched), 2)
                 });
             }
 

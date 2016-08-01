@@ -18,11 +18,21 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class CatchPokemonTask
+    public class CatchPokemonTask
     {
-        private static readonly Random Rng = new Random();
+        private readonly Random _rng = new Random();
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly DelayingUtils _delayingUtils;
+        private readonly LocationUtils _locationUtils;
 
-        public static async Task Execute(ISession session, dynamic encounter, MapPokemon pokemon,
+        public CatchPokemonTask(PokemonInfo pokemonInfo, DelayingUtils delayingUtils, LocationUtils locationUtils)
+        {
+            _pokemonInfo = pokemonInfo;
+            _delayingUtils = delayingUtils;
+            _locationUtils = locationUtils;
+        }
+
+        public async Task Execute(ISession session, dynamic encounter, MapPokemon pokemon,
             FortData currentFortData = null, ulong encounterId = 0)
         {
             CatchPokemonResponse caughtPokemonResponse;
@@ -55,7 +65,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                    ? encounter.WildPokemon?.PokemonData?.Cp
                                    : encounter.PokemonData?.Cp) > 400;
                 var isHighPerfection =
-                    PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
+                    _pokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData) >= session.LogicSettings.KeepMinIvPercentage;
 
@@ -71,7 +81,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 : currentFortData?.Id);
                 }
 
-                var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                var distance = _locationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                     session.Client.CurrentLongitude,
                     encounter is EncounterResponse || encounter is IncenseEncounterResponse
                         ? pokemon.Latitude
@@ -84,9 +94,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.HumanizeThrows)
                 {
                     normalizedRecticleSize =
-                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
+                        _rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
                         1.85 + 0.1; // 0.1..1.95
-                    spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
+                    spinModifier = _rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
                 }
                 else
                 {
@@ -155,19 +165,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         : session.Translation.GetTranslation(TranslationString.CatchTypeIncense);
                 evt.Id = encounter is EncounterResponse ? pokemon.PokemonId : encounter?.PokemonData.PokemonId;
                 evt.Level =
-                    PokemonInfo.GetLevel(encounter is EncounterResponse
+                    _pokemonInfo.GetLevel(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData);
                 evt.Cp = encounter is EncounterResponse
                     ? encounter.WildPokemon?.PokemonData?.Cp
                     : encounter?.PokemonData?.Cp ?? 0;
                 evt.MaxCp =
-                    PokemonInfo.CalculateMaxCp(encounter is EncounterResponse
+                    _pokemonInfo.CalculateMaxCp(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData);
                 evt.Perfection =
                     Math.Round(
-                        PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
+                        _pokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                             ? encounter.WildPokemon?.PokemonData
                             : encounter?.PokemonData), 2);
                 evt.Probability =
@@ -184,12 +194,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if(session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayCatchPokemon);
                 else
-                 await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
+                 await _delayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
             } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed ||
                      caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
         }
 
-        private static async Task<ItemId> GetBestBall(ISession session, dynamic encounter, float probability)
+        private async Task<ItemId> GetBestBall(ISession session, dynamic encounter, float probability)
         {
             var pokemonCp = encounter is EncounterResponse
                 ? encounter.WildPokemon?.PokemonData?.Cp
@@ -199,7 +209,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 : encounter?.PokemonData?.PokemonId;
             var iV =
                 Math.Round(
-                    PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
+                    _pokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData));
 

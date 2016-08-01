@@ -8,9 +8,9 @@ using POGOProtos.Inventory.Item;
 
 namespace PoGo.PokeMobBot.Logic.Utils
 {
-    public static class StringUtils
+    public class StringUtils
     {
-        public static string GetSummedFriendlyNameOfItemAwardList(IEnumerable<ItemAward> items)
+        public string GetSummedFriendlyNameOfItemAwardList(IEnumerable<ItemAward> items)
         {
             var enumerable = items as IList<ItemAward> ?? items.ToList();
 

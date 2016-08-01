@@ -80,18 +80,25 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public List<PokemonLocation> Pokemon { get; set; }
     }
 
-    public static class SnipePokemonTask
+    public class SnipePokemonTask
     {
         public static List<PokemonLocation> LocsVisited = new List<PokemonLocation>();
         private static readonly List<SniperInfo> SnipeLocations = new List<SniperInfo>();
         private static DateTime _lastSnipe = DateTime.MinValue;
 
-        public static Task AsyncStart(Session session, CancellationToken cancellationToken = default(CancellationToken))
+        private readonly CatchPokemonTask _catchPokemonTask;
+
+        public SnipePokemonTask(CatchPokemonTask catchPokemonTask)
+        {
+            _catchPokemonTask = catchPokemonTask;
+        }
+
+        public Task AsyncStart(Session session, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.Run(() => Start(session, cancellationToken), cancellationToken);
         }
 
-        public static async Task<bool> CheckPokeballsToSnipe(int minPokeballs, ISession session,
+        public async Task<bool> CheckPokeballsToSnipe(int minPokeballs, ISession session,
             CancellationToken cancellationToken)
         {
             var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
@@ -113,7 +120,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             return true;
         }
 
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             if (_lastSnipe.AddMilliseconds(session.LogicSettings.MinDelayBetweenSnipes) > DateTime.Now)
                 return;
@@ -221,7 +228,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             }
         }
 
-        private static async Task Snipe(ISession session, IEnumerable<PokemonId> pokemonIds, double latitude,
+        private async Task Snipe(ISession session, IEnumerable<PokemonId> pokemonIds, double latitude,
             double longitude, CancellationToken cancellationToken)
         {
             var currentLatitude = session.Client.CurrentLatitude;
@@ -269,7 +276,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Longitude = currentLongitude
                     });
 
-                    await CatchPokemonTask.Execute(session, encounter, pokemon);
+                    await _catchPokemonTask.Execute(session, encounter, pokemon);
                 }
                 else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
                 {
@@ -305,7 +312,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions, cancellationToken);
         }
 
-        private static ScanResult SnipeScanForPokemon(Location location)
+        private ScanResult SnipeScanForPokemon(Location location)
         {
             var formatter = new NumberFormatInfo {NumberDecimalSeparator = "."};
             var uri =
@@ -335,7 +342,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             return scanResult;
         }
 
-        public static async Task Start(Session session, CancellationToken cancellationToken)
+        public async Task Start(Session session, CancellationToken cancellationToken)
         {
             while (true)
             {

@@ -1,11 +1,14 @@
 ﻿#region using directives
 
+using log4net.Repository.Hierarchy;
 using Newtonsoft.Json;
+using PoGo.PokeMobBot.Logic;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
+using PokemonGo.RocketAPI;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.WebSocket;
@@ -18,19 +21,28 @@ namespace PoGo.PokeMobBot.CLI
     {
         private readonly WebSocketServer _server;
         private readonly Session _session;
+        private readonly PokemonListTask _pokemonListTask;
+        private readonly EggsListTask _eggsListTask;
+        private readonly InventoryListTask _inventoryListTask;
         private PokeStopListEvent _lastPokeStopList;
         private ProfileEvent _lastProfile;
+        private readonly ILogger _logger;
 
-        public WebSocketInterface(int port, Session session)
+        public WebSocketInterface(GlobalSettings settings, Session session, PokemonListTask pokemonListTask, EggsListTask eggsListTask, InventoryListTask inventoryListTask, ILogger logger)
         {
             _session = session;
+            _pokemonListTask = pokemonListTask;
+            _eggsListTask = eggsListTask;
+            _inventoryListTask = inventoryListTask;
+            _logger = logger;
+
             var translations = session.Translation;
             _server = new WebSocketServer();
             var setupComplete = _server.Setup(new ServerConfig
             {
                 Name = "NecroWebSocket",
                 Ip = "Any",
-                Port = port,
+                Port = settings.WebSocketPort,
                 Mode = SocketMode.Tcp,
                 Security = "tls",
                 Certificate = new CertificateConfig
@@ -42,7 +54,7 @@ namespace PoGo.PokeMobBot.CLI
 
             if (setupComplete == false)
             {
-                Logger.Write(translations.GetTranslation(TranslationString.WebSocketFailStart, port), LogLevel.Error);
+                _logger.Write(translations.GetTranslation(TranslationString.WebSocketFailStart, settings.WebSocketPort), LogLevel.Error);
                 return;
             }
 
@@ -82,13 +94,13 @@ namespace PoGo.PokeMobBot.CLI
             switch (message)
             {
                 case "PokemonList":
-                    await PokemonListTask.Execute(_session);
+                    await _pokemonListTask.Execute(_session);
                     break;
                 case "EggsList":
-                    await EggsListTask.Execute(_session);
+                    await _eggsListTask.Execute(_session);
                     break;
                 case "InventoryList":
-                    await InventoryListTask.Execute(_session);
+                    await _inventoryListTask.Execute(_session);
                     break;
             }
         }

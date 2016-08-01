@@ -15,6 +15,13 @@ namespace PoGo.PokeMobBot.Logic.State
 {
     public class LoginState : IState
     {
+        private readonly PositionCheckState _positionCheckState;
+
+        public LoginState(PositionCheckState positionCheckState)
+        {
+            _positionCheckState = positionCheckState;
+        }
+
         public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -113,7 +120,7 @@ namespace PoGo.PokeMobBot.Logic.State
 
             await DownloadProfile(session);
 
-            return new PositionCheckState();
+            return _positionCheckState;
         }
 
         private static async Task CheckLogin(ISession session, CancellationToken cancellationToken)

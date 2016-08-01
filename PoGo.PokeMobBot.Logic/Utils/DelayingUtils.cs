@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace PoGo.PokeMobBot.Logic.Utils
 {
-    public static class DelayingUtils
+    public class DelayingUtils
     {
         private static readonly Random RandomDevice = new Random();
 
-        public static async Task Delay(int delay, int defdelay)
+        public async Task Delay(int delay, int defdelay)
         {
             if (delay > defdelay)
             {

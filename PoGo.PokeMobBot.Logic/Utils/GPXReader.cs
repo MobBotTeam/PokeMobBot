@@ -20,6 +20,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
     public class GpxReader
     {
         private readonly XmlDocument _gpx = new XmlDocument();
+        private readonly ILogger _logger;
 
         private ISession _ctx;
 
@@ -36,10 +37,17 @@ namespace PoGo.PokeMobBot.Logic.Utils
         public string UrlName = "";
         public List<Wpt> WayPoints = new List<Wpt>();
 
-        public GpxReader(string xml, ISession session)
+        public GpxReader(ISession session, ILogger logger)
         {
             _ctx = session;
-            if (xml.Equals("")) return;
+            _logger = logger;
+        }
+
+        public void Read(string xml)
+        {
+            if (
+
+            xml.Equals("")) return;
             _gpx.LoadXml(xml);
             if (_gpx.DocumentElement == null || !_gpx.DocumentElement.Name.Equals("gpx")) return;
             var gpxNodes = _gpx.GetElementsByTagName("gpx")[0].ChildNodes;
@@ -109,8 +117,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
                     case "topografix:map":
                         break;
                     default:
-                        Logger.Write(session.Translation.GetTranslation(TranslationString.UnhandledGpxData),
-                            LogLevel.Info);
+                        _logger.Write(_ctx.Translation.GetTranslation(TranslationString.UnhandledGpxData), LogLevel.Info);
                         break;
                 }
             }

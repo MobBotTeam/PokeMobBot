@@ -14,6 +14,15 @@ namespace PoGo.PokeMobBot.Logic.State
 {
     public class PositionCheckState : IState
     {
+        private readonly InfoState _infoState;
+        private readonly LocationUtils _locationUtils;
+
+        public PositionCheckState(InfoState infoState, LocationUtils locationUtils)
+        {
+            _infoState = infoState;
+            _locationUtils = locationUtils;
+        }
+
         public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -25,7 +34,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 var latLngFromFile = LoadPositionFromDisk(session);
                 if (latLngFromFile != null)
                 {
-                    var distance = LocationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2,
+                    var distance = _locationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2,
                         session.Settings.DefaultLatitude, session.Settings.DefaultLongitude);
                     var lastModified = File.Exists(coordsPath) ? (DateTime?) File.GetLastWriteTime(coordsPath) : null;
                     if (lastModified != null)
@@ -73,7 +82,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 RequireInput = session.LogicSettings.StartupWelcomeDelay
             });
 
-            return new InfoState();
+            return _infoState;
         }
 
         private static Tuple<double, double> LoadPositionFromDisk(ISession session)
