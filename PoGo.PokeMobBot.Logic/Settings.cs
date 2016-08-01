@@ -150,12 +150,12 @@ namespace PoGo.PokeMobBot.Logic
         public bool TransferDuplicatePokemon = true;
         public bool PrioritizeIvOverCp = true;
         public int KeepMinCp = 1250;
-        public float KeepMinIvPercentage = 90;
+        public float KeepMinIvPercentage = 95;
         public int KeepMinDuplicatePokemon = 1;
         public bool KeepPokemonsThatCanEvolve = false;
 
         //evolve
-        public bool EvolveAllPokemonWithEnoughCandy = true;
+        public bool EvolveAllPokemonWithEnoughCandy = false;
         public bool EvolveAllPokemonAboveIv = false;
         public float EvolveAboveIvValue = 95;
         public bool UseLuckyEggsWhileEvolving = false;
@@ -174,30 +174,28 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowSpinFrequency = 0.75;
         public int MaxPokeballsPerPokemon = 6;
         public int UseGreatBallAboveCp = 750;
-        public int UseUltraBallAboveCp = 1000;
-        public int UseMasterBallAboveCp = 1500;
-        public bool UsePokemonToNotCatchFilter = false;
-
-        // berries
-        public int UseBerryMinCp = 450;
-        public float UseBerryMinIv = 95;
-        public double UseBerryBelowCatchProbability = 0.35;
-
-        //favorite
-        public float FavoriteMinIvPercentage = 95;
-        public bool AutoFavoritePokemon = false;
-
-        //recycle
-        public int TotalAmountOfPokeballsToKeep = 100;
-        public int TotalAmountOfPotionsToKeep = 80;
-        public int TotalAmountOfRevivesToKeep = 60;
-
+        public int UseUltraBallAboveCp = 1500;
+        public int UseMasterBallAboveCp = 2500;
         public int UseGreatBallAboveIv = 80;
         public int UseUltraBallAboveIv = 90;
         public double UseGreatBallBelowCatchProbability = 0.5;
         public double UseUltraBallBelowCatchProbability = 0.4;
         public double UseMasterBallBelowCatchProbability = 0.05;
+        public bool UsePokemonToNotCatchFilter = false;
 
+        //berries
+        public int UseBerryMinCp = 450;
+        public float UseBerryMinIv = 95;
+        public double UseBerryBelowCatchProbability = 0.35;
+
+        //favorite
+        public bool AutoFavoritePokemon = false;
+        public float FavoriteMinIvPercentage = 95;
+
+        //recycle
+        public int TotalAmountOfPokeballsToKeep = 100;
+        public int TotalAmountOfPotionsToKeep = 80;
+        public int TotalAmountOfRevivesToKeep = 60;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -328,7 +326,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter = new Dictionary<PokemonId, TransferFilter>
         {
-            //criteria: based on NY Central Park and Tokyo variety + sniping optimization
+            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v3
             {PokemonId.Venusaur, new TransferFilter(1500, 40, 1)},
             {PokemonId.Charizard, new TransferFilter(1500, 20, 1)},
             {PokemonId.Blastoise, new TransferFilter(1500, 20, 1)},
@@ -337,38 +335,35 @@ namespace PoGo.PokeMobBot.Logic
             {PokemonId.Clefable, new TransferFilter(1500, 60, 1)},
             {PokemonId.Vileplume, new TransferFilter(1750, 80, 1)},
             {PokemonId.Golduck, new TransferFilter(1750, 80, 1)},
-            {PokemonId.Arcanine, new TransferFilter(1750, 80, 1)},
+            {PokemonId.Arcanine, new TransferFilter(2000, 90, 1)},
             {PokemonId.Poliwrath, new TransferFilter(1500, 80, 1)},
             {PokemonId.Machamp, new TransferFilter(1250, 80, 1)},
             {PokemonId.Victreebel, new TransferFilter(1250, 60, 1)},
             {PokemonId.Golem, new TransferFilter(1500, 80, 1)},
             {PokemonId.Slowbro, new TransferFilter(1750, 80, 1)},
             {PokemonId.Farfetchd, new TransferFilter(1000, 90, 1)},
-            {PokemonId.Muk, new TransferFilter(1500, 80, 1)},
-            {PokemonId.Krabby, new TransferFilter(1500, 95, 1)},
-            {PokemonId.Exeggutor, new TransferFilter(2000, 90, 1)},
+            {PokemonId.Muk, new TransferFilter(2000, 80, 1)},
+            {PokemonId.Exeggutor, new TransferFilter(2250, 80, 1)},
             {PokemonId.Lickitung, new TransferFilter(1500, 80, 1)},
             {PokemonId.Chansey, new TransferFilter(1500, 95, 1)},
-            {PokemonId.Kangaskhan, new TransferFilter(1500, 40, 1)},
-            {PokemonId.Goldeen, new TransferFilter(1500, 95, 1)},
-            {PokemonId.Staryu, new TransferFilter(1500, 95, 1)},
+            {PokemonId.Kangaskhan, new TransferFilter(1500, 60, 1)},
             {PokemonId.MrMime, new TransferFilter(250, 40, 1)},
-            {PokemonId.Scyther, new TransferFilter(1500, 90, 1)},
+            {PokemonId.Scyther, new TransferFilter(1750, 90, 1)},
             {PokemonId.Jynx, new TransferFilter(1250, 90, 1)},
             {PokemonId.Electabuzz, new TransferFilter(1500, 80, 1)},
             {PokemonId.Magmar, new TransferFilter(1750, 80, 1)},
             {PokemonId.Pinsir, new TransferFilter(1750, 98, 1)},
             {PokemonId.Tauros, new TransferFilter(500, 90, 1)},
-            {PokemonId.Magikarp, new TransferFilter(1250, 95, 1)},
             {PokemonId.Gyarados, new TransferFilter(1750, 90, 1)},
-            {PokemonId.Lapras, new TransferFilter(1500, 80, 1)},
-            {PokemonId.Vaporeon, new TransferFilter(2000, 95, 1)},
+            {PokemonId.Lapras, new TransferFilter(2000, 90, 1)},
+            {PokemonId.Eevee, new TransferFilter(1500, 98, 1)},
+            {PokemonId.Vaporeon, new TransferFilter(2000, 98, 1)},
             {PokemonId.Jolteon, new TransferFilter(2000, 95, 1)},
             {PokemonId.Flareon, new TransferFilter(2000, 95, 1)},
-            {PokemonId.Porygon, new TransferFilter(1500, 90, 1)},
-            {PokemonId.Aerodactyl, new TransferFilter(1750, 80, 1)},
-            {PokemonId.Snorlax, new TransferFilter(2250, 95, 1)},
-            {PokemonId.Dragonite, new TransferFilter(1750, 90, 1)}
+            {PokemonId.Porygon, new TransferFilter(1500, 95, 1)},
+            {PokemonId.Aerodactyl, new TransferFilter(1750, 95, 1)},
+            {PokemonId.Snorlax, new TransferFilter(2500, 96, 1)},
+            {PokemonId.Dragonite, new TransferFilter(2500, 90, 1)}
         };
 
         public SnipeSettings PokemonToSnipe = new SnipeSettings
@@ -685,7 +680,6 @@ namespace PoGo.PokeMobBot.Logic
         public int MinPokeballsToSnipe => _settings.MinPokeballsToSnipe;
         public int MinPokeballsWhileSnipe => _settings.MinPokeballsWhileSnipe;
         public int MaxPokeballsPerPokemon => _settings.MaxPokeballsPerPokemon;
-
         public SnipeSettings PokemonToSnipe => _settings.PokemonToSnipe;
         public string SnipeLocationServer => _settings.SnipeLocationServer;
         public int SnipeLocationServerPort => _settings.SnipeLocationServerPort;
@@ -696,7 +690,6 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
-
         public bool Teleport => _settings.Teleport;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
@@ -718,5 +711,6 @@ namespace PoGo.PokeMobBot.Logic
         public int UseBerryMinCp => _settings.UseBerryMinCp;
         public float UseBerryMinIv => _settings.UseBerryMinIv;
         public double UseBerryBelowCatchProbability => _settings.UseBerryBelowCatchProbability;
+
     }
 }
