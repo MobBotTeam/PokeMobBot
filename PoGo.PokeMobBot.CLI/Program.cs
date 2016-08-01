@@ -36,7 +36,12 @@ namespace PoGo.PokeMobBot.CLI
             if (args.Length > 0)
                 subPath = args[0];
 
-            Logger.SetLogger(new ConsoleLogger(LogLevel.Info), subPath);
+#if DEBUG
+            LogLevel logLevel = LogLevel.Debug;
+#else
+            LogLevel logLevel = LogLevel.Info;
+#endif
+            Logger.SetLogger(new ConsoleLogger(logLevel), subPath);
 
             var settings = GlobalSettings.Load(subPath);
 
