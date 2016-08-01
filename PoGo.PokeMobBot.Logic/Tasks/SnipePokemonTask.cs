@@ -39,20 +39,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         public PokemonLocation(double latitude, double longitude)
         {
-            this.Latitude = latitude;
-            this.Longitude = longitude;
+            this.latitude = latitude;
+            this.longitude = longitude;
         }
 
         public long Id { get; set; }
         public double ExpirationTime { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public double latitude { get; set; }
+        public double longitude { get; set; }
         public int PokemonId { get; set; }
         public PokemonId PokemonName { get; set; }
 
         public bool Equals(PokemonLocation obj)
         {
-            return Math.Abs(Latitude - obj.Latitude) < 0.0001 && Math.Abs(Longitude - obj.Longitude) < 0.0001;
+            return Math.Abs(latitude - obj.latitude) < 0.0001 && Math.Abs(longitude - obj.longitude) < 0.0001;
         }
 
         public override bool Equals(object obj) // contains calls this here
@@ -63,7 +63,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 return false;
             }
 
-            return Math.Abs(Latitude - p.Latitude) < 0.0001 && Math.Abs(Longitude - p.Longitude) < 0.0001;
+            return Math.Abs(latitude - p.latitude) < 0.0001 && Math.Abs(longitude - p.longitude) < 0.0001;
         }
 
         public override int GetHashCode()
