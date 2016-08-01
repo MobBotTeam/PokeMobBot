@@ -88,6 +88,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public static List<PokemonLocation> LocsVisited = new List<PokemonLocation>();
         private static readonly List<SniperInfo> SnipeLocations = new List<SniperInfo>();
         private static DateTime _lastSnipe = DateTime.MinValue;
+        private const string _pokeSniperURI = "http://pokesnipers.com/api/v1/pokemon.json";
 
         public static Task AsyncStart(Session session, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -368,10 +369,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 scanResult = JsonConvert.DeserializeObject<ScanResult>(fullresp);
 
-                if(scanResult.Error != string.Empty)
+                if (scanResult.Error != string.Empty)
                 {
                     if (scanResult.Error.Contains("down for maintenance") || scanResult.Error.Contains("illegal request"))
-                        session.EventDispatcher.Send(new WarnEvent { Message = "SkipLagged servers are down for maintenance." });
+                        session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.SkipLaggedMaintenance) });
                 }
             }
             catch (WebException ex)
@@ -380,7 +381,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     ex.Response != null)
                 {
                     var resp = (HttpWebResponse)ex.Response;
-                    switch(resp.StatusCode)
+                    switch (resp.StatusCode)
                     {
                         case HttpStatusCode.NotFound:
                             session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound) });
@@ -395,23 +396,23 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             session.EventDispatcher.Send(new WarnEvent { Message = ex.ToString() });
                             break;
                     }
-                    }
-                else if(ex.Status == WebExceptionStatus.Timeout)
-                    {
-                    session.EventDispatcher.Send(new WarnEvent { Message = "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!" });
-                    }
-                    else
-                    {
+                }
+                else if (ex.Status == WebExceptionStatus.Timeout)
+                {
+                    session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.SkipLaggedTimeout) });
+                }
+                else
+                {
                     session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
-                    }
+                }
 
                 scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
-                }
+            }
             catch (Exception ex)
-                {
+            {
                 session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                 scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
-                }
+            }
 
             return scanResult;
         }
@@ -425,12 +426,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (offset < 0.001) offset = 0.003;
             if (offset > 0.06) offset = 0.06;
 
-            var uri = $"http://pokesnipers.com/api/v1/pokemon.json";
-
             ScanResult scanResult;
             try
             {
-                var request = WebRequest.CreateHttp(uri);
+                var request = WebRequest.CreateHttp(_pokeSniperURI);
                 request.Accept = "application/json";
                 request.Method = "GET";
                 request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
@@ -487,12 +486,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     if (offset < 0.001) offset = 0.003;
                     if (offset > 0.06) offset = 0.06;
 
-                    var uri = $"http://pokesnipers.com/api/v1/pokemon.json";
-
                     ScanResult scanResult;
                     try
                     {
-                        var request = WebRequest.CreateHttp(uri);
+                        var request = WebRequest.CreateHttp(_pokeSniperURI);
                         request.Accept = "application/json";
                         request.Method = "GET";
                         request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
@@ -528,7 +525,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         {
                             var resp = (HttpWebResponse)ex.Response;
                             switch (resp.StatusCode)
-                                {
+                            {
                                 case HttpStatusCode.NotFound:
                                     session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound) });
                                     break;
@@ -542,15 +539,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                     session.EventDispatcher.Send(new WarnEvent { Message = ex.ToString() });
                                     break;
                             }
-                            }
+                        }
                         else if (ex.Status == WebExceptionStatus.Timeout)
-                                {
-                            session.EventDispatcher.Send(new WarnEvent { Message = "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!" });
-                            }
-                            else
-                            {
+                        {
+                            session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.SkipLaggedTimeout) });
+                        }
+                        else
+                        {
                             session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
-                            }
+                        }
 
                         scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
                     }
