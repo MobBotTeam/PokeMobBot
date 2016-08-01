@@ -60,7 +60,7 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         private static void DumpToFile(ISession session, string data, string filename, string extension = "txt")
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps",
-                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.{extension}");
+                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH:mm:ss")}.{extension}");
 
             try
             {

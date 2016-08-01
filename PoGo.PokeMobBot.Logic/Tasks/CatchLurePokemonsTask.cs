@@ -1,10 +1,13 @@
 ﻿#region using directives
 
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.PoGoUtils;
 using PoGo.PokeMobBot.Logic.State;
 using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
@@ -15,6 +18,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public static class CatchLurePokemonsTask
     {
+        private static HashSet<int> cache;
+         
         public static async Task Execute(ISession session, FortData currentFortData, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -43,6 +48,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 var encounterId = currentFortData.LureInfo.EncounterId;
                 var encounter = await session.Client.Encounter.EncounterLurePokemon(encounterId, fortId);
+
+                // Feed this encounter back to the snipe server
+                if (session.LogicSettings.UseSnipeLocationServer)
+                {
+                    var payload = new SniperInfo
+                    {
+                        Latitude = currentFortData.Latitude,
+                        Longitude = currentFortData.Longitude,
+                        Iv = PokemonInfo.CalculatePokemonPerfection(encounter.PokemonData),
+                        Id = encounter.PokemonData.PokemonId,
+                        Move1 = encounter.PokemonData.Move1,
+                        Move2 = encounter.PokemonData.Move2,
+                    };
+                    SnipePokemonTask.Feedback(payload);
+                }
 
                 if (encounter.Result == DiskEncounterResponse.Types.Result.Success)
                 {

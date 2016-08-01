@@ -83,7 +83,7 @@
     },
 	{
       "Key": "eventUseLuckyEggMinPokemonCheck",
-      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+      "Value": "Nicht genug Pokemon vorhanden um Glücks-Ei zu benutzen. Warte auf {0} mehr. ({1}/{2})"
     },
     {
       "Key": "eventPokemonEvolvedSuccess",
@@ -325,7 +325,7 @@
     },
     {
       "Key": "UseBerry",
-      "Value": "Benutze Himbeere. Verbleibend: {0}"
+      "Value": "Benutze Himmihbeere. Verbleibend: {0}"
     }
   ],
   "pokemon": [

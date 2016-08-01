@@ -1,11 +1,14 @@
 ﻿#region using directives
 
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.PoGoUtils;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
 using POGOProtos.Inventory.Item;
@@ -65,6 +68,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 var encounter =
                     await session.Client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId);
+
+                // Feed this encounter back to the snipe server
+                if (session.LogicSettings.UseSnipeLocationServer)
+                {
+                    var payload = new SniperInfo
+                    {
+                        Latitude = encounter.WildPokemon.Latitude,
+                        Longitude = encounter.WildPokemon.Longitude,
+                        Iv = PokemonInfo.CalculatePokemonPerfection(encounter.WildPokemon.PokemonData),
+                        Id = encounter.WildPokemon.PokemonData.PokemonId,
+                        Move1 = encounter.WildPokemon.PokemonData.Move1,
+                        Move2 = encounter.WildPokemon.PokemonData.Move2,
+                    };
+                    SnipePokemonTask.Feedback(payload);
+                }
 
                 if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
                 {

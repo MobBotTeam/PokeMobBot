@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
 using POGOProtos.Enums;
@@ -30,6 +31,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public double Iv { get; set; }
         public DateTime TimeStamp { get; set; }
         public PokemonId Id { get; set; }
+        public PokemonMove Move1 { get; set; }
+        public PokemonMove Move2 { get; set; }
 
         [JsonIgnore]
         public DateTime TimeStampAdded { get; set; } = DateTime.Now;
@@ -88,6 +91,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public static List<PokemonLocation> LocsVisited = new List<PokemonLocation>();
         private static readonly List<SniperInfo> SnipeLocations = new List<SniperInfo>();
         private static DateTime _lastSnipe = DateTime.MinValue;
+        private static StreamReader Reader;
+        private static StreamWriter Writer;
 
         public static Task AsyncStart(Session session, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -516,7 +521,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     var currentTimestamp = t.TotalMilliseconds;
                     var pokemonIds = session.LogicSettings.PokemonToSnipe.Pokemon;
 
-                    var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
+                    var formatter = new NumberFormatInfo {NumberDecimalSeparator = "."};
 
                     var offset = session.LogicSettings.SnipingScanOffset;
                     // 0.003 = half a mile; maximum 0.06 is 10 miles
@@ -636,11 +641,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         lClient.Connect(session.LogicSettings.SnipeLocationServer,
                             session.LogicSettings.SnipeLocationServerPort);
 
-                        var sr = new StreamReader(lClient.GetStream());
+                        NetworkStream stream = lClient.GetStream();
+                        Reader = new StreamReader(stream);
+                        Writer = new StreamWriter(stream);
 
                         while (lClient.Connected)
                         {
-                            var line = sr.ReadLine();
+                            var line = Reader.ReadLine();
                             if (line == null)
                                 throw new Exception("Unable to ReadLine from sniper socket");
 
@@ -655,6 +662,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             SnipeLocations.RemoveAll(x => DateTime.Now > x.TimeStampAdded.AddMinutes(15));
                             SnipeLocations.Add(info);
                         }
+
+                        Reader.Close();
+                        Writer.Close();
+                        stream.Close();
+                        Reader = null;
+                        Writer = null;
                     }
                     catch (SocketException)
                     {
@@ -663,11 +676,23 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     catch (Exception ex)
                     {
                         // most likely System.IO.IOException
-                        session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+                        session.EventDispatcher.Send(new ErrorEvent {Message = ex.ToString()});
                     }
+                    await Task.Delay(5000, cancellationToken);
                 }
-                await Task.Delay(5000, cancellationToken);
             }
+        }
+
+        /// <summary>
+        /// Sends a communication back to the feeder server.
+        /// </summary>
+        /// <param name="message">Message to send.</param>
+        public static void Feedback(SniperInfo info)
+        {
+            if (Writer == null)
+                return;
+            Writer.WriteLine(JsonConvert.SerializeObject(info));
+            Writer.Flush();
         }
     }
 }
