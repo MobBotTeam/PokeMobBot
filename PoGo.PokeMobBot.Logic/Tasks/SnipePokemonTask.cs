@@ -37,18 +37,18 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
     public class PokemonLocation
     {
-        public PokemonLocation(double lat, double lon)
+        public PokemonLocation(double latitude, double longitude)
         {
-            Latitude = lat;
-            Longitude = lon;
+            Latitude = latitude;
+            Longitude = longitude;
         }
 
         public long Id { get; set; }
-        public double expires { get; set; }
+        public double ExpirationTime { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public int pokemon_id { get; set; }
-        public PokemonId pokemon_name { get; set; }
+        public int PokemonId { get; set; }
+        public PokemonId PokemonName { get; set; }
 
         public bool Equals(PokemonLocation obj)
         {
@@ -200,9 +200,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 scanResult = SnipeScanForPokemon(session, location);
                                 if (scanResult.Pokemon != null)
                                 {
-                                    var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.pokemon_name));
+                                    var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.PokemonName));
                                     var notVisitedPokemon = filteredPokemon.Where(q => !LocsVisited.Contains(q));
-                                    var notExpiredPokemon = notVisitedPokemon.Where(q => q.expires < currentTimestamp);
+                                    var notExpiredPokemon = notVisitedPokemon.Where(q => q.ExpirationTime < currentTimestamp);
 
                                     locationsToSnipe.AddRange(notExpiredPokemon);
                                 }
@@ -210,9 +210,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                             if (scanResult.Pokemon != null)
                             {
-                                var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.pokemon_name));
+                                var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.PokemonName));
                                 var notVisitedPokemon = filteredPokemon.Where(q => !LocsVisited.Contains(q));
-                                var notExpiredPokemon = notVisitedPokemon.Where(q => q.expires < currentTimestamp);
+                                var notExpiredPokemon = notVisitedPokemon.Where(q => q.ExpirationTime < currentTimestamp);
 
                                 locationsToSnipe.AddRange(notExpiredPokemon);
                             }
