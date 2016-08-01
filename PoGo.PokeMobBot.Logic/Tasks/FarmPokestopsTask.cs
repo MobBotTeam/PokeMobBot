@@ -113,7 +113,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         waypoint.Longitude,
                         session.Client.Settings.DefaultAltitude);
                             currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
-                            Logging.Logger.Write("We are teleporting " + maxDistance + " meters closer to the target. We are now " + currentDistanceToTarget + " away");
+                            //Logging.Logger.Write("We are teleporting " + maxDistance + " meters closer to the target. We are now " + currentDistanceToTarget + " away");
 
 
                         }
