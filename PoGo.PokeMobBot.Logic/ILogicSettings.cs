@@ -67,6 +67,7 @@ namespace PoGo.PokeMobBot.Logic
         double WalkingSpeedInKilometerPerHour { get; }
         bool EvolveAllPokemonWithEnoughCandy { get; }
         bool KeepPokemonsThatCanEvolve { get; }
+        bool KeepEvolveablesOnlyIfOnEvolutionList { get; }
         bool TransferDuplicatePokemon { get; }
         bool UseEggIncubators { get; }
         int UseGreatBallAboveCp { get; }
