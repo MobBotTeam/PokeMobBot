@@ -173,9 +173,6 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowAccuracyMax = 1.00;
         public double ThrowSpinFrequency = 0.75;
         public int MaxPokeballsPerPokemon = 6;
-        public int UseGreatBallAboveCp = 750;
-        public int UseUltraBallAboveCp = 1500;
-        public int UseMasterBallAboveCp = 2500;
         public int UseGreatBallAboveIv = 80;
         public int UseUltraBallAboveIv = 90;
         public double UseGreatBallBelowCatchProbability = 0.5;
@@ -641,14 +638,11 @@ namespace PoGo.PokeMobBot.Logic
         public bool KeepPokemonsThatCanEvolve => _settings.KeepPokemonsThatCanEvolve;
         public bool TransferDuplicatePokemon => _settings.TransferDuplicatePokemon;
         public bool UseEggIncubators => _settings.UseEggIncubators;
-        public int UseGreatBallAboveCp => _settings.UseGreatBallAboveCp;
-        public int UseUltraBallAboveCp => _settings.UseUltraBallAboveCp;
         public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
         public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
         public double UseMasterBallBelowCatchProbability => _settings.UseMasterBallBelowCatchProbability;
         public double UseUltraBallBelowCatchProbability => _settings.UseUltraBallBelowCatchProbability;
         public double UseGreatBallBelowCatchProbability => _settings.UseGreatBallBelowCatchProbability;
-        public int UseMasterBallAboveCp => _settings.UseMasterBallAboveCp;
         public int DelayBetweenPokemonCatch => _settings.DelayBetweenPokemonCatch;
         public int DelayBetweenPlayerActions => _settings.DelayBetweenPlayerActions;
         public bool UsePokemonToNotCatchFilter => _settings.UsePokemonToNotCatchFilter;

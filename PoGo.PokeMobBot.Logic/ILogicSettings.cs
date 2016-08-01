@@ -69,9 +69,6 @@ namespace PoGo.PokeMobBot.Logic
         bool KeepPokemonsThatCanEvolve { get; }
         bool TransferDuplicatePokemon { get; }
         bool UseEggIncubators { get; }
-        int UseGreatBallAboveCp { get; }
-        int UseUltraBallAboveCp { get; }
-        int UseMasterBallAboveCp { get; }
         int DelayBetweenPokemonCatch { get; }
         bool AutomaticallyLevelUpPokemon { get; }
         string LevelUpByCPorIv { get; }
@@ -125,7 +122,6 @@ namespace PoGo.PokeMobBot.Logic
         SnipeSettings PokemonToSnipe { get; }
 
         bool StartupWelcomeDelay { get; }
-
         bool Teleport { get; }
         int DelayPositionCheckState { get; }
         int DelayCatchIncensePokemon { get; }
@@ -147,5 +143,10 @@ namespace PoGo.PokeMobBot.Logic
         int UseBerryMinCp { get;  }
         float UseBerryMinIv { get;  }
         double UseBerryBelowCatchProbability { get; }
+        int UseGreatBallAboveIv { get; }
+        int UseUltraBallAboveIv { get; }
+        double UseMasterBallBelowCatchProbability { get; }
+        double UseUltraBallBelowCatchProbability { get; }
+        double UseGreatBallBelowCatchProbability { get; }
     }
 }
