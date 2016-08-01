@@ -60,58 +60,115 @@ namespace PoGo.PokeMobBot.Logic
 
     public interface ILogicSettings
     {
+        //bot start
         bool AutoUpdate { get; }
         bool TransferConfigAndAuthOnUpdate { get; }
-        float KeepMinIvPercentage { get; }
-        int KeepMinCp { get; }
+        bool DumpPokemonStats { get; }
+        int AmountOfPokemonToDisplayOnStart { get; }
+        bool StartupWelcomeDelay { get; }
+        string TranslationLanguageCode { get; }
+        
+        //coords and movement
+        bool Teleport { get; }
         double WalkingSpeedInKilometerPerHour { get; }
-        bool EvolveAllPokemonWithEnoughCandy { get; }
-        bool KeepPokemonsThatCanEvolve { get; }
-        bool TransferDuplicatePokemon { get; }
-        bool UseEggIncubators { get; }
-        int UseGreatBallAboveCp { get; }
-        int UseUltraBallAboveCp { get; }
-        int UseMasterBallAboveCp { get; }
-        int DelayBetweenPokemonCatch { get; }
-        bool AutomaticallyLevelUpPokemon { get; }
-        string LevelUpByCPorIv { get; }
-        float UpgradePokemonCpMinimum { get; }
-        float UpgradePokemonIvMinimum { get; }
-        int DelayBetweenPlayerActions { get; }
-        bool UsePokemonToNotCatchFilter { get; }
-        int KeepMinDuplicatePokemon { get; }
-        bool PrioritizeIvOverCp { get; }
         int MaxTravelDistanceInMeters { get; }
         bool UseGpxPathing { get; }
         string GpxFile { get; }
+        
+        //delays
+        int DelayBetweenPlayerActions { get; }
+        int DelayBetweenPokemonCatch { get; }
+        int DelayCatchIncensePokemon { get; }
+        int DelayCatchLurePokemon { get; }
+        int DelayCatchNearbyPokemon { get; }
+        int DelayCatchPokemon { get; }
+        int DelayDisplayPokemon { get; }
+        int DelayEvolvePokemon { get; }
+        double DelayEvolveVariation { get; }
+        int DelayPokestop { get; }
+        int DelayPositionCheckState { get; }
+        int DelayRecyleItem { get; }
+        int DelaySnipePokemon { get; }
+        int DelaySoftbanRetry { get; }
+        int DelayTransferPokemon { get; }
+        int DelayUseLuckyEgg { get; }        
+        
+        //incubator
+        bool UseEggIncubators { get; } 
+        
+        //rename
+        bool RenameOnlyAboveIv { get; }
+        bool RenamePokemon { get; }        
+        string RenameTemplate { get; }	
+
+        //transfer
+        bool TransferDuplicatePokemon { get; }
+        bool PrioritizeIvOverCp { get; }
+        int KeepMinCp { get; }
+        float KeepMinIvPercentage { get; }
+        int KeepMinDuplicatePokemon { get; }
+        bool KeepPokemonsThatCanEvolve { get; }
+        
+        //evolve
+        bool EvolveAllPokemonAboveIv { get; }
+        bool EvolveAllPokemonWithEnoughCandy { get; }        
+        float EvolveAboveIvValue { get; } 
         bool UseLuckyEggsWhileEvolving { get; }
         int UseLuckyEggsMinPokemonAmount { get; }
-        bool EvolveAllPokemonAboveIv { get; }
-        float EvolveAboveIvValue { get; }
-        bool DumpPokemonStats { get; }
-        bool RenamePokemon { get; }
-        bool RenameOnlyAboveIv { get; }
-        string RenameTemplate { get; }
-        int AmountOfPokemonToDisplayOnStart { get; }
-        string TranslationLanguageCode { get; }
-        string ProfilePath { get; }
-        string ProfileConfigPath { get; }
-        string GeneralConfigPath { get; }
-        bool SnipeAtPokestops { get; }
-        int MinPokeballsToSnipe { get; }
-        int MinPokeballsWhileSnipe { get; }
-        int MaxPokeballsPerPokemon { get; }
-        string SnipeLocationServer { get; }
-        int SnipeLocationServerPort { get; }
-        bool UseSnipeLocationServer { get; }
-        bool UseSnipeOnlineLocationServer { get; }
-        bool UseTransferIvForSnipe { get; }
-        bool SnipeIgnoreUnknownIv { get; }
-        int MinDelayBetweenSnipes { get; }
-        double SnipingScanOffset { get; }
+        
+        //levelup
+        bool AutomaticallyLevelUpPokemon { get; }
+        string LevelUpByCPorIv { get; }
+        float UpgradePokemonCpMinimum { get; }
+        float UpgradePokemonIvMinimum { get; }        
+        
+        //catch
+        bool HumanizeThrows { get; }
+        double ThrowAccuracyMax { get; }
+        double ThrowAccuracyMin { get; }
+        double ThrowSpinFrequency { get; }        
+        int MaxPokeballsPerPokemon { get; }        
+        
+        //pokeballs
+        int UseGreatBallAboveIv { get; }
+        int UseUltraBallAboveIv { get; }
+        double UseGreatBallBelowCatchProbability { get; }
+        double UseUltraBallBelowCatchProbability { get; }
+        double UseMasterBallBelowCatchProbability { get; }
+        bool UsePokemonToNotCatchFilter { get; }
+        
+        //berries
+        int UseBerryMinCp { get;  }
+        float UseBerryMinIv { get;  }
+        double UseBerryBelowCatchProbability { get; }
+         
+        //favorite 
+         
+        //recycle
         int TotalAmountOfPokeballsToKeep { get; }
         int TotalAmountOfPotionsToKeep { get; }
         int TotalAmountOfRevivesToKeep { get; }
+        int TotalAmountOfBerriesToKeep { get; }
+        double RecycleInventoryAtUsagePercentage { get; }
+        
+        //snipe
+        bool SnipeAtPokestops { get; }
+        bool SnipeIgnoreUnknownIv { get; }
+        bool UseSnipeLocationServer { get; }
+        bool UseSnipeOnlineLocationServer { get; }
+        bool UseTransferIvForSnipe { get; }
+        double SnipingScanOffset { get; }
+        int MinDelayBetweenSnipes { get; }
+        int MinPokeballsToSnipe { get; }
+        int MinPokeballsWhileSnipe { get; }
+        int SnipeLocationServerPort { get; }
+        string SnipeLocationServer { get; }
+        int SnipeRequestTimeoutSeconds { get; }
+        
+        //paths
+        string GeneralConfigPath { get; }
+        string ProfileConfigPath { get; }
+        string ProfilePath { get; }
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
 
@@ -126,28 +183,5 @@ namespace PoGo.PokeMobBot.Logic
         Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter { get; }
         SnipeSettings PokemonToSnipe { get; }
 
-        bool StartupWelcomeDelay { get; }
-
-        bool Teleport { get; }
-        int DelayPositionCheckState { get; }
-        int DelayCatchIncensePokemon { get; }
-        int DelayCatchNearbyPokemon { get; }
-        int DelayCatchLurePokemon { get; }
-        int DelayCatchPokemon { get; }
-        int DelayDisplayPokemon { get; }
-        int DelayUseLuckyEgg { get; }
-        int DelaySoftbanRetry { get; }
-        int DelayPokestop { get; }
-        int DelayRecyleItem { get; }
-        int DelaySnipePokemon { get; }
-        int DelayTransferPokemon { get; }
-        double RecycleInventoryAtUsagePercentage { get; }
-        bool HumanizeThrows { get; }
-        double ThrowAccuracyMin { get; }
-        double ThrowAccuracyMax { get; }
-        double ThrowSpinFrequency { get; }
-        int UseBerryMinCp { get;  }
-        float UseBerryMinIv { get;  }
-        double UseBerryBelowCatchProbability { get; }
     }
 }

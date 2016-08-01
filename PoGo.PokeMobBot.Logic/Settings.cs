@@ -106,7 +106,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool TransferConfigAndAuthOnUpdate = true;
         public bool DumpPokemonStats = false;
         public int AmountOfPokemonToDisplayOnStart = 10;
-        public bool StartupWelcomeDelay = true;
+        public bool StartupWelcomeDelay = false;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
 
@@ -130,6 +130,8 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayCatchNearbyPokemon = 1000;
         public int DelayCatchLurePokemon = 1000;
         public int DelayCatchIncensePokemon = 1000;
+        public int DelayEvolvePokemon = 1000;
+        public double DelayEvolveVariation = 0.3;
         public int DelayTransferPokemon = 1000;
         public int DelayDisplayPokemon = 1000;
         public int DelayUseLuckyEgg = 1000;
@@ -174,31 +176,27 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowAccuracyMax = 1.00;
         public double ThrowSpinFrequency = 0.75;
         public int MaxPokeballsPerPokemon = 6;
-
-        //pokeballs
-        public int UseGreatBallAboveCp = 750;
-        public int UseUltraBallAboveCp = 1500;
-        public int UseMasterBallAboveCp = 2500;
         public int UseGreatBallAboveIv = 80;
         public int UseUltraBallAboveIv = 90;
         public double UseGreatBallBelowCatchProbability = 0.5;
-        public double UseUltraBallBelowCatchProbability = 0.4;
+        public double UseUltraBallBelowCatchProbability = 0.25;
         public double UseMasterBallBelowCatchProbability = 0.05;
         public bool UsePokemonToNotCatchFilter = false;
 
         //berries
         public int UseBerryMinCp = 450;
         public float UseBerryMinIv = 95;
-        public double UseBerryBelowCatchProbability = 0.35;
+        public double UseBerryBelowCatchProbability = 0.2;
 
         //favorite
-        public float FavoriteMinIvPercentage = 95;
         public bool AutoFavoritePokemon = false;
+        public float FavoriteMinIvPercentage = 95;
 
         //recycle
         public int TotalAmountOfPokeballsToKeep = 100;
         public int TotalAmountOfPotionsToKeep = 80;
         public int TotalAmountOfRevivesToKeep = 60;
+        public int TotalAmountOfBerriesToKeep = 80;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -211,6 +209,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseSnipeOnlineLocationServer = false;
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
+        public int SnipeRequestTimeoutSeconds = 10;
 
         public List<KeyValuePair<ItemId, int>> ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>
         {
@@ -288,7 +287,7 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Bulbasaur,
             //PokemonId.Charmander,
             //PokemonId.Squirtle,
-            PokemonId.Rattata
+            PokemonId.Rattata,
             //PokemonId.NidoranFemale,
             //PokemonId.NidoranMale,
             //PokemonId.Oddish,
@@ -301,14 +300,14 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Eevee,
             //PokemonId.Dratini,
             /*criteria: 50 candies commons*/
-            //PokemonId.Spearow,
+            PokemonId.Spearow,
             //PokemonId.Ekans,
-            //PokemonId.Zubat,
+            PokemonId.Zubat,
             //PokemonId.Paras,
             //PokemonId.Venonat,
             //PokemonId.Psyduck,
             //PokemonId.Slowpoke,
-            //PokemonId.Doduo,
+            PokemonId.Doduo
             //PokemonId.Drowzee,
             //PokemonId.Krabby,
             //PokemonId.Horsea,
@@ -330,7 +329,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter = new Dictionary<PokemonId, TransferFilter>
         {
-            //criteria: based on NY Central Park and Tokyo variety + sniping optimization
+            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v3
             {PokemonId.Venusaur, new TransferFilter(1500, 40, 1)},
             {PokemonId.Charizard, new TransferFilter(1500, 20, 1)},
             {PokemonId.Blastoise, new TransferFilter(1500, 20, 1)},
@@ -631,6 +630,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public string ProfilePath => _settings.ProfilePath;
         public string ProfileConfigPath => _settings.ProfileConfigPath;
+        public int SnipeRequestTimeoutSeconds => _settings.SnipeRequestTimeoutSeconds*1000;
         public string GeneralConfigPath => _settings.GeneralConfigPath;
         public bool AutoUpdate => _settings.AutoUpdate;
         public bool TransferConfigAndAuthOnUpdate => _settings.TransferConfigAndAuthOnUpdate;
@@ -645,14 +645,11 @@ namespace PoGo.PokeMobBot.Logic
         public bool KeepPokemonsThatCanEvolve => _settings.KeepPokemonsThatCanEvolve;
         public bool TransferDuplicatePokemon => _settings.TransferDuplicatePokemon;
         public bool UseEggIncubators => _settings.UseEggIncubators;
-        public int UseGreatBallAboveCp => _settings.UseGreatBallAboveCp;
-        public int UseUltraBallAboveCp => _settings.UseUltraBallAboveCp;
         public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
         public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
         public double UseMasterBallBelowCatchProbability => _settings.UseMasterBallBelowCatchProbability;
         public double UseUltraBallBelowCatchProbability => _settings.UseUltraBallBelowCatchProbability;
         public double UseGreatBallBelowCatchProbability => _settings.UseGreatBallBelowCatchProbability;
-        public int UseMasterBallAboveCp => _settings.UseMasterBallAboveCp;
         public int DelayBetweenPokemonCatch => _settings.DelayBetweenPokemonCatch;
         public int DelayBetweenPlayerActions => _settings.DelayBetweenPlayerActions;
         public bool UsePokemonToNotCatchFilter => _settings.UsePokemonToNotCatchFilter;
@@ -684,7 +681,6 @@ namespace PoGo.PokeMobBot.Logic
         public int MinPokeballsToSnipe => _settings.MinPokeballsToSnipe;
         public int MinPokeballsWhileSnipe => _settings.MinPokeballsWhileSnipe;
         public int MaxPokeballsPerPokemon => _settings.MaxPokeballsPerPokemon;
-
         public SnipeSettings PokemonToSnipe => _settings.PokemonToSnipe;
         public string SnipeLocationServer => _settings.SnipeLocationServer;
         public int SnipeLocationServerPort => _settings.SnipeLocationServerPort;
@@ -695,9 +691,9 @@ namespace PoGo.PokeMobBot.Logic
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
         public double SnipingScanOffset => _settings.SnipingScanOffset;
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
+        public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
-
         public bool Teleport => _settings.Teleport;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
@@ -711,6 +707,8 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
+        public int DelayEvolvePokemon => _settings.DelayEvolvePokemon;
+        public double DelayEvolveVariation => _settings.DelayEvolveVariation;
         public double RecycleInventoryAtUsagePercentage => _settings.RecycleInventoryAtUsagePercentage;
         public bool HumanizeThrows => _settings.HumanizeThrows;
         public double ThrowAccuracyMin => _settings.ThrowAccuracyMin;
@@ -719,5 +717,6 @@ namespace PoGo.PokeMobBot.Logic
         public int UseBerryMinCp => _settings.UseBerryMinCp;
         public float UseBerryMinIv => _settings.UseBerryMinIv;
         public double UseBerryBelowCatchProbability => _settings.UseBerryBelowCatchProbability;
+
     }
 }

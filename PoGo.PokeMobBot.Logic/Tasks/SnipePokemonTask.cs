@@ -352,13 +352,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var uri =
                 $"http://skiplagged.com/api/pokemon.php?bounds={boundLowerLeftLat.ToString(formatter)},{boundLowerLeftLng.ToString(formatter)},{boundUpperRightLat.ToString(formatter)},{boundUpperRightLng.ToString(formatter)}";
-            /*var uri =
-                $"http://skiplagged.com/api/pokemon.php?address={location.Latitude.ToString(formatter)},{location.Longitude.ToString(formatter)}";
-                */
-            /*
-             * http://skiplagged.com/api/pokemon.php?bounds=40.76356269219236,-73.98657795715332,40.7854671345488,-73.95812508392333
-             * bounds = bound_lower_left_lat,bound_lower_left_lng,bound_upper_right_lat,bound_upper_right_lng
-             */
 
             ScanResult scanResult;
             try
@@ -366,19 +359,86 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
-                request.Timeout = 5000;
+                request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
                 var resp = request.GetResponse();
                 var reader = new StreamReader(resp.GetResponseStream());
                 var fullresp = reader.ReadToEnd().Replace(" M", "Male").Replace(" F", "Female");
 
+
+                if(fullresp.Contains("error"))
+                {
+                    session.EventDispatcher.Send(new WarnEvent
+                    {
+                        Message = fullresp
+                    });
+                }
+
+
                 scanResult = JsonConvert.DeserializeObject<ScanResult>(fullresp);
             }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError &&
+                    ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound)
+                        });
+                    }
+                    else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
+                    {
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message = session.Translation.GetTranslation(TranslationString.WebErrorGatewayTimeout)
+                        });
+                    }
+                    else if (resp.StatusCode == HttpStatusCode.BadGateway)
+                    {
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message = session.Translation.GetTranslation(TranslationString.WebErrorBadGateway)
+                        });
+                    }
+                    else
+                    {
+                        session.EventDispatcher.Send(new ErrorEvent
+                        {
+                            Message = ex.ToString()
+                        });
+                    }
+
+                    scanResult = new ScanResult
+                    {
+                        Status = "fail",
+                        Pokemon = new List<PokemonLocation>()
+                    };
+                }
+                else
+                {
+                    session.EventDispatcher.Send(new ErrorEvent
+                    {
+                        Message = ex.ToString()
+                    });
+                    scanResult = new ScanResult
+                    {
+                        Status = "fail",
+                        Pokemon = new List<PokemonLocation>()
+                    };
+                }
+            }
+
             catch (Exception ex)
             {
-                // most likely System.IO.IOException
-                session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = ex.ToString()
+                });
                 scanResult = new ScanResult
                 {
                     Status = "fail",
@@ -406,7 +466,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
-                request.Timeout = 5000;
+                request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
                 var resp = request.GetResponse();
@@ -472,7 +532,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         var request = WebRequest.CreateHttp(uri);
                         request.Accept = "application/json";
                         request.Method = "GET";
-                        request.Timeout = 5000;
+                        request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                         request.ReadWriteTimeout = 32000;
 
                         var resp = request.GetResponse();
@@ -498,10 +558,67 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             SnipeLocations.Add(a);
                         }
                     }
+                    catch (WebException ex)
+                    {
+                        if (ex.Status == WebExceptionStatus.ProtocolError &&
+                            ex.Response != null)
+                        {
+                            var resp = (HttpWebResponse)ex.Response;
+                            if (resp.StatusCode == HttpStatusCode.NotFound)
+                            {
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound)
+                                });
+                            }
+                            else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
+                            {
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorGatewayTimeout)
+                                });
+                            }
+                            else if (resp.StatusCode == HttpStatusCode.BadGateway)
+                            {
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorBadGateway)
+                                });
+                            }
+                            else
+                            {
+                                session.EventDispatcher.Send(new ErrorEvent
+                                {
+                                    Message = ex.ToString()
+                                });
+                            }
+
+                            scanResult = new ScanResult
+                            {
+                                Status = "fail",
+                                Pokemon = new List<PokemonLocation>()
+                            };
+                        }
+                        else
+                        {
+                            session.EventDispatcher.Send(new ErrorEvent
+                            {
+                                Message = ex.ToString()
+                            });
+                            scanResult = new ScanResult
+                            {
+                                Status = "fail",
+                                Pokemon = new List<PokemonLocation>()
+                            };
+                        }
+                    }
+
                     catch (Exception ex)
                     {
-                        // most likely System.IO.IOException
-                        session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+                        session.EventDispatcher.Send(new ErrorEvent
+                        {
+                            Message = ex.ToString()
+                        });
                         scanResult = new ScanResult
                         {
                             Status = "fail",
