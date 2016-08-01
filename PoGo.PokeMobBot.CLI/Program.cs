@@ -36,7 +36,12 @@ namespace PoGo.PokeMobBot.CLI
             if (args.Length > 0)
                 subPath = args[0];
 
-            Logger.SetLogger(new ConsoleLogger(LogLevel.Info), subPath);
+#if DEBUG
+            LogLevel logLevel = LogLevel.Debug;
+#else
+            LogLevel logLevel = LogLevel.Info;
+#endif
+            Logger.SetLogger(new ConsoleLogger(logLevel), subPath);
 
             var settings = GlobalSettings.Load(subPath);
 
@@ -102,7 +107,11 @@ namespace PoGo.PokeMobBot.CLI
             session.Navigation.UpdatePositionEvent +=
                 (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
 
+#if DEBUG
+            machine.AsyncStart(new LoginState(), session);
+#else
             machine.AsyncStart(new VersionCheckState(), session);
+#endif
             if (session.LogicSettings.UseSnipeLocationServer)
                 SnipePokemonTask.AsyncStart(session);
 
