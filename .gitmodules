@@ -1,0 +1,4 @@
+[submodule "Pokemon-Go-Rocket-API"]
+	path = Pokemon-Go-Rocket-API
+	url = https://github.com/DurtyFree/Pokemon-Go-Rocket-API.git
+	branch = master
