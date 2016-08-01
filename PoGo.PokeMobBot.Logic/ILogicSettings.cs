@@ -83,6 +83,8 @@ namespace PoGo.PokeMobBot.Logic
         int DelayCatchNearbyPokemon { get; }
         int DelayCatchPokemon { get; }
         int DelayDisplayPokemon { get; }
+        int DelayEvolvePokemon { get; }
+        double DelayEvolveVariation { get; }
         int DelayPokestop { get; }
         int DelayPositionCheckState { get; }
         int DelayRecyleItem { get; }
@@ -128,9 +130,11 @@ namespace PoGo.PokeMobBot.Logic
         int MaxPokeballsPerPokemon { get; }        
         
         //pokeballs
-        int UseGreatBallAboveCp { get; }
-        int UseMasterBallAboveCp { get; }
-        int UseUltraBallAboveCp { get; }        
+        int UseGreatBallAboveIv { get; }
+        int UseUltraBallAboveIv { get; }
+        double UseGreatBallBelowCatchProbability { get; }
+        double UseUltraBallBelowCatchProbability { get; }
+        double UseMasterBallBelowCatchProbability { get; }
         bool UsePokemonToNotCatchFilter { get; }
         
         //berries
@@ -144,13 +148,14 @@ namespace PoGo.PokeMobBot.Logic
         int TotalAmountOfPokeballsToKeep { get; }
         int TotalAmountOfPotionsToKeep { get; }
         int TotalAmountOfRevivesToKeep { get; }
+        int TotalAmountOfBerriesToKeep { get; }
         double RecycleInventoryAtUsagePercentage { get; }
         
         //snipe
         bool SnipeAtPokestops { get; }
         bool SnipeIgnoreUnknownIv { get; }
         bool UseSnipeLocationServer { get; }
-        bool UseSnipeOnlineLocationServer { get; }
+        bool UsePokeSnipersLocationServer { get; }
         bool UseTransferIvForSnipe { get; }
         double SnipingScanOffset { get; }
         int MinDelayBetweenSnipes { get; }
@@ -158,13 +163,12 @@ namespace PoGo.PokeMobBot.Logic
         int MinPokeballsWhileSnipe { get; }
         int SnipeLocationServerPort { get; }
         string SnipeLocationServer { get; }
+        int SnipeRequestTimeoutSeconds { get; }
         
-        // Paths
+        //paths
         string GeneralConfigPath { get; }
         string ProfileConfigPath { get; }
         string ProfilePath { get; }
-        
-        
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
 
@@ -178,9 +182,6 @@ namespace PoGo.PokeMobBot.Logic
 
         Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter { get; }
         SnipeSettings PokemonToSnipe { get; }
-
-        
-
 
     }
 }
