@@ -106,7 +106,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool TransferConfigAndAuthOnUpdate = true;
         public bool DumpPokemonStats = false;
         public int AmountOfPokemonToDisplayOnStart = 10;
-        public bool StartupWelcomeDelay = true;
+        public bool StartupWelcomeDelay = false;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
 
