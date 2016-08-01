@@ -46,6 +46,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.LogicSettings.WalkingSpeedInKilometerPerHour, null, cancellationToken);
             }
 
+            var GymList = await GetGyms(session);
+            session.EventDispatcher.Send(new PokeStopListEvent { Forts = GymList });
+
             var pokestopList = await GetPokeStops(session);
             var stopsHit = 0;
             var displayStatsHit = 0;
@@ -235,6 +238,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 );
 
             return pokeStops.ToList();
+        }
+
+                private static async Task<List<FortData>> GetGyms(ISession session)
+        {
+            var mapObjects = await session.Client.Map.GetMapObjects();
+
+            // Wasn't sure how to make this pretty. Edit as needed.
+            var Gyms = mapObjects.MapCells.SelectMany(i => i.Forts)
+                .Where(
+                    i =>
+                        i.Type == FortType.Gym 
+                );
+
+            return Gyms.ToList();
         }
 
         // static copy of download profile, to update stardust more accurately
