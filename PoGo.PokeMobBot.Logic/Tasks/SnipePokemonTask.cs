@@ -39,8 +39,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         public PokemonLocation(double latitude, double longitude)
         {
-            Latitude = latitude;
-            Longitude = longitude;
+            this.Latitude = latitude;
+            this.Longitude = longitude;
         }
 
         public long Id { get; set; }
