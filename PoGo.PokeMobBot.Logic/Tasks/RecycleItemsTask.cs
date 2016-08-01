@@ -21,20 +21,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (session.Profile.PlayerData.MaxItemStorage * session.LogicSettings.RecycleInventoryAtUsagePercentage > currentTotalItems)
                 return;
 
-            var items = await session.Inventory.GetItemsToRecycle(session);
+            //var items = await session.Inventory.GetItemsToRecycle(session);
 
-            foreach (var item in items)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+            //foreach (var item in items)
+            //{
+            //    cancellationToken.ThrowIfCancellationRequested();
 
-                await session.Client.Inventory.RecycleItem(item.ItemId, item.Count);
+            //    await session.Client.Inventory.RecycleItem(item.ItemId, item.Count);
 
-                session.EventDispatcher.Send(new ItemRecycledEvent { Id = item.ItemId, Count = item.Count });
-                if (session.LogicSettings.Teleport)
-                    await Task.Delay(session.LogicSettings.DelayRecyleItem);
-                else
-                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
-            }
+            //    session.EventDispatcher.Send(new ItemRecycledEvent { Id = item.ItemId, Count = item.Count });
+            //    if (session.LogicSettings.Teleport)
+            //        await Task.Delay(session.LogicSettings.DelayRecyleItem);
+            //    else
+            //        await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+            //}
 
             if (session.LogicSettings.TotalAmountOfPokeballsToKeep != 0)
             {
@@ -254,6 +254,28 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         cancellationToken.ThrowIfCancellationRequested();
                         await session.Client.Inventory.RecycleItem(ItemId.ItemRevive, revivesToRecycle);
                         session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemRevive, Count = revivesToRecycle });
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
+                        else
+                            await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                    }
+                }
+
+                if (diff > 0)
+                {
+                    int maxRevivesToKeep = maxReviveCount - diff;
+                    if (maxRevivesToKeep < 0)
+                    {
+                        maxRevivesToKeep = 0;
+                    }
+                    maxRevivesToRecycle = maxReviveCount - maxRevivesToKeep;
+
+                    if (maxRevivesToRecycle != 0)
+                    {
+                        diff -= maxRevivesToRecycle;
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await session.Client.Inventory.RecycleItem(ItemId.ItemMaxRevive, maxRevivesToRecycle);
+                        session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemMaxRevive, Count = maxRevivesToRecycle });
                         if (session.LogicSettings.Teleport)
                             await Task.Delay(session.LogicSettings.DelayRecyleItem);
                         else
