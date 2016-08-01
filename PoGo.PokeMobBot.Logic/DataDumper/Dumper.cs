@@ -21,7 +21,7 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps");
             var file = Path.Combine(path,
-                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.{extension}");
+                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH:mm:ss")}.{extension}");
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
             // Clears all contents of a file first if overwrite is true
@@ -52,7 +52,7 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         private void DumpToFile(ISession session, string data, string filename, string extension = "txt")
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps",
-                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.{extension}");
+                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH:mm:ss")}.{extension}");
 
             using (
                 var dumpFile =
