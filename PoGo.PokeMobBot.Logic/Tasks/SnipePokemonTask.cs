@@ -352,21 +352,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var uri =
                 $"http://skiplagged.com/api/pokemon.php?bounds={boundLowerLeftLat.ToString(formatter)},{boundLowerLeftLng.ToString(formatter)},{boundUpperRightLat.ToString(formatter)},{boundUpperRightLng.ToString(formatter)}";
-            /*var uri =
-                $"http://skiplagged.com/api/pokemon.php?address={location.Latitude.ToString(formatter)},{location.Longitude.ToString(formatter)}";
-                */
-            /*
-             * http://skiplagged.com/api/pokemon.php?bounds=40.76356269219236,-73.98657795715332,40.7854671345488,-73.95812508392333
-             * bounds = bound_lower_left_lat,bound_lower_left_lng,bound_upper_right_lat,bound_upper_right_lng
-             */
 
+            session.EventDispatcher.Send(new ErrorEvent { Message = uri });
             ScanResult scanResult;
             try
             {
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
-                request.Timeout = 5000;
+                request.Timeout = 10000;
                 request.ReadWriteTimeout = 32000;
 
                 var resp = request.GetResponse();
