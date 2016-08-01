@@ -107,6 +107,9 @@ namespace PoGo.PokeMobBot.CLI
                 case "PlayerStats":
                     await PlayerStatsTask.Execute(_session, action);
                     break;
+                case "GetPokemonSettings":
+                    await PokemonSettingsTask.Execute(_session, action);
+                    break;
                 case "TransferPokemon":
                     await TransferPokemonTask.Execute(_session, msgObj?.Data);
                     break;
