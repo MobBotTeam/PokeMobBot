@@ -33,7 +33,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayRecyleItem);
                 else
-                    DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
             }
 
             if (session.LogicSettings.TotalAmountOfPokeballsToKeep != 0)
@@ -91,7 +91,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         if (session.LogicSettings.Teleport)
                             await Task.Delay(session.LogicSettings.DelayRecyleItem);
                         else
-                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                            await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -113,7 +113,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         if (session.LogicSettings.Teleport)
                             await Task.Delay(session.LogicSettings.DelayRecyleItem);
                         else
-                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                            await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -155,7 +155,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         if (session.LogicSettings.Teleport)
                             await Task.Delay(session.LogicSettings.DelayRecyleItem);
                         else
-                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                            await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -177,7 +177,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         if (session.LogicSettings.Teleport)
                             await Task.Delay(session.LogicSettings.DelayRecyleItem);
                         else
-                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                            await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -199,7 +199,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         if (session.LogicSettings.Teleport)
                             await Task.Delay(session.LogicSettings.DelayRecyleItem);
                         else
-                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                            await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
 
@@ -221,7 +221,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         if (session.LogicSettings.Teleport)
                             await Task.Delay(session.LogicSettings.DelayRecyleItem);
                         else
-                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                            await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
             }
@@ -257,29 +257,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         if (session.LogicSettings.Teleport)
                             await Task.Delay(session.LogicSettings.DelayRecyleItem);
                         else
-                            DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
-                    }
-                }
-
-                if (diff > 0)
-                {
-                    int maxRevivesToKeep = maxReviveCount - diff;
-                    if (maxRevivesToKeep < 0)
-                    {
-                        maxRevivesToKeep = 0;
-                    }
-                    maxRevivesToRecycle = maxReviveCount - maxRevivesToKeep;
-
-                    if (maxRevivesToRecycle != 0)
-                    {
-                        diff -= maxRevivesToRecycle;
-                        cancellationToken.ThrowIfCancellationRequested();
-                        await session.Client.Inventory.RecycleItem(ItemId.ItemMaxRevive, maxRevivesToRecycle);
-                        session.EventDispatcher.Send(new ItemRecycledEvent { Id = ItemId.ItemMaxRevive, Count = maxRevivesToRecycle });
-                        if (session.LogicSettings.Teleport)
-                            await Task.Delay(session.LogicSettings.DelayRecyleItem);
-                        else
-                         DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
+                            await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
                     }
                 }
             }

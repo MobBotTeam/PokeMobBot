@@ -187,7 +187,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if(session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayCatchPokemon);
                 else
-                 DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
+                 await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
             } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed ||
                      caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
         }

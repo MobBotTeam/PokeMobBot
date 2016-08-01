@@ -48,6 +48,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var pokestopList = await GetPokeStops(session);
             var stopsHit = 0;
+            var displayStatsHit = 0;
             var eggWalker = new EggWalker(1000, session);
 
             if (pokestopList.Count <= 0)
@@ -77,11 +78,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
-                session.EventDispatcher.Send(new FortTargetEvent {Name = fortInfo.Name, Distance = distance});
+                session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance,Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
                 if (session.LogicSettings.Teleport)
-                {
-                    await session.Navigation.Teleport(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude));
-                }
+                    await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
+                        session.Client.Settings.DefaultAltitude);
+
                 else
                 {
                     await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
@@ -131,7 +132,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             if(session.LogicSettings.Teleport)
                                 await Task.Delay(session.LogicSettings.DelaySoftbanRetry);
                             else
-                                DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
+                                await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
                         }
                     }
                     else
@@ -145,7 +146,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Items = StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded),
                             Latitude = pokeStop.Latitude,
                             Longitude = pokeStop.Longitude,
-                            InventoryFull = fortSearch.Result == FortSearchResponse.Types.Result.InventoryFull
+                            InventoryFull = fortSearch.Result == FortSearchResponse.Types.Result.InventoryFull,
+                            Description = fortInfo.Description,
+                            url = fortInfo.ImageUrls[0]                            
                         });
 
                         break; //Continue with program as loot was succesfull.
@@ -175,6 +178,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (++stopsHit%5 == 0) //TODO: OR item/pokemon bag is full
                 {
                     stopsHit = 0;
+                    // need updated stardust information for upgrading, so refresh your profile now
+                    await DownloadProfile(session);
+
                     if (fortSearch.ItemsAwarded.Count > 0)
                     {
                         await session.Inventory.RefreshCachedInventory();
@@ -196,6 +202,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     if (session.LogicSettings.RenamePokemon)
                     {
                         await RenamePokemonTask.Execute(session, cancellationToken);
+                    }
+                    if (++displayStatsHit >= 4)
+                    {
+                        await DisplayPokemonStatsTask.Execute(session);
+                        displayStatsHit = 0;
                     }
                 }
 
@@ -224,6 +235,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 );
 
             return pokeStops.ToList();
+        }
+
+        // static copy of download profile, to update stardust more accurately
+        private static async Task DownloadProfile(ISession session)
+        {
+            session.Profile = await session.Client.Player.GetPlayer();
+            session.EventDispatcher.Send(new ProfileEvent { Profile = session.Profile });
         }
     }
 }

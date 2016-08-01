@@ -109,7 +109,7 @@ namespace PoGo.PokeMobBot.Logic
                     var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
                     var amountToSkip = GetPokemonTransferFilter(pokemon.Key).KeepMinDuplicatePokemon;
 
-                    if (settings.CandyToEvolve > 0)
+                    if (settings.CandyToEvolve > 0 && _logicSettings.PokemonsToEvolve.Contains(pokemon.Key))
                     {
                         var amountPossible = (familyCandy.Candy_ - 1)/(settings.CandyToEvolve - 1);
 
@@ -361,6 +361,12 @@ namespace PoGo.PokeMobBot.Logic
             return
                 templates.ItemTemplates.Select(i => i.PokemonSettings)
                     .Where(p => p != null && p.FamilyId != PokemonFamilyId.FamilyUnset);
+        }
+
+        public async Task<IEnumerable<PokemonUpgradeSettings>> GetPokemonUpgradeSettings()
+        {
+            var templates = await _client.Download.GetItemTemplates();
+            return templates.ItemTemplates.Select(i => i.PokemonUpgrades).Where(p => p != null);
         }
 
         public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(IEnumerable<PokemonId> filter = null)
