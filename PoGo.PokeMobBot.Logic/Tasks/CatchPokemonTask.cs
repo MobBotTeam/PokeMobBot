@@ -221,7 +221,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                   !session.LogicSettings.PokemonToUseMasterball.Any()) ||
                  session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId)))
                 return ItemId.ItemMasterBall;
-
             if (ultraBallsCount > 0 && probability <= session.LogicSettings.UseUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
             if (greatBallsCount > 0 && probability <= session.LogicSettings.UseGreatBallBelowCatchProbability)
