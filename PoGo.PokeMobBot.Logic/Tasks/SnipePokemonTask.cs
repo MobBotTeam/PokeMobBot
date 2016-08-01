@@ -89,6 +89,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public static List<PokemonLocation> LocsVisited = new List<PokemonLocation>();
         private static readonly List<SniperInfo> SnipeLocations = new List<SniperInfo>();
         private static DateTime _lastSnipe = DateTime.MinValue;
+        private static StreamReader Reader;
+        private static StreamWriter Writer;
 
         public static Task AsyncStart(Session session, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -457,7 +459,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     var currentTimestamp = t.TotalMilliseconds;
                     var pokemonIds = session.LogicSettings.PokemonToSnipe.Pokemon;
 
-                    var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
+                    var formatter = new NumberFormatInfo {NumberDecimalSeparator = "."};
 
                     var offset = session.LogicSettings.SnipingScanOffset;
                     // 0.003 = half a mile; maximum 0.06 is 10 miles
@@ -502,7 +504,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     catch (Exception ex)
                     {
                         // most likely System.IO.IOException
-                        session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+                        session.EventDispatcher.Send(new ErrorEvent {Message = ex.ToString()});
                         scanResult = new ScanResult
                         {
                             Status = "fail",
@@ -520,15 +522,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         lClient.Connect(session.LogicSettings.SnipeLocationServer,
                             session.LogicSettings.SnipeLocationServerPort);
 
-                    NetworkStream stream = lClient.GetStream();
-                    Reader = new StreamReader(stream);
-                    Writer = new StreamWriter(stream);
+                        NetworkStream stream = lClient.GetStream();
+                        Reader = new StreamReader(stream);
+                        Writer = new StreamWriter(stream);
 
-                    while (lClient.Connected)
-                    {
-                        var line = Reader.ReadLine();
-                        if (line == null)
-                            throw new Exception("Unable to ReadLine from sniper socket");
+                        while (lClient.Connected)
+                        {
+                            var line = Reader.ReadLine();
+                            if (line == null)
+                                throw new Exception("Unable to ReadLine from sniper socket");
 
                             var info = JsonConvert.DeserializeObject<SniperInfo>(line);
 
@@ -538,26 +540,27 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 // we might have different precisions from other sources
                                 continue;
 
-                        SnipeLocations.RemoveAll(x => DateTime.Now > x.TimeStampAdded.AddMinutes(15));
-                        SnipeLocations.Add(info);
-                    }
+                            SnipeLocations.RemoveAll(x => DateTime.Now > x.TimeStampAdded.AddMinutes(15));
+                            SnipeLocations.Add(info);
+                        }
 
-                    Reader.Close();
-                    Writer.Close();
-                    stream.Close();
-                    Reader = null;
-                    Writer = null;
+                        Reader.Close();
+                        Writer.Close();
+                        stream.Close();
+                        Reader = null;
+                        Writer = null;
+                    }
+                    catch (SocketException)
+                    {
+                        // this is spammed to often. Maybe add it to debug log later
+                    }
+                    catch (Exception ex)
+                    {
+                        // most likely System.IO.IOException
+                        session.EventDispatcher.Send(new ErrorEvent {Message = ex.ToString()});
+                    }
+                    await Task.Delay(5000, cancellationToken);
                 }
-                catch (SocketException)
-                {
-                    // this is spammed to often. Maybe add it to debug log later
-                }
-                catch (Exception ex)
-                {
-                    // most likely System.IO.IOException
-                    session.EventDispatcher.Send(new ErrorEvent {Message = ex.ToString()});
-                }
-                await Task.Delay(5000, cancellationToken);
             }
         }
 
