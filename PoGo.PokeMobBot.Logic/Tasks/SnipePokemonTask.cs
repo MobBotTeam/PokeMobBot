@@ -79,7 +79,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
     public class ScanResult
     {
-        public string Status { get; set; }
+        public string Error { get; set; }
         public List<PokemonLocation> Pokemon { get; set; }
     }
 
@@ -134,7 +134,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     if (session.LogicSettings.UseSnipeLocationServer)
                     {
                         var locationsToSnipe = SnipeLocations; // inital
-                        if (session.LogicSettings.UseSnipeOnlineLocationServer)
+                        if (session.LogicSettings.UsePokeSnipersLocationServer)
                         {
                             locationsToSnipe = new List<SniperInfo>(SnipeLocations);
                             locationsToSnipe = locationsToSnipe.Where(q => q.Id == PokemonId.Missingno || pokemonIds.Contains(q.Id)).ToList();
@@ -191,13 +191,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             var scanResult = SnipeScanForPokemon(session, location); // initialize
                             List<PokemonLocation> locationsToSnipe = new List<PokemonLocation>();
 
-                            if (session.LogicSettings.UseSnipeOnlineLocationServer)
+                            if (session.LogicSettings.UsePokeSnipersLocationServer)
                             {
-                                OnlineSnipeScanForPokemon(session, location);
+                                PokeSniperScanForPokemon(session, location);
                             }
                             else
                             {
-                                scanResult = SnipeScanForPokemon(session, location);
                                 if (scanResult.Pokemon != null)
                                 {
                                     var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.PokemonName));
@@ -345,38 +344,35 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (offset < 0.001) offset = 0.003;
             if (offset > 0.06) offset = 0.06;
 
-            var boundLowerLeftLat = location.Latitude - offset;
-            var boundLowerLeftLng = location.Longitude - offset;
-            var boundUpperRightLat = location.Latitude + offset;
-            var boundUpperRightLng = location.Longitude + offset;
+            var boundLowerLeftLat = (location.Latitude - offset).ToString(formatter);
+            var boundLowerLeftLng = (location.Longitude - offset).ToString(formatter);
+            var boundUpperRightLat = (location.Latitude + offset).ToString(formatter);
+            var boundUpperRightLng = (location.Longitude + offset).ToString(formatter);
 
-            var uri =
-                $"http://skiplagged.com/api/pokemon.php?bounds={boundLowerLeftLat.ToString(formatter)},{boundLowerLeftLng.ToString(formatter)},{boundUpperRightLat.ToString(formatter)},{boundUpperRightLng.ToString(formatter)}";
+            var uri = $"http://skiplagged.com/api/pokemon.php?bounds={boundLowerLeftLat},{boundLowerLeftLng},{boundUpperRightLat},{boundUpperRightLng}";
 
             ScanResult scanResult;
+
             try
             {
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
+                request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
                 request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
                 var resp = request.GetResponse();
                 var reader = new StreamReader(resp.GetResponseStream());
-                var fullresp = reader.ReadToEnd().Replace(" M", "Male").Replace(" F", "Female");
-
-
-                if(fullresp.Contains("error"))
-                {
-                    session.EventDispatcher.Send(new WarnEvent
-                    {
-                        Message = fullresp
-                    });
-                }
-
+                var fullresp = reader.ReadToEnd();
 
                 scanResult = JsonConvert.DeserializeObject<ScanResult>(fullresp);
+
+                if(scanResult.Error != string.Empty)
+                {
+                    if (scanResult.Error.Contains("down for maintenance") || scanResult.Error.Contains("illegal request"))
+                        session.EventDispatcher.Send(new WarnEvent { Message = "SkipLagged servers are down for maintenance." });
+                }
             }
             catch (WebException ex)
             {
@@ -384,71 +380,43 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     ex.Response != null)
                 {
                     var resp = (HttpWebResponse)ex.Response;
-                    if (resp.StatusCode == HttpStatusCode.NotFound)
+                    switch(resp.StatusCode)
                     {
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message = "404 Not Found: Not able to retrieve file from server!"
-                        });
+                        case HttpStatusCode.NotFound:
+                            session.EventDispatcher.Send(new WarnEvent { Message = "404 Not Found: Not able to retrieve file from server!" });
+                            break;
+                        case HttpStatusCode.GatewayTimeout:
+                            session.EventDispatcher.Send(new WarnEvent { Message = "504 Gateway Time-out: The server didn't respond in time." });
+                            break;
+                        case HttpStatusCode.BadGateway:
+                            session.EventDispatcher.Send(new WarnEvent { Message = "502 Bad Gateway: Server is under heavy load!" });
+                            break;
+                        default:
+                            session.EventDispatcher.Send(new WarnEvent { Message = ex.ToString() });
+                            break;
                     }
-                    else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
-                    {
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message = "504 Gateway Time-out: The server didn't respond in time."
-                        });
-                    }
-                    else if (resp.StatusCode == HttpStatusCode.BadGateway)
-                    {
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message = "502 Bad Gateway: Server is under heavy load!"
-                        });
-                    }
-                    else
-                    {
-                        session.EventDispatcher.Send(new ErrorEvent
-                        {
-                            Message = ex.ToString()
-                        });
-                    }
-
-                    scanResult = new ScanResult
-                    {
-                        Status = "fail",
-                        Pokemon = new List<PokemonLocation>()
-                    };
+                }
+                else if(ex.Status == WebExceptionStatus.Timeout)
+                {
+                    session.EventDispatcher.Send(new WarnEvent { Message = "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!" });
                 }
                 else
                 {
-                    session.EventDispatcher.Send(new ErrorEvent
-                    {
-                        Message = ex.ToString()
-                    });
-                    scanResult = new ScanResult
-                    {
-                        Status = "fail",
-                        Pokemon = new List<PokemonLocation>()
-                    };
+                    session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                 }
-            }
 
+                scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
+            }
             catch (Exception ex)
             {
-                session.EventDispatcher.Send(new ErrorEvent
-                {
-                    Message = ex.ToString()
-                });
-                scanResult = new ScanResult
-                {
-                    Status = "fail",
-                    Pokemon = new List<PokemonLocation>()
-                };
+                session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+                scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
             }
+
             return scanResult;
         }
 
-        private static ScanResult OnlineSnipeScanForPokemon(ISession session, Location location)
+        private static ScanResult PokeSniperScanForPokemon(ISession session, Location location)
         {
             var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
@@ -457,8 +425,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (offset < 0.001) offset = 0.003;
             if (offset > 0.06) offset = 0.06;
 
-            var uri =
-                $"http://pokesnipers.com/api/v1/pokemon.json";
+            var uri = $"http://pokesnipers.com/api/v1/pokemon.json";
 
             ScanResult scanResult;
             try
@@ -466,6 +433,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
+                request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
                 request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
@@ -496,11 +464,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 // most likely System.IO.IOException
                 session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
-                scanResult = new ScanResult
-                {
-                    Status = "fail",
-                    Pokemon = new List<PokemonLocation>()
-                };
+                scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
             }
             return null;
         }
@@ -509,7 +473,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             while (true)
             {
-                if (session.LogicSettings.UseSnipeOnlineLocationServer)
+                if (session.LogicSettings.UsePokeSnipersLocationServer)
                 {
                     var st = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     var t = DateTime.Now.ToUniversalTime() - st;
@@ -523,8 +487,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     if (offset < 0.001) offset = 0.003;
                     if (offset > 0.06) offset = 0.06;
 
-                    var uri =
-                        $"http://pokesnipers.com/api/v1/pokemon.json";
+                    var uri = $"http://pokesnipers.com/api/v1/pokemon.json";
 
                     ScanResult scanResult;
                     try
@@ -564,71 +527,41 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             ex.Response != null)
                         {
                             var resp = (HttpWebResponse)ex.Response;
-                            if (resp.StatusCode == HttpStatusCode.NotFound)
+                            switch (resp.StatusCode)
                             {
-                                session.EventDispatcher.Send(new WarnEvent
-                                {
-                                    Message = "404 Not Found: Not able to retrieve file from server!"
-                                });
+                                case HttpStatusCode.NotFound:
+                                    session.EventDispatcher.Send(new WarnEvent { Message = "404 Not Found: Not able to retrieve file from server!" });
+                                    break;
+                                case HttpStatusCode.GatewayTimeout:
+                                    session.EventDispatcher.Send(new WarnEvent { Message = "504 Gateway Time-out: The server didn't respond in time." });
+                                    break;
+                                case HttpStatusCode.BadGateway:
+                                    session.EventDispatcher.Send(new WarnEvent { Message = "502 Bad Gateway: Server is under heavy load!" });
+                                    break;
+                                default:
+                                    session.EventDispatcher.Send(new WarnEvent { Message = ex.ToString() });
+                                    break;
                             }
-                            else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
-                            {
-                                session.EventDispatcher.Send(new WarnEvent
-                                {
-                                    Message = "504 Gateway Time-out: The server didn't respond in time!"
-                                });
-                            }
-                            else if (resp.StatusCode == HttpStatusCode.BadGateway)
-                            {
-                                session.EventDispatcher.Send(new WarnEvent
-                                {
-                                    Message = "502 Bad Gateway: Server is under heavy load!"
-                                });
-                            }
-                            else
-                            {
-                                session.EventDispatcher.Send(new ErrorEvent
-                                {
-                                    Message = ex.ToString()
-                                });
-                            }
-
-                            scanResult = new ScanResult
-                            {
-                                Status = "fail",
-                                Pokemon = new List<PokemonLocation>()
-                            };
+                        }
+                        else if (ex.Status == WebExceptionStatus.Timeout)
+                        {
+                            session.EventDispatcher.Send(new WarnEvent { Message = "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!" });
                         }
                         else
                         {
-                            session.EventDispatcher.Send(new ErrorEvent
-                            {
-                                Message = ex.ToString()
-                            });
-                            scanResult = new ScanResult
-                            {
-                                Status = "fail",
-                                Pokemon = new List<PokemonLocation>()
-                            };
+                            session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                         }
-                    }
 
+                        scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
+                    }
                     catch (Exception ex)
                     {
-                        session.EventDispatcher.Send(new ErrorEvent
-                        {
-                            Message = ex.ToString()
-                        });
-                        scanResult = new ScanResult
-                        {
-                            Status = "fail",
-                            Pokemon = new List<PokemonLocation>()
-                        };
+                        session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+                        scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
                     }
                 }
                 else
                 {
-
                     cancellationToken.ThrowIfCancellationRequested();
                     try
                     {

@@ -155,7 +155,7 @@ namespace PoGo.PokeMobBot.Logic
         bool SnipeAtPokestops { get; }
         bool SnipeIgnoreUnknownIv { get; }
         bool UseSnipeLocationServer { get; }
-        bool UseSnipeOnlineLocationServer { get; }
+        bool UsePokeSnipersLocationServer { get; }
         bool UseTransferIvForSnipe { get; }
         double SnipingScanOffset { get; }
         int MinDelayBetweenSnipes { get; }
