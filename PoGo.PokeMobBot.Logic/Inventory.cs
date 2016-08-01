@@ -260,6 +260,18 @@ namespace PoGo.PokeMobBot.Logic
                     currentAmountOfMasterballs)
             });
 
+            var currentAmountOfPotions = await GetItemAmountByType(ItemId.ItemPotion);
+            var currentAmountOfSuperPotions = await GetItemAmountByType(ItemId.ItemSuperPotion);
+            var currentAmountOfHyperPotions = await GetItemAmountByType(ItemId.ItemHyperPotion);
+            var currentAmountOfMaxPotions= await GetItemAmountByType(ItemId.ItemMaxPotion);
+
+            session.EventDispatcher.Send(new NoticeEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.CurrentPotionInv,
+                    currentAmountOfPotions, currentAmountOfSuperPotions, currentAmountOfHyperPotions,
+                    currentAmountOfMaxPotions)
+            });
+
             var otherItemsToRecycle = myItems
                 .Where(x => _logicSettings.ItemRecycleFilter.Any(f => f.Key == x.ItemId && x.Count > f.Value))
                 .Select(
