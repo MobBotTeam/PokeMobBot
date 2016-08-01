@@ -13,7 +13,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class PokemonListTask
     {
-        public static async Task Execute(ISession session)
+        public static async Task Execute(ISession session, Action<IEvent> action)
         {
             // Refresh inventory so that the player stats are fresh
             await session.Inventory.RefreshCachedInventory();
@@ -35,17 +35,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 );
             });
 
-            session.EventDispatcher.Send(
-                new PokemonListEvent
-                {
-                    PokemonList = pkmWithIv.ToList()
-                });
-            await Task.Delay(500);
+            action(new PokemonListEvent
+            {
+                PokemonList = pkmWithIv.ToList()
+            });
 
-            if (session.LogicSettings.Teleport)
-                await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
-            else
-                await Task.Delay(500);
+            await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions);
         }
     }
 }

@@ -90,19 +90,22 @@ namespace PoGo.PokeMobBot.CLI
             }
             catch { }
 
+            // Action request from UI should not be broadcasted to all client
+            Action<IEvent> action = (evt) => session.Send(Serialize(evt));
+
             switch (command)
             {
                 case "PokemonList":
-                    await PokemonListTask.Execute(_session);
+                    await PokemonListTask.Execute(_session, action);
                     break;
                 case "EggsList":
-                    await EggsListTask.Execute(_session);
+                    await EggsListTask.Execute(_session, action);
                     break;
                 case "InventoryList":
-                    await InventoryListTask.Execute(_session);
+                    await InventoryListTask.Execute(_session, action);
                     break;
                 case "PlayerStats":
-                    await PlayerStatsTask.Execute(_session);
+                    await PlayerStatsTask.Execute(_session, action);
                     break;
             }
         }
