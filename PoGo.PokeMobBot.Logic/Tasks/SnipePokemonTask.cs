@@ -359,7 +359,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
-                request.Timeout = 10000;
+                request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
                 var resp = request.GetResponse();
@@ -432,7 +432,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
-                request.Timeout = 5000;
+                request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
                 var resp = request.GetResponse();
@@ -498,7 +498,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         var request = WebRequest.CreateHttp(uri);
                         request.Accept = "application/json";
                         request.Method = "GET";
-                        request.Timeout = 5000;
+                        request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                         request.ReadWriteTimeout = 32000;
 
                         var resp = request.GetResponse();

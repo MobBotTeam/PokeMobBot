@@ -42,7 +42,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
                     Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonIgnoreFilter,
-                        pokemon.PokemonId));
+                        session.Translation.GetPokemonName(pokemon.PokemonId)));
                 }
                 else
                 {
