@@ -142,7 +142,9 @@ namespace PoGo.PokeMobBot.Logic.Common
         PokemonUpgradeUnavailable,
         WebErrorNotFound,
         WebErrorGatewayTimeout,
-        WebErrorBadGateway
+        WebErrorBadGateway,
+        SkipLaggedTimeout,
+        SkipLaggedMaintenance
     }
 
     public class Translation : ITranslation
@@ -351,7 +353,11 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.WebErrorGatewayTimeout,
                 "504 Gateway Time-out: The server didn't respond in time."),
             new KeyValuePair<TranslationString, string>(TranslationString.WebErrorNotFound,
-                "404 Not Found: Not able to retrieve file from server!")
+                "404 Not Found: Not able to retrieve file from server!"),
+            new KeyValuePair<TranslationString, string>(TranslationString.SkipLaggedTimeout,
+                "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!"),
+            new KeyValuePair<TranslationString, string>(TranslationString.SkipLaggedMaintenance,
+                "SkipLagged servers are down for maintenance.")
         };
 
         [JsonProperty("Pokemon",
