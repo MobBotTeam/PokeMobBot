@@ -160,6 +160,7 @@ namespace PoGo.PokeMobBot.Logic
         int MinPokeballsWhileSnipe { get; }
         int SnipeLocationServerPort { get; }
         string SnipeLocationServer { get; }
+        int SnipeRequestTimeoutSeconds { get; }
         
         //paths
         string GeneralConfigPath { get; }
