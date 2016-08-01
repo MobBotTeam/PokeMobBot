@@ -388,6 +388,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Message = "504 Gateway Time-out: The server didn't respond in time."
                         });
                     }
+                    else if (resp.StatusCode == HttpStatusCode.BadGateway)
+                    {
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message = "502 Bad Gateway: Server is under heavy load!"
+                        });
+                    }
                     else
                     {
                         session.EventDispatcher.Send(new ErrorEvent
@@ -558,7 +565,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             {
                                 session.EventDispatcher.Send(new WarnEvent
                                 {
-                                    Message = "504 Gateway Time-out: The server didn't respond in time."
+                                    Message = "504 Gateway Time-out: The server didn't respond in time!"
+                                });
+                            }
+                            else if (resp.StatusCode == HttpStatusCode.BadGateway)
+                            {
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = "502 Bad Gateway: Server is under heavy load!"
                                 });
                             }
                             else
