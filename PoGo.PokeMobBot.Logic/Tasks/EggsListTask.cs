@@ -1,5 +1,6 @@
 ﻿#region using directives
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
@@ -39,6 +40,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     Incubators = incubators,
                     UnusedEggs = unusedEggs
                 });
+        }
+
+        public static Task Execute(Session _session)
+        {
+            throw new NotImplementedException();
         }
     }
 }
