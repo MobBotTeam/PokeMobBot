@@ -194,9 +194,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         private static async Task<ItemId> GetBestBall(ISession session, dynamic encounter, float probability)
         {
-            // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();			
-			
             var pokemonCp = encounter is EncounterResponse
                 ? encounter.WildPokemon?.PokemonData?.Cp
                 : encounter?.PokemonData?.Cp;
@@ -244,9 +241,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         private static async Task UseBerry(ISession session, ulong encounterId, string spawnPointId)
         {
-            // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();			
-			
             var inventoryBalls = await session.Inventory.GetItems();
             var berries = inventoryBalls.Where(p => p.ItemId == ItemId.ItemRazzBerry);
             var berry = berries.FirstOrDefault();

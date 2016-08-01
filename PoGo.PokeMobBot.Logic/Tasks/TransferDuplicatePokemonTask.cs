@@ -18,9 +18,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
-			
             var duplicatePokemons =
                 await
                     session.Inventory.GetDuplicatePokemonToTransfer(session.LogicSettings.KeepPokemonsThatCanEvolve,

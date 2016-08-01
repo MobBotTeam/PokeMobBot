@@ -94,9 +94,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public static async Task<bool> CheckPokeballsToSnipe(int minPokeballs, ISession session,
             CancellationToken cancellationToken)
         {
-            // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();			
-			
             var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
             pokeBallsCount += await session.Inventory.GetItemAmountByType(ItemId.ItemGreatBall);
             pokeBallsCount += await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
