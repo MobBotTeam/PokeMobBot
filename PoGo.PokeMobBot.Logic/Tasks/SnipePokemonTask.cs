@@ -77,7 +77,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         }
     }
 
-    public class scanResult
+    public class ScanResult
     {
         public string Status { get; set; }
         public List<PokemonLocation> Pokemon { get; set; }
@@ -198,9 +198,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             else
                             {
                                 scanResult = SnipeScanForPokemon(session, location);
-                                if (scanResult.pokemon != null)
+                                if (scanResult.Pokemon != null)
                                 {
-                                    var filteredPokemon = scanResult.pokemon.Where(q => pokemonIds.Contains((PokemonId)q.pokemon_name));
+                                    var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.pokemon_name));
                                     var notVisitedPokemon = filteredPokemon.Where(q => !LocsVisited.Contains(q));
                                     var notExpiredPokemon = notVisitedPokemon.Where(q => q.expires < currentTimestamp);
 
@@ -208,9 +208,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 }
                             }
 
-                            if (scanResult.pokemon != null)
+                            if (scanResult.Pokemon != null)
                             {
-                                var filteredPokemon = scanResult.pokemon.Where(q => pokemonIds.Contains((PokemonId)q.pokemon_name));
+                                var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.pokemon_name));
                                 var notVisitedPokemon = filteredPokemon.Where(q => !LocsVisited.Contains(q));
                                 var notExpiredPokemon = notVisitedPokemon.Where(q => q.expires < currentTimestamp);
 
@@ -269,7 +269,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var mapObjects = session.Client.Map.GetMapObjects().Result;
             var catchablePokemon =
-                mapObjects.MapCells.SelectMany(q => q.CatchablePokemon)
+                mapObjects.MapCells.SelectMany(q => q.CatchablePokemons)
                     .Where(q => pokemonIds.Contains(q.PokemonId))
                     .ToList();
 
@@ -360,7 +360,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
              * bounds = bound_lower_left_lat,bound_lower_left_lng,bound_upper_right_lat,bound_upper_right_lng
              */
 
-            scanResult scanResult;
+            ScanResult scanResult;
             try
             {
                 var request = WebRequest.CreateHttp(uri);
@@ -373,7 +373,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var reader = new StreamReader(resp.GetResponseStream());
                 var fullresp = reader.ReadToEnd().Replace(" M", "Male").Replace(" F", "Female");
 
-                scanResult = JsonConvert.DeserializeObject<scanResult>(fullresp);
+                scanResult = JsonConvert.DeserializeObject<ScanResult>(fullresp);
             }
             catch (Exception ex)
             {
@@ -388,7 +388,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             return scanResult;
         }
 
-        private static scanResult OnlineSnipeScanForPokemon(ISession session, Location location)
+        private static ScanResult OnlineSnipeScanForPokemon(ISession session, Location location)
         {
             var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
@@ -400,7 +400,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var uri =
                 $"http://pokesnipers.com/api/v1/pokemon.json";
 
-            scanResult scanResult;
+            ScanResult scanResult;
             try
             {
                 var request = WebRequest.CreateHttp(uri);
@@ -466,7 +466,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     var uri =
                         $"http://pokesnipers.com/api/v1/pokemon.json";
 
-                    scanResult scanResult;
+                    ScanResult scanResult;
                     try
                     {
                         var request = WebRequest.CreateHttp(uri);
