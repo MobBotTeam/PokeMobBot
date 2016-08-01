@@ -7,7 +7,6 @@ using PoGo.PokeMobBot.Logic.State;
 using PokemonGo.RocketAPI.Common;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
-using PokemonGo.RocketAPI.Extensions;
 
 #endregion
 

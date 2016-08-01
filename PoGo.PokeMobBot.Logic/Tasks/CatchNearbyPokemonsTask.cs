@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
 using POGOProtos.Inventory.Item;
@@ -25,7 +24,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             // Refresh inventory so that the player stats are fresh
             await session.Inventory.RefreshCachedInventory();
 
-            session.EventDispatcher.Send(new DebugEvent()
+            session.EventDispatcher.Send(new DebugEvent
             {
                 Message = session.Translation.GetTranslation(TranslationString.LookingForPokemon)
             });
@@ -42,7 +41,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (pokeBallsCount + greatBallsCount + ultraBallsCount + masterBallsCount == 0)
                 {
-                    session.EventDispatcher.Send(new NoticeEvent()
+                    session.EventDispatcher.Send(new NoticeEvent
                     {
                         Message = session.Translation.GetTranslation(TranslationString.ZeroPokeballInv)
                     });
@@ -52,7 +51,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.UsePokemonToNotCatchFilter &&
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
-                    session.EventDispatcher.Send(new NoticeEvent()
+                    session.EventDispatcher.Send(new NoticeEvent
                     {
                         Message = session.Translation.GetTranslation(TranslationString.PokemonSkipped, session.Translation.GetPokemonName(pokemon.PokemonId))
                     });

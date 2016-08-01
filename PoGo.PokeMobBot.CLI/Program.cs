@@ -55,7 +55,7 @@ namespace PoGo.PokeMobBot.CLI
                 Console.ReadKey();
 
                 // opens explorer with location "config"
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = "config",
                     UseShellExecute = true,
@@ -65,23 +65,6 @@ namespace PoGo.PokeMobBot.CLI
             }
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
             session.Client.ApiFailure = new ApiFailureStrategy(session);
-
-
-            /*SimpleSession session = new SimpleSession
-            {
-                _client = new PokemonGo.RocketAPI.Client(new ClientSettings(settings)),
-                _dispatcher = new EventDispatcher(),
-                _localizer = new Localizer()
-            };
-
-            BotService service = new BotService
-            {
-                _session = session,
-                _loginTask = new Login(session)
-            };
-
-            service.Run();
-            */
 
             var machine = new StateMachine();
             var stats = new Statistics();
@@ -96,16 +79,19 @@ namespace PoGo.PokeMobBot.CLI
             var listener = new ConsoleEventListener();
             var websocket = new WebSocketInterface(settings.WebSocketPort, session);
 
-            session.EventDispatcher.EventReceived += evt => listener.Listen(evt, session);
-            session.EventDispatcher.EventReceived += evt => aggregator.Listen(evt, session);
-            session.EventDispatcher.EventReceived += evt => websocket.Listen(evt, session);
+            session.EventDispatcher.EventReceived += evt => { listener.Listen(evt, session); };
+            session.EventDispatcher.EventReceived += evt => { aggregator.Listen(evt, session); };
+            session.EventDispatcher.EventReceived += evt => { websocket.Listen(evt, session); };
 
             machine.SetFailureState(new LoginState());
 
             Logger.SetLoggerContext(session);
 
             session.Navigation.UpdatePositionEvent +=
-                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
+                (lat, lng) =>
+                {
+                    session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
+                };
 
 #if DEBUG
             machine.AsyncStart(new LoginState(), session);

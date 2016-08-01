@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 
 #endregion
 
@@ -70,7 +69,7 @@ namespace PoGo.PokeMobBot.Logic.State
             var extractedDir = Path.Combine(tempPath, "Release");
             var destinationDir = baseDir + Path.DirectorySeparatorChar;
 
-            session.EventDispatcher.Send(new NoticeEvent() { Message = downloadLink });
+            session.EventDispatcher.Send(new NoticeEvent { Message = downloadLink });
 
             if (!DownloadFile(session, downloadLink, downloadFilePath))
                 return new LoginState();
@@ -131,7 +130,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 }
                 catch (Exception e)
                 {
-                    session.EventDispatcher.Send(new ErrorEvent()
+                    session.EventDispatcher.Send(new ErrorEvent
                     {
                         Message = e.ToString()
                     });
@@ -147,7 +146,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 try
                 {
                     client.DownloadFile(url, dest);
-                    session.EventDispatcher.Send(new NoticeEvent()
+                    session.EventDispatcher.Send(new NoticeEvent
                     {
                         Message = dest
                     });

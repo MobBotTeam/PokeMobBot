@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Xml;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 
 #endregion

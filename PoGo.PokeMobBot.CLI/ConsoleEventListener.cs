@@ -41,11 +41,9 @@ namespace PoGo.PokeMobBot.CLI
         {
             Logger.Write(evt.ToString(), LogLevel.Warning);
 
-            if (evt.RequireInput)
-            {
-                Logger.Write(session.Translation.GetTranslation(TranslationString.RequireInputText));
-                Console.ReadKey();
-            }
+            if (!evt.RequireInput) return;
+            Logger.Write(session.Translation.GetTranslation(TranslationString.RequireInputText));
+            Console.ReadKey();
         }
 
         public void HandleEvent(UseLuckyEggEvent evt, ISession session)
@@ -56,8 +54,7 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(UseLuckyEggMinPokemonEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff, evt.CurrCount, evt.MinPokemon),
-                LogLevel.Info);
+            Logger.Write(session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff, evt.CurrCount, evt.MinPokemon));
         }
 
         public void HandleEvent(PokemonEvolveEvent evt, ISession session)
@@ -138,9 +135,62 @@ namespace PoGo.PokeMobBot.CLI
                         return session.Translation.GetTranslation(TranslationString.UltraPokeball);
                     case ItemId.ItemMasterBall:
                         return session.Translation.GetTranslation(TranslationString.MasterPokeball);
+                    case ItemId.ItemUnknown:
+                        break;
+                    case ItemId.ItemPotion:
+                        break;
+                    case ItemId.ItemSuperPotion:
+                        break;
+                    case ItemId.ItemHyperPotion:
+                        break;
+                    case ItemId.ItemMaxPotion:
+                        break;
+                    case ItemId.ItemRevive:
+                        break;
+                    case ItemId.ItemMaxRevive:
+                        break;
+                    case ItemId.ItemLuckyEgg:
+                        break;
+                    case ItemId.ItemIncenseOrdinary:
+                        break;
+                    case ItemId.ItemIncenseSpicy:
+                        break;
+                    case ItemId.ItemIncenseCool:
+                        break;
+                    case ItemId.ItemIncenseFloral:
+                        break;
+                    case ItemId.ItemTroyDisk:
+                        break;
+                    case ItemId.ItemXAttack:
+                        break;
+                    case ItemId.ItemXDefense:
+                        break;
+                    case ItemId.ItemXMiracle:
+                        break;
+                    case ItemId.ItemRazzBerry:
+                        break;
+                    case ItemId.ItemBlukBerry:
+                        break;
+                    case ItemId.ItemNanabBerry:
+                        break;
+                    case ItemId.ItemWeparBerry:
+                        break;
+                    case ItemId.ItemPinapBerry:
+                        break;
+                    case ItemId.ItemSpecialCamera:
+                        break;
+                    case ItemId.ItemIncubatorBasicUnlimited:
+                        break;
+                    case ItemId.ItemIncubatorBasic:
+                        break;
+                    case ItemId.ItemPokemonStorageUpgrade:
+                        break;
+                    case ItemId.ItemItemStorageUpgrade:
+                        break;
                     default:
                         return session.Translation.GetTranslation(TranslationString.CommonWordUnknown);
                 }
+                return null;
             };
 
             var catchType = evt.CatchType;
