@@ -180,7 +180,7 @@ namespace PoGo.PokeMobBot.CLI
                 session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType, session.Translation.GetPokemonName(evt.Id),
                     evt.Level, evt.Cp, evt.MaxCp, evt.Perfection.ToString("0.00"), evt.Probability,
                     evt.Distance.ToString("F2"),
-                    returnRealBallName(evt.Pokeball), evt.BallAmount, familyCandies), LogLevel.Caught);
+                    returnRealBallName(evt.Pokeball), evt.BallAmount, evt.Exp, familyCandies), LogLevel.Caught);
         }
 
         public void HandleEvent(NoPokeballEvent evt, ISession session)
