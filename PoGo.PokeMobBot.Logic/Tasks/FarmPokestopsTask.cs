@@ -46,10 +46,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.LogicSettings.WalkingSpeedInKilometerPerHour, null, cancellationToken);
             }
 
-            var GymList = await GetGyms(session);
-            session.EventDispatcher.Send(new PokeStopListEvent { Forts = GymList });
+
 
             var pokestopList = await GetPokeStops(session);
+
             var stopsHit = 0;
             var displayStatsHit = 0;
             var eggWalker = new EggWalker(1000, session);
@@ -81,6 +81,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
+
+
                 session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance,Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
                 if (session.LogicSettings.Teleport)
                     await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
@@ -99,7 +101,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         return true;
                     }, cancellationToken);
                 }
-                
+
+
                 FortSearchResponse fortSearch;
                 var timesZeroXPawarded = 0;
                 var fortTry = 0; //Current check
@@ -183,6 +186,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     stopsHit = 0;
                     // need updated stardust information for upgrading, so refresh your profile now
                     await DownloadProfile(session);
+                    var GymList = await GetGyms(session);
+                    session.EventDispatcher.Send(new PokeStopListEvent { Forts = GymList });
 
                     if (fortSearch.ItemsAwarded.Count > 0)
                     {
