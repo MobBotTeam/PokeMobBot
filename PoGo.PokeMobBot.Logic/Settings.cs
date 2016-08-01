@@ -131,7 +131,7 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayCatchLurePokemon = 1000;
         public int DelayCatchIncensePokemon = 1000;
         public int DelayEvolvePokemon = 1000;
-        public double DelayEvolveVariation = 0.1;
+        public double DelayEvolveVariation = 0.3;
         public int DelayTransferPokemon = 1000;
         public int DelayDisplayPokemon = 1000;
         public int DelayUseLuckyEgg = 1000;
