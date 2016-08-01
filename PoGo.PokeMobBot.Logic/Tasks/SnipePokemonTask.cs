@@ -395,7 +395,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Message = ex.ToString()
                         });
                     }
-                    
+
                     scanResult = new ScanResult
                     {
                         Status = "fail",
@@ -414,6 +414,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Pokemon = new List<PokemonLocation>()
                     };
                 }
+            }
+
+            catch (Exception ex)
+            {
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = ex.ToString()
+                });
+                scanResult = new ScanResult
+                {
+                    Status = "fail",
+                    Pokemon = new List<PokemonLocation>()
+                };
             }
             return scanResult;
         }
@@ -574,6 +587,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 Pokemon = new List<PokemonLocation>()
                             };
                         }
+                    }
+
+                    catch (Exception ex)
+                    {
+                        session.EventDispatcher.Send(new ErrorEvent
+                        {
+                            Message = ex.ToString()
+                        });
+                        scanResult = new ScanResult
+                        {
+                            Status = "fail",
+                            Pokemon = new List<PokemonLocation>()
+                        };
                     }
                 }
                 else
