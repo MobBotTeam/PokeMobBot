@@ -132,7 +132,8 @@ namespace PoGo.PokeMobBot.Logic.Common
         NotEnoughPokeballsToSnipe,
         DisplayHighestMove1Header,
         DisplayHighestMove2Header,
-        UseBerry
+        UseBerry,
+        BerriesToKeepIncorrect
     }
 
     public class Translation : ITranslation
@@ -321,7 +322,9 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestMove1Header, "MOVE1"),
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestMove2Header, "MOVE2"),
             new KeyValuePair<TranslationString, string>(TranslationString.UseBerry,
-                "Using Razzberry. Berries left: {0}")
+                "Using Razzberry. Berries left: {0}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.BerriesToKeepIncorrect,
+                "You can not set the amount of Berries to less then 1")
         };
 
         [JsonProperty("Pokemon",
