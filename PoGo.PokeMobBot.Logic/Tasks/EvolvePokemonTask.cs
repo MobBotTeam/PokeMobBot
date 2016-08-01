@@ -17,15 +17,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         private DateTime _lastLuckyEggTime;
         private readonly DelayingUtils _delayingUtils;
+        private readonly DelayingEvolveUtils _delayingEvolveUtils;
 
-        public EvolvePokemonTask(DelayingUtils delayingUtils)
+        public EvolvePokemonTask(DelayingUtils delayingUtils, DelayingEvolveUtils delayingEvolveUtils)
         {
             _delayingUtils = delayingUtils;
+            _delayingEvolveUtils = delayingEvolveUtils;
         }
 
         public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
 
             var pokemonToEvolveTask = await session.Inventory.GetPokemonToEvolve(session.LogicSettings.PokemonsToEvolve);
             var pokemonToEvolve = pokemonToEvolveTask.ToList();
@@ -70,7 +75,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Result = evolveResponse.Result
                     });
 
-                    await _delayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 0);
+                    await _delayingEvolveUtils.Delay(session.LogicSettings.DelayEvolvePokemon, 0, session.LogicSettings.DelayEvolveVariation);
                 }
             }
         }

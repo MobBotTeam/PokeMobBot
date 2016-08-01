@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PoGo.PokeMobBot.Logic.Common;
+using PoGo.PokeMobBot.Logic.Event;
 using POGOProtos.Inventory;
 using POGOProtos.Settings.Master;
 using POGOProtos.Data;
@@ -29,6 +31,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         public async Task Execute(ISession session, CancellationToken cancellationToken)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
+
             // get the families and the pokemons settings to do some actual smart stuff like checking if you have enough candy in the first place
             var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
             var pokemonSettings = await session.Inventory.GetPokemonSettings();
@@ -95,23 +100,32 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.Success)
             {
-                _logger.Write("Pokemon Upgraded:" + upgradeResult.UpgradedPokemon.PokemonId + ":" +
-                                upgradeResult.UpgradedPokemon.Cp);
+                session.EventDispatcher.Send(new NoticeEvent()
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeSuccess, session.Translation.GetPokemonName(upgradeResult.UpgradedPokemon.PokemonId), upgradeResult.UpgradedPokemon.Cp)
+                });
             }
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorInsufficientResources)
             {
-                _logger.Write("Pokemon upgrade failed, not enough resources, probably not enough stardust");
+                session.EventDispatcher.Send(new NoticeEvent()
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeFailed)
+                });
             }
             // pokemon max level
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorUpgradeNotAvailable)
             {
-                _logger.Write("Pokemon upgrade unavailable for: " + pokemon.PokemonId + ":" + pokemon.Cp + "/" + _pokemonInfo.CalculateMaxCp(pokemon));
+                session.EventDispatcher.Send(new NoticeEvent()
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeUnavailable, session.Translation.GetPokemonName(pokemon.PokemonId), pokemon.Cp, _pokemonInfo.CalculateMaxCp(pokemon))
+                });
             }
             else
             {
-                _logger.Write(
-                    "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
-                    pokemon.PokemonId);
+                session.EventDispatcher.Send(new NoticeEvent()
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeFailedError, session.Translation.GetPokemonName(pokemon.PokemonId))
+                });
             }
         }
     }

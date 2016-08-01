@@ -56,7 +56,7 @@ namespace PoGo.PokeMobBot.CLI
 
             if (setupComplete == false)
             {
-                _logger.Write(translations.GetTranslation(TranslationString.WebSocketFailStart, settings.WebSocketPort), LogLevel.Error);
+                session.EventDispatcher.Send(new ErrorEvent() { Message = translations.GetTranslation(TranslationString.WebSocketFailStart, settings.WebSocketPort) });
                 return;
             }
 

@@ -22,6 +22,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         public async Task Execute(ISession session)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
+
             var allPokemonInBag = await session.Inventory.GetHighestsCp(1000);
             var pkmWithIv = allPokemonInBag.Select(p => Tuple.Create(p, _pokemonInfo.CalculatePokemonPerfection(p)));
             session.EventDispatcher.Send(

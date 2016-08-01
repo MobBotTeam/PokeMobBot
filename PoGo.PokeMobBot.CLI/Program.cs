@@ -41,12 +41,18 @@ namespace PoGo.PokeMobBot.CLI
             if (args.Length > 0)
                 subPath = args[0];
 
+#if DEBUG
+            LogLevel logLevel = LogLevel.Debug;
+#else
+            LogLevel logLevel = LogLevel.Info;
+#endif
+
             IKernel kernel = new StandardKernel();
             kernel.Bind<Client>().To<Client>().InSingletonScope();
             kernel.Bind<ISettings>().To<ClientSettings>();
             kernel.Bind<ILogicSettings>().To<LogicSettings>();
             kernel.Bind<ISession>().To<Session>().InSingletonScope();
-            kernel.Bind<ILogger>().To<ConsoleLogger>().WithConstructorArgument(LogLevel.Info);
+            kernel.Bind<ILogger>().To<ConsoleLogger>().WithConstructorArgument(logLevel);
 
             var logger = kernel.Get<ILogger>();
 
@@ -117,6 +123,7 @@ namespace PoGo.PokeMobBot.CLI
                 (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
 
             machine.AsyncStart(kernel.Get<VersionCheckState>(), session);
+
             if (session.LogicSettings.UseSnipeLocationServer)
             {
                 var snipePokemonTask = kernel.Get<SnipePokemonTask>();
