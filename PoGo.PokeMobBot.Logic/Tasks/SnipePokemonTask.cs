@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using POGOProtos.Enums;
 using POGOProtos.Inventory.Item;
@@ -335,6 +336,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             return scanResult;
         }
 
+        private static StreamReader Reader;
+        private static StreamWriter Writer;
+
         public static async Task Start(Session session, CancellationToken cancellationToken)
         {
             while (true)
@@ -346,11 +350,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     lClient.Connect(session.LogicSettings.SnipeLocationServer,
                         session.LogicSettings.SnipeLocationServerPort);
 
-                    var sr = new StreamReader(lClient.GetStream());
+                    NetworkStream stream = lClient.GetStream();
+                    Reader = new StreamReader(stream);
+                    Writer = new StreamWriter(stream);
 
                     while (lClient.Connected)
                     {
-                        var line = sr.ReadLine();
+                        var line = Reader.ReadLine();
                         if (line == null)
                             throw new Exception("Unable to ReadLine from sniper socket");
 
@@ -365,6 +371,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         SnipeLocations.RemoveAll(x => DateTime.Now > x.TimeStampAdded.AddMinutes(15));
                         SnipeLocations.Add(info);
                     }
+
+                    Reader.Close();
+                    Writer.Close();
+                    stream.Close();
+                    Reader = null;
+                    Writer = null;
                 }
                 catch (SocketException)
                 {
@@ -380,6 +392,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 else
                     await Task.Delay(5000, cancellationToken);
             }
+        }
+
+        /// <summary>
+        /// Sends a communication back to the feeder server.
+        /// </summary>
+        /// <param name="message">Message to send.</param>
+        public static void Feedback(SniperInfo info)
+        {
+            if (Writer == null)
+                return;
+            Logger.Write($"Sending info to feeder: {info.Latitude:0.00000000},{info.Longitude:0.00000000} {info.Iv:0.00}% IV {info.Id}");
+            Writer.WriteLine(JsonConvert.SerializeObject(info));
+            Writer.Flush();
         }
     }
 }
