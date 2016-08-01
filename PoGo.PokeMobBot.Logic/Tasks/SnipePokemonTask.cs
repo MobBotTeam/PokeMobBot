@@ -528,15 +528,52 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             SnipeLocations.Add(a);
                         }
                     }
-                    catch (Exception ex)
+                    catch (WebException ex)
                     {
-                        // most likely System.IO.IOException
-                        session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
-                        scanResult = new ScanResult
+                        if (ex.Status == WebExceptionStatus.ProtocolError &&
+                            ex.Response != null)
                         {
-                            Status = "fail",
-                            Pokemon = new List<PokemonLocation>()
-                        };
+                            var resp = (HttpWebResponse)ex.Response;
+                            if (resp.StatusCode == HttpStatusCode.NotFound)
+                            {
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = "404 Not Found: Not able to retrieve file from server!"
+                                });
+                            }
+                            else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
+                            {
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = "504 Gateway Time-out: The server didn't respond in time."
+                                });
+                            }
+                            else
+                            {
+                                session.EventDispatcher.Send(new ErrorEvent
+                                {
+                                    Message = ex.ToString()
+                                });
+                            }
+
+                            scanResult = new ScanResult
+                            {
+                                Status = "fail",
+                                Pokemon = new List<PokemonLocation>()
+                            };
+                        }
+                        else
+                        {
+                            session.EventDispatcher.Send(new ErrorEvent
+                            {
+                                Message = ex.ToString()
+                            });
+                            scanResult = new ScanResult
+                            {
+                                Status = "fail",
+                                Pokemon = new List<PokemonLocation>()
+                            };
+                        }
                     }
                 }
                 else
