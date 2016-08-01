@@ -366,6 +366,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var reader = new StreamReader(resp.GetResponseStream());
                 var fullresp = reader.ReadToEnd().Replace(" M", "Male").Replace(" F", "Female");
 
+
+                if(fullresp.Contains("error"))
+                {
+                    session.EventDispatcher.Send(new WarnEvent
+                    {
+                        Message = fullresp
+                    });
+                }
+
+
                 scanResult = JsonConvert.DeserializeObject<ScanResult>(fullresp);
             }
             catch (WebException ex)
