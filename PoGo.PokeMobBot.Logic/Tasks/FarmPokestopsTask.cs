@@ -35,10 +35,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (session.LogicSettings.MaxTravelDistanceInMeters != 0 &&
                 distanceFromStart > session.LogicSettings.MaxTravelDistanceInMeters)
             {
-                Logger.Write(
-                    session.Translation.GetTranslation(TranslationString.FarmPokestopsOutsideRadius, distanceFromStart),
-                    LogLevel.Warning);
-
+                session.EventDispatcher.Send(new WarnEvent()
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.FarmPokestopsOutsideRadius, distanceFromStart)
+                });
                 await Task.Delay(1000, cancellationToken);
 
                 await session.Navigation.HumanLikeWalking(
