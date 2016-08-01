@@ -25,7 +25,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             // Refresh inventory so that the player stats are fresh
             await session.Inventory.RefreshCachedInventory();
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForPokemon), LogLevel.Debug);
+            session.EventDispatcher.Send(new DebugEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.LookingForPokemon)
+            });
 
             var pokemons = await GetNearbyPokemons(session);
             foreach (var pokemon in pokemons)
@@ -39,14 +42,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (pokeBallsCount + greatBallsCount + ultraBallsCount + masterBallsCount == 0)
                 {
-                    Logger.Write(session.Translation.GetTranslation(TranslationString.ZeroPokeballInv));
+                    session.EventDispatcher.Send(new NoticeEvent()
+                    {
+                        Message = session.Translation.GetTranslation(TranslationString.ZeroPokeballInv)
+                    });
                     return;
                 }
 
                 if (session.LogicSettings.UsePokemonToNotCatchFilter &&
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
-                    Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonSkipped, session.Translation.GetPokemonName(pokemon.PokemonId)));
+                    session.EventDispatcher.Send(new NoticeEvent()
+                    {
+                        Message = session.Translation.GetTranslation(TranslationString.PokemonSkipped, session.Translation.GetPokemonName(pokemon.PokemonId))
+                    });
                     continue;
                 }
 
