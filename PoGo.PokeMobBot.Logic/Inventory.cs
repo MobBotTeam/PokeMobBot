@@ -35,6 +35,15 @@ namespace PoGo.PokeMobBot.Logic
             ItemId.ItemMasterBall
         };
 
+        private readonly List<ItemId> _berries = new List<ItemId>
+        {
+            ItemId.ItemBlukBerry,
+            ItemId.ItemPinapBerry,
+            ItemId.ItemNanabBerry,
+            ItemId.ItemRazzBerry,
+            ItemId.ItemWeparBerry
+        };
+
         private readonly List<ItemId> _potions = new List<ItemId>
         {
             ItemId.ItemPotion,
@@ -235,7 +244,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public async Task<IEnumerable<ItemData>> GetItemsToRecycle(ISession session)
         {
-            var itemsToRecylce = new List<ItemData>();
+            var itemsToRecycle = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
             var currentAmountOfPokeballs = await GetItemAmountByType(ItemId.ItemPokeBall);
@@ -247,7 +256,7 @@ namespace PoGo.PokeMobBot.Logic
                 currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
                 currentAmountOfMasterballs));
 
-            var otherItemsToRecylce = myItems
+            var otherItemsToRecycle = myItems
                 .Where(x => _logicSettings.ItemRecycleFilter.Any(f => f.Key == x.ItemId && x.Count > f.Value))
                 .Select(
                     x =>
@@ -258,9 +267,9 @@ namespace PoGo.PokeMobBot.Logic
                             Unseen = x.Unseen
                         });
 
-            itemsToRecylce.AddRange(otherItemsToRecylce);
+            itemsToRecycle.AddRange(otherItemsToRecycle);
 
-            return itemsToRecylce;
+            return itemsToRecycle;
         }
 
         public double GetPerfect(PokemonData poke)
@@ -291,6 +300,22 @@ namespace PoGo.PokeMobBot.Logic
             allPokeballs.Sort((ball1, ball2) => ((int)ball1.ItemId).CompareTo((int)ball2.ItemId));
 
             return TakeAmountOfItems(allPokeballs, amountOfPokeballsToKeep).ToList();
+        }
+
+        private List<ItemData> GetBerriesToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        {
+            var amountOfBerriesToKeep = _logicSettings.TotalAmountOfBerriesToKeep;
+            if (amountOfBerriesToKeep < 1)
+            {
+                Logger.Write(session.Translation.GetTranslation(TranslationString.BerriesToKeepIncorrect),
+                    LogLevel.Error, ConsoleColor.Red);
+                return new List<ItemData>();
+            }
+
+            var allPokeballs = myItems.Where(s => _pokeballs.Contains(s.ItemId)).ToList();
+            allPokeballs.Sort((ball1, ball2) => ((int)ball1.ItemId).CompareTo((int)ball2.ItemId));
+
+            return TakeAmountOfItems(allPokeballs, amountOfBerriesToKeep).ToList();
         }
 
         public async Task<int> GetPokedexCount()
@@ -470,7 +495,7 @@ namespace PoGo.PokeMobBot.Logic
                 {
                     if (item.Count < itemsToRemove)
                     {
-                        // Recylce all of this type
+                        // Recycle all of this type
                         itemsToRemove -= item.Count;
                         yield return item;
                     }
