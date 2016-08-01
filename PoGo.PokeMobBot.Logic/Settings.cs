@@ -187,8 +187,8 @@ namespace PoGo.PokeMobBot.Logic
         public double UseBerryBelowCatchProbability = 0.2;
 
         //favorite
-        public float FavoriteMinIvPercentage = 95;
         public bool AutoFavoritePokemon = false;
+        public float FavoriteMinIvPercentage = 95;
 
         //recycle
         public int TotalAmountOfPokeballsToKeep = 100;
