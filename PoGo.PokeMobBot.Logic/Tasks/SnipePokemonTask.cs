@@ -388,21 +388,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     {
                         session.EventDispatcher.Send(new WarnEvent
                         {
-                            Message = "404 Not Found: Not able to retrieve file from server!"
+                            Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound)
                         });
                     }
                     else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
                     {
                         session.EventDispatcher.Send(new WarnEvent
                         {
-                            Message = "504 Gateway Time-out: The server didn't respond in time."
+                            Message = session.Translation.GetTranslation(TranslationString.WebErrorGatewayTimeout)
                         });
                     }
                     else if (resp.StatusCode == HttpStatusCode.BadGateway)
                     {
                         session.EventDispatcher.Send(new WarnEvent
                         {
-                            Message = "502 Bad Gateway: Server is under heavy load!"
+                            Message = session.Translation.GetTranslation(TranslationString.WebErrorBadGateway)
                         });
                     }
                     else
@@ -568,21 +568,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             {
                                 session.EventDispatcher.Send(new WarnEvent
                                 {
-                                    Message = "404 Not Found: Not able to retrieve file from server!"
+                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound)
                                 });
                             }
                             else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
                             {
                                 session.EventDispatcher.Send(new WarnEvent
                                 {
-                                    Message = "504 Gateway Time-out: The server didn't respond in time!"
+                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorGatewayTimeout)
                                 });
                             }
                             else if (resp.StatusCode == HttpStatusCode.BadGateway)
                             {
                                 session.EventDispatcher.Send(new WarnEvent
                                 {
-                                    Message = "502 Bad Gateway: Server is under heavy load!"
+                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorBadGateway)
                                 });
                             }
                             else

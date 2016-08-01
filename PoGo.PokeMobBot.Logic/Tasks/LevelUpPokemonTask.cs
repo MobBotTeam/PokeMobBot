@@ -93,14 +93,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 session.EventDispatcher.Send(new NoticeEvent()
                 {
-                    Message = "Pokemon Upgraded:" + session.Translation.GetPokemonName(upgradeResult.UpgradedPokemon.PokemonId) + ":" + upgradeResult.UpgradedPokemon.Cp
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeSuccess, session.Translation.GetPokemonName(upgradeResult.UpgradedPokemon.PokemonId), upgradeResult.UpgradedPokemon.Cp)
                 });
             }
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorInsufficientResources)
             {
                 session.EventDispatcher.Send(new NoticeEvent()
                 {
-                    Message = "Pokemon upgrade failed, not enough resources, probably not enough stardust"
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeFailed)
                 });
             }
             // pokemon max level
@@ -108,14 +108,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 session.EventDispatcher.Send(new NoticeEvent()
                 {
-                    Message = "Pokemon upgrade unavailable for: " + session.Translation.GetPokemonName(pokemon.PokemonId) + ":" + pokemon.Cp + "/" + PokemonInfo.CalculateMaxCp(pokemon)
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeUnavailable, session.Translation.GetPokemonName(pokemon.PokemonId), pokemon.Cp, PokemonInfo.CalculateMaxCp(pokemon))
                 });
             }
             else
             {
                 session.EventDispatcher.Send(new NoticeEvent()
                 {
-                    Message = "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" + session.Translation.GetPokemonName(pokemon.PokemonId)
+                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeFailedError, session.Translation.GetPokemonName(pokemon.PokemonId))
                 });
             }
         }
