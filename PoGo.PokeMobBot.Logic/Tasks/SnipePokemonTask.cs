@@ -404,6 +404,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 }
                 else
                 {
+                    session.EventDispatcher.Send(new ErrorEvent
+                    {
+                        Message = ex.ToString()
+                    });
                     scanResult = new ScanResult
                     {
                         Status = "fail",
