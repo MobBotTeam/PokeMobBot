@@ -366,6 +366,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var reader = new StreamReader(resp.GetResponseStream());
                 var fullresp = reader.ReadToEnd().Replace(" M", "Male").Replace(" F", "Female");
 
+
+                if(fullresp.Contains("error"))
+                {
+                    session.EventDispatcher.Send(new WarnEvent
+                    {
+                        Message = fullresp
+                    });
+                }
+
+
                 scanResult = JsonConvert.DeserializeObject<ScanResult>(fullresp);
             }
             catch (WebException ex)
@@ -388,6 +398,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Message = "504 Gateway Time-out: The server didn't respond in time."
                         });
                     }
+                    else if (resp.StatusCode == HttpStatusCode.BadGateway)
+                    {
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message = "502 Bad Gateway: Server is under heavy load!"
+                        });
+                    }
                     else
                     {
                         session.EventDispatcher.Send(new ErrorEvent
@@ -395,7 +412,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Message = ex.ToString()
                         });
                     }
-                    
+
                     scanResult = new ScanResult
                     {
                         Status = "fail",
@@ -414,6 +431,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Pokemon = new List<PokemonLocation>()
                     };
                 }
+            }
+
+            catch (Exception ex)
+            {
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = ex.ToString()
+                });
+                scanResult = new ScanResult
+                {
+                    Status = "fail",
+                    Pokemon = new List<PokemonLocation>()
+                };
             }
             return scanResult;
         }
@@ -545,7 +575,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             {
                                 session.EventDispatcher.Send(new WarnEvent
                                 {
-                                    Message = "504 Gateway Time-out: The server didn't respond in time."
+                                    Message = "504 Gateway Time-out: The server didn't respond in time!"
+                                });
+                            }
+                            else if (resp.StatusCode == HttpStatusCode.BadGateway)
+                            {
+                                session.EventDispatcher.Send(new WarnEvent
+                                {
+                                    Message = "502 Bad Gateway: Server is under heavy load!"
                                 });
                             }
                             else
@@ -574,6 +611,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 Pokemon = new List<PokemonLocation>()
                             };
                         }
+                    }
+
+                    catch (Exception ex)
+                    {
+                        session.EventDispatcher.Send(new ErrorEvent
+                        {
+                            Message = ex.ToString()
+                        });
+                        scanResult = new ScanResult
+                        {
+                            Status = "fail",
+                            Pokemon = new List<PokemonLocation>()
+                        };
                     }
                 }
                 else
