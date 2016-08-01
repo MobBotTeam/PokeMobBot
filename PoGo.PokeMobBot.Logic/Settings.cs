@@ -680,7 +680,6 @@ namespace PoGo.PokeMobBot.Logic
         public int MinPokeballsToSnipe => _settings.MinPokeballsToSnipe;
         public int MinPokeballsWhileSnipe => _settings.MinPokeballsWhileSnipe;
         public int MaxPokeballsPerPokemon => _settings.MaxPokeballsPerPokemon;
-
         public SnipeSettings PokemonToSnipe => _settings.PokemonToSnipe;
         public string SnipeLocationServer => _settings.SnipeLocationServer;
         public int SnipeLocationServerPort => _settings.SnipeLocationServerPort;
@@ -691,7 +690,6 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
-
         public bool Teleport => _settings.Teleport;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
@@ -713,5 +711,6 @@ namespace PoGo.PokeMobBot.Logic
         public int UseBerryMinCp => _settings.UseBerryMinCp;
         public float UseBerryMinIv => _settings.UseBerryMinIv;
         public double UseBerryBelowCatchProbability => _settings.UseBerryBelowCatchProbability;
+
     }
 }
