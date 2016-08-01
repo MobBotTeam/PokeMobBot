@@ -10,11 +10,15 @@ using Newtonsoft.Json.Converters;
 
 namespace PoGo.PokeMobBot.Logic.Common
 {
+    using POGOProtos.Enums;
+
     public interface ITranslation
     {
         string GetTranslation(TranslationString translationString, params object[] data);
 
         string GetTranslation(TranslationString translationString);
+
+        string GetPokemonName(PokemonId pkmnId);
     }
 
     public enum TranslationString
@@ -316,9 +320,169 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "Not enough Pokeballs to start sniping! ({0}/{1})"),
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestMove1Header, "MOVE1"),
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestMove2Header, "MOVE2"),
-            new KeyValuePair<TranslationString, string>(TranslationString.UseBerry, 
+            new KeyValuePair<TranslationString, string>(TranslationString.UseBerry,
                 "Using Razzberry. Berries left: {0}")
         };
+
+        [JsonProperty("Pokemon",
+    ItemTypeNameHandling = TypeNameHandling.Arrays,
+    ObjectCreationHandling = ObjectCreationHandling.Replace,
+    DefaultValueHandling = DefaultValueHandling.Populate)]
+        private readonly List<string> _pokemon = new List<string>
+            {
+                "Missingno",
+                "Bulbasaur",
+                "Ivysaur",
+                "Venusaur",
+                "Charmander",
+                "Charmeleon",
+                "Charizard",
+                "Squirtle",
+                "Wartortle",
+                "Blastoise",
+                "Caterpie",
+                "Metapod",
+                "Butterfree",
+                "Weedle",
+                "Kakuna",
+                "Beedrill",
+                "Pidgey",
+                "Pidgeotto",
+                "Pidgeot",
+                "Rattata",
+                "Raticate",
+                "Spearow",
+                "Fearow",
+                "Ekans",
+                "Arbok",
+                "Pikachu",
+                "Raichu",
+                "Sandshrew",
+                "Sandslash",
+                "Nidoran♀",
+                "Nidorina",
+                "Nidoqueen",
+                "Nidoran♂",
+                "Nidorino",
+                "Nidoking",
+                "Clefairy",
+                "Clefable",
+                "Vulpix",
+                "Ninetales",
+                "Jigglypuff",
+                "Wigglytuff",
+                "Zubat",
+                "Golbat",
+                "Oddish",
+                "Gloom",
+                "Vileplume",
+                "Paras",
+                "Parasect",
+                "Venonat",
+                "Venomoth",
+                "Diglett",
+                "Dugtrio",
+                "Meowth",
+                "Persian",
+                "Psyduck",
+                "Golduck",
+                "Mankey",
+                "Primeape",
+                "Growlithe",
+                "Arcanine",
+                "Poliwag",
+                "Poliwhirl",
+                "Poliwrath",
+                "Abra",
+                "Kadabra",
+                "Alakazam",
+                "Machop",
+                "Machoke",
+                "Machamp",
+                "Bellsprout",
+                "Weepinbell",
+                "Victreebel",
+                "Tentacool",
+                "Tentacruel",
+                "Geodude",
+                "Graveler",
+                "Golem",
+                "Ponyta",
+                "Rapidash",
+                "Slowpoke",
+                "Slowbro",
+                "Magnemite",
+                "Magneton",
+                "Farfetch'd",
+                "Doduo",
+                "Dodrio",
+                "Seel",
+                "Dewgong",
+                "Grimer",
+                "Muk",
+                "Shellder",
+                "Cloyster",
+                "Gastly",
+                "Haunter",
+                "Gengar",
+                "Onix",
+                "Drowzee",
+                "Hypno",
+                "Krabby",
+                "Kingler",
+                "Voltorb",
+                "Electrode",
+                "Exeggcute",
+                "Exeggutor",
+                "Cubone",
+                "Marowak",
+                "Hitmonlee",
+                "Hitmonchan",
+                "Lickitung",
+                "Koffing",
+                "Weezing",
+                "Rhyhorn",
+                "Rhydon",
+                "Chansey",
+                "Tangela",
+                "Kangaskhan",
+                "Horsea",
+                "Seadra",
+                "Goldeen",
+                "Seaking",
+                "Staryu",
+                "Starmie",
+                "Mr. Mime",
+                "Scyther",
+                "Jynx",
+                "Electabuzz",
+                "Magmar",
+                "Pinsir",
+                "Tauros",
+                "Magikarp",
+                "Gyarados",
+                "Lapras",
+                "Ditto",
+                "Eevee",
+                "Vaporeon",
+                "Jolteon",
+                "Flareon",
+                "Porygon",
+                "Omanyte",
+                "Omastar",
+                "Kabuto",
+                "Kabutops",
+                "Aerodactyl",
+                "Snorlax",
+                "Articuno",
+                "Zapdos",
+                "Moltres",
+                "Dratini",
+                "Dragonair",
+                "Dragonite",
+                "Mewtwo",
+                "Mew"
+            };
 
         public string GetTranslation(TranslationString translationString, params object[] data)
         {
@@ -334,6 +498,11 @@ namespace PoGo.PokeMobBot.Logic.Common
             return translation != default(string) ? translation : $"Translation for {translationString} is missing";
         }
 
+        public string GetPokemonName(PokemonId pkmnId)
+        {
+            return _pokemon[(int)pkmnId];
+        }
+
         public static Translation Load(ILogicSettings logicSettings)
         {
             var translationsLanguageCode = logicSettings.TranslationLanguageCode;
@@ -346,15 +515,22 @@ namespace PoGo.PokeMobBot.Logic.Common
                 var input = File.ReadAllText(fullPath);
 
                 var jsonSettings = new JsonSerializerSettings();
-                jsonSettings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
+                jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
                 translations = JsonConvert.DeserializeObject<Translation>(input, jsonSettings);
                 //TODO make json to fill default values as it won't do it now
-                new Translation()._translationStrings.Where(
+
+                var defaultTranslation = new Translation();
+                defaultTranslation._translationStrings.Where(
                     item => translations._translationStrings.All(a => a.Key != item.Key))
                     .ToList()
                     .ForEach(translations._translationStrings.Add);
+
+                if (!translations._pokemon.Any())
+                {
+                    defaultTranslation._pokemon.ForEach(translations._pokemon.Add);
+                }
             }
             else
             {
@@ -367,7 +543,7 @@ namespace PoGo.PokeMobBot.Logic.Common
         public void Save(string fullPath)
         {
             var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter {CamelCaseText = true});
+                new StringEnumConverter { CamelCaseText = true });
 
             var folder = Path.GetDirectoryName(fullPath);
             if (folder != null && !Directory.Exists(folder))

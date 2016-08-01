@@ -420,5 +420,7 @@
       "Key": "displayHighestMove2Header",
       "Value": "ATTAQUE2"
     }
+  ],
+  "Pokemon": [
   ]
 }
