@@ -21,6 +21,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
+
             var pokemonToEvolveTask = await session.Inventory.GetPokemonToEvolve(session.LogicSettings.PokemonsToEvolve);
             var pokemonToEvolve = pokemonToEvolveTask.ToList();
 
@@ -67,6 +70,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Exp = evolveResponse.ExperienceAwarded,
                         Result = evolveResponse.Result
                     });
+
+                    await DelayingEvolveUtils.Delay(session.LogicSettings.DelayEvolvePokemon, 0, session.LogicSettings.DelayEvolveVariation);
                 }
             }
         }
