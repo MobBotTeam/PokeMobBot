@@ -133,7 +133,16 @@ namespace PoGo.PokeMobBot.Logic.Common
         DisplayHighestMove1Header,
         DisplayHighestMove2Header,
         UseBerry,
-        BerriesToKeepIncorrect
+        BerriesToKeepIncorrect,
+        NianticServerUnstable,
+        OperationCanceled,
+        PokemonUpgradeSuccess,
+        PokemonUpgradeFailed,
+        PokemonUpgradeFailedError,
+        PokemonUpgradeUnavailable,
+        WebErrorNotFound,
+        WebErrorGatewayTimeout,
+        WebErrorBadGateway
     }
 
     public class Translation : ITranslation
@@ -324,7 +333,25 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.UseBerry,
                 "Using Razzberry. Berries left: {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.BerriesToKeepIncorrect,
-                "You can not set the amount of Berries to less then 1")
+                "You can not set the amount of Berries to less then 1"),
+            new KeyValuePair<TranslationString, string>(TranslationString.NianticServerUnstable, 
+                "Niantic Servers unstable, throttling API Calls."),
+            new KeyValuePair<TranslationString, string>(TranslationString.OperationCanceled, 
+                "Current Operation was canceled."),
+            new KeyValuePair<TranslationString, string>(TranslationString.PokemonUpgradeSuccess,
+                "Pokemon upgraded: {0}:{1}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.PokemonUpgradeFailed,
+                "Pokemon upgrade failed, not enough resources, probably not enough stardust"),
+            new KeyValuePair<TranslationString, string>(TranslationString.PokemonUpgradeUnavailable,
+                "Pokemon upgrade unavailable for: {0}:{1}/{2}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.PokemonUpgradeFailedError,
+                "Pokemon upgrade failed duo to an unknown error, pokemon could be max level for your level. The Pokemon that caused issue was: {0}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.WebErrorBadGateway,
+                "502 Bad Gateway: Server is under heavy load!"),
+            new KeyValuePair<TranslationString, string>(TranslationString.WebErrorGatewayTimeout,
+                "504 Gateway Time-out: The server didn't respond in time."),
+            new KeyValuePair<TranslationString, string>(TranslationString.WebErrorNotFound,
+                "404 Not Found: Not able to retrieve file from server!")
         };
 
         [JsonProperty("Pokemon",
