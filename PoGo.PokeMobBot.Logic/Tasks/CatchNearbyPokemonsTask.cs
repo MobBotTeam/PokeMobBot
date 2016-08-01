@@ -58,6 +58,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     });
                     continue;
                 }
+                else if (!session.LogicSettings.CatchPokemon)
+                {
+                    session.EventDispatcher.Send(new CatchPokemonDisabledEvent
+                    {
+                        Id = pokemon.PokemonId
+                    });
+                }
 
                 var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                     session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);

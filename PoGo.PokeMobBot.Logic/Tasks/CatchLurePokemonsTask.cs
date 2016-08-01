@@ -39,6 +39,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     Message = session.Translation.GetTranslation(TranslationString.PokemonSkipped, session.Translation.GetPokemonName(pokemonId))
                 });
             }
+            else if (!session.LogicSettings.CatchPokemon)
+            {
+                session.EventDispatcher.Send(new CatchPokemonDisabledEvent
+                {
+                    Id = pokemonId
+                });
+            }
             else
             {
                 var encounterId = currentFortData.LureInfo.EncounterId;

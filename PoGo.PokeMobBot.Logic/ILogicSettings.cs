@@ -70,6 +70,7 @@ namespace PoGo.PokeMobBot.Logic
         
         //coords and movement
         bool Teleport { get; }
+        bool CatchPokemon { get; }
         double WalkingSpeedInKilometerPerHour { get; }
         int MaxTravelDistanceInMeters { get; }
         bool UseGpxPathing { get; }

@@ -111,6 +111,7 @@ namespace PoGo.PokeMobBot.Logic
         public int WebSocketPort = 14251;
 
         //coords and movement
+        public bool CatchPokemon = true;
         public bool Teleport = false;
         public double DefaultLatitude = 40.785091;
         public double DefaultLongitude = -73.968285;
@@ -695,6 +696,7 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public bool Teleport => _settings.Teleport;
+        public bool CatchPokemon => _settings.CatchPokemon;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
         public int DelayPositionCheckState => _settings.DelayPositionCheckState;

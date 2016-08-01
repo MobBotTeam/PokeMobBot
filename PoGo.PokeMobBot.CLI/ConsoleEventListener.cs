@@ -189,6 +189,12 @@ namespace PoGo.PokeMobBot.CLI
                 LogLevel.Caught);
         }
 
+        public void HandleEvent(CatchPokemonDisabledEvent evt, ISession session)
+        {
+            Logger.Write(session.Translation.GetTranslation(TranslationString.CatchPokemonDisabled, session.Translation.GetPokemonName(evt.Id)),
+                LogLevel.Warning);
+        }
+
         public void HandleEvent(UseBerryEvent evt, ISession session)
         {
             Logger.Write(session.Translation.GetTranslation(TranslationString.UseBerry, evt.Count),
