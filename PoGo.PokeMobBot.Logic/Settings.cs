@@ -173,31 +173,29 @@ namespace PoGo.PokeMobBot.Logic
         public double ThrowAccuracyMax = 1.00;
         public double ThrowSpinFrequency = 0.75;
         public int MaxPokeballsPerPokemon = 6;
-        public int UseGreatBallAboveCp = 750;
-        public int UseUltraBallAboveCp = 1000;
-        public int UseMasterBallAboveCp = 1500;
-        public bool UsePokemonToNotCatchFilter = false;
-
-        // berries
-        public int UseBerryMinCp = 450;
-        public float UseBerryMinIv = 95;
-        public double UseBerryBelowCatchProbability = 0.35;
-
-        //favorite
-        public float FavoriteMinIvPercentage = 95;
-        public bool AutoFavoritePokemon = false;
-
-        //recycle
-        public int TotalAmountOfPokeballsToKeep = 100;
-        public int TotalAmountOfPotionsToKeep = 80;
-        public int TotalAmountOfRevivesToKeep = 60;
-
+        public int UseGreatBallAboveCp = 1000;
+        public int UseUltraBallAboveCp = 1500;
+        public int UseMasterBallAboveCp = 2500;
         public int UseGreatBallAboveIv = 80;
         public int UseUltraBallAboveIv = 90;
         public double UseGreatBallBelowCatchProbability = 0.5;
         public double UseUltraBallBelowCatchProbability = 0.4;
         public double UseMasterBallBelowCatchProbability = 0.05;
+        public bool UsePokemonToNotCatchFilter = false;
 
+        //berries
+        public int UseBerryMinCp = 450;
+        public float UseBerryMinIv = 95;
+        public double UseBerryBelowCatchProbability = 0.35;
+
+        //favorite
+        public bool AutoFavoritePokemon = false;
+        public float FavoriteMinIvPercentage = 95;
+
+        //recycle
+        public int TotalAmountOfPokeballsToKeep = 100;
+        public int TotalAmountOfPotionsToKeep = 80;
+        public int TotalAmountOfRevivesToKeep = 60;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
