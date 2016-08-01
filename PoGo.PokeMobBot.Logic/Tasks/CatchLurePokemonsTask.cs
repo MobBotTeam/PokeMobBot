@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
@@ -22,7 +21,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             // Refresh inventory so that the player stats are fresh
             await session.Inventory.RefreshCachedInventory();
 
-            session.EventDispatcher.Send(new DebugEvent()
+            session.EventDispatcher.Send(new DebugEvent
             {
                 Message = session.Translation.GetTranslation(TranslationString.LookingForLurePokemon)
             });

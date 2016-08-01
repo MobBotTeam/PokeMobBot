@@ -1,16 +1,13 @@
 ﻿#region using directives
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using POGOProtos.Inventory;
 using POGOProtos.Settings.Master;
 using POGOProtos.Data;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
 
@@ -91,14 +88,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.Success)
             {
-                session.EventDispatcher.Send(new NoticeEvent()
+                session.EventDispatcher.Send(new NoticeEvent
                 {
                     Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeSuccess, session.Translation.GetPokemonName(upgradeResult.UpgradedPokemon.PokemonId), upgradeResult.UpgradedPokemon.Cp)
                 });
             }
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorInsufficientResources)
             {
-                session.EventDispatcher.Send(new NoticeEvent()
+                session.EventDispatcher.Send(new NoticeEvent
                 {
                     Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeFailed)
                 });
@@ -106,14 +103,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             // pokemon max level
             else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorUpgradeNotAvailable)
             {
-                session.EventDispatcher.Send(new NoticeEvent()
+                session.EventDispatcher.Send(new NoticeEvent
                 {
                     Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeUnavailable, session.Translation.GetPokemonName(pokemon.PokemonId), pokemon.Cp, PokemonInfo.CalculateMaxCp(pokemon))
                 });
             }
             else
             {
-                session.EventDispatcher.Send(new NoticeEvent()
+                session.EventDispatcher.Send(new NoticeEvent
                 {
                     Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeFailedError, session.Translation.GetPokemonName(pokemon.PokemonId))
                 });

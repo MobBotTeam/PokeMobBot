@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using GeoCoordinatePortable;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI.Extensions;
@@ -35,7 +34,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (session.LogicSettings.MaxTravelDistanceInMeters != 0 &&
                 distanceFromStart > session.LogicSettings.MaxTravelDistanceInMeters)
             {
-                session.EventDispatcher.Send(new WarnEvent()
+                session.EventDispatcher.Send(new WarnEvent
                 {
                     Message = session.Translation.GetTranslation(TranslationString.FarmPokestopsOutsideRadius, distanceFromStart)
                 });

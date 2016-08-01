@@ -1,7 +1,6 @@
 ﻿#region using directives
 
 using System.Collections.Generic;
-using POGOProtos.Inventory;
 using POGOProtos.Inventory.Item;
 
 #endregion

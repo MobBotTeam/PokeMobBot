@@ -2,9 +2,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.State;
-using POGOProtos.Inventory.Item;
 
 #endregion
 

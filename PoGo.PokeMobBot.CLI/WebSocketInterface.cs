@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
 using SuperSocket.SocketBase;
@@ -44,7 +43,7 @@ namespace PoGo.PokeMobBot.CLI
 
             if (setupComplete == false)
             {
-                session.EventDispatcher.Send(new ErrorEvent() { Message = translations.GetTranslation(TranslationString.WebSocketFailStart, port) });
+                session.EventDispatcher.Send(new ErrorEvent { Message = translations.GetTranslation(TranslationString.WebSocketFailStart, port) });
                 return;
             }
 
@@ -81,14 +80,16 @@ namespace PoGo.PokeMobBot.CLI
 
         private async void HandleMessage(WebSocketSession session, string message)
         {
-            Models.SocketMessage msgObj;
             var command = message;
             try
             {
-                msgObj = JsonConvert.DeserializeObject<Models.SocketMessage>(message);
+                var msgObj = JsonConvert.DeserializeObject<Models.SocketMessage>(message);
                 command = msgObj.Command;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             switch (command)
             {
@@ -117,13 +118,16 @@ namespace PoGo.PokeMobBot.CLI
 
             try
             {
-                session.Send(Serialize(new UpdatePositionEvent()
+                session.Send(Serialize(new UpdatePositionEvent
                 {
                     Latitude = _session.Client.CurrentLatitude,
                     Longitude = _session.Client.CurrentLongitude
                 }));
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         public void Listen(IEvent evt, Session session)
@@ -157,13 +161,13 @@ namespace PoGo.PokeMobBot.CLI
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JToken jt = JValue.ReadFrom(reader);
+            JToken jt = JToken.ReadFrom(reader);
             return jt.Value<long>();
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(System.Int64).Equals(objectType) || typeof(ulong).Equals(objectType);
+            return typeof(Int64) == objectType || typeof(ulong) == objectType;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
