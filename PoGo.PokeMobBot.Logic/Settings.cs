@@ -155,7 +155,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool KeepPokemonsThatCanEvolve = false;
 
         //evolve
-        public bool EvolveAllPokemonWithEnoughCandy = true;
+        public bool EvolveAllPokemonWithEnoughCandy = false;
         public bool EvolveAllPokemonAboveIv = false;
         public float EvolveAboveIvValue = 95;
         public bool UseLuckyEggsWhileEvolving = false;
