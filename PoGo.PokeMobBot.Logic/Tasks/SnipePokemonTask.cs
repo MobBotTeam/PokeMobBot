@@ -73,7 +73,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         public override string ToString()
         {
-            return Latitude.ToString("0.0000") + ", " + Longitude.ToString("0.0000");
+            return latitude.ToString("0.0000") + ", " + longitude.ToString("0.0000");
         }
     }
 
@@ -230,7 +230,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                     LocsVisited.Add(pokemonLocation);
 
                                     await
-                                        Snipe(session, pokemonIds, pokemonLocation.Latitude, pokemonLocation.Longitude,
+                                        Snipe(session, pokemonIds, pokemonLocation.latitude, pokemonLocation.longitude,
                                             cancellationToken);
                                 }
                             }
