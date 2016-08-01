@@ -155,7 +155,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool KeepPokemonsThatCanEvolve = false;
 
         //evolve
-        public bool EvolveAllPokemonWithEnoughCandy = false;
+        public bool EvolveAllPokemonWithEnoughCandy = true;
         public bool EvolveAllPokemonAboveIv = false;
         public float EvolveAboveIvValue = 95;
         public bool UseLuckyEggsWhileEvolving = false;
@@ -179,14 +179,14 @@ namespace PoGo.PokeMobBot.Logic
         public int UseGreatBallAboveIv = 80;
         public int UseUltraBallAboveIv = 90;
         public double UseGreatBallBelowCatchProbability = 0.5;
-        public double UseUltraBallBelowCatchProbability = 0.4;
+        public double UseUltraBallBelowCatchProbability = 0.25;
         public double UseMasterBallBelowCatchProbability = 0.05;
         public bool UsePokemonToNotCatchFilter = false;
 
         //berries
         public int UseBerryMinCp = 450;
         public float UseBerryMinIv = 95;
-        public double UseBerryBelowCatchProbability = 0.35;
+        public double UseBerryBelowCatchProbability = 0.2;
 
         //favorite
         public bool AutoFavoritePokemon = false;
@@ -284,7 +284,7 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Bulbasaur,
             //PokemonId.Charmander,
             //PokemonId.Squirtle,
-            PokemonId.Rattata
+            PokemonId.Rattata,
             //PokemonId.NidoranFemale,
             //PokemonId.NidoranMale,
             //PokemonId.Oddish,
@@ -297,14 +297,14 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Eevee,
             //PokemonId.Dratini,
             /*criteria: 50 candies commons*/
-            //PokemonId.Spearow,
+            PokemonId.Spearow,
             //PokemonId.Ekans,
-            //PokemonId.Zubat,
+            PokemonId.Zubat,
             //PokemonId.Paras,
             //PokemonId.Venonat,
             //PokemonId.Psyduck,
             //PokemonId.Slowpoke,
-            //PokemonId.Doduo,
+            PokemonId.Doduo
             //PokemonId.Drowzee,
             //PokemonId.Krabby,
             //PokemonId.Horsea,
