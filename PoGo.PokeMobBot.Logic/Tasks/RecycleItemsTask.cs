@@ -13,6 +13,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class RecycleItemsTask
     {
+        private static int diff;
+
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -55,30 +57,25 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
             var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
-            int pokeBallsToRecycle = 0;
-            int greatBallsToRecycle = 0;
-            int ultraBallsToRecycle = 0;
-            int masterBallsToRecycle = 0;
-
             int totalBallsCount = pokeBallsCount + greatBallsCount + ultraBallsCount + masterBallsCount;
             if (totalBallsCount > session.LogicSettings.TotalAmountOfPokeballsToKeep)
             {
                 int diff = totalBallsCount - session.LogicSettings.TotalAmountOfPokeballsToKeep;
                 if (diff > 0)
                 {
-                    await removeItems(pokeBallsCount, pokeBallsToRecycle, diff, ItemId.ItemPokeBall, cancellationToken, session);
+                    await removeItems(pokeBallsCount, ItemId.ItemPokeBall, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(greatBallsCount, greatBallsToRecycle, diff, ItemId.ItemGreatBall, cancellationToken, session);
+                    await removeItems(greatBallsCount, ItemId.ItemGreatBall, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(ultraBallsCount, ultraBallsToRecycle, diff, ItemId.ItemUltraBall, cancellationToken, session);
+                    await removeItems(ultraBallsCount, ItemId.ItemUltraBall, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(masterBallsCount, masterBallsToRecycle, diff, ItemId.ItemMasterBall, cancellationToken, session);
+                    await removeItems(masterBallsCount, ItemId.ItemMasterBall, cancellationToken, session);
                 }
             }
         }
@@ -90,30 +87,25 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var hyperPotionsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemHyperPotion);
             var maxPotionCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMaxPotion);
 
-            int potionsToRecycle = 0;
-            int superPotionsToRecycle = 0;
-            int hyperPotionsToRecycle = 0;
-            int maxPotionsToRecycle = 0;
-
             int totalPotionsCount = potionCount + superPotionCount + hyperPotionsCount + maxPotionCount;
             if (totalPotionsCount > session.LogicSettings.TotalAmountOfPotionsToKeep)
             {
                 int diff = totalPotionsCount - session.LogicSettings.TotalAmountOfPotionsToKeep;
                 if (diff > 0)
                 {
-                    await removeItems(potionCount, potionsToRecycle, diff, ItemId.ItemPotion, cancellationToken, session);
+                    await removeItems(potionCount, ItemId.ItemPotion, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(superPotionCount, superPotionsToRecycle, diff, ItemId.ItemSuperPotion, cancellationToken, session);
+                    await removeItems(superPotionCount, ItemId.ItemSuperPotion, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(hyperPotionsCount, hyperPotionsToRecycle, diff, ItemId.ItemHyperPotion, cancellationToken, session);
+                    await removeItems(hyperPotionsCount, ItemId.ItemHyperPotion, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(maxPotionCount, maxPotionsToRecycle, diff, ItemId.ItemMaxPotion, cancellationToken, session);
+                    await removeItems(maxPotionCount, ItemId.ItemMaxPotion, cancellationToken, session);
                 }
             }
         }
@@ -126,39 +118,33 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var pinap = await session.Inventory.GetItemAmountByType(ItemId.ItemPinapBerry);
             var wepar = await session.Inventory.GetItemAmountByType(ItemId.ItemWeparBerry);
 
-            int razzToRecycle = 0;
-            int blukToRecycle = 0;
-            int nanabToRecycle = 0;
-            int pinapToRecycle = 0;
-            int weparToRecycle = 0;
-
             int totalBerryCount = razz + bluk + nanab + pinap + wepar;
             if (totalBerryCount > session.LogicSettings.TotalAmountOfBerriesToKeep)
             {
-                int diff = totalBerryCount - session.LogicSettings.TotalAmountOfPotionsToKeep;
+                diff = totalBerryCount - session.LogicSettings.TotalAmountOfPotionsToKeep;
                 if (diff > 0)
                 {
-                    await removeItems(razz, razzToRecycle, diff, ItemId.ItemRazzBerry, cancellationToken, session);
+                    await removeItems(razz, ItemId.ItemRazzBerry, cancellationToken, session);
                 }
 
                 if (diff > 0)
                 {
-                    await removeItems(bluk, blukToRecycle, diff, ItemId.ItemBlukBerry, cancellationToken, session);
+                    await removeItems(bluk, ItemId.ItemBlukBerry, cancellationToken, session);
                 }
 
                 if (diff > 0)
                 {
-                    await removeItems(nanab, nanabToRecycle, diff, ItemId.ItemNanabBerry, cancellationToken, session);
+                    await removeItems(nanab, ItemId.ItemNanabBerry, cancellationToken, session);
                 }
 
                 if (diff > 0)
                 {
-                    await removeItems(pinap, pinapToRecycle, diff, ItemId.ItemPinapBerry, cancellationToken, session);
+                    await removeItems(pinap, ItemId.ItemPinapBerry, cancellationToken, session);
                 }
 
                 if (diff > 0)
                 {
-                    await removeItems(wepar, weparToRecycle, diff, ItemId.ItemWeparBerry, cancellationToken, session);
+                    await removeItems(wepar, ItemId.ItemWeparBerry, cancellationToken, session);
                 }
             }
         }
@@ -168,27 +154,24 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var reviveCount = await session.Inventory.GetItemAmountByType(ItemId.ItemRevive);
             var maxReviveCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMaxRevive);
 
-            int revivesToRecycle = 0;
-            int maxRevivesToRecycle = 0;
-
             int totalRevivesCount = reviveCount + maxReviveCount;
             if (totalRevivesCount > session.LogicSettings.TotalAmountOfRevivesToKeep)
             {
                 int diff = totalRevivesCount - session.LogicSettings.TotalAmountOfRevivesToKeep;
                 if (diff > 0)
                 {
-                    await removeItems(reviveCount, revivesToRecycle, diff, ItemId.ItemRevive, cancellationToken, session);
+                    await removeItems(reviveCount, ItemId.ItemRevive, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(maxReviveCount, maxRevivesToRecycle, diff, ItemId.ItemMaxRevive, cancellationToken, session);
+                    await removeItems(maxReviveCount, ItemId.ItemMaxRevive, cancellationToken, session);
                 }
             }
         }
 
-        private static async Task removeItems(int itemCount, int itemsToRecycle, int diff,
-            ItemId item, CancellationToken cancellationToken, ISession session)
+        private static async Task removeItems(int itemCount, ItemId item, CancellationToken cancellationToken, ISession session)
         {
+            int itemsToRecycle = 0;
             int itemsToKeep = itemCount - diff;
             if (itemsToKeep < 0)
             {
