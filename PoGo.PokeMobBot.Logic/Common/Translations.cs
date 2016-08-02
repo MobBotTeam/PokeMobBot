@@ -92,12 +92,11 @@ namespace PoGo.PokeMobBot.Logic.Common
         PokemonSkipped,
         ZeroPokeballInv,
         CurrentPokeballInv,
+        CurrentPotionInv,
         CheckingForBallsToRecycle,
         CheckingForPotionsToRecycle,
         CheckingForRevivesToRecycle,
         PokeballsToKeepIncorrect,
-        PotionsToKeepIncorrect,
-        RevivesToKeepIncorrect,
         InvFullTransferring,
         InvFullTransferManually,
         InvFullPokestopLooting,
@@ -133,7 +132,6 @@ namespace PoGo.PokeMobBot.Logic.Common
         DisplayHighestMove1Header,
         DisplayHighestMove2Header,
         UseBerry,
-        BerriesToKeepIncorrect,
         NianticServerUnstable,
         OperationCanceled,
         PokemonUpgradeSuccess,
@@ -142,7 +140,9 @@ namespace PoGo.PokeMobBot.Logic.Common
         PokemonUpgradeUnavailable,
         WebErrorNotFound,
         WebErrorGatewayTimeout,
-        WebErrorBadGateway
+        WebErrorBadGateway,
+        SkipLaggedTimeout,
+        SkipLaggedMaintenance
     }
 
     public class Translation : ITranslation
@@ -266,6 +266,8 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "You have no pokeballs in your inventory, no more Pokemon can be caught!"),
             new KeyValuePair<TranslationString, string>(TranslationString.CurrentPokeballInv,
                 "[Current Inventory] Pokeballs: {0} | Greatballs: {1} | Ultraballs: {2} | Masterballs: {3}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CurrentPotionInv,
+                "[Current Inventory] Potions: {0} | Super Potions: {1} | Hyper Potions: {2} | Max Potions: {3}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForBallsToRecycle,
                 "Checking for balls to recycle, keeping {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForPotionsToRecycle,
@@ -274,10 +276,6 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "Checking for revives to recycle, keeping {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.PokeballsToKeepIncorrect,
                 "TotalAmountOfPokeballsToKeep is configured incorrectly. The number is smaller than 1."),
-            new KeyValuePair<TranslationString, string>(TranslationString.PotionsToKeepIncorrect,
-                "TotalAmountOfPotionsToKeep is configured incorrectly. The number is smaller than 1."),
-            new KeyValuePair<TranslationString, string>(TranslationString.RevivesToKeepIncorrect,
-                "TotalAmountOfRevivesToKeep is configured incorrectly. The number is smaller than 1."),
             new KeyValuePair<TranslationString, string>(TranslationString.InvFullTransferring,
                 "Pokemon Inventory is full, transferring Pokemon..."),
             new KeyValuePair<TranslationString, string>(TranslationString.InvFullTransferManually,
@@ -332,8 +330,6 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestMove2Header, "MOVE2"),
             new KeyValuePair<TranslationString, string>(TranslationString.UseBerry,
                 "Using Razzberry. Berries left: {0}"),
-            new KeyValuePair<TranslationString, string>(TranslationString.BerriesToKeepIncorrect,
-                "You can not set the amount of Berries to less then 1"),
             new KeyValuePair<TranslationString, string>(TranslationString.NianticServerUnstable, 
                 "Niantic Servers unstable, throttling API Calls."),
             new KeyValuePair<TranslationString, string>(TranslationString.OperationCanceled, 
@@ -351,7 +347,11 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.WebErrorGatewayTimeout,
                 "504 Gateway Time-out: The server didn't respond in time."),
             new KeyValuePair<TranslationString, string>(TranslationString.WebErrorNotFound,
-                "404 Not Found: Not able to retrieve file from server!")
+                "404 Not Found: Not able to retrieve file from server!"),
+            new KeyValuePair<TranslationString, string>(TranslationString.SkipLaggedTimeout,
+                "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!"),
+            new KeyValuePair<TranslationString, string>(TranslationString.SkipLaggedMaintenance,
+                "SkipLagged servers are down for maintenance.")
         };
 
         [JsonProperty("Pokemon",
