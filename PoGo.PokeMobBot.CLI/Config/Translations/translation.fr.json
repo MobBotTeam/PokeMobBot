@@ -420,5 +420,615 @@
       "Key": "displayHighestMove2Header",
       "Value": "ATTAQUE2"
     }
+  ],
+  "pokemon": [
+    {
+      "Key": "0",
+      "Value": "Missingno"
+    },
+    {
+      "Key": "1",
+      "Value": "Bulbizarre"
+    },
+    {
+      "Key": "2",
+      "Value": "Herbizarre"
+    },
+    {
+      "Key": "3",
+      "Value": "Florizarre"
+    },
+    {
+      "Key": "4",
+      "Value": "Salamèche"
+    },
+    {
+      "Key": "5",
+      "Value": "Reptincel"
+    },
+    {
+      "Key": "6",
+      "Value": "Dracaufeu"
+    },
+    {
+      "Key": "7",
+      "Value": "Carapuce"
+    },
+    {
+      "Key": "8",
+      "Value": "Carabaffe"
+    },
+    {
+      "Key": "9",
+      "Value": "Tortank"
+    },
+    {
+      "Key": "10",
+      "Value": "Chenipan"
+    },
+    {
+      "Key": "11",
+      "Value": "Chrysacier"
+    },
+    {
+      "Key": "12",
+      "Value": "Papilusion"
+    },
+    {
+      "Key": "13",
+      "Value": "Aspicot"
+    },
+    {
+      "Key": "14",
+      "Value": "Coconfort"
+    },
+    {
+      "Key": "15",
+      "Value": "Dardargnan"
+    },
+    {
+      "Key": "16",
+      "Value": "Roucool"
+    },
+    {
+      "Key": "17",
+      "Value": "Roucoups"
+    },
+    {
+      "Key": "18",
+      "Value": "Roucarnage"
+    },
+    {
+      "Key": "19",
+      "Value": "Rattata"
+    },
+    {
+      "Key": "20",
+      "Value": "Rattatac"
+    },
+    {
+      "Key": "21",
+      "Value": "Piafabec"
+    },
+    {
+      "Key": "22",
+      "Value": "Rapasdepic"
+    },
+    {
+      "Key": "23",
+      "Value": "Abo"
+    },
+    {
+      "Key": "24",
+      "Value": "Arbok"
+    },
+    {
+      "Key": "25",
+      "Value": "Pikachu"
+    },
+    {
+      "Key": "26",
+      "Value": "Raichu"
+    },
+    {
+      "Key": "27",
+      "Value": "Sabelette"
+    },
+    {
+      "Key": "28",
+      "Value": "Sablaireau"
+    },
+    {
+      "Key": "29",
+      "Value": "Nidoran♀"
+    },
+    {
+      "Key": "30",
+      "Value": "Nidorina"
+    },
+    {
+      "Key": "31",
+      "Value": "Nidoqueen"
+    },
+    {
+      "Key": "32",
+      "Value": "Nidoran♂"
+    },
+    {
+      "Key": "33",
+      "Value": "Nidorino"
+    },
+    {
+      "Key": "34",
+      "Value": "Nidoking"
+    },
+    {
+      "Key": "35",
+      "Value": "Mélofée"
+    },
+    {
+      "Key": "36",
+      "Value": "Mélodelfe"
+    },
+    {
+      "Key": "37",
+      "Value": "Goupix"
+    },
+    {
+      "Key": "38",
+      "Value": "Feunard"
+    },
+    {
+      "Key": "39",
+      "Value": "Rondoudou"
+    },
+    {
+      "Key": "40",
+      "Value": "Grodoudou"
+    },
+    {
+      "Key": "41",
+      "Value": "Nosferapti"
+    },
+    {
+      "Key": "42",
+      "Value": "Nosferalto"
+    },
+    {
+      "Key": "43",
+      "Value": "Mystherbe"
+    },
+    {
+      "Key": "44",
+      "Value": "Ortide"
+    },
+    {
+      "Key": "45",
+      "Value": "Rafflesia"
+    },
+    {
+      "Key": "46",
+      "Value": "Paras"
+    },
+    {
+      "Key": "47",
+      "Value": "Parasect"
+    },
+    {
+      "Key": "48",
+      "Value": "Mimitoss"
+    },
+    {
+      "Key": "49",
+      "Value": "Aéromite"
+    },
+    {
+      "Key": "50",
+      "Value": "Taupiqueur"
+    },
+    {
+      "Key": "51",
+      "Value": "Triopikeur"
+    },
+    {
+      "Key": "52",
+      "Value": "Miaouss"
+    },
+    {
+      "Key": "53",
+      "Value": "Persian"
+    },
+    {
+      "Key": "54",
+      "Value": "Psykokwak"
+    },
+    {
+      "Key": "55",
+      "Value": "Akwakwak"
+    },
+    {
+      "Key": "56",
+      "Value": "Férosinge"
+    },
+    {
+      "Key": "57",
+      "Value": "Colossinge"
+    },
+    {
+      "Key": "58",
+      "Value": "Caninos"
+    },
+    {
+      "Key": "59",
+      "Value": "Arcanin"
+    },
+    {
+      "Key": "60",
+      "Value": "Ptitard"
+    },
+    {
+      "Key": "61",
+      "Value": "Têtarte"
+    },
+    {
+      "Key": "62",
+      "Value": "Tartard"
+    },
+    {
+      "Key": "63",
+      "Value": "Abra"
+    },
+    {
+      "Key": "64",
+      "Value": "Kadabra"
+    },
+    {
+      "Key": "65",
+      "Value": "Alakazam"
+    },
+    {
+      "Key": "66",
+      "Value": "Machoc"
+    },
+    {
+      "Key": "67",
+      "Value": "Machopeur"
+    },
+    {
+      "Key": "68",
+      "Value": "Mackogneur"
+    },
+    {
+      "Key": "69",
+      "Value": "Chétiflor"
+    },
+    {
+      "Key": "70",
+      "Value": "Boustiflor"
+    },
+    {
+      "Key": "71",
+      "Value": "Empiflor"
+    },
+    {
+      "Key": "72",
+      "Value": "Tentacool"
+    },
+    {
+      "Key": "73",
+      "Value": "Tentacruel"
+    },
+    {
+      "Key": "74",
+      "Value": "Racaillou"
+    },
+    {
+      "Key": "75",
+      "Value": "Gravalanch"
+    },
+    {
+      "Key": "76",
+      "Value": "Grolem"
+    },
+    {
+      "Key": "77",
+      "Value": "Ponyta"
+    },
+    {
+      "Key": "78",
+      "Value": "Galopa"
+    },
+    {
+      "Key": "79",
+      "Value": "Ramoloss"
+    },
+    {
+      "Key": "80",
+      "Value": "Flagadoss"
+    },
+    {
+      "Key": "81",
+      "Value": "Magnéti"
+    },
+    {
+      "Key": "82",
+      "Value": "Magnéton"
+    },
+    {
+      "Key": "83",
+      "Value": "Canarticho"
+    },
+    {
+      "Key": "84",
+      "Value": "Doduo"
+    },
+    {
+      "Key": "85",
+      "Value": "Dodrio"
+    },
+    {
+      "Key": "86",
+      "Value": "Otaria"
+    },
+    {
+      "Key": "87",
+      "Value": "Lamantine"
+    },
+    {
+      "Key": "88",
+      "Value": "Tadmorv"
+    },
+    {
+      "Key": "89",
+      "Value": "Grotadmorv"
+    },
+    {
+      "Key": "90",
+      "Value": "Kokiyas"
+    },
+    {
+      "Key": "91",
+      "Value": "Crustabri"
+    },
+    {
+      "Key": "92",
+      "Value": "Fantominus"
+    },
+    {
+      "Key": "93",
+      "Value": "Spectrum"
+    },
+    {
+      "Key": "94",
+      "Value": "Ectoplasma"
+    },
+    {
+      "Key": "95",
+      "Value": "Onix"
+    },
+    {
+      "Key": "96",
+      "Value": "Soporifik"
+    },
+    {
+      "Key": "97",
+      "Value": "Hypnomade"
+    },
+    {
+      "Key": "98",
+      "Value": "Krabby"
+    },
+    {
+      "Key": "99",
+      "Value": "Krabboss"
+    },
+    {
+      "Key": "100",
+      "Value": "Voltorbe"
+    },
+    {
+      "Key": "101",
+      "Value": "Électrode"
+    },
+    {
+      "Key": "102",
+      "Value": "Nœunœuf"
+    },
+    {
+      "Key": "103",
+      "Value": "Noadkoko"
+    },
+    {
+      "Key": "104",
+      "Value": "Osselait"
+    },
+    {
+      "Key": "105",
+      "Value": "Ossatueur"
+    },
+    {
+      "Key": "106",
+      "Value": "Kicklee"
+    },
+    {
+      "Key": "107",
+      "Value": "Tygnon"
+    },
+    {
+      "Key": "108",
+      "Value": "Excelangue"
+    },
+    {
+      "Key": "109",
+      "Value": "Smogo"
+    },
+    {
+      "Key": "110",
+      "Value": "Smogogo"
+    },
+    {
+      "Key": "111",
+      "Value": "Rhinocorne"
+    },
+    {
+      "Key": "112",
+      "Value": "Rhinoféros"
+    },
+    {
+      "Key": "113",
+      "Value": "Leveinard"
+    },
+    {
+      "Key": "114",
+      "Value": "Saquedeneu"
+    },
+    {
+      "Key": "115",
+      "Value": "Kangourex"
+    },
+    {
+      "Key": "116",
+      "Value": "Hypotrempe"
+    },
+    {
+      "Key": "117",
+      "Value": "Hypocéan"
+    },
+    {
+      "Key": "118",
+      "Value": "Poissirène"
+    },
+    {
+      "Key": "119",
+      "Value": "Poissoroy"
+    },
+    {
+      "Key": "120",
+      "Value": "Stari"
+    },
+    {
+      "Key": "121",
+      "Value": "Staross"
+    },
+    {
+      "Key": "122",
+      "Value": "M.Mime"
+    },
+    {
+      "Key": "123",
+      "Value": "Insécateur"
+    },
+    {
+      "Key": "124",
+      "Value": "Lippoutou"
+    },
+    {
+      "Key": "125",
+      "Value": "Élektek"
+    },
+    {
+      "Key": "126",
+      "Value": "Magmar"
+    },
+    {
+      "Key": "127",
+      "Value": "Scarabrute"
+    },
+    {
+      "Key": "128",
+      "Value": "Tauros"
+    },
+    {
+      "Key": "129",
+      "Value": "Magicarpe"
+    },
+    {
+      "Key": "130",
+      "Value": "Léviator"
+    },
+    {
+      "Key": "131",
+      "Value": "Lokhlass"
+    },
+    {
+      "Key": "132",
+      "Value": "Métamorph"
+    },
+    {
+      "Key": "133",
+      "Value": "Évoli"
+    },
+    {
+      "Key": "134",
+      "Value": "Aquali"
+    },
+    {
+      "Key": "135",
+      "Value": "Voltali"
+    },
+    {
+      "Key": "136",
+      "Value": "Pyroli"
+    },
+    {
+      "Key": "137",
+      "Value": "Porygon"
+    },
+    {
+      "Key": "138",
+      "Value": "Amonita"
+    },
+    {
+      "Key": "139",
+      "Value": "Amonistar"
+    },
+    {
+      "Key": "140",
+      "Value": "Kabuto"
+    },
+    {
+      "Key": "141",
+      "Value": "Kabutops"
+    },
+    {
+      "Key": "142",
+      "Value": "Ptéra"
+    },
+    {
+      "Key": "143",
+      "Value": "Ronflex"
+    },
+    {
+      "Key": "144",
+      "Value": "Artikodin"
+    },
+    {
+      "Key": "145",
+      "Value": "Électhor"
+    },
+    {
+      "Key": "146",
+      "Value": "Sulfura"
+    },
+    {
+      "Key": "147",
+      "Value": "Minidraco"
+    },
+    {
+      "Key": "148",
+      "Value": "Draco"
+    },
+    {
+      "Key": "149",
+      "Value": "Dracolosse"
+    },
+    {
+      "Key": "150",
+      "Value": "Mewtwo"
+    },
+    {
+      "Key": "151",
+      "Value": "Mew"
+    }
   ]
 }
