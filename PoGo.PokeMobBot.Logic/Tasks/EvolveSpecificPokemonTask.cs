@@ -29,7 +29,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 Result = evolveResponse.Result
             });
 
-            await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions);
+            await Task.Delay(session.LogicSettings.DelayEvolvePokemon);
         }
     }
 }

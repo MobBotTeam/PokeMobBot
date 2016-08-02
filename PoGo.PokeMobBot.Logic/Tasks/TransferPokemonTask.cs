@@ -45,7 +45,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 FamilyCandies = family.Candy_
             });
 
-            await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions);
+            await Task.Delay(session.LogicSettings.DelayTransferPokemon);
         }
     }
 }
