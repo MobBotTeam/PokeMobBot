@@ -22,12 +22,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             // Refresh inventory so that the player stats are fresh
             await session.Inventory.RefreshCachedInventory();
-            
-            session.EventDispatcher.Send(new DebugEvent()
-            {
-                Message = session.Translation.GetTranslation(TranslationString.LookingForIncensePokemon)
-            });
 
+            if (!session.LogicSettings.DoNotCatchPokemon)
+            {
+                session.EventDispatcher.Send(new DebugEvent()
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.LookingForIncensePokemon)
+                });
+
+            }
             var incensePokemon = await session.Client.Map.GetIncensePokemons();
             if (incensePokemon.Result == GetIncensePokemonResponse.Types.Result.IncenseEncounterAvailable)
             {

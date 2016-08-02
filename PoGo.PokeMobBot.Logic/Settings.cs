@@ -109,6 +109,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool StartupWelcomeDelay = false;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
+        public bool DoNotCatchPokemon;
 
         //coords and movement
         public bool Teleport = false;
@@ -672,6 +673,7 @@ namespace PoGo.PokeMobBot.Logic
         public ICollection<PokemonId> PokemonToUseMasterball => _settings.PokemonToUseMasterball;
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter => _settings.PokemonsTransferFilter;
         public bool StartupWelcomeDelay => _settings.StartupWelcomeDelay;
+        public bool DoNotCatchPokemon => _settings.DoNotCatchPokemon;
         public bool SnipeAtPokestops => _settings.SnipeAtPokestops;
         public int MinPokeballsToSnipe => _settings.MinPokeballsToSnipe;
         public int MinPokeballsWhileSnipe => _settings.MinPokeballsWhileSnipe;
