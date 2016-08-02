@@ -23,24 +23,30 @@ namespace PoGo.PokeMobBot.CLI
         private PokeStopListEvent _lastPokeStopList;
         private ProfileEvent _lastProfile;
 
-        public WebSocketInterface(int port, Session session)
+        public WebSocketInterface(int port, Session session, string certificate)
         {
             _session = session;
             var translations = session.Translation;
             _server = new WebSocketServer();
-            var setupComplete = _server.Setup(new ServerConfig
+            var config = new ServerConfig
             {
                 Name = "MobBotWebSocket",
                 Ip = "Any",
                 Port = port,
                 Mode = SocketMode.Tcp,
-                Security = "tls",
-                Certificate = new CertificateConfig
+            };
+
+            if(certificate != null)
+            {
+                config.Security = "tls";
+                config.Certificate = new CertificateConfig
                 {
-                    FilePath = @"cert.pfx",
-                    Password = "necro"
-                }
-            });
+                    FilePath = certificate,
+                    Password = "mobbot"
+                };
+            }
+
+            var setupComplete = _server.Setup(config);
 
             if (setupComplete == false)
             {
@@ -81,7 +87,7 @@ namespace PoGo.PokeMobBot.CLI
 
         private async void HandleMessage(WebSocketSession session, string message)
         {
-            Models.SocketMessage msgObj;
+            Models.SocketMessage msgObj = null;
             var command = message;
             try
             {
@@ -90,19 +96,31 @@ namespace PoGo.PokeMobBot.CLI
             }
             catch { }
 
+            // Action request from UI should not be broadcasted to all client
+            Action<IEvent> action = (evt) => session.Send(Serialize(evt));
+
             switch (command)
             {
                 case "PokemonList":
-                    await PokemonListTask.Execute(_session);
+                    await PokemonListTask.Execute(_session, action);
                     break;
                 case "EggsList":
-                    await EggsListTask.Execute(_session);
+                    await EggsListTask.Execute(_session, action);
                     break;
                 case "InventoryList":
-                    await InventoryListTask.Execute(_session);
+                    await InventoryListTask.Execute(_session, action);
                     break;
                 case "PlayerStats":
-                    await PlayerStatsTask.Execute(_session);
+                    await PlayerStatsTask.Execute(_session, action);
+                    break;
+                case "GetPokemonSettings":
+                    await PokemonSettingsTask.Execute(_session, action);
+                    break;
+                case "TransferPokemon":
+                    await TransferPokemonTask.Execute(_session, msgObj?.Data);
+                    break;
+                case "EvolvePokemon":
+                    await EvolveSpecificPokemonTask.Execute(_session, msgObj?.Data);
                     break;
             }
         }
