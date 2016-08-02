@@ -238,7 +238,7 @@ namespace PoGo.PokeMobBot.CLI
             Logger.Write($"====== {strHeader} ======", LogLevel.Info, ConsoleColor.Yellow);
             foreach (var pokemon in evt.PokemonList)
                 Logger.Write(
-                  $"# CP {pokemon.Item1.Cp.ToString().PadLeft(4, ' ')}/{pokemon.Item2.ToString().PadLeft(4, ' ')} | ({pokemon.Item3.ToString("0.00")}% {strPerfect})\t| Lvl {pokemon.Item4.ToString("00")}\t {strName}: {pokemon.Item1.PokemonId.ToString().PadRight(10, ' ')}\t MOVESET>> {pokemon.Item5.ToString().PadRight(20, ' ')},{pokemon.Item6.ToString().PadRight(10, ' ')}\t->RankVsTypeAvg: {pokemon.Item7}",
+                  $"# CP {pokemon.Item1.Cp.ToString().PadLeft(4, ' ')}/{pokemon.Item3.ToString().PadLeft(4, ' ')} | ({pokemon.Item4.ToString("0.00")}% {strPerfect})\t| Lvl {pokemon.Item5.ToString("00")}\t {strName}: {pokemon.Item1.PokemonId.ToString().PadRight(10, ' ')}\t MOVESET>> {pokemon.Item6.ToString().PadRight(20, ' ')},{pokemon.Item7.ToString().PadRight(10, ' ')}\t->RankVsTypeAvg: {pokemon.Item8}",
                     LogLevel.Info, ConsoleColor.Yellow);
         }
 

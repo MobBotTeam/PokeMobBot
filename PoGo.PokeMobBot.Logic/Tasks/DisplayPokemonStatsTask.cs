@@ -22,6 +22,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         public static async Task Execute(ISession session)
         {
+            var PlayersProfile = (await session.Inventory.GetPlayerStats())
+              .ToList();
+            var trainerLevel = PlayersProfile.FirstOrDefault() != null ? PlayersProfile.FirstOrDefault().Level : 30;
             var highestsPokemonCp =
                 await session.Inventory.GetHighestsCp(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
             var highestsPokemonCpForUpgrade = await session.Inventory.GetHighestsCp(50);
@@ -29,7 +32,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var pokemonPairedWithStatsCp =
                 highestsPokemonCp.Select(
                     pokemon =>
-                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon),
+                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon), PokemonInfo.GetMaxCpAtTrainerLevel(pokemon, trainerLevel),
                             PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
                             PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon),
  (PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0)
@@ -37,7 +40,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var pokemonPairedWithStatsCpForUpgrade =
                 highestsPokemonCpForUpgrade.Select(
                     pokemon =>
-                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon),
+                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon), PokemonInfo.GetMaxCpAtTrainerLevel(pokemon, trainerLevel),
                             PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
                             PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon),
 
@@ -49,7 +52,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var pokemonPairedWithStatsIv =
                 highestsPokemonPerfect.Select(
                     pokemon =>
-                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon),
+                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon), PokemonInfo.GetMaxCpAtTrainerLevel(pokemon, trainerLevel),
                             PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
                             PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon),
 
@@ -58,7 +61,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var pokemonPairedWithStatsIvForUpgrade =
                 highestsPokemonIvForUpgrade.Select(
                     pokemon =>
-                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon),
+                        Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon), PokemonInfo.GetMaxCpAtTrainerLevel(pokemon,trainerLevel),
                             PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
                             PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon),
 

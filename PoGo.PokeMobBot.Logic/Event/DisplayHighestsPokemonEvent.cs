@@ -11,8 +11,8 @@ namespace PoGo.PokeMobBot.Logic.Event
 {
     public class DisplayHighestsPokemonEvent : IEvent
     {
-        //PokemonData | CP | IV | Level | MOVE1 | MOVE2 | AverageRankVsTypes
-        public List<Tuple<PokemonData, int, double, double, PokemonMove, PokemonMove,int>> PokemonList;
+        //PokemonData | CP |Powered Cp| IV | Level | MOVE1 | MOVE2 | AverageRankVsTypes
+        public List<Tuple<PokemonData, int,int, double, double, PokemonMove, PokemonMove,int>> PokemonList;
         public string SortedBy;
     }
 }
