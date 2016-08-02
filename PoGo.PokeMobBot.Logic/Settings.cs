@@ -153,6 +153,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool TransferDuplicatePokemon = true;
         public bool TransferLowStatPokemon = false;
         public bool PrioritizeIvOverCp = true;
+        public bool PrioritizeIvAndCp = false;
         public int KeepMinCp = 1250;
         public float KeepMinIvPercentage = 95;
         public int KeepMinDuplicatePokemon = 1;
@@ -659,6 +660,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool UsePokemonToNotCatchFilter => _settings.UsePokemonToNotCatchFilter;
         public int KeepMinDuplicatePokemon => _settings.KeepMinDuplicatePokemon;
         public bool PrioritizeIvOverCp => _settings.PrioritizeIvOverCp;
+        public bool PrioritizeIvAndCp => _settings.PrioritizeIvAndCp;
         public int MaxTravelDistanceInMeters => _settings.MaxTravelDistanceInMeters;
         public string GpxFile => _settings.GpxFile;
         public bool UseGpxPathing => _settings.UseGpxPathing;
