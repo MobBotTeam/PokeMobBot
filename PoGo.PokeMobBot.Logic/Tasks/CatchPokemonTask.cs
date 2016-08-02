@@ -26,7 +26,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             FortData currentFortData = null, ulong encounterId = 0)
         {
             if (encounter is EncounterResponse && pokemon == null)
-                throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse", "pokemon");
+                throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse",
+                    "pokemon");
 
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
@@ -62,7 +63,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData) >= session.LogicSettings.UseBerryMinIv;
 
-                if (isLowProbability && (( session.LogicSettings.PrioritizeIvOverCp && isHighPerfection) || isHighCp))
+                if (isLowProbability && ((session.LogicSettings.PrioritizeIvOverCp && isHighPerfection) || isHighCp))
                 {
                     await
                         UseBerry(session,
@@ -108,9 +109,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         spinModifier);
 
                 var lat = encounter is EncounterResponse || encounter is IncenseEncounterResponse
-                            ? pokemon.Latitude : currentFortData.Latitude;
+                    ? pokemon.Latitude
+                    : currentFortData.Latitude;
                 var lng = encounter is EncounterResponse || encounter is IncenseEncounterResponse
-                            ? pokemon.Longitude : currentFortData.Longitude;
+                    ? pokemon.Longitude
+                    : currentFortData.Longitude;
                 var evt = new PokemonCaptureEvent
                 {
                     Status = caughtPokemonResponse.Status,
@@ -184,7 +187,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 session.EventDispatcher.Send(evt);
 
                 attemptCounter++;
-                if(session.LogicSettings.Teleport)
+                if (session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayCatchPokemon);
                 else
                     await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
