@@ -1,5 +1,6 @@
 ﻿#region using directives
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
@@ -14,6 +15,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         public static async Task Execute(ISession session)
         {
+            // Refresh inventory so that the player stats are fresh
             await session.Inventory.RefreshCachedInventory();
 
             var playerStats = (await session.Inventory.GetPlayerStats()).FirstOrDefault();

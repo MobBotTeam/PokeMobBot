@@ -35,7 +35,7 @@ namespace PoGo.PokeMobBot.Logic.State
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await CleanupOldFiles();
+            await CleanupOldFiles(session);
             var autoUpdate = session.LogicSettings.AutoUpdate;
             var needupdate = IsLatest();
             if (!needupdate || !autoUpdate)
@@ -69,9 +69,10 @@ namespace PoGo.PokeMobBot.Logic.State
             var tempPath = Path.Combine(baseDir, "tmp");
             var extractedDir = Path.Combine(tempPath, "Release");
             var destinationDir = baseDir + Path.DirectorySeparatorChar;
-            Logger.Write(downloadLink);
 
-            if (!DownloadFile(downloadLink, downloadFilePath))
+            session.EventDispatcher.Send(new NoticeEvent() { Message = downloadLink });
+
+            if (!DownloadFile(session, downloadLink, downloadFilePath))
                 return new LoginState();
 
             session.EventDispatcher.Send(new UpdateEvent
@@ -108,7 +109,7 @@ namespace PoGo.PokeMobBot.Logic.State
             return null;
         }
 
-        public static async Task CleanupOldFiles()
+        public static async Task CleanupOldFiles(ISession session)
         {
             var tmpDir = Path.Combine(Directory.GetCurrentDirectory(), "tmp");
 
@@ -130,20 +131,26 @@ namespace PoGo.PokeMobBot.Logic.State
                 }
                 catch (Exception e)
                 {
-                    Logger.Write(e.ToString());
+                    session.EventDispatcher.Send(new ErrorEvent()
+                    {
+                        Message = e.ToString()
+                    });
                 }
             }
             await Task.Delay(200);
         }
 
-        public static bool DownloadFile(string url, string dest)
+        public bool DownloadFile(ISession session, string url, string dest)
         {
             using (var client = new WebClient())
             {
                 try
                 {
                     client.DownloadFile(url, dest);
-                    Logger.Write(dest);
+                    session.EventDispatcher.Send(new NoticeEvent()
+                    {
+                        Message = dest
+                    });
                 }
                 catch
                 {
@@ -153,7 +160,7 @@ namespace PoGo.PokeMobBot.Logic.State
             }
         }
 
-        private static string DownloadServerVersion()
+        private string DownloadServerVersion()
         {
             using (var wC = new WebClient())
             {
@@ -161,7 +168,7 @@ namespace PoGo.PokeMobBot.Logic.State
             }
         }
 
-        private static JObject GetJObject(string filePath)
+        private JObject GetJObject(string filePath)
         {
             return JObject.Parse(File.ReadAllText(filePath));
         }
@@ -179,7 +186,8 @@ namespace PoGo.PokeMobBot.Logic.State
 
                 var gitVersion = new Version($"{match.Groups[1]}.{match.Groups[2]}.{match.Groups[3]}");
                 RemoteVersion = gitVersion;
-                if (gitVersion >= Assembly.GetExecutingAssembly().GetName().Version)
+                var localVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                if (gitVersion >= localVersion)
                 {
                     return true;
                 }
@@ -192,7 +200,7 @@ namespace PoGo.PokeMobBot.Logic.State
             return false;
         }
 
-        public static bool MoveAllFiles(string sourceFolder, string destFolder)
+        public bool MoveAllFiles(string sourceFolder, string destFolder)
         {
             if (!Directory.Exists(destFolder))
                 Directory.CreateDirectory(destFolder);
@@ -232,7 +240,7 @@ namespace PoGo.PokeMobBot.Logic.State
             return true;
         }
 
-        private static bool TransferConfig(string baseDir, ISession session)
+        private bool TransferConfig(string baseDir, ISession session)
         {
             if (!session.LogicSettings.TransferConfigAndAuthOnUpdate)
                 return false;
@@ -258,7 +266,7 @@ namespace PoGo.PokeMobBot.Logic.State
             return true;
         }
 
-        private static void TransferJson(JObject oldFile, JObject newFile)
+        private void TransferJson(JObject oldFile, JObject newFile)
         {
             try
             {
@@ -276,7 +284,7 @@ namespace PoGo.PokeMobBot.Logic.State
             }
         }
 
-        public static bool UnpackFile(string sourceTarget, string destPath)
+        public bool UnpackFile(string sourceTarget, string destPath)
         {
             var source = sourceTarget;
             var dest = destPath;
