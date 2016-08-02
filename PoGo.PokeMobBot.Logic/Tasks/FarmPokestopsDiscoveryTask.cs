@@ -50,16 +50,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                pokestopList = pokestopList.OrderBy(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                               session.Client.CurrentLongitude, i.Latitude, i.Longitude)).ToList();
                 //resort                
-                var pokeStop = pokestopList[0];
+                var pokeStop = pokestopList.OrderBy(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                               session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => x.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime()).First();
+                pokeStop.CooldownCompleteTimestampMs = DateTime.UtcNow.ToUnixTime() + 300 * 1000;
                 var newPokestopList = (await GetPokeStops(session)).OrderBy(i =>
                             LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                                session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Except(pokestopList);
-
+                                session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => !pokestopList.Any(i=>i.Id == x.Id) && LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                               session.Client.CurrentLongitude, x.Latitude, x.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters);
                 pokestopList.AddRange(newPokestopList);
-                pokestopList.RemoveAt(0);
+
+                var tooFarPokestops = pokestopList.Where(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                               session.Client.CurrentLongitude, i.Latitude, i.Longitude) > session.LogicSettings.MaxTravelDistanceInMeters);
+
+                foreach (var tooFar in tooFarPokestops)
+                    pokestopList.Remove(tooFar);
 
                 session.EventDispatcher.Send(new PokeStopListEvent { Forts = newPokestopList });
 
