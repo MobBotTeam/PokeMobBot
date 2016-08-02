@@ -50,7 +50,7 @@
     },
     {
       "Key": "eventUseLuckyEggMinPokemonCheck",
-      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+      "Value": "Pas assez de pokemon à évoluer pour utiliser un Oeuf Chance. Il en manque {0}. ({1}/{2})"
     },
     {
       "Key": "eventPokemonEvolvedSuccess",
