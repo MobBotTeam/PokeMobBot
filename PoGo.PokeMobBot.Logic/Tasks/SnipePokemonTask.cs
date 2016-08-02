@@ -195,7 +195,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 PokemonId = PokemonId.Missingno
                             });
 
-                            var scanResult = SnipeScanForPokemon(session, location); // initialize
+                            var scanResult = await SnipeScanForPokemon(session, location); // initialize
                             List<PokemonLocation> locationsToSnipe = new List<PokemonLocation>();
 
                             if (session.LogicSettings.UseSnipeOnlineLocationServer)
@@ -204,7 +204,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             }
                             else
                             {
-                                scanResult = SnipeScanForPokemon(session, location);
+                                scanResult = await SnipeScanForPokemon(session, location);
                                 if (scanResult.Pokemon != null)
                                 {
                                     var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.PokemonName));
@@ -343,7 +343,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions, cancellationToken);
         }
 
-        private ScanResult SnipeScanForPokemon(ISession session, Location location)
+        private async Task<ScanResult> SnipeScanForPokemon(ISession session, Location location)
         {
             var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
@@ -369,12 +369,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
-                var resp = request.GetResponse();
+                var resp = await request.GetResponseAsync();
                 var reader = new StreamReader(resp.GetResponseStream());
                 var fullresp = reader.ReadToEnd().Replace(" M", "Male").Replace(" F", "Female");
 
 
-                if(fullresp.Contains("error"))
+                if (fullresp.Contains("error"))
                 {
                     session.EventDispatcher.Send(new WarnEvent
                     {
