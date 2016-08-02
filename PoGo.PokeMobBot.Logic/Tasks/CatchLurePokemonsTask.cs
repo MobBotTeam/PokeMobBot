@@ -8,6 +8,7 @@ using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
 using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
+using POGOProtos.Map.Pokemon;
 
 #endregion
 
@@ -37,6 +38,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 var encounterId = currentFortData.LureInfo.EncounterId;
                 var encounter = await session.Client.Encounter.EncounterLurePokemon(encounterId, fortId);
+
+                var pokemon = new MapPokemon
+                {
+                    EncounterId = encounterId,
+                    Latitude = currentFortData.Latitude,
+                    Longitude = currentFortData.Longitude,
+                    PokemonId = pokemonId
+                };
+                session.EventDispatcher.Send(new PokemonsFoundEvent { Pokemons = new MapPokemon[] { pokemon } });
 
                 if (encounter.Result == DiskEncounterResponse.Types.Result.Success)
                 {
@@ -68,6 +78,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 encounter.Result)
                     });
                 }
+                session.EventDispatcher.Send(new PokemonDisappearEvent { Pokemon = pokemon });
             }
         }
     }

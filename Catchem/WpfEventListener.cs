@@ -75,6 +75,11 @@ namespace Catchem
             Logger.PushToUi("ps", session, new object[] { evt.Forts });
         }
 
+        public void HandleEvent(ForceMoveDoneEvent evt, ISession session)
+        {
+            Logger.PushToUi("forcemove_done", session, new object[] { });
+        }
+
         public void HandleEvent(PokemonsFoundEvent evt, ISession session)
         {
             Logger.PushToUi("pm", session, new object[] { evt.Pokemons });

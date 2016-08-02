@@ -64,6 +64,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                if (session.ForceMoveTo != null)
+                {
+                    await ForceMoveTask.Execute(session, cancellationToken);
+                    pokestopList = await GetPokeStops(session);
+                }
+
                 //resort
                 pokestopList =
                     pokestopList.OrderBy(

@@ -46,6 +46,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 {
                     session.EventDispatcher.Send(new ErrorEvent {Message = "Current Operation was canceled."});
                     state = _initialState;
+                    break;
                 }
                 catch (Exception ex)
                 {

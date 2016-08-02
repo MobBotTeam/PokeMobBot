@@ -27,10 +27,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var distanceFromStart = LocationUtils.CalculateDistanceInMeters(
-                session.Settings.DefaultLatitude, session.Settings.DefaultLongitude,
-                session.Client.CurrentLatitude, session.Client.CurrentLongitude);
-
             var pokestopList = await GetPokeStops(session);
             var stopsHit = 0;
             var eggWalker = new EggWalker(1000, session);
@@ -50,15 +46,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                //resort                
+                if (session.ForceMoveTo != null)                
+                    await ForceMoveTask.Execute(session, cancellationToken);                
+
+                var newPokestopList = (await GetPokeStops(session)).OrderBy(i =>
+                            LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                                session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => !pokestopList.Any(i => i.Id == x.Id) && LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                               session.Client.CurrentLongitude, x.Latitude, x.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters);
+                pokestopList.AddRange(newPokestopList);
                 var pokeStop = pokestopList.OrderBy(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                                session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => x.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime()).First();
                 pokeStop.CooldownCompleteTimestampMs = DateTime.UtcNow.ToUnixTime() + 300 * 1000;
-                var newPokestopList = (await GetPokeStops(session)).OrderBy(i =>
-                            LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                                session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => !pokestopList.Any(i=>i.Id == x.Id) && LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                               session.Client.CurrentLongitude, x.Latitude, x.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters);
-                pokestopList.AddRange(newPokestopList);
 
                 var tooFarPokestops = pokestopList.Where(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                                session.Client.CurrentLongitude, i.Latitude, i.Longitude) > session.LogicSettings.MaxTravelDistanceInMeters).ToList();
