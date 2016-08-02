@@ -288,7 +288,7 @@ namespace Catchem
             int delay = 25;
             while (!windowClosing)
             {
-                if (bot != null && playerMarker != null)
+                if (bot != null && playerMarker != null && bot.Started)
                 {
                     if (bot.moveRequired)
                     {
@@ -351,6 +351,7 @@ namespace Catchem
                             if (bot.mapMarkers.ContainsKey(newMapObj.uid))
                             {
                                 pokeMap.Markers.Remove(bot.mapMarkers[newMapObj.uid].marker);
+                                bot.mapMarkers.Remove(newMapObj.uid);
                             }
                             break;
                         case "forcemove_done":
@@ -397,6 +398,7 @@ namespace Catchem
                     if (bot.logQueue.Count > 0)
                     {
                         var t = bot.logQueue.Dequeue();
+                        bot.log.Add(t);
                         consoleBox.AppendParagraph(t.Item1, t.Item2);
                     }                    
                 }
@@ -497,16 +499,21 @@ namespace Catchem
                 timerStop();
                 cts.Cancel();
                 WipeData();
+                ts = new TimeSpan();
                 Started = false;
             }
 
-            public void timerStart()
+            public void Start()
             {
-                timer?.Start();
+                timerStart();
+                cts.Dispose();
+                cts = new CancellationTokenSource();
                 Started = true;
             }
 
-            public void timerStop() => timer?.Stop();
+            private void timerStart() => timer?.Start();
+
+            private void timerStop() => timer?.Stop();
 
             internal void EnqueData()
             {
@@ -516,7 +523,8 @@ namespace Catchem
                     logQueue.Enqueue(item);
 
                 foreach (var item in mapMarkers)
-                    MarkersQueue.Enqueue(item.Value);                                
+                    MarkersQueue.Enqueue(item.Value);
+                mapMarkers = new Dictionary<string, NewMapObject>();                           
             }
         }
 
@@ -716,11 +724,13 @@ namespace Catchem
 
             bStart.Click += delegate (object o, RoutedEventArgs args)
             {
-
-                newBot.machine.AsyncStart(new VersionCheckState(), session, newBot.cancellationToken);
-                if (session.LogicSettings.UseSnipeLocationServer)
-                    SnipePokemonTask.AsyncStart(session);
-                newBot.timerStart();
+                if (!newBot.Started)
+                {
+                    newBot.Start();
+                    newBot.machine.AsyncStart(new VersionCheckState(), session, newBot.cancellationToken);
+                    if (session.LogicSettings.UseSnipeLocationServer)
+                        SnipePokemonTask.AsyncStart(session);                   
+                }
             };
 
             bStop.Click += delegate (object o, RoutedEventArgs args)
@@ -758,6 +768,7 @@ namespace Catchem
         {
             consoleBox.Document.Blocks.Clear();
             pokeMap.Markers.Clear();
+            playerMarker = null;
         }
 
         private void rebuildUI()
