@@ -149,6 +149,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         evt.FamilyCandies = caughtPokemonResponse.CaptureAward.Candy.Sum();
                     }
                 }
+                else
+                {
+                    var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
+                    var pokemonSettings = await session.Inventory.GetPokemonSettings();
+                    var setting =
+                        pokemonSettings.FirstOrDefault(q => pokemon != null && q.PokemonId == pokemon.PokemonId);
+                    var family = pokemonFamilies.FirstOrDefault(q => setting != null && q.FamilyId == setting.FamilyId);
+                    evt.FamilyCandies = family.Candy_;
+                }
 
 
                 evt.CatchType = encounter is EncounterResponse

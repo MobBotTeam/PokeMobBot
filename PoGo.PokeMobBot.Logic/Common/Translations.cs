@@ -190,7 +190,6 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "No Pokeballs - We missed a {0} with CP {1}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusAttempt, "{0} Attempt #{1}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CatchStatus, "{0}"),
-            new KeyValuePair<TranslationString, string>(TranslationString.Candies, "Candies: {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.UnhandledGpxData,
                 "Unhandled data in GPX file, attempting to skip."),
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestsHeader, "Pokemons"),
