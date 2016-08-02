@@ -199,6 +199,10 @@
       "Value": "Server PTC mungkin sedang turun ATAU kredensial anda salah. Coba google"
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Coba lagi dalam {0} detik..."
     },

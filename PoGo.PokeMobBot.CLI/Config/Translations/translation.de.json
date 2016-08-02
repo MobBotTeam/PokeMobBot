@@ -231,6 +231,10 @@
       "Value": "PTC Server sind wahrscheinlich down ODER die angegebenen Zugangsdaten sind falsch. Versuch Google."
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access Token ausgelaufen. Logge mich neu ein für ein neues Token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Erneuter Versuch in {0} Sekunden..."
     },

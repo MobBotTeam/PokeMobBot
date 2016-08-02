@@ -201,6 +201,10 @@
         "PTC servrarna är förmodligen frånanslutna ELLER så är dina inloggningsuppgifter felaktiga. Försök med Google."
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Försöker igen om {0} sekunder..."
     },

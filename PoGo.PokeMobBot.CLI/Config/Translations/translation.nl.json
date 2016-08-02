@@ -189,6 +189,10 @@
       "Value": "PTC Servers zijn waarschijnlijk overbelast of uw login-gegevens zijn verkeerd. Probeer google!"
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Opnieuw proberen in {0} seconden..."
     },

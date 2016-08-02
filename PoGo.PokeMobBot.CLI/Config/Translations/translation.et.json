@@ -232,6 +232,10 @@
       "Value": "PTC server on maas VÕI on kasutajanimi ja parool valed. Proovi Google'iga?"
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Järgmine katse {0} sekundi pärast..."
     },

@@ -201,6 +201,10 @@
       "Value": "Servidores de PTC probablemente estén caídos o sus datos de acceso son incorrectos. Prueba con Google."
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Intentar de nuevo en {0} segundos..."
     },
