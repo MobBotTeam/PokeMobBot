@@ -93,8 +93,7 @@ namespace PoGo.PokeMobBot.Logic.Common
         LookingForIncensePokemon,
         PokemonSkipped,
         ZeroPokeballInv,
-        CurrentPokeballInv,
-        CurrentPotionInv,
+        InvItemsTier,
         CheckingForBallsToRecycle,
         CheckingForPotionsToRecycle,
         CheckingForRevivesToRecycle,
@@ -268,10 +267,13 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.PokemonSkipped, "Skipped {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.ZeroPokeballInv,
                 "You have no pokeballs in your inventory, no more Pokemon can be caught!"),
-            new KeyValuePair<TranslationString, string>(TranslationString.CurrentPokeballInv,
-                "[Inventory] Pokeballs: {0} | Greatballs: {1} | Ultraballs: {2} | Masterballs: {3}"),
-            new KeyValuePair<TranslationString, string>(TranslationString.CurrentPotionInv,
-                "[Inventory] Potions: {0} | Super Potions: {1} | Hyper Potions: {2} | Max Potions: {3}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.InvItemsTier, Environment.NewLine + "|============================================ Display Current Inventory Items ============================================|" +
+                Environment.NewLine + "|| Pokeballs: {0}\t || Razz Berries: {1}\t || Potions: {2}\t\t || Incenses: {3}\t\t || Revives: {4}\t\t ||" +
+                Environment.NewLine + "|| Greatballs: {5}\t || Bluk Berries: {6}\t || Super Potions: {7}\t || Spicy Incenses: {8}\t || Max Revives: {9}\t ||" +
+                Environment.NewLine + "|| Ultraballs: {10}\t || Nanab Berries: {11}\t || Hyper Potions: {12}\t || Cool Incenses: {13}\t || Lucky Eggs: {14}\t ||" +
+                Environment.NewLine + "|| Masterballs: {15}\t || Wepar Berries: {16}\t || Max Potions: {17}\t || Floral Incenses: {18}\t || Lure Module: {19}\t ||" +
+                Environment.NewLine + "|| \t\t\t || Pinap Berries: {20}\t || \t\t\t || \t\t\t || TroyDisks: {21}\t ||" +
+                Environment.NewLine + "|=========================================================================================================================|"),
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForBallsToRecycle,
                 "Checking for balls to recycle, keeping {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForPotionsToRecycle,
