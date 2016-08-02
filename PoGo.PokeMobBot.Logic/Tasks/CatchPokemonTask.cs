@@ -231,8 +231,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
                 probability <= useGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
-            if (pokeBallsCount > 0 && iV < session.LogicSettings.UseGreatBallAboveIv ||
-                probability > useGreatBallBelowCatchProbability)
+            if (pokeBallsCount > 0)
                 return ItemId.ItemPokeBall;
 
             return ItemId.ItemUnknown;
