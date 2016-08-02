@@ -46,7 +46,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.LogicSettings.WalkingSpeedInKilometerPerHour, null, cancellationToken);
             }
 
+
+
             var pokestopList = await GetPokeStops(session);
+
             var stopsHit = 0;
             var displayStatsHit = 0;
             var eggWalker = new EggWalker(1000, session);
@@ -78,6 +81,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
+
+
                 session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance,Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
                 if (session.LogicSettings.Teleport)
                     await session.Navigation.Teleport(new GeoCoordinate(fortInfo.Latitude, fortInfo.Longitude,
@@ -95,7 +100,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         return true;
                     }, cancellationToken);
                 }
-                
+
+
                 FortSearchResponse fortSearch;
                 var timesZeroXPawarded = 0;
                 var fortTry = 0; //Current check
@@ -179,6 +185,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     stopsHit = 0;
                     // need updated stardust information for upgrading, so refresh your profile now
                     await DownloadProfile(session);
+                    var GymList = await GetGyms(session);
+                    session.EventDispatcher.Send(new PokeStopListEvent { Forts = GymList });
 
                     if (fortSearch.ItemsAwarded.Count > 0)
                     {
@@ -234,6 +242,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 );
 
             return pokeStops.ToList();
+        }
+
+                private static async Task<List<FortData>> GetGyms(ISession session)
+        {
+            var mapObjects = await session.Client.Map.GetMapObjects();
+
+            // Wasn't sure how to make this pretty. Edit as needed.
+            var Gyms = mapObjects.MapCells.SelectMany(i => i.Forts)
+                .Where(
+                    i =>
+                        i.Type == FortType.Gym 
+                );
+
+            return Gyms.ToList();
         }
 
         // static copy of download profile, to update stardust more accurately
