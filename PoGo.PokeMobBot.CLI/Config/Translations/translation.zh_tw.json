@@ -197,6 +197,10 @@
       "Value": "PTC服務器可能關閉或您的帳號錯誤錯誤，請嘗試谷歌帳號登錄"
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "將在 {0} 秒後重試..."
     },

@@ -201,6 +201,10 @@
         "PTC сервера возможно не работают ИЛИ неверно указаны данные учетной записи. Попробуйте использовать логин от Google аккаунта"
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Пробуем снова через {0} сек..."
     },

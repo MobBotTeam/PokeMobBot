@@ -199,6 +199,10 @@
       "Value": "Os Servidores PTC provavelmente estão offline ou suas credenciais são inválidas. Tente o Google."
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Tentando novamente em {0} segundos..."
     },

@@ -200,6 +200,10 @@
       "Value": "Serwery PTC najprawdopodobniej nie działają albo twoje dane są błędne. Spróbuj konta Google."
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Ponawiam próbę za {0} sekund..."
     },

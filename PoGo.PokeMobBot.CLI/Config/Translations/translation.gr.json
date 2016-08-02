@@ -201,6 +201,10 @@
         "Οι PTC Servers είναι εκτός λειτουργίας Ή τα στοιχεία σου ειναι λανθασμένα. Προσπάθησε να συνδεθείς μέσω google"
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Επόμενη προσπάθεια σε {0}'"
     },

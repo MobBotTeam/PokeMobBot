@@ -196,6 +196,14 @@
       "Value": "PTC sunucuları yanıt vermiyor ya da bilgilerin yanlış olabilir. Google ile dene."
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "{0} saniye sonra tekrar denenecek..."
     },

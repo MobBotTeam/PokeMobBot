@@ -197,6 +197,10 @@
       "Value": "PTC服务器可能关闭或您的帐号错误错误，请尝试谷歌帐号登录"
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "将在 {0} 秒后重试..."
     },

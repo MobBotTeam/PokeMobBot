@@ -231,6 +231,10 @@
       "Value": "PTC Servere er sandsynligvis nede ellers er de givne login info ikke korrekte. Forsøg med Google."
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "Access token expired. Relogin to get a new token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "Prøver igen om {0} Sekunder..."
     },
