@@ -1,5 +1,6 @@
 ﻿#region using directives
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -553,20 +554,28 @@ namespace PoGo.PokeMobBot.Logic.Common
                 jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-                translations = JsonConvert.DeserializeObject<Translation>(input, jsonSettings);
-                //TODO make json to fill default values as it won't do it now
+                try
+                {
+                    translations = JsonConvert.DeserializeObject<Translation>(input, jsonSettings);
+                    //TODO make json to fill default values as it won't do it now
 
-                var defaultTranslation = new Translation();
+                    var defaultTranslation = new Translation();
 
-                defaultTranslation._translationStrings.Where(
-                    item => translations._translationStrings.All(a => a.Key != item.Key))
-                    .ToList()
-                    .ForEach(translations._translationStrings.Add);
+                    defaultTranslation._translationStrings.Where(
+                        item => translations._translationStrings.All(a => a.Key != item.Key))
+                        .ToList()
+                        .ForEach(translations._translationStrings.Add);
 
-                defaultTranslation._pokemons.Where(
-                    item => translations._pokemons.All(a => a.Key != item.Key))
-                    .ToList()
-                    .ForEach(translations._pokemons.Add);
+                    defaultTranslation._pokemons.Where(
+                        item => translations._pokemons.All(a => a.Key != item.Key))
+                        .ToList()
+                        .ForEach(translations._pokemons.Add);
+                }
+                catch (Exception e)
+                {
+                    translations = new Translation();
+                    translations.Save(Path.Combine(translationPath, "translation.en.json"));
+                }
             }
             else
             {
