@@ -61,7 +61,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 pokestopList.AddRange(newPokestopList);
 
                 var tooFarPokestops = pokestopList.Where(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                               session.Client.CurrentLongitude, i.Latitude, i.Longitude) > session.LogicSettings.MaxTravelDistanceInMeters);
+                               session.Client.CurrentLongitude, i.Latitude, i.Longitude) > session.LogicSettings.MaxTravelDistanceInMeters).ToList();
 
                 foreach (var tooFar in tooFarPokestops)
                     pokestopList.Remove(tooFar);
