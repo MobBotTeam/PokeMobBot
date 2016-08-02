@@ -37,6 +37,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             await OptimizedRecycleBalls(session, cancellationToken);
             await OptimizedRecyclePotions(session, cancellationToken);
             await OptimizedRecycleRevives(session, cancellationToken);
+            await OptimizedRecycleBerries(session, cancellationToken);
 
             await session.Inventory.RefreshCachedInventory();
         }

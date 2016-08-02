@@ -105,6 +105,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                     fortSearch =
                         await session.Client.Fort.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
+                    if (fortSearch.Result == FortSearchResponse.Types.Result.InventoryFull)
+                    {
+                        await RecycleItemsTask.Execute(session, cancellationToken);
+                    }
                     if (fortSearch.ExperienceAwarded > 0 && timesZeroXPawarded > 0) timesZeroXPawarded = 0;
                     if (fortSearch.ExperienceAwarded == 0)
                     {

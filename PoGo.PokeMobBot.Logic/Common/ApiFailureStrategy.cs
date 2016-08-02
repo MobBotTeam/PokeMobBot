@@ -49,6 +49,14 @@ namespace PoGo.PokeMobBot.Logic.Common
                     });
                     await Task.Delay(20000);
                 }
+                catch (InvalidResponseException)
+                {
+                    _session.EventDispatcher.Send(new ErrorEvent
+                    {
+                        Message = _session.Translation.GetTranslation(TranslationString.NianticServerUnstable)
+                    });
+                    await Task.Delay(1000);
+                }
             }
 
             return ApiOperation.Retry;
