@@ -103,7 +103,9 @@ namespace PoGo.PokeMobBot.Logic
 
         //transfer
         bool TransferDuplicatePokemon { get; }
+        bool TransferLowStatPokemon { get; }
         bool PrioritizeIvOverCp { get; }
+        bool PrioritizeIvAndCp { get; }
         int KeepMinCp { get; }
         float KeepMinIvPercentage { get; }
         int KeepMinDuplicatePokemon { get; }
