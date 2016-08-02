@@ -117,7 +117,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             int totalBerryCount = razz + bluk + nanab + pinap + wepar;
             if (totalBerryCount > session.LogicSettings.TotalAmountOfBerriesToKeep)
             {
-                diff = totalBerryCount - session.LogicSettings.TotalAmountOfPotionsToKeep;
+                diff = totalBerryCount - session.LogicSettings.TotalAmountOfBerriesToKeep;
                 if (diff > 0)
                 {
                     await RemoveItems(razz, ItemId.ItemRazzBerry, cancellationToken, session);
