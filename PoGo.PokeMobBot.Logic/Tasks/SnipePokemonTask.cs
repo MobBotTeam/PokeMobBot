@@ -348,8 +348,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         private static ScanResult SnipeScanForPokemon(ISession session, Location location)
         {
-            if (session.LogicSettings.CatchPokemon)
-            {
                 var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
                 var offset = session.LogicSettings.SnipingScanOffset;
@@ -427,13 +425,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 }
 
                 return scanResult;
-            }
         }
 
         private static ScanResult PokeSniperScanForPokemon(ISession session, Location location)
         {
-            if (session.LogicSettings.CatchPokemon)
-            {
                 var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
                 var offset = session.LogicSettings.SnipingScanOffset;
@@ -481,7 +476,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
                 }
                 return null;
-            }
         }
 
         public static async Task Start(Session session, CancellationToken cancellationToken)
