@@ -12,25 +12,28 @@ namespace PoGo.PokeMobBot.Logic.State
     {
         public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
         {
-            if (session.LogicSettings.EvolveAllPokemonAboveIv || session.LogicSettings.EvolveAllPokemonWithEnoughCandy)
+            if (!session.LogicSettings.DoNotCatchPokemon)
             {
-                await EvolvePokemonTask.Execute(session, cancellationToken);
-            }
+                if (session.LogicSettings.EvolveAllPokemonAboveIv || session.LogicSettings.EvolveAllPokemonWithEnoughCandy)
+                {
+                    await EvolvePokemonTask.Execute(session, cancellationToken);
+                }
 
-            if (session.LogicSettings.TransferDuplicatePokemon)
-            {
-                await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
-            }
-            if (session.LogicSettings.AutomaticallyLevelUpPokemon)
-            {
-                await LevelUpPokemonTask.Execute(session, cancellationToken);
-            }
-            if (session.LogicSettings.RenamePokemon)
-            {
-                await RenamePokemonTask.Execute(session, cancellationToken);
-            }
+                if (session.LogicSettings.TransferDuplicatePokemon)
+                {
+                    await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                }
+                if (session.LogicSettings.AutomaticallyLevelUpPokemon)
+                {
+                    await LevelUpPokemonTask.Execute(session, cancellationToken);
+                }
+                if (session.LogicSettings.RenamePokemon)
+                {
+                    await RenamePokemonTask.Execute(session, cancellationToken);
+                }
 
-            await RecycleItemsTask.Execute(session, cancellationToken);
+                await RecycleItemsTask.Execute(session, cancellationToken);
+            }
 
             if (session.LogicSettings.UseEggIncubators)
             {

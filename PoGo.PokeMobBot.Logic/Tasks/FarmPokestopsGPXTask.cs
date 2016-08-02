@@ -81,7 +81,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                             if (pokeStop.LureInfo != null)
                             {
-                                await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                                if (!session.LogicSettings.DoNotCatchPokemon)
+                                {
+                                    await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                                }
                             }
 
                             var fortSearch =
@@ -112,25 +115,29 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 DateTime.Now.AddMilliseconds(Math.Min(session.LogicSettings.DelayBetweenPlayerActions,
                                     3000));
 
-                            await RecycleItemsTask.Execute(session, cancellationToken);
+                            if (!session.LogicSettings.DoNotCatchPokemon)
+                            {
+                                await RecycleItemsTask.Execute(session, cancellationToken);
+                            }
 
-                            if (session.LogicSettings.SnipeAtPokestops || session.LogicSettings.UseSnipeLocationServer)
+                            if (session.LogicSettings.SnipeAtPokestops || session.LogicSettings.UseSnipeLocationServer ||
+                                !session.LogicSettings.DoNotCatchPokemon)
                             {
                                 await SnipePokemonTask.Execute(session, cancellationToken);
                             }
 
                             if (session.LogicSettings.EvolveAllPokemonWithEnoughCandy ||
-                                session.LogicSettings.EvolveAllPokemonAboveIv)
+                                session.LogicSettings.EvolveAllPokemonAboveIv && !session.LogicSettings.DoNotCatchPokemon)
                             {
                                 await EvolvePokemonTask.Execute(session, cancellationToken);
                             }
 
-                            if (session.LogicSettings.TransferDuplicatePokemon)
+                            if (session.LogicSettings.TransferDuplicatePokemon || !session.LogicSettings.DoNotCatchPokemon)
                             {
                                 await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
                             }
 
-                            if (session.LogicSettings.RenamePokemon)
+                            if (session.LogicSettings.RenamePokemon || !session.LogicSettings.DoNotCatchPokemon)
                             {
                                 await RenamePokemonTask.Execute(session, cancellationToken);
                             }
@@ -141,9 +148,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             session.LogicSettings.WalkingSpeedInKilometerPerHour,
                             async () =>
                             {
-                                await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
-                                //Catch Incense Pokemon
-                                await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                                if (!session.LogicSettings.DoNotCatchPokemon)
+                                {
+                                    await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                                    //Catch Incense Pokemon
+                                    await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                                }
                                 await UseNearbyPokestopsTask.Execute(session, cancellationToken);
                                 return true;
                             },

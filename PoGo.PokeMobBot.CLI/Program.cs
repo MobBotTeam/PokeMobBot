@@ -66,23 +66,6 @@ namespace PoGo.PokeMobBot.CLI
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
             session.Client.ApiFailure = new ApiFailureStrategy(session);
 
-
-            /*SimpleSession session = new SimpleSession
-            {
-                _client = new PokemonGo.RocketAPI.Client(new ClientSettings(settings)),
-                _dispatcher = new EventDispatcher(),
-                _localizer = new Localizer()
-            };
-
-            BotService service = new BotService
-            {
-                _session = session,
-                _loginTask = new Login(session)
-            };
-
-            service.Run();
-            */
-
             var machine = new StateMachine();
             var stats = new Statistics();
             stats.DirtyEvent +=
@@ -112,7 +95,7 @@ namespace PoGo.PokeMobBot.CLI
 #else
             machine.AsyncStart(new VersionCheckState(), session);
 #endif
-            if (session.LogicSettings.UseSnipeLocationServer)
+            if (session.LogicSettings.UseSnipeLocationServer && !session.LogicSettings.DoNotCatchPokemon)
                 SnipePokemonTask.AsyncStart(session);
 
             _quitEvent.WaitOne();
