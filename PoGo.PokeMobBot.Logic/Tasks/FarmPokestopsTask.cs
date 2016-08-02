@@ -14,6 +14,7 @@ using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI.Extensions;
 using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
+using PoGo.PokeMobBot.Logic;
 
 #endregion
 
@@ -22,8 +23,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     public static class FarmPokestopsTask
     {
         public static int TimesZeroXPawarded;
-        private static GeoCoordinate targetLocation;
-        private static int maxDistance;
+
 
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
@@ -38,10 +38,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 distanceFromStart > session.LogicSettings.MaxTravelDistanceInMeters)
             {
                 session.EventDispatcher.Send(new WarnEvent()
-                 {
-                     Message = session.Translation.GetTranslation(TranslationString.FarmPokestopsOutsideRadius, distanceFromStart)
-                 });
-
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.FarmPokestopsOutsideRadius, distanceFromStart)
+                });
                 await Task.Delay(1000, cancellationToken);
 
                 await session.Navigation.HumanLikeWalking(
@@ -82,54 +81,25 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                 session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance,Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
-                if (session.LogicSettings.Teleport)
+
+
+                if (session.LogicSettings.Teleport && distance > 40)
                 {
-                    if (session.LogicSettings.SaferTeleport)
-                    {
-
-                        var maxDistance = session.LogicSettings.MaxTeleportDistance;
-                        var targetLocation = new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude);
-                        var sourceLocation = new GeoCoordinate(session.Client.CurrentLatitude, session.Client.CurrentLongitude);
-                        double currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
-                        var nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
-                        var waypoint = LocationUtils.CreateWaypoint(sourceLocation, maxDistance, nextWaypointBearing);
-
-
-                        while (currentDistanceToTarget > maxDistance)
-                        {
-                             targetLocation = new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude);
-                             sourceLocation = new GeoCoordinate(session.Client.CurrentLatitude, session.Client.CurrentLongitude);
-                             currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
-                            nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
-                            waypoint = LocationUtils.CreateWaypoint(sourceLocation, maxDistance, nextWaypointBearing);
-
-
-
-                            var requestSendDateTime = DateTime.Now;
-                            var result =
-                               
-                               await session.Client.Player.UpdatePlayerLocation(
-                        waypoint.Latitude,
-                        waypoint.Longitude,
-                        session.Client.Settings.DefaultAltitude);
-                            currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
-                            //Logging.Logger.Write("We are teleporting " + maxDistance + " meters closer to the target. We are now " + currentDistanceToTarget + " away");
-
-
-                        }
-                        await session.Client.Player.UpdatePlayerLocation(
+               
+                  
+                        distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                        session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
+                    
+                    await session.Client.Player.UpdatePlayerLocation(
                                       pokeStop.Latitude,
                                       pokeStop.Longitude,
                                       session.Client.Settings.DefaultAltitude);
-                    }
 
-                    targetLocation = new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude);
-                    await session.Client.Player.UpdatePlayerLocation(
-                        targetLocation.Latitude,
-                        targetLocation.Longitude,
-                        session.Client.Settings.DefaultAltitude);
+                   // Logging.Logger.Write("Debug: "+TeleSetting.teleWaiter(distance));
+                    int delay = (int) TeleSettings.teleWaiter(distance);
+                    await Task.Delay(15000);
                     
-                  
+
                 }
 
                 else
@@ -142,6 +112,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
                         //Catch Incense Pokemon
                         await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                        await Task.Delay(1);
                         return true;
                     }, cancellationToken);
                 }
@@ -151,6 +122,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var fortTry = 0; //Current check
                 const int retryNumber = 50; //How many times it needs to check to clear softban
                 const int zeroCheck = 5; //How many times it checks fort before it thinks it's softban
+
                 do
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -164,24 +136,24 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                         if (timesZeroXPawarded > zeroCheck)
                         {
-                            if ((int) fortSearch.CooldownCompleteTimestampMs != 0)
+
+                            if ((int)fortSearch.CooldownCompleteTimestampMs != 0)
                             {
                                 break;
-                                    // Check if successfully looted, if so program can continue as this was "false alarm".
+                                // Check if successfully looted, if so program can continue as this was "false alarm".
                             }
 
                             fortTry += 1;
-
                             session.EventDispatcher.Send(new FortFailedEvent
                             {
                                 Name = fortInfo.Name,
                                 Try = fortTry,
                                 Max = retryNumber - zeroCheck
                             });
-                            if(session.LogicSettings.Teleport)
+                            if (session.LogicSettings.Teleport)
                                 await Task.Delay(session.LogicSettings.DelaySoftbanRetry);
                             else
-                                await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
+                                await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 0);
                         }
                     }
                     else
@@ -197,17 +169,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Longitude = pokeStop.Longitude,
                             InventoryFull = fortSearch.Result == FortSearchResponse.Types.Result.InventoryFull,
                             Description = fortInfo.Description,
-                            url = fortInfo.ImageUrls[0]                            
+                            url = fortInfo.ImageUrls[0]
                         });
-
+                        if (fortTry > 1) {
+                           int distance2 = (int) distance;
+                            session.TeleSetting.teleDelayer(distance2);
+                        }
                         break; //Continue with program as loot was succesfull.
                     }
                 } while (fortTry < retryNumber - zeroCheck);
-                    //Stop trying if softban is cleaned earlier or if 40 times fort looting failed.
+                //Stop trying if softban is cleaned earlier or if 40 times fort looting failed.
+                
 
+                if (session.LogicSettings.Teleport)
 
-                if(session.LogicSettings.Teleport)
-                    await Task.Delay(session.LogicSettings.DelayPokestop);
+                    await Task.Delay(session.LogicSettings.DelaySoftbanRetry);
                 else
                     await Task.Delay(1000, cancellationToken);
 
@@ -217,16 +193,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (pokeStop.LureInfo != null)
                 {
-                    await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                   await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
                 }
                 if(session.LogicSettings.Teleport)
                     await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
 
-                await eggWalker.ApplyDistance(distance, cancellationToken);
 
                 if (++stopsHit%5 == 0) //TODO: OR item/pokemon bag is full
                 {
                     stopsHit = 0;
+
+                    await eggWalker.ApplyDistance(distance, cancellationToken);
                     // need updated stardust information for upgrading, so refresh your profile now
                     await DownloadProfile(session);
 
@@ -290,7 +267,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private static async Task DownloadProfile(ISession session)
         {
             session.Profile = await session.Client.Player.GetPlayer();
-            session.EventDispatcher.Send(new ProfileEvent { Profile = session.Profile });
         }
     }
 }

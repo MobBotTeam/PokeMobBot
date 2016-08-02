@@ -61,7 +61,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                     session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
-                await Task.Delay(distance > 100 ? 3000 : 500, cancellationToken);
+                await Task.Delay(distance > 100 ? 1 : 500, cancellationToken);
 
                 var encounter =
                     await session.Client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId);

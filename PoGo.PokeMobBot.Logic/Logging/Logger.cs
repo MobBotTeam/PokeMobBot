@@ -26,6 +26,19 @@ namespace PoGo.PokeMobBot.Logic.Logging
                 log.Flush();
             }
         }
+        internal static void BanLog(string v)
+        {
+            // maybe do a new log rather than appending?
+            using (
+                var log =
+                    File.AppendText(Path.Combine(_path,
+                        $"SoftBan-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt"))
+                )
+            {
+                log.WriteLine(v);
+                log.Flush();
+            }
+        }
 
         /// <summary>
         ///     Set the logger. All future requests to <see cref="Write(string,LogLevel,ConsoleColor)" /> will use that logger, any
@@ -64,6 +77,8 @@ namespace PoGo.PokeMobBot.Logic.Logging
             _logger.Write(message, level, color);
             Log(string.Concat($"[{DateTime.Now.ToString("HH:mm:ss")}] ", message));
         }
+
+   
     }
 
     public enum LogLevel

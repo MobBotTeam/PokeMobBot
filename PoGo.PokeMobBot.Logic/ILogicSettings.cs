@@ -10,7 +10,6 @@ namespace PoGo.PokeMobBot.Logic
 {
     public class Location
     {
-
         public Location()
         {
         }
@@ -71,8 +70,7 @@ namespace PoGo.PokeMobBot.Logic
         
         //coords and movement
         bool Teleport { get; }
-        bool SaferTeleport { get; }
-        int MaxTeleportDistance { get; }
+
         double WalkingSpeedInKilometerPerHour { get; }
         int MaxTravelDistanceInMeters { get; }
         bool UseGpxPathing { get; }
@@ -158,7 +156,7 @@ namespace PoGo.PokeMobBot.Logic
         bool SnipeAtPokestops { get; }
         bool SnipeIgnoreUnknownIv { get; }
         bool UseSnipeLocationServer { get; }
-        bool UseSnipeOnlineLocationServer { get; }
+        bool UsePokeSnipersLocationServer { get; }
         bool UseTransferIvForSnipe { get; }
         double SnipingScanOffset { get; }
         int MinDelayBetweenSnipes { get; }
@@ -172,7 +170,8 @@ namespace PoGo.PokeMobBot.Logic
         string GeneralConfigPath { get; }
         string ProfileConfigPath { get; }
         string ProfilePath { get; }
-
+        
+  
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
 
         ICollection<PokemonId> PokemonsToEvolve { get; }
@@ -187,5 +186,4 @@ namespace PoGo.PokeMobBot.Logic
         SnipeSettings PokemonToSnipe { get; }
 
     }
-
 }

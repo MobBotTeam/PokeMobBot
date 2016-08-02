@@ -17,6 +17,7 @@ namespace PoGo.PokeMobBot.Logic.State
         GetPlayerResponse Profile { get; set; }
         Navigation Navigation { get; }
         ILogicSettings LogicSettings { get; }
+        TeleDelay TeleSetting { get; set; }
         ITranslation Translation { get; }
         IEventDispatcher EventDispatcher { get; }
     }
@@ -43,6 +44,8 @@ namespace PoGo.PokeMobBot.Logic.State
         public Navigation Navigation { get; private set; }
 
         public ILogicSettings LogicSettings { get; }
+
+        public TeleDelay TeleSetting { get; set; }
 
         public ITranslation Translation { get; }
 

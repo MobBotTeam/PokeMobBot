@@ -10,7 +10,6 @@ using GeoCoordinatePortable;
 using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI;
 using POGOProtos.Networking.Responses;
-using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
@@ -98,8 +97,6 @@ namespace PoGo.PokeMobBot.Logic
             return result;
         }
 
-  
-
         public async Task<PlayerUpdateResponse> HumanPathWalking(GpxReader.Trkpt trk,
             double walkingSpeedInKilometersPerHour, Func<Task<bool>> functionExecutedWhileWalking,
             CancellationToken cancellationToken)
@@ -172,51 +169,16 @@ namespace PoGo.PokeMobBot.Logic
             return result;
         }
 
-        public async Task Teleport(GeoCoordinate targetLocation, ISession session)
+        public async Task Teleport(GeoCoordinate targetLocation)
         {
-            //Safer Teleporting
-            if (session.LogicSettings.SaferTeleport)
-            {
-
-                var maxDistance = session.LogicSettings.MaxTeleportDistance;
-                var sourceLocation = new GeoCoordinate(_client.CurrentLatitude, _client.CurrentLongitude);
-                double currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
-                while (currentDistanceToTarget > maxDistance)
-                {
-                    var nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
-
-                    var waypoint = LocationUtils.CreateWaypoint(sourceLocation, maxDistance, nextWaypointBearing);
-
-
-
-                    var requestSendDateTime = DateTime.Now;
-                    var result =
-                        await
-                            _client.Player.UpdatePlayerLocation(waypoint.Latitude, waypoint.Longitude,
-                                _client.Settings.DefaultAltitude);
-                    currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
-                    Logging.Logger.Write("We are teleporting " + maxDistance + " meters closer to the target. We are now " + currentDistanceToTarget + " away");
-
-
-                    UpdatePositionEvent?.Invoke(waypoint.Latitude, waypoint.Longitude);
-                    result =
-                        await
-                            _client.Player.UpdatePlayerLocation(waypoint.Latitude, waypoint.Longitude,
-                                _client.Settings.DefaultAltitude);
-                }
-                return;
-            }
             await _client.Player.UpdatePlayerLocation(
-                targetLocation.Latitude,
+                targetLocation.Latitude, 
                 targetLocation.Longitude,
                 _client.Settings.DefaultAltitude);
 
             UpdatePositionEvent?.Invoke(targetLocation.Latitude, targetLocation.Longitude);
-            return;
         }
 
         public event UpdatePositionDelegate UpdatePositionEvent;
-
-
     }
 }

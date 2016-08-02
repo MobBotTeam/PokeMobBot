@@ -20,7 +20,7 @@ namespace PoGo.PokeMobBot.Logic
         [JsonIgnore]
         private string _filePath;
         public AuthType AuthType;
-        public string GoogleRefreshToken;
+        public string GoogleRefreshToken = "";
         public string GoogleUsername;
         public string GooglePassword;
         public string PtcUsername;
@@ -112,8 +112,6 @@ namespace PoGo.PokeMobBot.Logic
 
         //coords and movement
         public bool Teleport = false;
-        public bool SaferTeleport = false;
-        public int MaxTeleportDistance = 35;
         public double DefaultLatitude = 40.785091;
         public double DefaultLongitude = -73.968285;
         public double DefaultAltitude = 10;
@@ -208,10 +206,10 @@ namespace PoGo.PokeMobBot.Logic
         public int MinPokeballsToSnipe = 20;
         public int MinPokeballsWhileSnipe = 0;
         public bool UseSnipeLocationServer = false;
-        public bool UseSnipeOnlineLocationServer = false;
+        public bool UsePokeSnipersLocationServer = false;
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
-        public int SnipeRequestTimeoutSeconds = 10;
+        public int SnipeRequestTimeoutSeconds = 5;
 
         public List<KeyValuePair<ItemId, int>> ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>
         {
@@ -225,11 +223,6 @@ namespace PoGo.PokeMobBot.Logic
             new KeyValuePair<ItemId, int>(ItemId.ItemXAttack, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemXDefense, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemXMiracle, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemRazzBerry, 50),
-            new KeyValuePair<ItemId, int>(ItemId.ItemBlukBerry, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemNanabBerry, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemWeparBerry, 30),
-            new KeyValuePair<ItemId, int>(ItemId.ItemPinapBerry, 30),
             new KeyValuePair<ItemId, int>(ItemId.ItemSpecialCamera, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasicUnlimited, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasic, 100),
@@ -681,14 +674,13 @@ namespace PoGo.PokeMobBot.Logic
         public bool StartupWelcomeDelay => _settings.StartupWelcomeDelay;
         public bool SnipeAtPokestops => _settings.SnipeAtPokestops;
         public int MinPokeballsToSnipe => _settings.MinPokeballsToSnipe;
-        public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
         public int MinPokeballsWhileSnipe => _settings.MinPokeballsWhileSnipe;
         public int MaxPokeballsPerPokemon => _settings.MaxPokeballsPerPokemon;
         public SnipeSettings PokemonToSnipe => _settings.PokemonToSnipe;
         public string SnipeLocationServer => _settings.SnipeLocationServer;
         public int SnipeLocationServerPort => _settings.SnipeLocationServerPort;
         public bool UseSnipeLocationServer => _settings.UseSnipeLocationServer;
-        public bool UseSnipeOnlineLocationServer => _settings.UseSnipeOnlineLocationServer;
+        public bool UsePokeSnipersLocationServer => _settings.UsePokeSnipersLocationServer;
         public bool UseTransferIvForSnipe => _settings.UseTransferIvForSnipe;
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
@@ -698,8 +690,6 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public bool Teleport => _settings.Teleport;
-        public bool SaferTeleport => _settings.SaferTeleport;
-        public int MaxTeleportDistance => _settings.MaxTeleportDistance;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
         public int DelayPositionCheckState => _settings.DelayPositionCheckState;
@@ -724,4 +714,310 @@ namespace PoGo.PokeMobBot.Logic
         public double UseBerryBelowCatchProbability => _settings.UseBerryBelowCatchProbability;
 
     }
+    public class TeleSettings
+    {
+        [JsonIgnore]
+        public string GeneralConfigPath;
+        [JsonIgnore]
+        public string ProfilePath;
+        [JsonIgnore]
+        public string ProfileConfigPath;
+
+        //bot start
+        public int waitTime50 = 0;
+        public int waitTime100 = 0;
+        public int waitTime200 = 0;
+        public int waitTime300 = 0;
+        public int waitTime400 = 0;
+        public int waitTime500 = 0;
+        public int waitTime600 = 0;
+        public int waitTime700 = 0;
+        public int waitTime800 = 0;
+        public int waitTime900 = 0;
+        public int waitTime1000 = 0;
+        public int waitTime1250 = 0;
+        public int waitTime1500 = 0;
+        public int waitTime2000 = 0;
+
+        public TeleSettings Default => new TeleSettings();
+
+
+        public TeleSettings Load(string path)
+        {
+            TeleSettings settings;
+            var profilePath = Path.Combine(Directory.GetCurrentDirectory(), path);
+            var profileConfigPath = Path.Combine(profilePath, "config");
+            var configFile = Path.Combine(profileConfigPath, "teleai.json");
+
+            if (File.Exists(configFile))
+            {
+                try
+                {
+                    //if the file exists, load the settings
+                    var input = File.ReadAllText(configFile);
+
+                    var jsonSettings = new JsonSerializerSettings();
+                    jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                    jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
+                    jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
+
+                    settings = JsonConvert.DeserializeObject<TeleSettings>(input, jsonSettings);
+                }
+                catch (JsonReaderException exception)
+                {
+                    Logger.Write("JSON Exception: " + exception.Message, LogLevel.Error);
+                    return null;
+                }
+            }
+            else
+            {
+                settings = new TeleSettings();
+            }
+
+
+
+            settings.ProfilePath = profilePath;
+            settings.ProfileConfigPath = profileConfigPath;
+            settings.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
+
+            var firstRun = !File.Exists(configFile);
+
+            settings.Save(configFile);
+
+            if (firstRun)
+            {
+                return null;
+            }
+
+            return settings;
+        }
+
+        public void Save(string fullPath)
+        {
+            var output = JsonConvert.SerializeObject(this, Formatting.Indented,
+                new StringEnumConverter { CamelCaseText = true });
+
+            var folder = Path.GetDirectoryName(fullPath);
+            if (folder != null && !Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            File.WriteAllText(fullPath, output);
+        }
+
+        internal static int teleWaiter(double distance)
+        {
+           return TeleSettings.teleWaiter(distance);
+        }
+    }
+    public class TeleLogicSettings : ITeleSettings
+    {
+        public TeleSettings _settings;
+
+
+        public TeleLogicSettings(TeleSettings settings)
+        {
+            _settings = settings;
+        }
+
+        public string ProfilePath => _settings.ProfilePath;
+        public int waitTime50 => _settings.waitTime50;
+        public int waitTime100 => _settings.waitTime100;
+        public int waitTime200 => _settings.waitTime200;
+        public int waitTime300 => _settings.waitTime300;
+        public int waitTime400 => _settings.waitTime400;
+        public int waitTime500 => _settings.waitTime500;
+        public int waitTime600 => _settings.waitTime600;
+        public int waitTime700 => _settings.waitTime700;
+        public int waitTime800 => _settings.waitTime800;
+        public int waitTime900 => _settings.waitTime900;
+        public int waitTime1000 => _settings.waitTime1000;
+        public int waitTime1250 => _settings.waitTime1250;
+        public int waitTime1500 => _settings.waitTime1500;
+        public int waitTime2000 => _settings.waitTime2000;
+
+        int ITeleSettings.waitTime50
+        {
+            get
+            {
+               return _settings.waitTime50;
+            }
+
+            set
+            {
+                _settings.waitTime50 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime100
+        {
+            get
+            {
+                return _settings.waitTime100;
+            }
+
+            set
+            {
+                _settings.waitTime100 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime200
+        {
+            get
+            {
+                return _settings.waitTime200;
+            }
+
+            set
+            {
+                _settings.waitTime200 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime300
+        {
+            get
+            {
+                return _settings.waitTime300;
+            }
+
+            set
+            {
+                _settings.waitTime300 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime400
+        {
+            get
+            {
+                return _settings.waitTime400;
+            }
+
+            set
+            {
+                _settings.waitTime400 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime500
+        {
+            get
+            {
+                return _settings.waitTime500;
+            }
+
+            set
+            {
+                _settings.waitTime500 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime600
+        {
+            get
+            {
+                return _settings.waitTime600;
+            }
+
+            set
+            {
+                _settings.waitTime600 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime700
+        {
+            get
+            {
+                return _settings.waitTime700;
+            }
+
+            set
+            {
+                _settings.waitTime700 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime800
+        {
+            get
+            {
+                return _settings.waitTime800;
+            }
+
+            set
+            {
+                _settings.waitTime800 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime900
+        {
+            get
+            {
+                return _settings.waitTime900;
+            }
+
+            set
+            {
+                _settings.waitTime900 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime1000
+        {
+            get
+            {
+                return _settings.waitTime1000;
+            }
+
+            set
+            {
+                _settings.waitTime1000 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime1250
+        {
+            get
+            {
+                return _settings.waitTime1250;
+            }
+
+            set
+            {
+                _settings.waitTime1250 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime1500
+        {
+            get
+            {
+                return _settings.waitTime1500;
+            }
+
+            set
+            {
+                _settings.waitTime1500 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime2000
+        {
+            get
+            {
+                return _settings.waitTime2000;
+            }
+
+            set
+            {
+                _settings.waitTime2000 = value;
+            }
+        }
+    }
 }
+
