@@ -59,8 +59,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 });
             }
 
-            session.EventDispatcher.Send(new PokeStopListEvent {Forts = pokestopList});
-
             while (pokestopList.Any())
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -221,8 +219,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             var mapObjects = await session.Client.Map.GetMapObjects();
 
+            var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts);
+
+            session.EventDispatcher.Send(new PokeStopListEvent { Forts = pokeStops.ToList() });
+
             // Wasn't sure how to make this pretty. Edit as needed.
-            var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts)
+            pokeStops = pokeStops
                 .Where(
                     i =>
                         i.Type == FortType.Checkpoint &&
