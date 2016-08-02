@@ -87,7 +87,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.HumanizeThrows)
                 {
                     normalizedRecticleSize =
-Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
+                        -Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax) *
                         1.85 + 0.1; // 0.1..1.95
                     spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
                 }
