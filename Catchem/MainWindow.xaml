@@ -191,7 +191,14 @@
                         <FlowDocument>
                         </FlowDocument>
                     </RichTextBox>
-                    <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Height="3" Grid.Row="1" VerticalAlignment="Top" Width="636" ResizeDirection="Rows"/>
+                    <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Stretch" Height="3" Grid.Row="1" VerticalAlignment="Top" ResizeDirection="Rows">
+                        <GridSplitter.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FFADFB80" Offset="0"/>
+                                <GradientStop Color="#FF33D47C" Offset="1"/>
+                            </LinearGradientBrush>
+                        </GridSplitter.Background>
+                    </GridSplitter>
                     <WindowsPresentation:GMapControl x:Name="pokeMap" Margin="0,3,0,0" Grid.Row="1" MouseDoubleClick="pokeMap_MouseDoubleClick"/>
                 </Grid>
             </TabItem>
