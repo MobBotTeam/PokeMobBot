@@ -110,20 +110,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private static async Task OptimizedRecycleBerries(ISession session, CancellationToken cancellationToken)
         {
             var razz = await session.Inventory.GetItemAmountByType(ItemId.ItemRazzBerry);
-            var bluk = await session.Inventory.GetItemAmountByType(ItemId.ItemBlukBerry);
+            /*var bluk = await session.Inventory.GetItemAmountByType(ItemId.ItemBlukBerry);
             var nanab = await session.Inventory.GetItemAmountByType(ItemId.ItemNanabBerry);
             var pinap = await session.Inventory.GetItemAmountByType(ItemId.ItemPinapBerry);
-            var wepar = await session.Inventory.GetItemAmountByType(ItemId.ItemWeparBerry);
+            var wepar = await session.Inventory.GetItemAmountByType(ItemId.ItemWeparBerry); */
 
-            int totalBerryCount = razz + bluk + nanab + pinap + wepar;
+            int totalBerryCount = razz; //+ bluk + nanab + pinap + wepar;
             if (totalBerryCount > session.LogicSettings.TotalAmountOfBerriesToKeep)
             {
                 diff = totalBerryCount - session.LogicSettings.TotalAmountOfBerriesToKeep;
                 if (diff > 0)
                 {
-                    await RemoveItems(razz, ItemId.ItemRazzBerry, cancellationToken, session);
+                    await RemoveItems(razz - diff, ItemId.ItemRazzBerry, cancellationToken, session);
                 }
-
+                //Those berries are not implemented yet
+                /* 
                 if (diff > 0)
                 {
                     await RemoveItems(bluk, ItemId.ItemBlukBerry, cancellationToken, session);
@@ -142,7 +143,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (diff > 0)
                 {
                     await RemoveItems(wepar, ItemId.ItemWeparBerry, cancellationToken, session);
-                }
+                } */
             }
         }
 
