@@ -241,7 +241,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private static async Task DownloadProfile(ISession session)
         {
             session.Profile = await session.Client.Player.GetPlayer();
-            session.EventDispatcher.Send(new ProfileEvent { Profile = session.Profile });
         }
     }
 }
