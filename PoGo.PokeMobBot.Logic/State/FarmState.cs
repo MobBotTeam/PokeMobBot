@@ -64,7 +64,7 @@ namespace PoGo.PokeMobBot.Logic.State
                     Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 20)
                 });
                 await Task.Delay(20000, cancellationToken);
-                return this;
+                return new LoginState();
             }
             catch (AccessTokenExpiredException)
             {
@@ -77,7 +77,7 @@ namespace PoGo.PokeMobBot.Logic.State
                     Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 2)
                 });
                 await Task.Delay(2000, cancellationToken);
-                return this;
+                return new LoginState();
             }
             catch (InvalidResponseException)
             {
