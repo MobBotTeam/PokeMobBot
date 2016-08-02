@@ -42,7 +42,7 @@ namespace PoGo.PokeMobBot.CLI
                 config.Certificate = new CertificateConfig
                 {
                     FilePath = certificate,
-                    Password = "necro"
+                    Password = "mobbot"
                 };
             }
 
