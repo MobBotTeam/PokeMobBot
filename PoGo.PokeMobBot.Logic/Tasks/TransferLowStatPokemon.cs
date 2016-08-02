@@ -37,9 +37,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if ((pokemon.Cp >= session.LogicSettings.KeepMinCp) ||  //dont toss if its over min CP
-                    (PokemonInfo.CalculatePokemonPerfection(pokemon) >= session.LogicSettings.KeepMinIvPercentage && session.LogicSettings.PrioritizeIvOverCp) ||   //dont toss if its over min IV
-                    pokemon.Favorite == 1)  //dont toss if its a favorite
+                if (pokemon.Cp >= session.LogicSettings.KeepMinCp || pokemon.Favorite == 1)  //dont toss if above minimum CP or if its a favorite
+                {
+                    continue;
+                }
+                if  (PokemonInfo.CalculatePokemonPerfection(pokemon) >= session.LogicSettings.KeepMinIvPercentage && session.LogicSettings.PrioritizeIvOverCp) //dont toss if its over min IV
                 {
                     continue;
                 }
