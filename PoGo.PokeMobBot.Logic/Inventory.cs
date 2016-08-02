@@ -255,27 +255,36 @@ namespace PoGo.PokeMobBot.Logic
             var myItems = (await GetItems()).ToList();
 
             var currentAmountOfPokeballs = await GetItemAmountByType(ItemId.ItemPokeBall);
-            var currentAmountOfGreatballs = await GetItemAmountByType(ItemId.ItemGreatBall);
-            var currentAmountOfUltraballs = await GetItemAmountByType(ItemId.ItemUltraBall);
-            var currentAmountOfMasterballs = await GetItemAmountByType(ItemId.ItemMasterBall);
-
-            session.EventDispatcher.Send(new NoticeEvent()
-            {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
-                    currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
-                    currentAmountOfMasterballs)
-            });
-
+            var currentAmountOfRazzBerry = await GetItemAmountByType(ItemId.ItemRazzBerry);
             var currentAmountOfPotions = await GetItemAmountByType(ItemId.ItemPotion);
+            var currentAmountOfIncense = await GetItemAmountByType(ItemId.ItemIncenseOrdinary);
+            var currentAmountofRevives = await GetItemAmountByType(ItemId.ItemRevive);
+            var currentAmountOfGreatballs = await GetItemAmountByType(ItemId.ItemGreatBall);
+            var currentAmountOfBlukBerry = await GetItemAmountByType(ItemId.ItemBlukBerry);
             var currentAmountOfSuperPotions = await GetItemAmountByType(ItemId.ItemSuperPotion);
+            var currentAmountOfSpicyIncense = await GetItemAmountByType(ItemId.ItemIncenseSpicy);
+            var currentAmountofMaxRevives = await GetItemAmountByType(ItemId.ItemMaxRevive);
+            var currentAmountOfUltraballs = await GetItemAmountByType(ItemId.ItemUltraBall);
+            var currentAmountOfNanabBerry = await GetItemAmountByType(ItemId.ItemNanabBerry);
             var currentAmountOfHyperPotions = await GetItemAmountByType(ItemId.ItemHyperPotion);
-            var currentAmountOfMaxPotions= await GetItemAmountByType(ItemId.ItemMaxPotion);
+            var currentAmountOfCoolIncense = await GetItemAmountByType(ItemId.ItemIncenseCool);
+            var currentAmountofLuckyEggs = await GetItemAmountByType(ItemId.ItemLuckyEgg);
+            var currentAmountOfMasterballs = await GetItemAmountByType(ItemId.ItemMasterBall);
+            var currentAmountOfWeparBerry = await GetItemAmountByType(ItemId.ItemWeparBerry);
+            var currentAmountOfMaxPotions = await GetItemAmountByType(ItemId.ItemMaxPotion);
+            var currentAmountOfFloralIncense = await GetItemAmountByType(ItemId.ItemIncenseFloral);
+            var currentAmountofLureModule = await GetItemAmountByType(ItemId.ItemUnknown);
+            var currentAmountOfPinapBerry = await GetItemAmountByType(ItemId.ItemPinapBerry);
+            var currentAmountOfTroyThing = await GetItemAmountByType(ItemId.ItemTroyDisk);
 
             session.EventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentPotionInv,
-                    currentAmountOfPotions, currentAmountOfSuperPotions, currentAmountOfHyperPotions,
-                    currentAmountOfMaxPotions)
+                Message = session.Translation.GetTranslation(TranslationString.InvItemsTier,
+                    currentAmountOfPokeballs, currentAmountOfRazzBerry, currentAmountOfPotions, currentAmountOfIncense, currentAmountofRevives, 
+                    currentAmountOfGreatballs, currentAmountOfBlukBerry, currentAmountOfSuperPotions, currentAmountOfSpicyIncense, currentAmountofMaxRevives,
+                    currentAmountOfUltraballs, currentAmountOfNanabBerry, currentAmountOfHyperPotions, currentAmountOfCoolIncense, currentAmountofLuckyEggs,
+                    currentAmountOfMasterballs, currentAmountOfWeparBerry, currentAmountOfMaxPotions, currentAmountOfFloralIncense, currentAmountofLureModule,
+                    currentAmountOfPinapBerry, currentAmountOfTroyThing)
             });
 
             var otherItemsToRecycle = myItems
