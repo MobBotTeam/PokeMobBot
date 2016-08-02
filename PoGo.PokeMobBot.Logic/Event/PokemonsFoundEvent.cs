@@ -12,4 +12,9 @@ namespace PoGo.PokeMobBot.Logic.Event
     {
         public IEnumerable<MapPokemon> Pokemons;
     }
+
+    public class PokemonsWildFoundEvent : IEvent
+    {
+        public IEnumerable<WildPokemon> Pokemons;
+    }
 }

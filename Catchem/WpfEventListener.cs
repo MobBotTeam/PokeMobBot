@@ -84,6 +84,10 @@ namespace Catchem
         {
             Logger.PushToUi("pm", session, new object[] { evt.Pokemons });
         }
+        public void HandleEvent(PokemonsWildFoundEvent evt, ISession session)
+        {
+            Logger.PushToUi("pmw", session, new object[] { evt.Pokemons });
+        }        
 
         public void HandleEvent(PokemonDisappearEvent evt, ISession session)
         {

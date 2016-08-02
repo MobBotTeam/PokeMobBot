@@ -152,6 +152,9 @@ namespace Catchem
                 case "pm":
                     PushNewPokemons(session, (IEnumerable<MapPokemon>)objData[0]);
                     break;
+                case "pmw":
+                    PushNewWildPokemons(session, (IEnumerable<WildPokemon>)objData[0]);
+                    break;
                 case "pm_rm":
                     PushRemovePokemon(session, (MapPokemon)objData[0]);
                     break;
@@ -260,6 +263,21 @@ namespace Catchem
                     if (!tBot.mapMarkers.ContainsKey(pokemon.EncounterId.ToString()) && tBot.MarkersQueue.Count(x => x.uid == pokemon.EncounterId.ToString()) == 0)
                     {
                         NewMapObject nMapObj = new NewMapObject("pm", pokemon.PokemonId.ToString(), pokemon.Latitude, pokemon.Longitude, pokemon.EncounterId.ToString());
+                        tBot.MarkersQueue.Enqueue(nMapObj);
+                    }
+                }
+            }
+        }
+        private void PushNewWildPokemons(ISession session, IEnumerable<WildPokemon> pokemons)
+        {
+            if (openedSessions.ContainsKey(session))
+            {
+                foreach (var pokemon in pokemons)
+                {
+                    var tBot = openedSessions[session];
+                    if (!tBot.mapMarkers.ContainsKey(pokemon.EncounterId.ToString()) && tBot.MarkersQueue.Count(x => x.uid == pokemon.EncounterId.ToString()) == 0)
+                    {
+                        NewMapObject nMapObj = new NewMapObject("pm", pokemon.PokemonData.PokemonId.ToString(), pokemon.Latitude, pokemon.Longitude, pokemon.EncounterId.ToString());
                         tBot.MarkersQueue.Enqueue(nMapObj);
                     }
                 }

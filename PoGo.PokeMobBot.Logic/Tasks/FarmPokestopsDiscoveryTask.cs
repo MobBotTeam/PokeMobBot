@@ -86,7 +86,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         return true;
                     }, cancellationToken);
 
-                
+                await CatchWildPokemonsTask.Execute(session, cancellationToken);
+
                 FortSearchResponse fortSearch;
                 var timesZeroXPawarded = 0;
                 var fortTry = 0; //Current check

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Catchem"
         xmlns:WindowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation" x:Class="Catchem.MainWindow"
         mc:Ignorable="d"
-        Title="Catchem" Height="574.5" Width="900" MinWidth="900" MinHeight="600" Closing="Window_Closing" Icon="unnamed.ico">
+        Title="Catchem" Height="574.5" Width="1030" MinWidth="1030" MinHeight="600" Closing="Window_Closing" Icon="unnamed.ico">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFB2EF9C" Offset="0"/>
@@ -184,7 +184,7 @@
             <TabItem Header="Map &amp; Console">
                 <Grid Background="#FFE5E5E5" Margin="0,2,0,-2">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="239*"/>
+                        <RowDefinition Height="220"/>
                         <RowDefinition Height="302*"/>
                     </Grid.RowDefinitions>
                     <RichTextBox x:Name="consoleBox" Background="#FF252525" Foreground="#FFCDCDCD" VerticalScrollBarVisibility="Visible" Block.LineHeight="1">
