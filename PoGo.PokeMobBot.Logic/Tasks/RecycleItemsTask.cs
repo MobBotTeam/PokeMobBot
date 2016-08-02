@@ -20,12 +20,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             cancellationToken.ThrowIfCancellationRequested();
             await session.Inventory.RefreshCachedInventory();
             var currentTotalItems = await session.Inventory.GetTotalItemCount();
-
             if (session.Profile.PlayerData.MaxItemStorage * session.LogicSettings.RecycleInventoryAtUsagePercentage > currentTotalItems)
                 return;
-
             var items = await session.Inventory.GetItemsToRecycle(session);
-
             foreach (var item in items)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -36,27 +33,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 else
                     await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 500);
             }
-
-            if (session.LogicSettings.TotalAmountOfPokeballsToKeep >= 0)
+            if (session.LogicSettings.TotalAmountOfPokeballsToKeep != 0)
             {
                 await OptimizedRecycleBalls(session, cancellationToken);
             }
 
-            if (session.LogicSettings.TotalAmountOfPotionsToKeep >= 0)
+            if (session.LogicSettings.TotalAmountOfPotionsToKeep != 0)
             {
                 await OptimizedRecyclePotions(session, cancellationToken);
             }
 
-            if (session.LogicSettings.TotalAmountOfRevivesToKeep >= 0)
+            if (session.LogicSettings.TotalAmountOfRevivesToKeep != 0)
             {
                 await OptimizedRecycleRevives(session, cancellationToken);
             }
-
-            if (session.LogicSettings.TotalAmountOfBerriesToKeep >= 0)
-            {
-                await OptimizedRecycleBerries(session, cancellationToken);
-            }
-
             await session.Inventory.RefreshCachedInventory();
         }
 
