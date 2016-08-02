@@ -151,7 +151,9 @@ namespace PoGo.PokeMobBot.Logic
 
         //transfer
         public bool TransferDuplicatePokemon = true;
+        public bool TransferLowStatPokemon = false;
         public bool PrioritizeIvOverCp = true;
+        public bool PrioritizeIvAndCp = false;
         public int KeepMinCp = 1250;
         public float KeepMinIvPercentage = 95;
         public int KeepMinDuplicatePokemon = 1;
@@ -180,13 +182,12 @@ namespace PoGo.PokeMobBot.Logic
         public int UseUltraBallAboveIv = 90;
         public double UseGreatBallBelowCatchProbability = 0.5;
         public double UseUltraBallBelowCatchProbability = 0.25;
-        public double UseMasterBallBelowCatchProbability = 0.05;
         public bool UsePokemonToNotCatchFilter = false;
 
         //berries
         public int UseBerryMinCp = 450;
         public float UseBerryMinIv = 95;
-        public double UseBerryBelowCatchProbability = 0.2;
+        public double UseBerryBelowCatchProbability = 0.25;
 
         //favorite
         public bool AutoFavoritePokemon = false;
@@ -203,7 +204,11 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfMaxPotionsToKeep = 20;
         public int TotalAmountOfRevivesToKeep = 20;
         public int TotalAmountOfMaxRevivesToKeep = 30;
-        public int TotalAmountOfBerriesToKeep = 40;
+        public int TotalAmountOfRazzToKeep = 40;
+        //public int TotalAmountOfBlukToKeep = 40;
+        //public int TotalAmountOfNanabToKeep = 40;
+        //public int TotalAmountOfPinapToKeep = 40;
+        //public int TotalAmountOfWeparToKeep = 40;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -450,7 +455,7 @@ namespace PoGo.PokeMobBot.Logic
         };
 
         public static GlobalSettings Default => new GlobalSettings();
-        
+
         public static GlobalSettings Load(string path)
         {
             GlobalSettings settings;
@@ -646,10 +651,10 @@ namespace PoGo.PokeMobBot.Logic
         public bool EvolveAllPokemonWithEnoughCandy => _settings.EvolveAllPokemonWithEnoughCandy;
         public bool KeepPokemonsThatCanEvolve => _settings.KeepPokemonsThatCanEvolve;
         public bool TransferDuplicatePokemon => _settings.TransferDuplicatePokemon;
+        public bool TransferLowStatPokemon => _settings.TransferLowStatPokemon;
         public bool UseEggIncubators => _settings.UseEggIncubators;
         public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
         public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
-        public double UseMasterBallBelowCatchProbability => _settings.UseMasterBallBelowCatchProbability;
         public double UseUltraBallBelowCatchProbability => _settings.UseUltraBallBelowCatchProbability;
         public double UseGreatBallBelowCatchProbability => _settings.UseGreatBallBelowCatchProbability;
         public int DelayBetweenPokemonCatch => _settings.DelayBetweenPokemonCatch;
@@ -657,6 +662,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool UsePokemonToNotCatchFilter => _settings.UsePokemonToNotCatchFilter;
         public int KeepMinDuplicatePokemon => _settings.KeepMinDuplicatePokemon;
         public bool PrioritizeIvOverCp => _settings.PrioritizeIvOverCp;
+        public bool PrioritizeIvAndCp => _settings.PrioritizeIvAndCp;
         public int MaxTravelDistanceInMeters => _settings.MaxTravelDistanceInMeters;
         public string GpxFile => _settings.GpxFile;
         public bool UseGpxPathing => _settings.UseGpxPathing;
@@ -696,7 +702,11 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfGreatballsToKeep => _settings.TotalAmountOfGreatballsToKeep;
         public int TotalAmountOfUltraballsToKeep => _settings.TotalAmountOfUltraballsToKeep;
         public int TotalAmountOfMasterballsToKeep => _settings.TotalAmountOfMasterballsToKeep;
-        public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
+        public int TotalAmountOfRazzToKeep => _settings.TotalAmountOfRazzToKeep;
+        //public int TotalAmountOfBlukToKeep => _settings.TotalAmountOfBlukToKeep;
+        //public int TotalAmountOfNanabToKeep => _settings.TotalAmountOfNanabToKeep;
+        //public int TotalAmountOfPinapToKeep => _settings.TotalAmountOfPinapToKeep;
+        //public int TotalAmountOfWeparToKeep => _settings.TotalAmountOfWeparToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfSuperPotionsToKeep => _settings.TotalAmountOfSuperPotionsToKeep;
         public int TotalAmountOfHyperPotionsToKeep => _settings.TotalAmountOfHyperPotionsToKeep;
