@@ -77,14 +77,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             });
                             await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
                         }
-                        if (session.LogicSettings.TransferLowStatPokemon)
-                        {
-                            session.EventDispatcher.Send(new WarnEvent
-                            {
-                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
-                            });
-                            await TransferLowStatPokemonTask.Execute(session, cancellationToken);
-                        }
                         else
                             session.EventDispatcher.Send(new WarnEvent
                             {
