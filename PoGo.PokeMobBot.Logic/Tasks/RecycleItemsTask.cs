@@ -63,19 +63,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 diff = totalBallsCount - session.LogicSettings.TotalAmountOfPokeballsToKeep;
                 if (diff > 0)
                 {
-                    await removeItems(pokeBallsCount, ItemId.ItemPokeBall, cancellationToken, session);
+                    await RemoveItems(pokeBallsCount, ItemId.ItemPokeBall, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(greatBallsCount, ItemId.ItemGreatBall, cancellationToken, session);
+                    await RemoveItems(greatBallsCount, ItemId.ItemGreatBall, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(ultraBallsCount, ItemId.ItemUltraBall, cancellationToken, session);
+                    await RemoveItems(ultraBallsCount, ItemId.ItemUltraBall, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(masterBallsCount, ItemId.ItemMasterBall, cancellationToken, session);
+                    await RemoveItems(masterBallsCount, ItemId.ItemMasterBall, cancellationToken, session);
                 }
             }
         }
@@ -93,19 +93,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 diff = totalPotionsCount - session.LogicSettings.TotalAmountOfPotionsToKeep;
                 if (diff > 0)
                 {
-                    await removeItems(potionCount, ItemId.ItemPotion, cancellationToken, session);
+                    await RemoveItems(potionCount, ItemId.ItemPotion, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(superPotionCount, ItemId.ItemSuperPotion, cancellationToken, session);
+                    await RemoveItems(superPotionCount, ItemId.ItemSuperPotion, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(hyperPotionsCount, ItemId.ItemHyperPotion, cancellationToken, session);
+                    await RemoveItems(hyperPotionsCount, ItemId.ItemHyperPotion, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(maxPotionCount, ItemId.ItemMaxPotion, cancellationToken, session);
+                    await RemoveItems(maxPotionCount, ItemId.ItemMaxPotion, cancellationToken, session);
                 }
             }
         }
@@ -124,27 +124,27 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 diff = totalBerryCount - session.LogicSettings.TotalAmountOfPotionsToKeep;
                 if (diff > 0)
                 {
-                    await removeItems(razz, ItemId.ItemRazzBerry, cancellationToken, session);
+                    await RemoveItems(razz, ItemId.ItemRazzBerry, cancellationToken, session);
                 }
 
                 if (diff > 0)
                 {
-                    await removeItems(bluk, ItemId.ItemBlukBerry, cancellationToken, session);
+                    await RemoveItems(bluk, ItemId.ItemBlukBerry, cancellationToken, session);
                 }
 
                 if (diff > 0)
                 {
-                    await removeItems(nanab, ItemId.ItemNanabBerry, cancellationToken, session);
+                    await RemoveItems(nanab, ItemId.ItemNanabBerry, cancellationToken, session);
                 }
 
                 if (diff > 0)
                 {
-                    await removeItems(pinap, ItemId.ItemPinapBerry, cancellationToken, session);
+                    await RemoveItems(pinap, ItemId.ItemPinapBerry, cancellationToken, session);
                 }
 
                 if (diff > 0)
                 {
-                    await removeItems(wepar, ItemId.ItemWeparBerry, cancellationToken, session);
+                    await RemoveItems(wepar, ItemId.ItemWeparBerry, cancellationToken, session);
                 }
             }
         }
@@ -160,16 +160,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 diff = totalRevivesCount - session.LogicSettings.TotalAmountOfRevivesToKeep;
                 if (diff > 0)
                 {
-                    await removeItems(reviveCount, ItemId.ItemRevive, cancellationToken, session);
+                    await RemoveItems(reviveCount, ItemId.ItemRevive, cancellationToken, session);
                 }
                 if (diff > 0)
                 {
-                    await removeItems(maxReviveCount, ItemId.ItemMaxRevive, cancellationToken, session);
+                    await RemoveItems(maxReviveCount, ItemId.ItemMaxRevive, cancellationToken, session);
                 }
             }
         }
 
-        private static async Task removeItems(int itemCount, ItemId item, CancellationToken cancellationToken, ISession session)
+        private static async Task RemoveItems(int itemCount, ItemId item, CancellationToken cancellationToken, ISession session)
         {
             int itemsToRecycle = 0;
             int itemsToKeep = itemCount - diff;
