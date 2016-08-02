@@ -37,7 +37,7 @@ namespace PoGo.PokeMobBot.CLI
                 subPath = args[0];
 
 #if DEBUG
-            LogLevel logLevel = LogLevel.Debug;
+            LogLevel logLevel = LogLevel.Flee;
 #else
             LogLevel logLevel = LogLevel.Info;
 #endif
