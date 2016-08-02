@@ -107,12 +107,11 @@ namespace PoGo.PokeMobBot.CLI
             session.Navigation.UpdatePositionEvent +=
                 (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
 
-            //#if DEBUG
-            //            machine.AsyncStart(new LoginState(), session);
-            //#else
-            //            machine.AsyncStart(new VersionCheckState(), session);
-            //#endif
+#if DEBUG
+            machine.AsyncStart(new LoginState(), session);
+#else
             machine.AsyncStart(new VersionCheckState(), session);
+#endif
             if (session.LogicSettings.UseSnipeLocationServer)
                 SnipePokemonTask.AsyncStart(session);
 
