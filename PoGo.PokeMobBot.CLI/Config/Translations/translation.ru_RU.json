@@ -50,6 +50,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Использовано Lucky Egg, их осталось: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} успешно, получено {1}xp"
@@ -69,7 +73,7 @@
     {
       "Key": "eventPokemonCapture",
       "Value":
-        "=>({0})({1}) {2} {3}-УР (CР:{4}/{5}|VI:{6}%) c {7}% шансом на {8}м исп. {9} ({10} осталось) {11}"
+        "=>({0})({1}) {2} {3}-УР (CР:{4}/{5}|IV:{6}%) c {7}% шансом на {8}м исп. {9} ({10} осталось) {11}"
     },
     {
       "Key": "eventNoPokeballs",
@@ -250,7 +254,7 @@
     },
     {
       "Key": "FinishedTransferringConfig",
-      "Value": "Закончено передачи своей конфигурации на новую версию..."
+      "Value": "Закончена передача настроек в новую версию."
     },
     {
       "Key": "updateFinished",
@@ -388,4 +392,6 @@
       "Value": "[Снайпер] Покемона для отлова не обнаружено!"
     }
   ]
-}
+,
+  "Pokemon": [
+  ]}

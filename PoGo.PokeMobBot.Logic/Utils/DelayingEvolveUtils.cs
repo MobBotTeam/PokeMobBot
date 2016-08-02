@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace PoGo.PokeMobBot.Logic.Utils
 {
-    public static class DelayingUtils
+    public static class DelayingEvolveUtils
     {
         private static readonly Random RandomDevice = new Random();
 
-        public static async Task Delay(int delay, int defdelay)
+        public static async Task Delay(int delay, int defdelay, double evolvevariation)
         {
             if (delay > defdelay)
             {
-                var randomFactor = 0.3f;
+                var randomFactor = evolvevariation;
                 var randomMin = (int)(delay * (1 - randomFactor));
                 var randomMax = (int)(delay * (1 + randomFactor));
                 var randomizedDelay = RandomDevice.Next(randomMin, randomMax);

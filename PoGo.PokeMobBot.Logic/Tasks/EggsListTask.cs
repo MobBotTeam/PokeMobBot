@@ -1,5 +1,6 @@
 ﻿#region using directives
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
@@ -14,6 +15,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         public static async Task Execute(ISession session)
         {
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
+
+            var playerStats = (await session.Inventory.GetPlayerStats()).FirstOrDefault();
+            if (playerStats == null)
+                return;
+
+            var kmWalked = playerStats.KmWalked;
+
             var incubators = (await session.Inventory.GetEggIncubators())
                 .Where(x => x.UsesRemaining > 0 || x.ItemId == ItemId.ItemIncubatorBasicUnlimited)
                 .OrderByDescending(x => x.ItemId == ItemId.ItemIncubatorBasicUnlimited)
@@ -27,6 +37,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             session.EventDispatcher.Send(
                 new EggsListEvent
                 {
+                    PlayerKmWalked = kmWalked,
                     Incubators = incubators,
                     UnusedEggs = unusedEggs
                 });

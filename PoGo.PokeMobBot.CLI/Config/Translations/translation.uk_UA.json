@@ -50,6 +50,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Використано Lucky Egg, їх залишилося: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} успішно, отримано {1} xp"
@@ -389,4 +393,6 @@
       "Value": "[Снайпер] Покемона для вилову не виявлено!"
     }
   ]
-}
+,
+  "Pokemon": [
+  ]}

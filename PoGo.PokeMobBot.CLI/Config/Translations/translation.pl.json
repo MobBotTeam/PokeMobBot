@@ -49,6 +49,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Użyto Szczęśliwego Jajka, pozostało: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} z powodzeniem za {1}xp"
@@ -381,5 +385,7 @@
       "Key": "noPokemonToSnipe",
       "Value": "[Snajper] Nie znaleziono żadnego Pokemona!"
     }
+  ],
+  "Pokemon": [
   ]
 }
