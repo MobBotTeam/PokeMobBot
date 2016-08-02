@@ -204,7 +204,11 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfMaxPotionsToKeep = 20;
         public int TotalAmountOfRevivesToKeep = 20;
         public int TotalAmountOfMaxRevivesToKeep = 30;
-        public int TotalAmountOfBerriesToKeep = 40;
+        public int TotalAmountOfRazzToKeep = 40;
+        //public int TotalAmountOfBlukToKeep = 40;
+        //public int TotalAmountOfNanabToKeep = 40;
+        //public int TotalAmountOfPinapToKeep = 40;
+        //public int TotalAmountOfWeparToKeep = 40;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -698,7 +702,11 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfGreatballsToKeep => _settings.TotalAmountOfGreatballsToKeep;
         public int TotalAmountOfUltraballsToKeep => _settings.TotalAmountOfUltraballsToKeep;
         public int TotalAmountOfMasterballsToKeep => _settings.TotalAmountOfMasterballsToKeep;
-        public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
+        public int TotalAmountOfRazzToKeep => _settings.TotalAmountOfRazzToKeep;
+        //public int TotalAmountOfBlukToKeep => _settings.TotalAmountOfBlukToKeep;
+        //public int TotalAmountOfNanabToKeep => _settings.TotalAmountOfNanabToKeep;
+        //public int TotalAmountOfPinapToKeep => _settings.TotalAmountOfPinapToKeep;
+        //public int TotalAmountOfWeparToKeep => _settings.TotalAmountOfWeparToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
         public int TotalAmountOfSuperPotionsToKeep => _settings.TotalAmountOfSuperPotionsToKeep;
         public int TotalAmountOfHyperPotionsToKeep => _settings.TotalAmountOfHyperPotionsToKeep;
