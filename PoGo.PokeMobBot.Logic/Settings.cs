@@ -419,7 +419,6 @@ namespace PoGo.PokeMobBot.Logic
                 PokemonId.Scyther,
                 PokemonId.Magmar,
                 PokemonId.Electabuzz,
-                PokemonId.Magmar,
                 PokemonId.Jynx,
                 PokemonId.Gyarados,
                 PokemonId.Lapras,
