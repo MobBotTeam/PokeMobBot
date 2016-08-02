@@ -23,15 +23,23 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var pokemons = await session.Inventory.GetPokemons();
 
+            var pokemonList = pokemons.Where(p => !session.LogicSettings.PokemonsNotToTransfer.Contains(p.PokemonId)).ToList(); //filter out the do not transfers
+
+            if (session.LogicSettings.KeepPokemonsThatCanEvolve)
+            {
+                pokemonList = pokemonList.Where(p => !session.LogicSettings.PokemonsToEvolve.Contains(p.PokemonId)).ToList(); //filter out the evolve list if evolve is true
+            }
+
             var pokemonSettings = await session.Inventory.GetPokemonSettings();
             var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
 
-            foreach (var pokemon in pokemons)
+            foreach (var pokemon in pokemonList)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if ((pokemon.Cp >= session.LogicSettings.KeepMinCp) ||
-                    (PokemonInfo.CalculatePokemonPerfection(pokemon) >= session.LogicSettings.KeepMinIvPercentage && session.LogicSettings.PrioritizeIvOverCp))
+                if ((pokemon.Cp >= session.LogicSettings.KeepMinCp) ||  //dont toss if its over min CP
+                    (PokemonInfo.CalculatePokemonPerfection(pokemon) >= session.LogicSettings.KeepMinIvPercentage && session.LogicSettings.PrioritizeIvOverCp) ||   //dont toss if its over min IV
+                    pokemon.Favorite == 1)  //dont toss if its a favorite
                 {
                     continue;
                 }
