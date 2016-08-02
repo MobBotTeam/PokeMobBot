@@ -35,6 +35,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 TransferDuplicatePokemonTask.Execute(_session, cancellationToken).Wait(cancellationToken);
             }
+            if (_session.LogicSettings.TransferLowStatPokemon)
+            {
+                TransferLowStatPokemonTask.Execute(_session, cancellationToken).Wait(cancellationToken);
+            }
 
             if (_session.LogicSettings.RenamePokemon)
             {
