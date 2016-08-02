@@ -49,6 +49,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Message = session.Translation.GetTranslation(TranslationString.PokemonIgnoreFilter,session.Translation.GetPokemonName(pokemon.PokemonId))
                     });
                 }
+                else if (!session.LogicSettings.CatchPokemon)
+                {
+                    session.EventDispatcher.Send(new CatchPokemonDisabledEvent
+                    {
+                        Id = pokemon.PokemonId
+                    });
+                }
                 else
                 {
                     var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,

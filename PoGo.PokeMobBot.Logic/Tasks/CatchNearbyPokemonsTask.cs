@@ -58,50 +58,61 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     });
                     continue;
                 }
-
-                var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                    session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
-                await Task.Delay(distance > 100 ? 3000 : 500, cancellationToken);
-
-                var encounter =
-                    await session.Client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId);
-
-                if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
+                else if (!session.LogicSettings.CatchPokemon)
                 {
-                    await CatchPokemonTask.Execute(session, encounter, pokemon);
-                }
-                else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
-                {
-                    if (session.LogicSettings.TransferDuplicatePokemon)
+                    session.EventDispatcher.Send(new CatchPokemonDisabledEvent
                     {
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
-                        });
-                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
-                    }
-                    else
-                        session.EventDispatcher.Send(new WarnEvent
-                        {
-                            Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
-                        });
+                        Id = pokemon.PokemonId
+                    });
                 }
                 else
                 {
-                    session.EventDispatcher.Send(new WarnEvent
-                    {
-                        Message =
-                            session.Translation.GetTranslation(TranslationString.EncounterProblem, encounter.Status)
-                    });
-                }
 
-                // If pokemon is not last pokemon in list, create delay between catches, else keep moving.
-                if (!Equals(pokemons.ElementAtOrDefault(pokemons.Count() - 1), pokemon))
-                {
-                    if(session.LogicSettings.Teleport)
-                        await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch);
+
+                    var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                        session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
+                    await Task.Delay(distance > 100 ? 3000 : 500, cancellationToken);
+
+                    var encounter =
+                        await session.Client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId);
+
+                    if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
+                    {
+                        await CatchPokemonTask.Execute(session, encounter, pokemon);
+                    }
+                    else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
+                    {
+                        if (session.LogicSettings.TransferDuplicatePokemon)
+                        {
+                            session.EventDispatcher.Send(new WarnEvent
+                            {
+                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
+                            });
+                            await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                        }
+                        else
+                            session.EventDispatcher.Send(new WarnEvent
+                            {
+                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
+                            });
+                    }
                     else
-                        await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch, cancellationToken);
+                    {
+                        session.EventDispatcher.Send(new WarnEvent
+                        {
+                            Message =
+                                session.Translation.GetTranslation(TranslationString.EncounterProblem, encounter.Status)
+                        });
+                    }
+
+                    // If pokemon is not last pokemon in list, create delay between catches, else keep moving.
+                    if (!Equals(pokemons.ElementAtOrDefault(pokemons.Count() - 1), pokemon))
+                    {
+                        if (session.LogicSettings.Teleport)
+                            await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch);
+                        else
+                            await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch, cancellationToken);
+                    }
                 }
             }
         }
