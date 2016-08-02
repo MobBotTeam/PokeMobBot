@@ -151,6 +151,7 @@ namespace PoGo.PokeMobBot.Logic
 
         //transfer
         public bool TransferDuplicatePokemon = true;
+        public bool TransferLowStatPokemon = false;
         public bool PrioritizeIvOverCp = true;
         public int KeepMinCp = 1250;
         public float KeepMinIvPercentage = 95;
@@ -646,6 +647,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool EvolveAllPokemonWithEnoughCandy => _settings.EvolveAllPokemonWithEnoughCandy;
         public bool KeepPokemonsThatCanEvolve => _settings.KeepPokemonsThatCanEvolve;
         public bool TransferDuplicatePokemon => _settings.TransferDuplicatePokemon;
+        public bool TransferLowStatPokemon => _settings.TransferLowStatPokemon;
         public bool UseEggIncubators => _settings.UseEggIncubators;
         public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
         public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
