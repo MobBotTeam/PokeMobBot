@@ -85,8 +85,8 @@ namespace PoGo.PokeMobBot.Logic
         }
 
         public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(
-            bool keepPokemonsThatCanEvolve = false, bool prioritizeIVoverCp = false,
-            IEnumerable<PokemonId> filter = null)
+            bool keepPokemonsThatCanEvolve, bool prioritizeIVoverCp,
+            IEnumerable<PokemonId> filter)
         {
             var myPokemon = await GetPokemons();
 
@@ -95,8 +95,7 @@ namespace PoGo.PokeMobBot.Logic
                     p => p.DeployedFortId == string.Empty &&
                          p.Favorite == 0 && (p.Cp < GetPokemonTransferFilter(p.PokemonId).KeepMinCp ||
                                              PokemonInfo.CalculatePokemonPerfection(p) <
-                                             GetPokemonTransferFilter(p.PokemonId).KeepMinIvPercentage))
-                    .ToList();
+                                             GetPokemonTransferFilter(p.PokemonId).KeepMinIvPercentage)).ToList();
             if (filter != null)
             {
                 pokemonList = pokemonList.Where(p => !filter.Contains(p.PokemonId)).ToList();
@@ -348,7 +347,7 @@ namespace PoGo.PokeMobBot.Logic
             return templates.ItemTemplates.Select(i => i.PokemonUpgrades).Where(p => p != null);
         }
 
-        public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(IEnumerable<PokemonId> filter = null)
+        public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(IEnumerable<PokemonId> filter)
         {
             var myPokemons = await GetPokemons();
             myPokemons = myPokemons.Where(p => p.DeployedFortId == string.Empty).OrderByDescending(p => p.Cp);

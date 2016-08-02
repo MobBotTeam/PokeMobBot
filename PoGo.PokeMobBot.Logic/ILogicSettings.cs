@@ -42,10 +42,6 @@ namespace PoGo.PokeMobBot.Logic
 
     public class TransferFilter
     {
-        public TransferFilter()
-        {
-        }
-
         public TransferFilter(int keepMinCp, float keepMinIvPercentage, int keepMinDuplicatePokemon)
         {
             KeepMinCp = keepMinCp;
