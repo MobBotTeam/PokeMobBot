@@ -13,7 +13,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class RecycleItemsTask
     {
-        private static int diff;
 
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
@@ -109,41 +108,45 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         private static async Task OptimizedRecycleBerries(ISession session, CancellationToken cancellationToken)
         {
-            var razz = await session.Inventory.GetItemAmountByType(ItemId.ItemRazzBerry);
-            var bluk = await session.Inventory.GetItemAmountByType(ItemId.ItemBlukBerry);
-            var nanab = await session.Inventory.GetItemAmountByType(ItemId.ItemNanabBerry);
-            var pinap = await session.Inventory.GetItemAmountByType(ItemId.ItemPinapBerry);
-            var wepar = await session.Inventory.GetItemAmountByType(ItemId.ItemWeparBerry);
-
-            int totalBerryCount = razz + bluk + nanab + pinap + wepar;
-            if (totalBerryCount > session.LogicSettings.TotalAmountOfBerriesToKeep)
+            var razzCount = await session.Inventory.GetItemAmountByType(ItemId.ItemRazzBerry);
+            //var blukCount = await session.Inventory.GetItemAmountByType(ItemId.ItemBlukBerry);
+            //var nanabCount = await session.Inventory.GetItemAmountByType(ItemId.ItemNanabBerry);
+            //var pinapCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPinapBerry);
+            //var weparCount = await session.Inventory.GetItemAmountByType(ItemId.ItemWeparBerry);
+            int razzToKeep = session.LogicSettings.TotalAmountOfRazzToKeep;
+            //int blukToKeep = session.LogicSettings.TotalAmountOfBlukToKeep;
+            //int nanabToKeep = session.LogicSettings.TotalAmountOfNanabToKeep;
+            //int pinapToKeep = session.LogicSettings.TotalAmountOfPinapToKeep;
+            //int weparToKeep = session.LogicSettings.TotalAmountOfWeparToKeep;
+            int razzToRecycle = razzCount - razzToKeep;
+            //int blukToRecycle = blukCount - blukToKeep;
+            //int nanabToRecycle = nanabCount - nanabToKeep;
+            //int pinapToRecycle = pinapCount - pinapToKeep;
+            //int weparToRecycle = weparCount - weparToKeep;
+            if (razzCount > razzToKeep)
             {
-                diff = totalBerryCount - session.LogicSettings.TotalAmountOfBerriesToKeep;
-                if (diff > 0)
-                {
-                    await RemoveItems(razz, ItemId.ItemRazzBerry, cancellationToken, session);
-                }
-
-                if (diff > 0)
-                {
-                    await RemoveItems(bluk, ItemId.ItemBlukBerry, cancellationToken, session);
-                }
-
-                if (diff > 0)
-                {
-                    await RemoveItems(nanab, ItemId.ItemNanabBerry, cancellationToken, session);
-                }
-
-                if (diff > 0)
-                {
-                    await RemoveItems(pinap, ItemId.ItemPinapBerry, cancellationToken, session);
-                }
-
-                if (diff > 0)
-                {
-                    await RemoveItems(wepar, ItemId.ItemWeparBerry, cancellationToken, session);
-                }
+                await RemoveItems(razzToRecycle, ItemId.ItemRazzBerry, cancellationToken, session);
             }
+
+            //if (blukCount > blukToKeep)
+            //{
+            //    await RemoveItems(blukToRecycle, ItemId.ItemBlukBerry, cancellationToken, session);
+            //}
+
+            //if nanabCount > nanabToKeep)
+            //{
+            //    await RemoveItems(nanabToRecycle, ItemId.ItemNanabBerry, cancellationToken, session);
+            //}
+
+            //if (pinapCount > pinapToKeep)
+            //{
+            //    await RemoveItems(pinapToRecycle, ItemId.ItemPinapBerry, cancellationToken, session);
+            //}
+
+            //if (weparCount > weparToKeep)
+            //{
+            //    await RemoveItems(weparToRecycle, ItemId.ItemWeparBerry, cancellationToken, session);
+            //}
         }
 
         private static async Task OptimizedRecycleRevives(ISession session, CancellationToken cancellationToken)
