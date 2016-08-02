@@ -20,7 +20,7 @@ namespace PoGo.PokeMobBot.Logic
         [JsonIgnore]
         private string _filePath;
         public AuthType AuthType;
-        public string GoogleRefreshToken;
+        public string GoogleRefreshToken = "";
         public string GoogleUsername;
         public string GooglePassword;
         public string PtcUsername;
@@ -223,11 +223,6 @@ namespace PoGo.PokeMobBot.Logic
             new KeyValuePair<ItemId, int>(ItemId.ItemXAttack, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemXDefense, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemXMiracle, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemRazzBerry, 50),
-            new KeyValuePair<ItemId, int>(ItemId.ItemBlukBerry, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemNanabBerry, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemWeparBerry, 30),
-            new KeyValuePair<ItemId, int>(ItemId.ItemPinapBerry, 30),
             new KeyValuePair<ItemId, int>(ItemId.ItemSpecialCamera, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasicUnlimited, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasic, 100),
