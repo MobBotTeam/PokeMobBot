@@ -34,7 +34,9 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(DebugEvent evt, ISession session)
         {
+#if DEBUG
             Logger.Write(evt.ToString(), LogLevel.Debug);
+#endif
         }
 
         public void HandleEvent(WarnEvent evt, ISession session)
@@ -144,27 +146,34 @@ namespace PoGo.PokeMobBot.CLI
             };
 
             var catchType = evt.CatchType;
+            LogLevel caughtEscapeFlee;
 
             string strStatus;
             switch (evt.Status)
             {
                 case CatchPokemonResponse.Types.CatchStatus.CatchError:
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusError);
+                    caughtEscapeFlee = LogLevel.Error;
                     break;
                 case CatchPokemonResponse.Types.CatchStatus.CatchEscape:
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusEscape);
+                    caughtEscapeFlee = LogLevel.Escape;
                     break;
                 case CatchPokemonResponse.Types.CatchStatus.CatchFlee:
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusFlee);
+                    caughtEscapeFlee = LogLevel.Flee;
                     break;
                 case CatchPokemonResponse.Types.CatchStatus.CatchMissed:
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusMissed);
+                    caughtEscapeFlee = LogLevel.Escape;
                     break;
                 case CatchPokemonResponse.Types.CatchStatus.CatchSuccess:
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusSuccess);
+                    caughtEscapeFlee = LogLevel.Caught;
                     break;
                 default:
                     strStatus = evt.Status.ToString();
+                    caughtEscapeFlee = LogLevel.Error;
                     break;
             }
 
@@ -180,7 +189,7 @@ namespace PoGo.PokeMobBot.CLI
                 session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType, session.Translation.GetPokemonName(evt.Id),
                     evt.Level, evt.Cp, evt.MaxCp, evt.Perfection.ToString("0.00"), evt.Probability,
                     evt.Distance.ToString("F2"),
-                    returnRealBallName(evt.Pokeball), evt.BallAmount, evt.Exp, familyCandies), LogLevel.Caught);
+                    returnRealBallName(evt.Pokeball), evt.BallAmount, evt.Exp, familyCandies), caughtEscapeFlee);
         }
 
         public void HandleEvent(NoPokeballEvent evt, ISession session)
@@ -242,7 +251,7 @@ namespace PoGo.PokeMobBot.CLI
             Logger.Write($"====== {strHeader} ======", LogLevel.Info, ConsoleColor.Yellow);
             foreach (var pokemon in evt.PokemonList)
                 Logger.Write(
-                    $"# CP {pokemon.Item1.Cp.ToString().PadLeft(4, ' ')}/{pokemon.Item2.ToString().PadLeft(4, ' ')} | ({pokemon.Item3.ToString("0.00")}% {strPerfect})\t| Lvl {pokemon.Item4.ToString("00")}\t {strName}: {session.Translation.GetPokemonName(pokemon.Item1.PokemonId).PadRight(10, ' ')}\t MOVE1: {pokemon.Item5.ToString().PadRight(20, ' ')} MOVE2: {pokemon.Item6}",
+                  $"# CP {pokemon.Item1.Cp.ToString().PadLeft(4, ' ')}/{pokemon.Item2.ToString().PadLeft(4, ' ')} | ({pokemon.Item3.ToString("0.00")}% {strPerfect})\t| Lvl {pokemon.Item4.ToString("00")}\t {strName}: {pokemon.Item1.PokemonId.ToString().PadRight(10, ' ')}\t MOVESET>> {pokemon.Item5.ToString().PadRight(20, ' ')},{pokemon.Item6.ToString().PadRight(10, ' ')}\t->RankVsTypeAvg: {pokemon.Item7}",
                     LogLevel.Info, ConsoleColor.Yellow);
         }
 

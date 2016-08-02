@@ -1,5 +1,6 @@
 ﻿#region using directives
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -93,12 +94,11 @@ namespace PoGo.PokeMobBot.Logic.Common
         PokemonSkipped,
         ZeroPokeballInv,
         CurrentPokeballInv,
+        CurrentPotionInv,
         CheckingForBallsToRecycle,
         CheckingForPotionsToRecycle,
         CheckingForRevivesToRecycle,
         PokeballsToKeepIncorrect,
-        PotionsToKeepIncorrect,
-        RevivesToKeepIncorrect,
         InvFullTransferring,
         InvFullTransferManually,
         InvFullPokestopLooting,
@@ -134,7 +134,6 @@ namespace PoGo.PokeMobBot.Logic.Common
         DisplayHighestMove1Header,
         DisplayHighestMove2Header,
         UseBerry,
-        BerriesToKeepIncorrect,
         NianticServerUnstable,
         OperationCanceled,
         PokemonUpgradeSuccess,
@@ -143,7 +142,9 @@ namespace PoGo.PokeMobBot.Logic.Common
         PokemonUpgradeUnavailable,
         WebErrorNotFound,
         WebErrorGatewayTimeout,
-        WebErrorBadGateway
+        WebErrorBadGateway,
+        SkipLaggedTimeout,
+        SkipLaggedMaintenance
     }
 
     public class Translation : ITranslation
@@ -186,7 +187,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "{0}\t- CP: {1}  IV: {2}%   [Best CP: {3}  IV: {4}%] (Candies: {5})"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventItemRecycled, "{0}x {1}"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventPokemonCapture,
-                "({0}) | ({1}) {2} Lvl: {3} CP: ({4}/{5}) IV: {6}% | Chance: {7}% | {8}m dist | with a {9} ({10} left). | {11}xp | {12}"),
+                "({0}) | {2}, Lvl: {3} | CP: ({4}/{5}) | IV: {6}% | Type: {1} | Chance: {7}% | Dist: {8}m | Used: {9} ({10} left) | XP: {11} | {12}"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventNoPokeballs,
                 "No Pokeballs - We missed a {0} with CP {1}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CatchPokemonDisabled,
@@ -219,14 +220,14 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.LogEntryPokestop, "POKESTOP"),
             new KeyValuePair<TranslationString, string>(TranslationString.LogEntryFarming, "FARMING"),
             new KeyValuePair<TranslationString, string>(TranslationString.LogEntryRecycling, "RECYCLING"),
-            new KeyValuePair<TranslationString, string>(TranslationString.LogEntryPkmn, "PKMN"),
-            new KeyValuePair<TranslationString, string>(TranslationString.LogEntryTransfered, "TRANSFERED"),
+            new KeyValuePair<TranslationString, string>(TranslationString.LogEntryPkmn, "CATCH"),
+            new KeyValuePair<TranslationString, string>(TranslationString.LogEntryTransfered, "TRANSFER"),
             new KeyValuePair<TranslationString, string>(TranslationString.LogEntryEvolved, "EVOLVED"),
             new KeyValuePair<TranslationString, string>(TranslationString.LogEntryBerry, "BERRY"),
             new KeyValuePair<TranslationString, string>(TranslationString.LogEntryEgg, "EGG"),
             new KeyValuePair<TranslationString, string>(TranslationString.LogEntryDebug, "DEBUG"),
             new KeyValuePair<TranslationString, string>(TranslationString.LogEntryUpdate, "UPDATE"),
-            new KeyValuePair<TranslationString, string>(TranslationString.LoggingIn, "Logging in using {0}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.LoggingIn, "Logging in using account {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.PtcOffline,
                 "PTC Servers are probably down OR your credentials are wrong. Try google"),
             new KeyValuePair<TranslationString, string>(TranslationString.TryingAgainIn,
@@ -268,7 +269,9 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.ZeroPokeballInv,
                 "You have no pokeballs in your inventory, no more Pokemon can be caught!"),
             new KeyValuePair<TranslationString, string>(TranslationString.CurrentPokeballInv,
-                "[Current Inventory] Pokeballs: {0} | Greatballs: {1} | Ultraballs: {2} | Masterballs: {3}"),
+                "[Inventory] Pokeballs: {0} | Greatballs: {1} | Ultraballs: {2} | Masterballs: {3}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CurrentPotionInv,
+                "[Inventory] Potions: {0} | Super Potions: {1} | Hyper Potions: {2} | Max Potions: {3}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForBallsToRecycle,
                 "Checking for balls to recycle, keeping {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForPotionsToRecycle,
@@ -277,10 +280,6 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "Checking for revives to recycle, keeping {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.PokeballsToKeepIncorrect,
                 "TotalAmountOfPokeballsToKeep is configured incorrectly. The number is smaller than 1."),
-            new KeyValuePair<TranslationString, string>(TranslationString.PotionsToKeepIncorrect,
-                "TotalAmountOfPotionsToKeep is configured incorrectly. The number is smaller than 1."),
-            new KeyValuePair<TranslationString, string>(TranslationString.RevivesToKeepIncorrect,
-                "TotalAmountOfRevivesToKeep is configured incorrectly. The number is smaller than 1."),
             new KeyValuePair<TranslationString, string>(TranslationString.InvFullTransferring,
                 "Pokemon Inventory is full, transferring Pokemon..."),
             new KeyValuePair<TranslationString, string>(TranslationString.InvFullTransferManually,
@@ -296,12 +295,12 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "Pokemon {0} ({1}) renamed from {2} to {3}."),
             new KeyValuePair<TranslationString, string>(TranslationString.PokemonIgnoreFilter,
                 "[Pokemon ignore filter] - Ignoring {0} as defined in settings"),
-            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusAttempt, "CatchAttempt"),
-            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusError, "CatchError"),
-            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusEscape, "CatchEscape"),
-            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusFlee, "CatchFlee"),
-            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusMissed, "CatchMissed"),
-            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusSuccess, "CatchSuccess"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusAttempt, "Attempt"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusError, "Error"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusEscape, "Escape"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusFlee, "Flee"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusMissed, "Missed"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusSuccess, "Success"),
             new KeyValuePair<TranslationString, string>(TranslationString.CatchTypeNormal, "Normal"),
             new KeyValuePair<TranslationString, string>(TranslationString.CatchTypeLure, "Lure"),
             new KeyValuePair<TranslationString, string>(TranslationString.CatchTypeIncense, "Incense"),
@@ -335,8 +334,6 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.DisplayHighestMove2Header, "MOVE2"),
             new KeyValuePair<TranslationString, string>(TranslationString.UseBerry,
                 "Using Razzberry. Berries left: {0}"),
-            new KeyValuePair<TranslationString, string>(TranslationString.BerriesToKeepIncorrect,
-                "You can not set the amount of Berries to less then 1"),
             new KeyValuePair<TranslationString, string>(TranslationString.NianticServerUnstable, 
                 "Niantic Servers unstable, throttling API Calls."),
             new KeyValuePair<TranslationString, string>(TranslationString.OperationCanceled, 
@@ -354,7 +351,11 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.WebErrorGatewayTimeout,
                 "504 Gateway Time-out: The server didn't respond in time."),
             new KeyValuePair<TranslationString, string>(TranslationString.WebErrorNotFound,
-                "404 Not Found: Not able to retrieve file from server!")
+                "404 Not Found: Not able to retrieve file from server!"),
+            new KeyValuePair<TranslationString, string>(TranslationString.SkipLaggedTimeout,
+                "SkipLagged is down or SnipeRequestTimeoutSeconds is too small!"),
+            new KeyValuePair<TranslationString, string>(TranslationString.SkipLaggedMaintenance,
+                "SkipLagged servers are down for maintenance.")
         };
 
         [JsonProperty("Pokemon",
@@ -394,10 +395,10 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<PokemonId, string>(PokemonId.Raichu, "Raichu"),
             new KeyValuePair<PokemonId, string>(PokemonId.Sandshrew, "Sandshrew"),
             new KeyValuePair<PokemonId, string>(PokemonId.Sandslash, "Sandslash"),
-            new KeyValuePair<PokemonId, string>(PokemonId.NidoranFemale, "Nidoran♀"),
+            new KeyValuePair<PokemonId, string>(PokemonId.NidoranFemale, "NidoranF"),
             new KeyValuePair<PokemonId, string>(PokemonId.Nidorina, "Nidorina"),
             new KeyValuePair<PokemonId, string>(PokemonId.Nidoqueen, "Nidoqueen"),
-            new KeyValuePair<PokemonId, string>(PokemonId.NidoranMale, "Nidoran♂"),
+            new KeyValuePair<PokemonId, string>(PokemonId.NidoranMale, "NidoranM"),
             new KeyValuePair<PokemonId, string>(PokemonId.Nidorino, "Nidorino"),
             new KeyValuePair<PokemonId, string>(PokemonId.Nidoking, "Nidoking"),
             new KeyValuePair<PokemonId, string>(PokemonId.Clefairy, "Clefairy"),
@@ -557,20 +558,28 @@ namespace PoGo.PokeMobBot.Logic.Common
                 jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-                translations = JsonConvert.DeserializeObject<Translation>(input, jsonSettings);
-                //TODO make json to fill default values as it won't do it now
+                try
+                {
+                    translations = JsonConvert.DeserializeObject<Translation>(input, jsonSettings);
+                    //TODO make json to fill default values as it won't do it now
 
-                var defaultTranslation = new Translation();
+                    var defaultTranslation = new Translation();
 
-                defaultTranslation._translationStrings.Where(
-                    item => translations._translationStrings.All(a => a.Key != item.Key))
-                    .ToList()
-                    .ForEach(translations._translationStrings.Add);
+                    defaultTranslation._translationStrings.Where(
+                        item => translations._translationStrings.All(a => a.Key != item.Key))
+                        .ToList()
+                        .ForEach(translations._translationStrings.Add);
 
-                defaultTranslation._pokemons.Where(
-                    item => translations._pokemons.All(a => a.Key != item.Key))
-                    .ToList()
-                    .ForEach(translations._pokemons.Add);
+                    defaultTranslation._pokemons.Where(
+                        item => translations._pokemons.All(a => a.Key != item.Key))
+                        .ToList()
+                        .ForEach(translations._pokemons.Add);
+                }
+                catch (Exception e)
+                {
+                    translations = new Translation();
+                    translations.Save(Path.Combine(translationPath, "translation.en.json"));
+                }
             }
             else
             {

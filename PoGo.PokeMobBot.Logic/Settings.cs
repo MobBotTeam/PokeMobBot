@@ -20,7 +20,7 @@ namespace PoGo.PokeMobBot.Logic
         [JsonIgnore]
         private string _filePath;
         public AuthType AuthType;
-        public string GoogleRefreshToken;
+        public string GoogleRefreshToken = "";
         public string GoogleUsername;
         public string GooglePassword;
         public string PtcUsername;
@@ -194,10 +194,17 @@ namespace PoGo.PokeMobBot.Logic
         public float FavoriteMinIvPercentage = 95;
 
         //recycle
-        public int TotalAmountOfPokeballsToKeep = 100;
-        public int TotalAmountOfPotionsToKeep = 80;
-        public int TotalAmountOfRevivesToKeep = 60;
-        public int TotalAmountOfBerriesToKeep = 80;
+        public int TotalAmountOfPokeballsToKeep = 75;
+        public int TotalAmountOfGreatballsToKeep = 50;
+        public int TotalAmountOfUltraballsToKeep = 50;
+        public int TotalAmountOfMasterballsToKeep = 50;
+        public int TotalAmountOfPotionsToKeep = 0;
+        public int TotalAmountOfSuperPotionsToKeep = 0;
+        public int TotalAmountOfHyperPotionsToKeep = 0;
+        public int TotalAmountOfMaxPotionsToKeep = 20;
+        public int TotalAmountOfRevivesToKeep = 20;
+        public int TotalAmountOfMaxRevivesToKeep = 30;
+        public int TotalAmountOfBerriesToKeep = 40;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -207,10 +214,10 @@ namespace PoGo.PokeMobBot.Logic
         public int MinPokeballsToSnipe = 20;
         public int MinPokeballsWhileSnipe = 0;
         public bool UseSnipeLocationServer = false;
-        public bool UseSnipeOnlineLocationServer = false;
+        public bool UsePokeSnipersLocationServer = false;
         public string SnipeLocationServer = "localhost";
         public int SnipeLocationServerPort = 16969;
-        public int SnipeRequestTimeoutSeconds = 10;
+        public int SnipeRequestTimeoutSeconds = 5;
 
         public List<KeyValuePair<ItemId, int>> ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>
         {
@@ -224,11 +231,6 @@ namespace PoGo.PokeMobBot.Logic
             new KeyValuePair<ItemId, int>(ItemId.ItemXAttack, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemXDefense, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemXMiracle, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemRazzBerry, 50),
-            new KeyValuePair<ItemId, int>(ItemId.ItemBlukBerry, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemNanabBerry, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemWeparBerry, 30),
-            new KeyValuePair<ItemId, int>(ItemId.ItemPinapBerry, 30),
             new KeyValuePair<ItemId, int>(ItemId.ItemSpecialCamera, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasicUnlimited, 100),
             new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasic, 100),
@@ -686,15 +688,22 @@ namespace PoGo.PokeMobBot.Logic
         public string SnipeLocationServer => _settings.SnipeLocationServer;
         public int SnipeLocationServerPort => _settings.SnipeLocationServerPort;
         public bool UseSnipeLocationServer => _settings.UseSnipeLocationServer;
-        public bool UseSnipeOnlineLocationServer => _settings.UseSnipeOnlineLocationServer;
+        public bool UsePokeSnipersLocationServer => _settings.UsePokeSnipersLocationServer;
         public bool UseTransferIvForSnipe => _settings.UseTransferIvForSnipe;
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
         public double SnipingScanOffset => _settings.SnipingScanOffset;
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
+        public int TotalAmountOfGreatballsToKeep => _settings.TotalAmountOfGreatballsToKeep;
+        public int TotalAmountOfUltraballsToKeep => _settings.TotalAmountOfUltraballsToKeep;
+        public int TotalAmountOfMasterballsToKeep => _settings.TotalAmountOfMasterballsToKeep;
         public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
+        public int TotalAmountOfSuperPotionsToKeep => _settings.TotalAmountOfSuperPotionsToKeep;
+        public int TotalAmountOfHyperPotionsToKeep => _settings.TotalAmountOfHyperPotionsToKeep;
+        public int TotalAmountOfMaxPotionsToKeep => _settings.TotalAmountOfMaxPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
+        public int TotalAmountOfMaxRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public bool Teleport => _settings.Teleport;
         public bool CatchPokemon => _settings.CatchPokemon;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
