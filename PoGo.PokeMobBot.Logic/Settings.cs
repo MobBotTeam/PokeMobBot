@@ -301,7 +301,7 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Eevee,
             //PokemonId.Dratini,
             /*criteria: 50 candies commons*/
-            //PokemonId.Spearow,
+            PokemonId.Spearow,
             //PokemonId.Ekans,
             PokemonId.Zubat,
             //PokemonId.Paras,

@@ -141,7 +141,7 @@ namespace PoGo.PokeMobBot.Logic
         float UseBerryMinIv { get; }
         double UseBerryBelowCatchProbability { get; }
 
-        //favorite 
+        //favorite
 
         //recycle
         int TotalAmountOfPokeballsToKeep { get; }
