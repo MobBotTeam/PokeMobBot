@@ -180,13 +180,12 @@ namespace PoGo.PokeMobBot.Logic
         public int UseUltraBallAboveIv = 90;
         public double UseGreatBallBelowCatchProbability = 0.5;
         public double UseUltraBallBelowCatchProbability = 0.25;
-        public double UseMasterBallBelowCatchProbability = 0.05;
         public bool UsePokemonToNotCatchFilter = false;
 
         //berries
         public int UseBerryMinCp = 450;
         public float UseBerryMinIv = 95;
-        public double UseBerryBelowCatchProbability = 0.2;
+        public double UseBerryBelowCatchProbability = 0.25;
 
         //favorite
         public bool AutoFavoritePokemon = false;
@@ -302,7 +301,7 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Eevee,
             //PokemonId.Dratini,
             /*criteria: 50 candies commons*/
-            PokemonId.Spearow,
+            //PokemonId.Spearow,
             //PokemonId.Ekans,
             PokemonId.Zubat,
             //PokemonId.Paras,
@@ -450,7 +449,7 @@ namespace PoGo.PokeMobBot.Logic
         };
 
         public static GlobalSettings Default => new GlobalSettings();
-        
+
         public static GlobalSettings Load(string path)
         {
             GlobalSettings settings;
@@ -649,7 +648,6 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseEggIncubators => _settings.UseEggIncubators;
         public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
         public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
-        public double UseMasterBallBelowCatchProbability => _settings.UseMasterBallBelowCatchProbability;
         public double UseUltraBallBelowCatchProbability => _settings.UseUltraBallBelowCatchProbability;
         public double UseGreatBallBelowCatchProbability => _settings.UseGreatBallBelowCatchProbability;
         public int DelayBetweenPokemonCatch => _settings.DelayBetweenPokemonCatch;

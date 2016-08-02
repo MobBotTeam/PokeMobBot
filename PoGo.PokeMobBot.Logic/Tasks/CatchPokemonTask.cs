@@ -87,7 +87,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.HumanizeThrows)
                 {
                     normalizedRecticleSize =
-                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
+Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
                         1.85 + 0.1; // 0.1..1.95
                     spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
                 }
@@ -187,16 +187,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if(session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayCatchPokemon);
                 else
-                 await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
+                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
             } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed ||
                      caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
         }
 
         private static async Task<ItemId> GetBestBall(ISession session, dynamic encounter, float probability)
         {
-            var pokemonCp = encounter is EncounterResponse
+            /*var pokemonCp = encounter is EncounterResponse //commented for possible future uses
                 ? encounter.WildPokemon?.PokemonData?.Cp
-                : encounter?.PokemonData?.Cp;
+                : encounter?.PokemonData?.Cp;*/
             var pokemonId = encounter is EncounterResponse
                 ? encounter.WildPokemon?.PokemonData?.PokemonId
                 : encounter?.PokemonData?.PokemonId;
@@ -211,29 +211,18 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
             var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
-            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv)
-                return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv)
-                return ItemId.ItemGreatBall;
-
-            if (masterBallsCount > 0 &&
-                ((probability <= session.LogicSettings.UseMasterBallBelowCatchProbability &&
-                  !session.LogicSettings.PokemonToUseMasterball.Any()) ||
-                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId)))
+            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() ||
+                session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
-            if (ultraBallsCount > 0 && probability <= session.LogicSettings.UseUltraBallBelowCatchProbability)
+            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
+                probability <= session.LogicSettings.UseUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && probability <= session.LogicSettings.UseGreatBallBelowCatchProbability)
+            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
+                probability <= session.LogicSettings.UseGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
-
-            if (pokeBallsCount > 0)
+            if (pokeBallsCount > 0 && iV < session.LogicSettings.UseGreatBallAboveIv ||
+                probability > session.LogicSettings.UseGreatBallBelowCatchProbability)
                 return ItemId.ItemPokeBall;
-            if (greatBallsCount > 0)
-                return ItemId.ItemGreatBall;
-            if (ultraBallsCount > 0)
-                return ItemId.ItemUltraBall;
-            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any())
-                return ItemId.ItemMasterBall;
 
             return ItemId.ItemUnknown;
         }
