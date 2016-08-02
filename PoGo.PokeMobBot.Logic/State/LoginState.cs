@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
+using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
 
@@ -16,33 +17,42 @@ namespace PoGo.PokeMobBot.Logic.State
     public class LoginState : IState
     {
         private readonly PositionCheckState _positionCheckState;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly ISettings _settings;
+        private readonly PokemonGo.RocketAPI.Rpc.Login _login;
+        private readonly Client _client;
 
-        public LoginState(PositionCheckState positionCheckState)
+        public LoginState(PositionCheckState positionCheckState, IEventDispatcher eventDispatcher, ITranslation translation, ISettings settings, PokemonGo.RocketAPI.Rpc.Login login, Client client)
         {
             _positionCheckState = positionCheckState;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _settings = settings;
+            _login = login;
+            _client = client;
         }
 
-        public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
+        public async Task<IState> Execute(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            session.EventDispatcher.Send(new NoticeEvent
+            _eventDispatcher.Send(new NoticeEvent
             {
-                Message = session.Translation.GetTranslation(TranslationString.LoggingIn, session.Settings.AuthType)
+                Message = _translation.GetTranslation(TranslationString.LoggingIn, _settings.AuthType)
             });
 
-            await CheckLogin(session, cancellationToken);
+            await CheckLogin(cancellationToken);
 
             try
             {
-                switch (session.Settings.AuthType)
+                switch (_settings.AuthType)
                 {
                     case AuthType.Ptc:
                         try
                         {
                             await
-                                session.Client.Login.DoPtcLogin(session.Settings.PtcUsername,
-                                    session.Settings.PtcPassword);
+                                _login.DoPtcLogin(_settings.PtcUsername, _settings.PtcPassword);
                         }
                         catch (AggregateException ae)
                         {
@@ -51,35 +61,34 @@ namespace PoGo.PokeMobBot.Logic.State
                         break;
                     case AuthType.Google:
                         await
-                            session.Client.Login.DoGoogleLogin(session.Settings.GoogleUsername,
-                                session.Settings.GooglePassword);
+                            _login.DoGoogleLogin(_settings.GoogleUsername, _settings.GooglePassword);
                         break;
                     default:
-                        session.EventDispatcher.Send(new ErrorEvent
+                        _eventDispatcher.Send(new ErrorEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.WrongAuthType)
+                            Message = _translation.GetTranslation(TranslationString.WrongAuthType)
                         });
                         return null;
                 }
             }
             catch (Exception ex) when (ex is PtcOfflineException || ex is AccessTokenExpiredException)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PtcOffline)
+                    Message = _translation.GetTranslation(TranslationString.PtcOffline)
                 });
-                session.EventDispatcher.Send(new NoticeEvent
+                _eventDispatcher.Send(new NoticeEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 20)
+                    Message = _translation.GetTranslation(TranslationString.TryingAgainIn, 20)
                 });
                 await Task.Delay(20000, cancellationToken);
                 return this;
             }
             catch (AccountNotVerifiedException)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.AccountNotVerified)
+                    Message = _translation.GetTranslation(TranslationString.AccountNotVerified)
                 });
                 await Task.Delay(2000, cancellationToken);
                 Environment.Exit(0);
@@ -88,13 +97,13 @@ namespace PoGo.PokeMobBot.Logic.State
             {
                 if (e.Message.Contains("NeedsBrowser"))
                 {
-                    session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = session.Translation.GetTranslation(TranslationString.GoogleTwoFactorAuth)
+                        Message = _translation.GetTranslation(TranslationString.GoogleTwoFactorAuth)
                     });
-                    session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = session.Translation.GetTranslation(TranslationString.GoogleTwoFactorAuthExplanation)
+                        Message = _translation.GetTranslation(TranslationString.GoogleTwoFactorAuthExplanation)
                     });
                     await Task.Delay(7000, cancellationToken);
                     try
@@ -103,56 +112,53 @@ namespace PoGo.PokeMobBot.Logic.State
                     }
                     catch (Exception)
                     {
-                        session.EventDispatcher.Send(new ErrorEvent
+                        _eventDispatcher.Send(new ErrorEvent
                         {
                             Message = "https://security.google.com/settings/security/apppasswords"
                         });
                         throw;
                     }
                 }
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.GoogleError)
+                    Message = _translation.GetTranslation(TranslationString.GoogleError)
                 });
                 await Task.Delay(2000, cancellationToken);
                 Environment.Exit(0);
             }
 
-            await DownloadProfile(session);
+            await DownloadProfile();
 
             return _positionCheckState;
         }
 
-        private static async Task CheckLogin(ISession session, CancellationToken cancellationToken)
+        private async Task CheckLogin(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (session.Settings.AuthType == AuthType.Google &&
-                (session.Settings.GoogleUsername == null || session.Settings.GooglePassword == null))
+            if (_settings.AuthType == AuthType.Google && (_settings.GoogleUsername == null || _settings.GooglePassword == null))
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.MissingCredentialsGoogle)
+                    Message = _translation.GetTranslation(TranslationString.MissingCredentialsGoogle)
                 });
                 await Task.Delay(2000, cancellationToken);
                 Environment.Exit(0);
             }
-            else if (session.Settings.AuthType == AuthType.Ptc &&
-                     (session.Settings.PtcUsername == null || session.Settings.PtcPassword == null))
+            else if (_settings.AuthType == AuthType.Ptc && (_settings.PtcUsername == null || _settings.PtcPassword == null))
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.MissingCredentialsPtc)
+                    Message = _translation.GetTranslation(TranslationString.MissingCredentialsPtc)
                 });
                 await Task.Delay(2000, cancellationToken);
                 Environment.Exit(0);
             }
         }
 
-        public async Task DownloadProfile(ISession session)
+        public async Task DownloadProfile()
         {
-            session.Profile = await session.Client.Player.GetPlayer();
-            session.EventDispatcher.Send(new ProfileEvent { Profile = session.Profile });
+            _eventDispatcher.Send(new ProfileEvent { Profile = await _client.Player.GetPlayer() });
         }
     }
 }

@@ -14,7 +14,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
     public class Farm : IFarm
     {
-        private readonly ISession _session;
         private readonly EvolvePokemonTask _evolvePokemonTask;
         private readonly LevelUpPokemonTask _levelUpPokemonTask;
         private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
@@ -23,10 +22,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly UseIncubatorsTask _useIncubatorsTask;
         private readonly FarmPokestopsGpxTask _farmPokestopsGpxTask;
         private readonly FarmPokestopsTask _farmPokestopsTask;
+        private readonly ILogicSettings _logicSettings;
 
-        public Farm(ISession session, EvolvePokemonTask evolvePokemonTask, LevelUpPokemonTask levelUpPokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask)
+        public Farm(EvolvePokemonTask evolvePokemonTask, LevelUpPokemonTask levelUpPokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask, ILogicSettings logicSettings)
         {
-            _session = session;
             _evolvePokemonTask = evolvePokemonTask;
             _levelUpPokemonTask = levelUpPokemonTask;
             _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
@@ -35,42 +34,43 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _useIncubatorsTask = useIncubatorsTask;
             _farmPokestopsGpxTask = farmPokestopsGpxTask;
             _farmPokestopsTask = farmPokestopsTask;
+            _logicSettings = logicSettings;
         }
 
         public void Run(CancellationToken cancellationToken)
         {
-            if (_session.LogicSettings.EvolveAllPokemonAboveIv || _session.LogicSettings.EvolveAllPokemonWithEnoughCandy)
+            if (_logicSettings.EvolveAllPokemonAboveIv || _logicSettings.EvolveAllPokemonWithEnoughCandy)
             {
-                _evolvePokemonTask.Execute(_session, cancellationToken).Wait(cancellationToken);
+                _evolvePokemonTask.Execute(cancellationToken).Wait(cancellationToken);
             }
-            if (_session.LogicSettings.AutomaticallyLevelUpPokemon)
+            if (_logicSettings.AutomaticallyLevelUpPokemon)
             {
-                _levelUpPokemonTask.Execute(_session, cancellationToken).Wait(cancellationToken);
+                _levelUpPokemonTask.Execute(cancellationToken).Wait(cancellationToken);
             }
-            if (_session.LogicSettings.TransferDuplicatePokemon)
+            if (_logicSettings.TransferDuplicatePokemon)
             {
-                _transferDuplicatePokemonTask.Execute(_session, cancellationToken).Wait(cancellationToken);
-            }
-
-            if (_session.LogicSettings.RenamePokemon)
-            {
-                _renamePokemonTask.Execute(_session, cancellationToken).Wait(cancellationToken);
+                _transferDuplicatePokemonTask.Execute(cancellationToken).Wait(cancellationToken);
             }
 
-            _recycleItemsTask.Execute(_session, cancellationToken).Wait(cancellationToken);
-
-            if (_session.LogicSettings.UseEggIncubators)
+            if (_logicSettings.RenamePokemon)
             {
-                _useIncubatorsTask.Execute(_session, cancellationToken).Wait(cancellationToken);
+                _renamePokemonTask.Execute(cancellationToken).Wait(cancellationToken);
             }
 
-            if (_session.LogicSettings.UseGpxPathing)
+            _recycleItemsTask.Execute(cancellationToken).Wait(cancellationToken);
+
+            if (_logicSettings.UseEggIncubators)
             {
-                _farmPokestopsGpxTask.Execute(_session, cancellationToken).Wait(cancellationToken);
+                _useIncubatorsTask.Execute(cancellationToken).Wait(cancellationToken);
+            }
+
+            if (_logicSettings.UseGpxPathing)
+            {
+                _farmPokestopsGpxTask.Execute(cancellationToken).Wait(cancellationToken);
             }
             else
             {
-                _farmPokestopsTask.Execute(_session, cancellationToken).Wait(cancellationToken);
+                _farmPokestopsTask.Execute(cancellationToken).Wait(cancellationToken);
             }
         }
     }

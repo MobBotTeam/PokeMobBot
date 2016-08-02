@@ -10,7 +10,6 @@ namespace PoGo.PokeMobBot.Logic.Service
     public class BotService
     {
         public ILogin LoginTask;
-        public ISession Session;
 
         public void Run()
         {

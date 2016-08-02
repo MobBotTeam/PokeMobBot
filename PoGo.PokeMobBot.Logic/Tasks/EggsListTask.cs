@@ -12,28 +12,37 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class EggsListTask
     {
-        public async Task Execute(ISession session)
+        private readonly Inventory _inventory;
+        private readonly IEventDispatcher _eventDispatcher;
+
+        public EggsListTask(Inventory inventory, IEventDispatcher eventDispatcher)
+        {
+            _inventory = inventory;
+            _eventDispatcher = eventDispatcher;
+        }
+
+        public async Task Execute()
         {
             // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
+            await _inventory.RefreshCachedInventory();
 
-            var playerStats = (await session.Inventory.GetPlayerStats()).FirstOrDefault();
+            var playerStats = (await _inventory.GetPlayerStats()).FirstOrDefault();
             if (playerStats == null)
                 return;
 
             var kmWalked = playerStats.KmWalked;
 
-            var incubators = (await session.Inventory.GetEggIncubators())
+            var incubators = (await _inventory.GetEggIncubators())
                 .Where(x => x.UsesRemaining > 0 || x.ItemId == ItemId.ItemIncubatorBasicUnlimited)
                 .OrderByDescending(x => x.ItemId == ItemId.ItemIncubatorBasicUnlimited)
                 .ToList();
 
-            var unusedEggs = (await session.Inventory.GetEggs())
+            var unusedEggs = (await _inventory.GetEggs())
                 .Where(x => string.IsNullOrEmpty(x.EggIncubatorId))
                 .OrderBy(x => x.EggKmWalkedTarget - x.EggKmWalkedStart)
                 .ToList();
 
-            session.EventDispatcher.Send(
+            _eventDispatcher.Send(
                 new EggsListEvent
                 {
                     PlayerKmWalked = kmWalked,

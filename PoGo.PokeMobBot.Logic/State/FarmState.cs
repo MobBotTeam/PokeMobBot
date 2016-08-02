@@ -18,8 +18,9 @@ namespace PoGo.PokeMobBot.Logic.State
         private readonly UseIncubatorsTask _useIncubatorsTask;
         private readonly FarmPokestopsGpxTask _farmPokestopsGpxTask;
         private readonly FarmPokestopsTask _farmPokestopsTask;
+        private readonly ILogicSettings _logicSettings;
 
-        public FarmState(EvolvePokemonTask evolvePokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, LevelUpPokemonTask levelUpPokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask)
+        public FarmState(EvolvePokemonTask evolvePokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, LevelUpPokemonTask levelUpPokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask, ILogicSettings logicSettings)
         {
             _evolvePokemonTask = evolvePokemonTask;
             _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
@@ -29,42 +30,43 @@ namespace PoGo.PokeMobBot.Logic.State
             _useIncubatorsTask = useIncubatorsTask;
             _farmPokestopsGpxTask = farmPokestopsGpxTask;
             _farmPokestopsTask = farmPokestopsTask;
+            _logicSettings = logicSettings;
         }
 
-        public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
+        public async Task<IState> Execute(CancellationToken cancellationToken)
         {
-            if (session.LogicSettings.EvolveAllPokemonAboveIv || session.LogicSettings.EvolveAllPokemonWithEnoughCandy)
+            if (_logicSettings.EvolveAllPokemonAboveIv || _logicSettings.EvolveAllPokemonWithEnoughCandy)
             {
-                await _evolvePokemonTask.Execute(session, cancellationToken);
+                await _evolvePokemonTask.Execute(cancellationToken);
             }
 
-            if (session.LogicSettings.TransferDuplicatePokemon)
+            if (_logicSettings.TransferDuplicatePokemon)
             {
-                await _transferDuplicatePokemonTask.Execute(session, cancellationToken);
+                await _transferDuplicatePokemonTask.Execute(cancellationToken);
             }
-            if (session.LogicSettings.AutomaticallyLevelUpPokemon)
+            if (_logicSettings.AutomaticallyLevelUpPokemon)
             {
-                await _levelUpPokemonTask.Execute(session, cancellationToken);
+                await _levelUpPokemonTask.Execute(cancellationToken);
             }
-            if (session.LogicSettings.RenamePokemon)
+            if (_logicSettings.RenamePokemon)
             {
-                await _renamePokemonTask.Execute(session, cancellationToken);
-            }
-
-            await _recycleItemsTask.Execute(session, cancellationToken);
-
-            if (session.LogicSettings.UseEggIncubators)
-            {
-                await _useIncubatorsTask.Execute(session, cancellationToken);
+                await _renamePokemonTask.Execute(cancellationToken);
             }
 
-            if (session.LogicSettings.UseGpxPathing)
+            await _recycleItemsTask.Execute(cancellationToken);
+
+            if (_logicSettings.UseEggIncubators)
             {
-                await _farmPokestopsGpxTask.Execute(session, cancellationToken);
+                await _useIncubatorsTask.Execute(cancellationToken);
+            }
+
+            if (_logicSettings.UseGpxPathing)
+            {
+                await _farmPokestopsGpxTask.Execute(cancellationToken);
             }
             else
             {
-                await _farmPokestopsTask.Execute(session, cancellationToken);
+                await _farmPokestopsTask.Execute( cancellationToken);
             }
 
             return this;

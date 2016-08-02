@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.DataDumper;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
@@ -17,23 +18,31 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         private readonly Dumper _dumper;
         private readonly PokemonInfo _pokemonInfo;
+        private readonly Inventory _inventory;
+        private readonly ILogicSettings _logicSettings;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
 
         public List<ulong> PokemonId = new List<ulong>();
         
         public List<ulong> PokemonIdcp = new List<ulong>();
 
-        public DisplayPokemonStatsTask(Dumper dumper, PokemonInfo pokemonInfo)
+        public DisplayPokemonStatsTask(Dumper dumper, PokemonInfo pokemonInfo, Inventory inventory, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, ITranslation translation)
         {
             _dumper = dumper;
             _pokemonInfo = pokemonInfo;
+            _inventory = inventory;
+            _logicSettings = logicSettings;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
         }
 
-        public async Task Execute(ISession session)
+        public async Task Execute()
         {
             var highestsPokemonCp =
-                await session.Inventory.GetHighestsCp(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
-            var highestsPokemonCpForUpgrade = await session.Inventory.GetHighestsCp(50);
-            var highestsPokemonIvForUpgrade = await session.Inventory.GetHighestsPerfect(50);
+                await _inventory.GetHighestsCp(_logicSettings.AmountOfPokemonToDisplayOnStart);
+            var highestsPokemonCpForUpgrade = await _inventory.GetHighestsCp(50);
+            var highestsPokemonIvForUpgrade = await _inventory.GetHighestsPerfect(50);
             var pokemonPairedWithStatsCp =
                 highestsPokemonCp.Select(
                     pokemon =>
@@ -47,7 +56,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
                             _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).ToList();
             var highestsPokemonPerfect =
-                await session.Inventory.GetHighestsPerfect(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
+                await _inventory.GetHighestsPerfect(_logicSettings.AmountOfPokemonToDisplayOnStart);
 
             var pokemonPairedWithStatsIv =
                 highestsPokemonPerfect.Select(
@@ -62,46 +71,46 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
                             _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).ToList();
 
-            session.EventDispatcher.Send(
+            _eventDispatcher.Send(
                 new DisplayHighestsPokemonEvent
                 {
                     SortedBy = "CP",
                     PokemonList = pokemonPairedWithStatsCp
                 });
-            if(session.LogicSettings.Teleport)
-                await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
+            if(_logicSettings.Teleport)
+                await Task.Delay(_logicSettings.DelayDisplayPokemon);
             else
                 await Task.Delay(500);
 
-            session.EventDispatcher.Send(
+            _eventDispatcher.Send(
                 new DisplayHighestsPokemonEvent
                 {
                     SortedBy = "IV",
                     PokemonList = pokemonPairedWithStatsIv
                 });
             
-            var allPokemonInBag = session.LogicSettings.PrioritizeIvOverCp
-                ? await session.Inventory.GetHighestsPerfect(1000)
-                : await session.Inventory.GetHighestsCp(1000);
-            if (session.LogicSettings.DumpPokemonStats)
+            var allPokemonInBag = _logicSettings.PrioritizeIvOverCp
+                ? await _inventory.GetHighestsPerfect(1000)
+                : await _inventory.GetHighestsCp(1000);
+            if (_logicSettings.DumpPokemonStats)
             {
                 const string dumpFileName = "PokeBagStats";
                 string toDumpCSV = "Name,Level,CP,IV,Move1,Move2\r\n";
                 string toDumpTXT = "";
-                _dumper.ClearDumpFile(session, dumpFileName);
-                _dumper.ClearDumpFile(session, dumpFileName, "csv");
+                _dumper.ClearDumpFile(dumpFileName);
+                _dumper.ClearDumpFile(dumpFileName, "csv");
 
                 foreach (var pokemon in allPokemonInBag)
                 {
-                    toDumpTXT += $"NAME: {session.Translation.GetPokemonName(pokemon.PokemonId).PadRight(16, ' ')}Lvl: {_pokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {_pokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}\r\n";
-                    toDumpCSV += $"{session.Translation.GetPokemonName(pokemon.PokemonId)},{_pokemonInfo.GetLevel(pokemon).ToString("00")},{pokemon.Cp},{_pokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%,{pokemon.Move1},{pokemon.Move2}\r\n";
+                    toDumpTXT += $"NAME: {_translation.GetPokemonName(pokemon.PokemonId).PadRight(16, ' ')}Lvl: {_pokemonInfo.GetLevel(pokemon).ToString("00")}\t\tCP: {pokemon.Cp.ToString().PadRight(8, ' ')}\t\t IV: {_pokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%\t\t\tMOVE1: {pokemon.Move1}\t\t\tMOVE2: {pokemon.Move2}\r\n";
+                    toDumpCSV += $"{_translation.GetPokemonName(pokemon.PokemonId)},{_pokemonInfo.GetLevel(pokemon).ToString("00")},{pokemon.Cp},{_pokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}%,{pokemon.Move1},{pokemon.Move2}\r\n";
                 }
 
-                _dumper.Dump(session, toDumpTXT, dumpFileName);
-                _dumper.Dump(session, toDumpCSV, dumpFileName, "csv");
+                _dumper.Dump(toDumpTXT, dumpFileName);
+                _dumper.Dump(toDumpCSV, dumpFileName, "csv");
             }
-            if(session.LogicSettings.Teleport)
-                await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
+            if(_logicSettings.Teleport)
+                await Task.Delay(_logicSettings.DelayDisplayPokemon);
             else
                 await Task.Delay(500);
         }

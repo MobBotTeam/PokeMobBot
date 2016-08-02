@@ -1,12 +1,10 @@
 ﻿#region using directives
 
-using log4net.Repository.Hierarchy;
 using Newtonsoft.Json;
 using PoGo.PokeMobBot.Logic;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
-using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
 using PokemonGo.RocketAPI;
 using SuperSocket.SocketBase;
@@ -20,25 +18,26 @@ namespace PoGo.PokeMobBot.CLI
     public class WebSocketInterface
     {
         private readonly WebSocketServer _server;
-        private readonly Session _session;
         private readonly PokemonListTask _pokemonListTask;
         private readonly EggsListTask _eggsListTask;
         private readonly InventoryListTask _inventoryListTask;
         private readonly PlayerStatsTask _playerStatsTask;
-        private readonly ILogger _logger;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly Client _client;
         private PokeStopListEvent _lastPokeStopList;
         private ProfileEvent _lastProfile;
 
-        public WebSocketInterface(GlobalSettings settings, Session session, PokemonListTask pokemonListTask, EggsListTask eggsListTask, InventoryListTask inventoryListTask, ILogger logger, PlayerStatsTask playerStatsTask)
+        public WebSocketInterface(GlobalSettings settings, PokemonListTask pokemonListTask, EggsListTask eggsListTask, InventoryListTask inventoryListTask, ILogger logger, PlayerStatsTask playerStatsTask, IEventDispatcher eventDispatcher, ITranslation translation, Client client)
         {
-            _session = session;
             _pokemonListTask = pokemonListTask;
             _eggsListTask = eggsListTask;
             _inventoryListTask = inventoryListTask;
-            _logger = logger;
             _playerStatsTask = playerStatsTask;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _client = client;
 
-            var translations = session.Translation;
             _server = new WebSocketServer();
             var setupComplete = _server.Setup(new ServerConfig
             {
@@ -56,7 +55,7 @@ namespace PoGo.PokeMobBot.CLI
 
             if (setupComplete == false)
             {
-                session.EventDispatcher.Send(new ErrorEvent() { Message = translations.GetTranslation(TranslationString.WebSocketFailStart, settings.WebSocketPort) });
+                _eventDispatcher.Send(new ErrorEvent() { Message = _translation.GetTranslation(TranslationString.WebSocketFailStart, settings.WebSocketPort) });
                 return;
             }
 
@@ -96,16 +95,16 @@ namespace PoGo.PokeMobBot.CLI
             switch (message)
             {
                 case "PokemonList":
-                    await _pokemonListTask.Execute(_session);
+                    await _pokemonListTask.Execute();
                     break;
                 case "EggsList":
-                    await _eggsListTask.Execute(_session);
+                    await _eggsListTask.Execute();
                     break;
                 case "InventoryList":
-                    await _inventoryListTask.Execute(_session);
+                    await _inventoryListTask.Execute();
                     break;
                 case "PlayerStats":
-                    await _playerStatsTask.Execute(_session);
+                    await _playerStatsTask.Execute();
                     break;
             }
         }
@@ -122,14 +121,14 @@ namespace PoGo.PokeMobBot.CLI
             {
                 session.Send(Serialize(new UpdatePositionEvent()
                 {
-                    Latitude = _session.Client.CurrentLatitude,
-                    Longitude = _session.Client.CurrentLongitude
+                    Latitude = _client.CurrentLatitude,
+                    Longitude = _client.CurrentLongitude
                 }));
             }
             catch { }
         }
 
-        public void Listen(IEvent evt, Session session)
+        public void Listen(IEvent evt)
         {
             dynamic eve = evt;
 

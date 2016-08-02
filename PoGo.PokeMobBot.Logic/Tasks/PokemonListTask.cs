@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
-using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
@@ -14,26 +13,32 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     public class PokemonListTask
     {
         private readonly PokemonInfo _pokemonInfo;
+        private readonly ILogicSettings _logicSettings;
+        private readonly Inventory _inventory;
+        private readonly IEventDispatcher _eventDispatcher;
 
-        public PokemonListTask(PokemonInfo pokemonInfo)
+        public PokemonListTask(PokemonInfo pokemonInfo, ILogicSettings logicSettings, Inventory inventory, IEventDispatcher eventDispatcher)
         {
             _pokemonInfo = pokemonInfo;
+            _logicSettings = logicSettings;
+            _inventory = inventory;
+            _eventDispatcher = eventDispatcher;
         }
 
-        public async Task Execute(ISession session)
+        public async Task Execute()
         {
             // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
+            await _inventory.RefreshCachedInventory();
 
-            var allPokemonInBag = await session.Inventory.GetHighestsCp(1000);
+            var allPokemonInBag = await _inventory.GetHighestsCp(1000);
             var pkmWithIv = allPokemonInBag.Select(p => Tuple.Create(p, _pokemonInfo.CalculatePokemonPerfection(p)));
-            session.EventDispatcher.Send(
+            _eventDispatcher.Send(
                 new PokemonListEvent
                 {
                     PokemonList = pkmWithIv.ToList()
                 });
-            if(session.LogicSettings.Teleport)
-                await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
+            if(_logicSettings.Teleport)
+                await Task.Delay(_logicSettings.DelayDisplayPokemon);
             else
                 await Task.Delay(500);
         }

@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.Repository;
 
 #endregion
@@ -31,46 +30,49 @@ namespace PoGo.PokeMobBot.Logic.State
             "https://github.com/PocketMobsters/PokeMobBot/releases";
 
         private readonly LoginState _loginState;
-        private readonly ILogger _logger;
+        private readonly ILogicSettings _logicSettings;
         private readonly GlobalSettingsRepository _globalSettingsRepository;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
 
         public static Version RemoteVersion;
 
-        public VersionCheckState(LoginState loginState, ILogger logger, GlobalSettingsRepository globalSettingsRepository)
+        public VersionCheckState(LoginState loginState, GlobalSettingsRepository globalSettingsRepository, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, ITranslation translation)
         {
             _loginState = loginState;
-            _logger = logger;
             _globalSettingsRepository = globalSettingsRepository;
+            _logicSettings = logicSettings;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
         }
 
-        public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
+        public async Task<IState> Execute(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await CleanupOldFiles(session);
-            var autoUpdate = session.LogicSettings.AutoUpdate;
+            await CleanupOldFiles();
+            var autoUpdate = _logicSettings.AutoUpdate;
             var needupdate = IsLatest();
             if (!needupdate || !autoUpdate)
             {
                 if (!needupdate)
                 {
-                    session.EventDispatcher.Send(new UpdateEvent
+                    _eventDispatcher.Send(new UpdateEvent
                     {
-                        Message =
-                            session.Translation.GetTranslation(TranslationString.GotUpToDateVersion, RemoteVersion)
+                        Message = _translation.GetTranslation(TranslationString.GotUpToDateVersion, RemoteVersion)
                     });
                     return _loginState;
                 }
-                session.EventDispatcher.Send(new UpdateEvent
+                _eventDispatcher.Send(new UpdateEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.AutoUpdaterDisabled, LatestRelease)
+                    Message = _translation.GetTranslation(TranslationString.AutoUpdaterDisabled, LatestRelease)
                 });
 
                 return _loginState;
             }
-            session.EventDispatcher.Send(new UpdateEvent
+            _eventDispatcher.Send(new UpdateEvent
             {
-                Message = session.Translation.GetTranslation(TranslationString.DownloadingUpdate)
+                Message = _translation.GetTranslation(TranslationString.DownloadingUpdate)
             });
             var remoteReleaseUrl =
                 $"https://github.com/PocketMobsters/PokeMobBot/releases/download/v{RemoteVersion}/";
@@ -82,36 +84,36 @@ namespace PoGo.PokeMobBot.Logic.State
             var extractedDir = Path.Combine(tempPath, "Release");
             var destinationDir = baseDir + Path.DirectorySeparatorChar;
 
-            session.EventDispatcher.Send(new NoticeEvent() { Message = downloadLink });
+            _eventDispatcher.Send(new NoticeEvent() { Message = downloadLink });
 
-            if (!DownloadFile(session, downloadLink, downloadFilePath))
+            if (!DownloadFile(downloadLink, downloadFilePath))
                 return _loginState;
 
-            session.EventDispatcher.Send(new UpdateEvent
+            _eventDispatcher.Send(new UpdateEvent
             {
-                Message = session.Translation.GetTranslation(TranslationString.FinishedDownloadingRelease)
+                Message = _translation.GetTranslation(TranslationString.FinishedDownloadingRelease)
             });
 
             if (!UnpackFile(downloadFilePath, tempPath))
                 return _loginState;
 
-            session.EventDispatcher.Send(new UpdateEvent
+            _eventDispatcher.Send(new UpdateEvent
             {
-                Message = session.Translation.GetTranslation(TranslationString.FinishedUnpackingFiles)
+                Message = _translation.GetTranslation(TranslationString.FinishedUnpackingFiles)
             });
 
             if (!MoveAllFiles(extractedDir, destinationDir))
                 return _loginState;
 
-            session.EventDispatcher.Send(new UpdateEvent
+            _eventDispatcher.Send(new UpdateEvent
             {
-                Message = session.Translation.GetTranslation(TranslationString.UpdateFinished)
+                Message = _translation.GetTranslation(TranslationString.UpdateFinished)
             });
 
-            if (TransferConfig(baseDir, session))
-                session.EventDispatcher.Send(new UpdateEvent
+            if (TransferConfig(baseDir))
+                _eventDispatcher.Send(new UpdateEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.FinishedTransferringConfig)
+                    Message = _translation.GetTranslation(TranslationString.FinishedTransferringConfig)
                 });
 
             await Task.Delay(2000, cancellationToken);
@@ -121,7 +123,7 @@ namespace PoGo.PokeMobBot.Logic.State
             return null;
         }
 
-        public async Task CleanupOldFiles(ISession session)
+        public async Task CleanupOldFiles()
         {
             var tmpDir = Path.Combine(Directory.GetCurrentDirectory(), "tmp");
 
@@ -143,7 +145,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 }
                 catch (Exception e)
                 {
-                    session.EventDispatcher.Send(new ErrorEvent()
+                    _eventDispatcher.Send(new ErrorEvent()
                     {
                         Message = e.ToString()
                     });
@@ -152,14 +154,14 @@ namespace PoGo.PokeMobBot.Logic.State
             await Task.Delay(200);
         }
 
-        public bool DownloadFile(ISession session, string url, string dest)
+        public bool DownloadFile(string url, string dest)
         {
             using (var client = new WebClient())
             {
                 try
                 {
                     client.DownloadFile(url, dest);
-                    session.EventDispatcher.Send(new NoticeEvent()
+                    _eventDispatcher.Send(new NoticeEvent()
                     {
                         Message = dest
                     });
@@ -251,9 +253,9 @@ namespace PoGo.PokeMobBot.Logic.State
             return true;
         }
 
-        private bool TransferConfig(string baseDir, ISession session)
+        private bool TransferConfig(string baseDir)
         {
-            if (!session.LogicSettings.TransferConfigAndAuthOnUpdate)
+            if (!_logicSettings.TransferConfigAndAuthOnUpdate)
                 return false;
 
             var configDir = Path.Combine(baseDir, "Config");

@@ -13,11 +13,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class InventoryListTask
     {
-        public async Task Execute(ISession session)
-        {
-            var inventory = await session.Inventory.GetItems();
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly Inventory _inventory;
 
-            session.EventDispatcher.Send(
+        public InventoryListTask(Inventory inventory, IEventDispatcher eventDispatcher)
+        {
+            _inventory = inventory;
+            _eventDispatcher = eventDispatcher;
+        }
+
+        public async Task Execute()
+        {
+            var inventory = await _inventory.GetItems();
+
+            _eventDispatcher.Send(
                 new InventoryListEvent
                 {
                     Items = inventory.ToList()

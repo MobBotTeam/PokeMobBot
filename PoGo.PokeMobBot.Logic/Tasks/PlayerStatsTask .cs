@@ -12,13 +12,22 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class PlayerStatsTask
     {
-        public async Task Execute(ISession session)
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly Inventory _inventory;
+
+        public PlayerStatsTask(IEventDispatcher eventDispatcher, Inventory inventory)
         {
-            var PlayersProfile = (await session.Inventory.GetPlayerStats())
+            _eventDispatcher = eventDispatcher;
+            _inventory = inventory;
+        }
+
+        public async Task Execute()
+        {
+            var PlayersProfile = (await _inventory.GetPlayerStats())
                 .ToList();
 
 
-            session.EventDispatcher.Send(
+            _eventDispatcher.Send(
                 new PlayerStatsEvent
                 {
                     PlayerStats = PlayersProfile,

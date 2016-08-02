@@ -12,12 +12,11 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.State;
-using PoGo.PokeMobBot.Logic.PoGoUtils;
 using POGOProtos.Enums;
 using POGOProtos.Inventory.Item;
 using POGOProtos.Networking.Responses;
 using Newtonsoft.Json.Linq;
+using PokemonGo.RocketAPI;
 
 #endregion
 
@@ -88,34 +87,41 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public static List<PokemonLocation> LocsVisited = new List<PokemonLocation>();
         private static readonly List<SniperInfo> SnipeLocations = new List<SniperInfo>();
         private static DateTime _lastSnipe = DateTime.MinValue;
+        private readonly Inventory _inventory;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly ILogicSettings _logicSettings;
+        private readonly Client _client;
 
         private readonly CatchPokemonTask _catchPokemonTask;
 
-        public SnipePokemonTask(CatchPokemonTask catchPokemonTask)
+        public SnipePokemonTask(CatchPokemonTask catchPokemonTask, Inventory inventory, IEventDispatcher eventDispatcher, ITranslation translation, ILogicSettings logicSettings, Client client)
         {
             _catchPokemonTask = catchPokemonTask;
+            _inventory = inventory;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _logicSettings = logicSettings;
+            _client = client;
         }
 
-        public Task AsyncStart(Session session, CancellationToken cancellationToken = default(CancellationToken))
+        public Task AsyncStart(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.Run(() => Start(session, cancellationToken), cancellationToken);
+            return Task.Run(() => Start(cancellationToken), cancellationToken);
         }
 
-        public async Task<bool> CheckPokeballsToSnipe(int minPokeballs, ISession session,
-            CancellationToken cancellationToken)
+        public async Task<bool> CheckPokeballsToSnipe(int minPokeballs, CancellationToken cancellationToken)
         {
-            var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
-            pokeBallsCount += await session.Inventory.GetItemAmountByType(ItemId.ItemGreatBall);
-            pokeBallsCount += await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
-            pokeBallsCount += await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
+            var pokeBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemPokeBall);
+            pokeBallsCount += await _inventory.GetItemAmountByType(ItemId.ItemGreatBall);
+            pokeBallsCount += await _inventory.GetItemAmountByType(ItemId.ItemUltraBall);
+            pokeBallsCount += await _inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
             if (pokeBallsCount < minPokeballs)
             {
-                session.EventDispatcher.Send(new NoticeEvent
+                _eventDispatcher.Send(new NoticeEvent
                 {
-                    Message =
-                        session.Translation.GetTranslation(TranslationString.NotEnoughPokeballsToSnipe, pokeBallsCount,
-                            minPokeballs)
+                    Message = _translation.GetTranslation(TranslationString.NotEnoughPokeballsToSnipe, pokeBallsCount, minPokeballs)
                 });
                 return false;
             }
@@ -123,25 +129,25 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             return true;
         }
 
-        public async Task Execute(ISession session, CancellationToken cancellationToken)
+        public async Task Execute(CancellationToken cancellationToken)
         {
-            if (_lastSnipe.AddMilliseconds(session.LogicSettings.MinDelayBetweenSnipes) > DateTime.Now)
+            if (_lastSnipe.AddMilliseconds(_logicSettings.MinDelayBetweenSnipes) > DateTime.Now)
                 return;
 
-            if (await CheckPokeballsToSnipe(session.LogicSettings.MinPokeballsToSnipe, session, cancellationToken))
+            if (await CheckPokeballsToSnipe(_logicSettings.MinPokeballsToSnipe, cancellationToken))
             {
-                if (session.LogicSettings.PokemonToSnipe != null)
+                if (_logicSettings.PokemonToSnipe != null)
                 {
                     var st = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     var t = DateTime.Now.ToUniversalTime() - st;
                     var currentTimestamp = t.TotalMilliseconds;
 
-                    var pokemonIds = session.LogicSettings.PokemonToSnipe.Pokemon;
+                    var pokemonIds = _logicSettings.PokemonToSnipe.Pokemon;
 
-                    if (session.LogicSettings.UseSnipeLocationServer)
+                    if (_logicSettings.UseSnipeLocationServer)
                     {
                         var locationsToSnipe = SnipeLocations; // inital
-                        if (session.LogicSettings.UseSnipeOnlineLocationServer)
+                        if (_logicSettings.UseSnipeOnlineLocationServer)
                         {
                             locationsToSnipe = new List<SniperInfo>(SnipeLocations);
                             locationsToSnipe = locationsToSnipe.Where(q => q.Id == PokemonId.Missingno || pokemonIds.Contains(q.Id)).ToList();
@@ -149,9 +155,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         else
                         {
                             locationsToSnipe = SnipeLocations?.Where(q =>
-                            (!session.LogicSettings.UseTransferIvForSnipe ||
-                             (q.Iv == 0 && !session.LogicSettings.SnipeIgnoreUnknownIv) ||
-                             (q.Iv >= session.Inventory.GetPokemonTransferFilter(q.Id).KeepMinIvPercentage)) &&
+                            (!_logicSettings.UseTransferIvForSnipe ||
+                             (q.Iv == 0 && !_logicSettings.SnipeIgnoreUnknownIv) ||
+                             (q.Iv >= _inventory.GetPokemonTransferFilter(q.Id).KeepMinIvPercentage)) &&
                             !LocsVisited.Contains(new PokemonLocation(q.Latitude, q.Longitude))
                             && !(q.TimeStamp != default(DateTime) &&
                                  q.TimeStamp > new DateTime(2016) &&
@@ -166,7 +172,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             _lastSnipe = DateTime.Now;
                             foreach (var location in locationsToSnipe)
                             {
-                                session.EventDispatcher.Send(new SnipeScanEvent
+                                _eventDispatcher.Send(new SnipeScanEvent
                                 {
                                     Bounds = new Location(location.Latitude, location.Longitude),
                                     PokemonId = location.Id,
@@ -175,36 +181,35 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                                 if (
                                     !await
-                                        CheckPokeballsToSnipe(session.LogicSettings.MinPokeballsWhileSnipe + 1, session,
-                                            cancellationToken))
+                                        CheckPokeballsToSnipe(_logicSettings.MinPokeballsWhileSnipe + 1, cancellationToken))
                                     return;
 
                                 await
-                                    Snipe(session, pokemonIds, location.Latitude, location.Longitude, cancellationToken);
+                                    Snipe(pokemonIds, location.Latitude, location.Longitude, cancellationToken);
                                 LocsVisited.Add(new PokemonLocation(location.Latitude, location.Longitude));
                             }
                         }
                     }
                     else
                     {
-                        foreach (var location in session.LogicSettings.PokemonToSnipe.Locations)
+                        foreach (var location in _logicSettings.PokemonToSnipe.Locations)
                         {
-                            session.EventDispatcher.Send(new SnipeScanEvent
+                            _eventDispatcher.Send(new SnipeScanEvent
                             {
                                 Bounds = location,
                                 PokemonId = PokemonId.Missingno
                             });
 
-                            var scanResult = await SnipeScanForPokemon(session, location); // initialize
+                            var scanResult = await SnipeScanForPokemon(location); // initialize
                             List<PokemonLocation> locationsToSnipe = new List<PokemonLocation>();
 
-                            if (session.LogicSettings.UseSnipeOnlineLocationServer)
+                            if (_logicSettings.UseSnipeOnlineLocationServer)
                             {
-                                OnlineSnipeScanForPokemon(session, location);
+                                OnlineSnipeScanForPokemon(location);
                             }
                             else
                             {
-                                scanResult = await SnipeScanForPokemon(session, location);
+                                scanResult = await SnipeScanForPokemon(location);
                                 if (scanResult.Pokemon != null)
                                 {
                                     var filteredPokemon = scanResult.Pokemon.Where(q => pokemonIds.Contains((PokemonId)q.PokemonName));
@@ -230,22 +235,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 {
                                     if (
                                         !await
-                                            CheckPokeballsToSnipe(session.LogicSettings.MinPokeballsWhileSnipe + 1,
-                                                session, cancellationToken))
+                                            CheckPokeballsToSnipe(_logicSettings.MinPokeballsWhileSnipe + 1, cancellationToken))
                                         return;
 
                                     LocsVisited.Add(pokemonLocation);
 
                                     await
-                                        Snipe(session, pokemonIds, pokemonLocation.latitude, pokemonLocation.longitude,
-                                            cancellationToken);
+                                        Snipe(pokemonIds, pokemonLocation.latitude, pokemonLocation.longitude, cancellationToken);
                                 }
                             }
                             else
                             {
-                                session.EventDispatcher.Send(new NoticeEvent
+                                _eventDispatcher.Send(new NoticeEvent
                                 {
-                                    Message = session.Translation.GetTranslation(TranslationString.NoPokemonToSnipe)
+                                    Message = _translation.GetTranslation(TranslationString.NoPokemonToSnipe)
                                 });
                             }
 
@@ -256,32 +259,32 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             }
         }
 
-        private async Task Snipe(ISession session, IEnumerable<PokemonId> pokemonIds, double Latitude,
+        private async Task Snipe(IEnumerable<PokemonId> pokemonIds, double Latitude,
             double Longitude, CancellationToken cancellationToken)
         {
-            var CurrentLatitude = session.Client.CurrentLatitude;
-            var CurrentLongitude = session.Client.CurrentLongitude;
+            var CurrentLatitude = _client.CurrentLatitude;
+            var CurrentLongitude = _client.CurrentLongitude;
 
-            session.EventDispatcher.Send(new SnipeModeEvent { Active = true });
+            _eventDispatcher.Send(new SnipeModeEvent { Active = true });
 
             await
-                session.Client.Player.UpdatePlayerLocation(Latitude,
-                    Longitude, session.Client.CurrentAltitude);
+                _client.Player.UpdatePlayerLocation(Latitude,
+                    Longitude, _client.CurrentAltitude);
 
-            session.EventDispatcher.Send(new UpdatePositionEvent
+            _eventDispatcher.Send(new UpdatePositionEvent
             {
                 Longitude = Longitude,
                 Latitude = Latitude
             });
 
-            var mapObjects = session.Client.Map.GetMapObjects().Result;
+            var mapObjects = _client.Map.GetMapObjects().Result;
             var catchablePokemon =
                 mapObjects.MapCells.SelectMany(q => q.CatchablePokemons)
                     .Where(q => pokemonIds.Contains(q.PokemonId))
                     .ToList();
 
-            await session.Client.Player.UpdatePlayerLocation(CurrentLatitude, CurrentLongitude,
-                session.Client.CurrentAltitude);
+            await _client.Player.UpdatePlayerLocation(CurrentLatitude, CurrentLongitude,
+                _client.CurrentAltitude);
 
             foreach (var pokemon in catchablePokemon)
             {
@@ -291,42 +294,42 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 try
                 {
                     await
-                        session.Client.Player.UpdatePlayerLocation(Latitude, Longitude, session.Client.CurrentAltitude);
+                        _client.Player.UpdatePlayerLocation(Latitude, Longitude, _client.CurrentAltitude);
 
                     encounter =
-                        session.Client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId).Result;
+                        _client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId).Result;
                 }
                 finally
                 {
                     await
-                        session.Client.Player.UpdatePlayerLocation(CurrentLatitude, CurrentLongitude, session.Client.CurrentAltitude);
+                        _client.Player.UpdatePlayerLocation(CurrentLatitude, CurrentLongitude, _client.CurrentAltitude);
                 }
 
                 if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
                 {
-                    session.EventDispatcher.Send(new UpdatePositionEvent
+                    _eventDispatcher.Send(new UpdatePositionEvent
                     {
                         Latitude = CurrentLatitude,
                         Longitude = CurrentLongitude
                     });
 
-                    await _catchPokemonTask.Execute(session, encounter, pokemon);
+                    await _catchPokemonTask.Execute(encounter, pokemon);
                 }
                 else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
                 {
-                    session.EventDispatcher.Send(new WarnEvent
+                    _eventDispatcher.Send(new WarnEvent
                     {
                         Message =
-                            session.Translation.GetTranslation(
+                            _translation.GetTranslation(
                                 TranslationString.InvFullTransferManually)
                     });
                 }
                 else
                 {
-                    session.EventDispatcher.Send(new WarnEvent
+                    _eventDispatcher.Send(new WarnEvent
                     {
                         Message =
-                            session.Translation.GetTranslation(
+                            _translation.GetTranslation(
                                 TranslationString.EncounterProblem, encounter.Status)
                     });
                 }
@@ -335,19 +338,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     !Equals(catchablePokemon.ElementAtOrDefault(catchablePokemon.Count - 1),
                         pokemon))
                 {
-                    await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch, cancellationToken);
+                    await Task.Delay(_logicSettings.DelayBetweenPokemonCatch, cancellationToken);
                 }
             }
 
-            session.EventDispatcher.Send(new SnipeModeEvent { Active = false });
-            await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions, cancellationToken);
+            _eventDispatcher.Send(new SnipeModeEvent { Active = false });
+            await Task.Delay(_logicSettings.DelayBetweenPlayerActions, cancellationToken);
         }
 
-        private async Task<ScanResult> SnipeScanForPokemon(ISession session, Location location)
+        private async Task<ScanResult> SnipeScanForPokemon(Location location)
         {
             var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
-            var offset = session.LogicSettings.SnipingScanOffset;
+            var offset = _logicSettings.SnipingScanOffset;
             // 0.003 = half a mile; maximum 0.06 is 10 miles
             if (offset < 0.001) offset = 0.003;
             if (offset > 0.06) offset = 0.06;
@@ -366,7 +369,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
-                request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
+                request.Timeout = _logicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
                 var resp = await request.GetResponseAsync();
@@ -376,7 +379,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (fullresp.Contains("error"))
                 {
-                    session.EventDispatcher.Send(new WarnEvent
+                    _eventDispatcher.Send(new WarnEvent
                     {
                         Message = fullresp
                     });
@@ -393,28 +396,28 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     var resp = (HttpWebResponse)ex.Response;
                     if (resp.StatusCode == HttpStatusCode.NotFound)
                     {
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound)
+                            Message = _translation.GetTranslation(TranslationString.WebErrorNotFound)
                         });
                     }
                     else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
                     {
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.WebErrorGatewayTimeout)
+                            Message = _translation.GetTranslation(TranslationString.WebErrorGatewayTimeout)
                         });
                     }
                     else if (resp.StatusCode == HttpStatusCode.BadGateway)
                     {
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.WebErrorBadGateway)
+                            Message = _translation.GetTranslation(TranslationString.WebErrorBadGateway)
                         });
                     }
                     else
                     {
-                        session.EventDispatcher.Send(new ErrorEvent
+                        _eventDispatcher.Send(new ErrorEvent
                         {
                             Message = ex.ToString()
                         });
@@ -428,7 +431,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 }
                 else
                 {
-                    session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
                         Message = ex.ToString()
                     });
@@ -442,7 +445,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             catch (Exception ex)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
                     Message = ex.ToString()
                 });
@@ -455,11 +458,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             return scanResult;
         }
 
-        private ScanResult OnlineSnipeScanForPokemon(ISession session, Location location)
+        private ScanResult OnlineSnipeScanForPokemon(Location location)
         {
             var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
-            var offset = session.LogicSettings.SnipingScanOffset;
+            var offset = _logicSettings.SnipingScanOffset;
             // 0.003 = half a mile; maximum 0.06 is 10 miles
             if (offset < 0.001) offset = 0.003;
             if (offset > 0.06) offset = 0.06;
@@ -473,7 +476,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 var request = WebRequest.CreateHttp(uri);
                 request.Accept = "application/json";
                 request.Method = "GET";
-                request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
+                request.Timeout = _logicSettings.SnipeRequestTimeoutSeconds;
                 request.ReadWriteTimeout = 32000;
 
                 var resp = request.GetResponse();
@@ -502,7 +505,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             catch (Exception ex)
             {
                 // most likely System.IO.IOException
-                session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+                _eventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                 scanResult = new ScanResult
                 {
                     Status = "fail",
@@ -512,20 +515,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             return null;
         }
 
-        public async Task Start(Session session, CancellationToken cancellationToken)
+        public async Task Start(CancellationToken cancellationToken)
         {
             while (true)
             {
-                if (session.LogicSettings.UseSnipeOnlineLocationServer)
+                if (_logicSettings.UseSnipeOnlineLocationServer)
                 {
                     var st = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     var t = DateTime.Now.ToUniversalTime() - st;
                     var currentTimestamp = t.TotalMilliseconds;
-                    var pokemonIds = session.LogicSettings.PokemonToSnipe.Pokemon;
+                    var pokemonIds = _logicSettings.PokemonToSnipe.Pokemon;
 
                     var formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
-                    var offset = session.LogicSettings.SnipingScanOffset;
+                    var offset = _logicSettings.SnipingScanOffset;
                     // 0.003 = half a mile; maximum 0.06 is 10 miles
                     if (offset < 0.001) offset = 0.003;
                     if (offset > 0.06) offset = 0.06;
@@ -539,7 +542,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         var request = WebRequest.CreateHttp(uri);
                         request.Accept = "application/json";
                         request.Method = "GET";
-                        request.Timeout = session.LogicSettings.SnipeRequestTimeoutSeconds;
+                        request.Timeout = _logicSettings.SnipeRequestTimeoutSeconds;
                         request.ReadWriteTimeout = 32000;
 
                         var resp = request.GetResponse();
@@ -573,28 +576,28 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             var resp = (HttpWebResponse)ex.Response;
                             if (resp.StatusCode == HttpStatusCode.NotFound)
                             {
-                                session.EventDispatcher.Send(new WarnEvent
+                                _eventDispatcher.Send(new WarnEvent
                                 {
-                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorNotFound)
+                                    Message = _translation.GetTranslation(TranslationString.WebErrorNotFound)
                                 });
                             }
                             else if (resp.StatusCode == HttpStatusCode.GatewayTimeout)
                             {
-                                session.EventDispatcher.Send(new WarnEvent
+                                _eventDispatcher.Send(new WarnEvent
                                 {
-                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorGatewayTimeout)
+                                    Message = _translation.GetTranslation(TranslationString.WebErrorGatewayTimeout)
                                 });
                             }
                             else if (resp.StatusCode == HttpStatusCode.BadGateway)
                             {
-                                session.EventDispatcher.Send(new WarnEvent
+                                _eventDispatcher.Send(new WarnEvent
                                 {
-                                    Message = session.Translation.GetTranslation(TranslationString.WebErrorBadGateway)
+                                    Message = _translation.GetTranslation(TranslationString.WebErrorBadGateway)
                                 });
                             }
                             else
                             {
-                                session.EventDispatcher.Send(new ErrorEvent
+                                _eventDispatcher.Send(new ErrorEvent
                                 {
                                     Message = ex.ToString()
                                 });
@@ -608,7 +611,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         }
                         else
                         {
-                            session.EventDispatcher.Send(new ErrorEvent
+                            _eventDispatcher.Send(new ErrorEvent
                             {
                                 Message = ex.ToString()
                             });
@@ -622,7 +625,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                     catch (Exception ex)
                     {
-                        session.EventDispatcher.Send(new ErrorEvent
+                        _eventDispatcher.Send(new ErrorEvent
                         {
                             Message = ex.ToString()
                         });
@@ -640,8 +643,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     try
                     {
                         var lClient = new TcpClient();
-                        lClient.Connect(session.LogicSettings.SnipeLocationServer,
-                            session.LogicSettings.SnipeLocationServerPort);
+                        lClient.Connect(_logicSettings.SnipeLocationServer,
+                            _logicSettings.SnipeLocationServerPort);
 
                         var sr = new StreamReader(lClient.GetStream());
 
@@ -670,7 +673,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     catch (Exception ex)
                     {
                         // most likely System.IO.IOException
-                        session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+                        _eventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                     }
                 }
                 await Task.Delay(5000, cancellationToken);

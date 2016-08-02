@@ -12,28 +12,28 @@ namespace PoGo.PokeMobBot.Logic.Utils
     public class EggWalker
     {
         private readonly double _checkInterval = 1000; // TODO: check for real value
-        private readonly ISession _session;
         private readonly UseIncubatorsTask _useIncubatorsTask;
+        private readonly ILogicSettings _logicSettings;
 
         private double _distanceTraveled;
 
-        public EggWalker(ISession session, UseIncubatorsTask useIncubatorsTask)
+        public EggWalker(UseIncubatorsTask useIncubatorsTask, ILogicSettings logicSettings)
         {
-            _session = session;
             _useIncubatorsTask = useIncubatorsTask;
+            _logicSettings = logicSettings;
         }
 
         public async Task ApplyDistance(double distanceTraveled, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (!_session.LogicSettings.UseEggIncubators)
+            if (!_logicSettings.UseEggIncubators)
                 return;
 
             _distanceTraveled += distanceTraveled;
             if (_distanceTraveled > _checkInterval)
             {
-                await _useIncubatorsTask.Execute(_session, cancellationToken);
+                await _useIncubatorsTask.Execute(cancellationToken);
                 _distanceTraveled = 0;
             }
         }

@@ -2,9 +2,7 @@
 
 using System;
 using System.Globalization;
-using System.IO;
 using System.Threading;
-using log4net.Repository.Hierarchy;
 using Ninject;
 using PoGo.PokeMobBot.Logic;
 using PoGo.PokeMobBot.Logic.Common;
@@ -15,6 +13,7 @@ using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
 using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI;
+using POGOProtos.Networking.Responses;
 
 #endregion
 
@@ -27,7 +26,8 @@ namespace PoGo.PokeMobBot.CLI
 
         private static void Main(string[] args)
         {
-            Console.CancelKeyPress += (sender, eArgs) => {
+            Console.CancelKeyPress += (sender, eArgs) =>
+            {
                 _quitEvent.Set();
                 eArgs.Cancel = true;
             };
@@ -49,9 +49,13 @@ namespace PoGo.PokeMobBot.CLI
 
             IKernel kernel = new StandardKernel();
             kernel.Bind<Client>().To<Client>().InSingletonScope();
-            kernel.Bind<ISettings>().To<ClientSettings>();
-            kernel.Bind<ILogicSettings>().To<LogicSettings>();
-            kernel.Bind<ISession>().To<Session>().InSingletonScope();
+            kernel.Bind<ISettings>().To<ClientSettings>().InSingletonScope();
+            kernel.Bind<Inventory>().To<Inventory>().InSingletonScope();
+            kernel.Bind<GetPlayerResponse>().To<GetPlayerResponse>().InSingletonScope();
+            kernel.Bind<ILogicSettings>().To<LogicSettings>().InSingletonScope();
+            kernel.Bind<Navigation>().To<Navigation>().InSingletonScope();
+            kernel.Bind<ITranslation>().To<Translation>().InSingletonScope();
+            kernel.Bind<IEventDispatcher>().To<EventDispatcher>().InSingletonScope();
             kernel.Bind<ILogger>().To<ConsoleLogger>().WithConstructorArgument(logLevel);
 
             var logger = kernel.Get<ILogger>();
@@ -80,8 +84,10 @@ namespace PoGo.PokeMobBot.CLI
                 Environment.Exit(0);
             }
             //var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
-            var session = kernel.Get<Session>();
-            session.Client.ApiFailure = new ApiFailureStrategy(session);
+            var client = kernel.Get<Client>();
+            client.ApiFailure = kernel.Get<ApiFailureStrategy>();
+
+            var translation = kernel.Get<ITranslation>();
 
 
             /*SimpleSession session = new SimpleSession
@@ -100,34 +106,37 @@ namespace PoGo.PokeMobBot.CLI
             service.Run();
             */
 
-            var machine = new StateMachine();
+            var machine = kernel.Get<StateMachine>();
             var stats = new Statistics();
             stats.DirtyEvent +=
                 () =>
                     Console.Title =
                         stats.GetTemplatedStats(
-                            session.Translation.GetTranslation(TranslationString.StatsTemplateString),
-                            session.Translation.GetTranslation(TranslationString.StatsXpTemplateString));
+                            translation.GetTranslation(TranslationString.StatsTemplateString),
+                            translation.GetTranslation(TranslationString.StatsXpTemplateString));
 
-            var aggregator = new StatisticsAggregator(stats);
+            var aggregator = kernel.Get<StatisticsAggregator>();
             var listener = kernel.Get<ConsoleEventListener>();
             var websocket = kernel.Get<WebSocketInterface>();
+            var eventDispatcher = kernel.Get<IEventDispatcher>();
+            var navigation = kernel.Get<Navigation>();
+            var logicSettings = kernel.Get<ILogicSettings>();
 
-            session.EventDispatcher.EventReceived += evt => listener.Listen(evt, session);
-            session.EventDispatcher.EventReceived += evt => aggregator.Listen(evt, session);
-            session.EventDispatcher.EventReceived += evt => websocket.Listen(evt, session);
+            eventDispatcher.EventReceived += evt => listener.Listen(evt);
+            eventDispatcher.EventReceived += evt => aggregator.Listen(evt);
+            eventDispatcher.EventReceived += evt => websocket.Listen(evt);
 
             machine.SetFailureState(kernel.Get<LoginState>());
 
-            session.Navigation.UpdatePositionEvent +=
-                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
+            navigation.UpdatePositionEvent +=
+                (lat, lng) => eventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
 
-            machine.AsyncStart(kernel.Get<VersionCheckState>(), session);
+            machine.AsyncStart(kernel.Get<VersionCheckState>());
 
-            if (session.LogicSettings.UseSnipeLocationServer)
+            if (logicSettings.UseSnipeLocationServer)
             {
                 var snipePokemonTask = kernel.Get<SnipePokemonTask>();
-                snipePokemonTask.AsyncStart(session);
+                snipePokemonTask.AsyncStart();
             }
 
             _quitEvent.WaitOne();

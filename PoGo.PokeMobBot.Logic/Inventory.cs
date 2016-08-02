@@ -56,15 +56,19 @@ namespace PoGo.PokeMobBot.Logic
         };
 
         private readonly List<ItemId> _revives = new List<ItemId> { ItemId.ItemRevive, ItemId.ItemMaxRevive };
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
         private GetInventoryResponse _cachedInventory;
         private DateTime _lastRefresh;
 
-        public Inventory(Client client, ILogicSettings logicSettings, PokemonInfo pokemonInfo, ILogger logger)
+        public Inventory(Client client, ILogicSettings logicSettings, PokemonInfo pokemonInfo, ILogger logger, IEventDispatcher eventDispatcher, ITranslation translation)
         {
             _client = client;
             _logicSettings = logicSettings;
             _pokemonInfo = pokemonInfo;
             _logger = logger;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
         }
 
         public async Task DeletePokemonFromInvById(ulong id)
@@ -125,7 +129,7 @@ namespace PoGo.PokeMobBot.Logic
 
                     if (settings.CandyToEvolve > 0 && _logicSettings.PokemonsToEvolve.Contains(pokemon.Key))
                     {
-                        var amountPossible = (familyCandy.Candy_ - 1)/(settings.CandyToEvolve - 1);
+                        var amountPossible = (familyCandy.Candy_ - 1) / (settings.CandyToEvolve - 1);
 
                         if (amountPossible > amountToSkip)
                             amountToSkip = amountPossible;
@@ -247,7 +251,7 @@ namespace PoGo.PokeMobBot.Logic
             return myItemCount;
         }
 
-        public async Task<IEnumerable<ItemData>> GetItemsToRecycle(ISession session)
+        public async Task<IEnumerable<ItemData>> GetItemsToRecycle()
         {
             var itemsToRecycle = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
@@ -257,9 +261,9 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfUltraballs = await GetItemAmountByType(ItemId.ItemUltraBall);
             var currentAmountOfMasterballs = await GetItemAmountByType(ItemId.ItemMasterBall);
 
-            session.EventDispatcher.Send(new ErrorEvent()
+            _eventDispatcher.Send(new ErrorEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
+                Message = _translation.GetTranslation(TranslationString.CurrentPokeballInv,
                     currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
                     currentAmountOfMasterballs)
             });
@@ -294,14 +298,14 @@ namespace PoGo.PokeMobBot.Logic
                 .Where(p => p != null);
         }
 
-        private List<ItemData> GetPokeballsToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        private List<ItemData> GetPokeballsToRecycle(IReadOnlyList<ItemData> myItems)
         {
             var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
             if (amountOfPokeballsToKeep < 1)
             {
-                session.EventDispatcher.Send(new ErrorEvent()
+                _eventDispatcher.Send(new ErrorEvent()
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect)
+                    Message = _translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect)
                 });
                 return new List<ItemData>();
             }
@@ -312,14 +316,14 @@ namespace PoGo.PokeMobBot.Logic
             return TakeAmountOfItems(allPokeballs, amountOfPokeballsToKeep).ToList();
         }
 
-        private List<ItemData> GetBerriesToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        private List<ItemData> GetBerriesToRecycle(IReadOnlyList<ItemData> myItems)
         {
             var amountOfBerriesToKeep = _logicSettings.TotalAmountOfBerriesToKeep;
             if (amountOfBerriesToKeep < 1)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.BerriesToKeepIncorrect)
+                    Message = _translation.GetTranslation(TranslationString.BerriesToKeepIncorrect)
                 });
                 return new List<ItemData>();
             }
@@ -441,14 +445,14 @@ namespace PoGo.PokeMobBot.Logic
                 _logicSettings.KeepMinDuplicatePokemon);
         }
 
-        private List<ItemData> GetPotionsToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        private List<ItemData> GetPotionsToRecycle(IReadOnlyList<ItemData> myItems)
         {
             var amountOfPotionsToKeep = _logicSettings.TotalAmountOfPotionsToKeep;
             if (amountOfPotionsToKeep < 1)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PotionsToKeepIncorrect)
+                    Message = _translation.GetTranslation(TranslationString.PotionsToKeepIncorrect)
                 });
                 return new List<ItemData>();
             }
@@ -459,14 +463,14 @@ namespace PoGo.PokeMobBot.Logic
             return TakeAmountOfItems(allPotions, amountOfPotionsToKeep).ToList();
         }
 
-        private List<ItemData> GetRevivesToRecycle(ISession session, IReadOnlyList<ItemData> myItems)
+        private List<ItemData> GetRevivesToRecycle(IReadOnlyList<ItemData> myItems)
         {
             var amountOfRevivesToKeep = _logicSettings.TotalAmountOfRevivesToKeep;
             if (amountOfRevivesToKeep < 1)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.RevivesToKeepIncorrect)
+                    Message = _translation.GetTranslation(TranslationString.RevivesToKeepIncorrect)
                 });
                 return new List<ItemData>();
             }

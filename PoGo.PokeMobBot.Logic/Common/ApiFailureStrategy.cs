@@ -4,8 +4,10 @@ using System;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.State;
+using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Extensions;
+using PokemonGo.RocketAPI.Rpc;
 
 #endregion
 
@@ -13,12 +15,19 @@ namespace PoGo.PokeMobBot.Logic.Common
 {
     public class ApiFailureStrategy : IApiFailureStrategy
     {
-        private readonly ISession _session;
+        private readonly ISettings _settings;
+        private readonly Login _login;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+
         private int _retryCount;
 
-        public ApiFailureStrategy(ISession session)
+        public ApiFailureStrategy(ISettings settings, Login login, IEventDispatcher eventDispatcher, ITranslation translation)
         {
-            _session = session;
+            _settings = settings;
+            _login = login;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
         }
 
         public async Task<ApiOperation> HandleApiFailure()
@@ -29,7 +38,7 @@ namespace PoGo.PokeMobBot.Logic.Common
             await Task.Delay(500);
             _retryCount++;
 
-            if (_retryCount%5 == 0)
+            if (_retryCount % 5 == 0)
             {
                 DoLogin();
             }
@@ -44,14 +53,13 @@ namespace PoGo.PokeMobBot.Logic.Common
 
         private async void DoLogin()
         {
-            switch (_session.Settings.AuthType)
+            switch (_settings.AuthType)
             {
                 case AuthType.Ptc:
                     try
                     {
                         await
-                            _session.Client.Login.DoPtcLogin(_session.Settings.PtcUsername,
-                                _session.Settings.PtcPassword);
+                            _login.DoPtcLogin(_settings.PtcUsername, _settings.PtcPassword);
                     }
                     catch (AggregateException ae)
                     {
@@ -60,13 +68,12 @@ namespace PoGo.PokeMobBot.Logic.Common
                     break;
                 case AuthType.Google:
                     await
-                        _session.Client.Login.DoGoogleLogin(_session.Settings.GoogleUsername,
-                            _session.Settings.GooglePassword);
+                        _login.DoGoogleLogin(_settings.GoogleUsername, _settings.GooglePassword);
                     break;
                 default:
-                    _session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = _session.Translation.GetTranslation(TranslationString.WrongAuthType)
+                        Message = _translation.GetTranslation(TranslationString.WrongAuthType)
                     });
                     break;
             }
