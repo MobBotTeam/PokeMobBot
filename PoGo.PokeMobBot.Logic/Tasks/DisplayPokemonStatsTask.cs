@@ -22,9 +22,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         public static async Task Execute(ISession session)
         {
-            var PlayersProfile = (await session.Inventory.GetPlayerStats())
-              .ToList();
-            var trainerLevel = PlayersProfile.FirstOrDefault() != null ? PlayersProfile.FirstOrDefault().Level : 30;
+           var PlayersProfile = await session.Inventory.GetPlayerStats();
+
+            var trainerLevel = 30;
             var highestsPokemonCp =
                 await session.Inventory.GetHighestsCp(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
             var highestsPokemonCpForUpgrade = await session.Inventory.GetHighestsCp(50);
@@ -35,7 +35,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Tuple.Create(pokemon, Tuple.Create(PokemonInfo.CalculateMaxCp(pokemon), (int)PokemonInfo.GetMaxCpAtTrainerLevel(pokemon, trainerLevel)),
                             PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
                             PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon),
- PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average")
+  PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0
                                    )).ToList();
             var pokemonPairedWithStatsCpForUpgrade =
                 highestsPokemonCpForUpgrade.Select(
@@ -43,7 +43,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Tuple.Create(pokemon, Tuple.Create(PokemonInfo.CalculateMaxCp(pokemon), (int)PokemonInfo.GetMaxCpAtTrainerLevel(pokemon, trainerLevel)),
                             PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
                             PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon),
- PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average")
+ PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0
                                    )).ToList();
             var highestsPokemonPerfect =
                 await session.Inventory.GetHighestsPerfect(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
@@ -54,7 +54,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Tuple.Create(pokemon, Tuple.Create(PokemonInfo.CalculateMaxCp(pokemon), (int)PokemonInfo.GetMaxCpAtTrainerLevel(pokemon, trainerLevel)),
                             PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
                             PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon),
- PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average")
+ PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0
                                    )).ToList();
             var pokemonPairedWithStatsIvForUpgrade =
                 highestsPokemonIvForUpgrade.Select(
@@ -62,7 +62,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Tuple.Create(pokemon, Tuple.Create(PokemonInfo.CalculateMaxCp(pokemon), (int)PokemonInfo.GetMaxCpAtTrainerLevel(pokemon, trainerLevel)),
                             PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon),
                             PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon),
- PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average")
+ PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, PokemonInfo.GetPokemonMove1(pokemon), PokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0
                                    )).ToList();
 
             session.EventDispatcher.Send(
