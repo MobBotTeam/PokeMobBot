@@ -47,7 +47,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             }
 
             var pokestopList = await GetPokeStops(session);
-            var stopsHit = 0;
             var displayStatsHit = 0;
             var eggWalker = new EggWalker(1000, session);
 
@@ -59,7 +58,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 });
             }
 
-            session.EventDispatcher.Send(new PokeStopListEvent {Forts = pokestopList});
+            session.EventDispatcher.Send(new PokeStopListEvent { Forts = pokestopList });
 
             while (pokestopList.Any())
             {
@@ -78,7 +77,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
-                session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance,Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
+                session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance, Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
                 if (session.LogicSettings.Teleport)
                     await session.Navigation.Teleport(new GeoCoordinate(fortInfo.Latitude, fortInfo.Longitude,
                        session.Client.Settings.DefaultAltitude));
@@ -88,14 +87,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.LogicSettings.WalkingSpeedInKilometerPerHour,
                     async () =>
                     {
-                        // Catch normal map Pokemon
-                        await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
-                        //Catch Incense Pokemon
-                        await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                        if (!session.LogicSettings.OnlyFarmItems)
+                        {
+                            // Catch normal map Pokemon
+                            await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                            //Catch Incense Pokemon
+                            await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                        }
                         return true;
                     }, cancellationToken);
                 }
-                
+
                 FortSearchResponse fortSearch;
                 var timesZeroXPawarded = 0;
                 var fortTry = 0; //Current check
@@ -114,10 +116,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                         if (timesZeroXPawarded > zeroCheck)
                         {
-                            if ((int) fortSearch.CooldownCompleteTimestampMs != 0)
+                            if ((int)fortSearch.CooldownCompleteTimestampMs != 0)
                             {
                                 break;
-                                    // Check if successfully looted, if so program can continue as this was "false alarm".
+                                // Check if successfully looted, if so program can continue as this was "false alarm".
                             }
 
                             fortTry += 1;
@@ -128,7 +130,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 Try = fortTry,
                                 Max = retryNumber - zeroCheck
                             });
-                            if(session.LogicSettings.Teleport)
+                            if (session.LogicSettings.Teleport)
                                 await Task.Delay(session.LogicSettings.DelaySoftbanRetry);
                             else
                                 await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 400);
@@ -147,72 +149,77 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Longitude = pokeStop.Longitude,
                             InventoryFull = fortSearch.Result == FortSearchResponse.Types.Result.InventoryFull,
                             Description = fortInfo.Description,
-                            url = fortInfo.ImageUrls[0]                            
+                            url = fortInfo.ImageUrls[0]
                         });
 
                         break; //Continue with program as loot was succesfull.
                     }
                 } while (fortTry < retryNumber - zeroCheck);
-                    //Stop trying if softban is cleaned earlier or if 40 times fort looting failed.
+                //Stop trying if softban is cleaned earlier or if 40 times fort looting failed.
 
 
-                if(session.LogicSettings.Teleport)
+                if (session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayPokestop);
                 else
                     await Task.Delay(1000, cancellationToken);
 
-
-                //Catch Lure Pokemon
-
-
-                if (pokeStop.LureInfo != null)
-                {
-                    await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
-                }
-                if(session.LogicSettings.Teleport)
-                    await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
-
+                //Update eggs
                 await eggWalker.ApplyDistance(distance, cancellationToken);
 
-                if (++stopsHit%5 == 0) //TODO: OR item/pokemon bag is full
-                {
-                    stopsHit = 0;
-                    // need updated stardust information for upgrading, so refresh your profile now
-                    await DownloadProfile(session);
+                //Refresh inventory
+                if (fortSearch.ItemsAwarded.Count > 0)
+                    await session.Inventory.RefreshCachedInventory();
 
-                    if (fortSearch.ItemsAwarded.Count > 0)
-                    {
-                        await session.Inventory.RefreshCachedInventory();
-                    }
-                    await RecycleItemsTask.Execute(session, cancellationToken);
-                    if (session.LogicSettings.EvolveAllPokemonWithEnoughCandy ||
-                        session.LogicSettings.EvolveAllPokemonAboveIv)
-                    {
-                        await EvolvePokemonTask.Execute(session, cancellationToken);
-                    }
-                    if (session.LogicSettings.AutomaticallyLevelUpPokemon)
-                    {
-                        await LevelUpPokemonTask.Execute(session, cancellationToken);
-                    }
-                    if (session.LogicSettings.TransferDuplicatePokemon)
-                    {
-                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
-                    }
-                    if (session.LogicSettings.RenamePokemon)
-                    {
-                        await RenamePokemonTask.Execute(session, cancellationToken);
-                    }
-                    if (++displayStatsHit >= 4)
-                    {
-                        await DisplayPokemonStatsTask.Execute(session);
-                        displayStatsHit = 0;
-                    }
-                }
+                //Recycle items
+                await RecycleItemsTask.Execute(session, cancellationToken);
+                
+                // etc.
+                if (!session.LogicSettings.OnlyFarmItems)
+                    await DoAdditionalPokemonStuff(session, cancellationToken, pokeStop,displayStatsHit);
 
-                if (session.LogicSettings.SnipeAtPokestops || session.LogicSettings.UseSnipeLocationServer)
-                {
-                    await SnipePokemonTask.Execute(session, cancellationToken);
-                }
+            }
+        }
+
+        private static async Task DoAdditionalPokemonStuff(ISession session, CancellationToken cancellationToken, FortData pokeStop, int displayStatsHit)
+        {
+            //Catch Lure Pokemon
+            if (pokeStop.LureInfo != null)
+                await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+
+            if (session.LogicSettings.Teleport)
+                await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+
+            // need updated stardust information for upgrading, so refresh your profile now
+            await DownloadProfile(session);
+
+            // evolve
+            if (session.LogicSettings.EvolveAllPokemonWithEnoughCandy ||
+                session.LogicSettings.EvolveAllPokemonAboveIv)
+                await EvolvePokemonTask.Execute(session, cancellationToken);
+
+            // upgrade pokemons
+            if (session.LogicSettings.AutomaticallyLevelUpPokemon)
+                await LevelUpPokemonTask.Execute(session, cancellationToken);
+
+            // transfer 
+            if (session.LogicSettings.TransferDuplicatePokemon)
+                await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+
+            // rename
+            if (session.LogicSettings.RenamePokemon)
+                await RenamePokemonTask.Execute(session, cancellationToken);
+
+            // display stats
+            if (++displayStatsHit >= 4)
+            {
+                await DisplayPokemonStatsTask.Execute(session);
+                displayStatsHit = 0;
+            }
+
+            // sniping
+            if (session.LogicSettings.SnipeAtPokestops || session.LogicSettings.UseSnipeLocationServer)
+            {
+                await SnipePokemonTask.Execute(session, cancellationToken);
             }
         }
 
