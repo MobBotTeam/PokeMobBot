@@ -109,6 +109,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool StartupWelcomeDelay = false;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
+        public bool OnlyFarmItems = false;
 
         //coords and movement
         public bool Teleport = false;
@@ -703,6 +704,7 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfMaxPotionsToKeep => _settings.TotalAmountOfMaxPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public int TotalAmountOfMaxRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
+        public bool OnlyFarmItems => _settings.OnlyFarmItems;
         public bool Teleport => _settings.Teleport;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;

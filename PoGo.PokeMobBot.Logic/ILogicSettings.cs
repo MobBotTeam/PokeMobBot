@@ -67,7 +67,8 @@ namespace PoGo.PokeMobBot.Logic
         int AmountOfPokemonToDisplayOnStart { get; }
         bool StartupWelcomeDelay { get; }
         string TranslationLanguageCode { get; }
-        
+        bool OnlyFarmItems { get; }
+
         //coords and movement
         bool Teleport { get; }
         double WalkingSpeedInKilometerPerHour { get; }

@@ -12,27 +12,27 @@ namespace PoGo.PokeMobBot.Logic.State
     {
         public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
         {
-            if (session.LogicSettings.EvolveAllPokemonAboveIv || session.LogicSettings.EvolveAllPokemonWithEnoughCandy)
+            if (!session.LogicSettings.OnlyFarmItems && (session.LogicSettings.EvolveAllPokemonAboveIv || session.LogicSettings.EvolveAllPokemonWithEnoughCandy))
             {
                 await EvolvePokemonTask.Execute(session, cancellationToken);
             }
 
-            if (session.LogicSettings.TransferDuplicatePokemon)
+            if (!session.LogicSettings.OnlyFarmItems && session.LogicSettings.TransferDuplicatePokemon)
             {
                 await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
             }
-            if (session.LogicSettings.AutomaticallyLevelUpPokemon)
+            if (!session.LogicSettings.OnlyFarmItems && session.LogicSettings.AutomaticallyLevelUpPokemon)
             {
                 await LevelUpPokemonTask.Execute(session, cancellationToken);
             }
-            if (session.LogicSettings.RenamePokemon)
+            if (!session.LogicSettings.OnlyFarmItems && session.LogicSettings.RenamePokemon)
             {
                 await RenamePokemonTask.Execute(session, cancellationToken);
             }
 
             await RecycleItemsTask.Execute(session, cancellationToken);
 
-            if (session.LogicSettings.UseEggIncubators)
+            if (!session.LogicSettings.OnlyFarmItems && session.LogicSettings.UseEggIncubators)
             {
                 await UseIncubatorsTask.Execute(session, cancellationToken);
             }
