@@ -35,7 +35,7 @@ namespace PoGo.PokeMobBot.Logic.State
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await CleanupOldFiles();
+            await CleanupOldFiles(session);
             var autoUpdate = session.LogicSettings.AutoUpdate;
             var needupdate = IsLatest(session);
             if (!needupdate || !autoUpdate)
@@ -108,7 +108,7 @@ namespace PoGo.PokeMobBot.Logic.State
             return null;
         }
 
-        public static async Task CleanupOldFiles()
+        public static async Task CleanupOldFiles(ISession session)
         {
             var tmpDir = Path.Combine(Directory.GetCurrentDirectory(), "tmp");
 
@@ -130,7 +130,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 }
                 catch (Exception e)
                 {
-                    Logger.Write(e.ToString());
+                    Logger.Write(e.ToString(), session: session);
                 }
             }
             await Task.Delay(200);

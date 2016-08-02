@@ -20,7 +20,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForIncensePokemon), LogLevel.Debug);
+            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForIncensePokemon), LogLevel.Debug, session: session);
 
             var incensePokemon = await session.Client.Map.GetIncensePokemons();
             if (incensePokemon.Result == GetIncensePokemonResponse.Types.Result.IncenseEncounterAvailable)
@@ -35,11 +35,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     SpawnPointId = incensePokemon.EncounterLocation
                 };
 
+                session.EventDispatcher.Send(new PokemonsFoundEvent { Pokemons = new MapPokemon[] { pokemon } });
+
                 if (session.LogicSettings.UsePokemonToNotCatchFilter &&
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
                     Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonIgnoreFilter,
-                        pokemon.PokemonId));
+                        pokemon.PokemonId), session: session);
                 }
                 else
                 {
@@ -84,6 +86,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         });
                     }
                 }
+                session.EventDispatcher.Send(new PokemonDisappearEvent { Pokemon = pokemon });
             }
         }
     }

@@ -43,7 +43,10 @@ namespace PoGo.PokeMobBot.Logic.State
             }
             else
             {
-                await FarmPokestopsTask.Execute(session, cancellationToken);
+                if (session.LogicSettings.UseDiscoveryPathing)
+                    await FarmPokeStopsDiscoveryTask.Execute(session, cancellationToken);
+                else
+                    await FarmPokestopsTask.Execute(session, cancellationToken);
             }
 
             return this;

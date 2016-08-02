@@ -8,12 +8,16 @@ using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
 using PoGo.PokeMobBot.Logic.Utils;
 using POGOProtos.Enums;
+using POGOProtos.Map.Fort;
+using POGOProtos.Map.Pokemon;
 using PokemonGo.RocketAPI.Enums;
+using PokemonGo.RocketAPI.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -57,11 +61,11 @@ namespace Catchem
 
         //string Async Queues
         Queue<Tuple<string, Color>> logQueue = new Queue<Tuple<string, Color>>();
-        Queue<NewMapObject> markerQueue = new Queue<NewMapObject>();
-        Dictionary<string, GMapMarker> mapMarkers = new Dictionary<string, GMapMarker>();
 
         GMapMarker forceMoveMarker;
         GMapMarker playerMarker;
+
+        bool LoadingUi = false;
 
         public MainWindow()
         {
@@ -72,7 +76,7 @@ namespace Catchem
 
             LogWorker();
             MarkersWorker();
-
+            MovePlayer();
             InitBots();
         }
 
@@ -120,11 +124,11 @@ namespace Catchem
             if (bot != null)
                 pokeMap.Position = new GMap.NET.PointLatLng(bot.Lat, bot.Lng);
 
-            await Task.Delay(10);         
+            await Task.Delay(10);
         }
-             
+
         void InitBots()
-        {            
+        {
             Logger.SetLogger(new WpfLogger(LogLevel.Info), subPath);
 
             foreach (var item in Directory.GetDirectories(subPath))
@@ -134,18 +138,88 @@ namespace Catchem
                     initBot(GlobalSettings.Load(item), System.IO.Path.GetFileName(item));
                 }
             }
-        } 
+        }
 
 
         public void ReceiveMsg(string msgType, ISession session, params object[] objData)
         {
+            if (session == null) return;
             switch (msgType)
             {
                 case "log":
                     PushNewConsoleRow(session, (string)objData[0], (Color)objData[1]);
                     break;
+                case "ps":
+                    PushNewPokestop(session, (IEnumerable<FortData>)objData[0]);
+                    break;
+                case "pm":
+                    PushNewPokemons(session, (IEnumerable<MapPokemon>)objData[0]);
+                    break;
+                case "pm_rm":
+                    PushRemovePokemon(session, (MapPokemon)objData[0]);
+                    break;
+                case "p_loc":
+                    UpdateCoords(session, objData);
+                    break;
                 default:
                     break;
+            }
+        }
+
+        private void UpdateCoords(ISession session, object[] objData)
+        {
+            try
+            {
+                if (session != curSession)
+                {
+                    if (openedSessions.ContainsKey(session))
+                    {
+                        var botReceiver = openedSessions[session];
+                        botReceiver.Lat = botReceiver._lat = (double)objData[0];
+                        botReceiver.Lng = botReceiver._lng = (double)objData[1];
+                    }
+                }
+                else
+                {
+                    bot.moveRequired = true;
+                    if (bot._lat == 0 && bot._lng == 0)
+                    {
+                        bot.Lat = bot._lat = (double)objData[0];
+                        bot.Lng = bot._lng = (double)objData[1];
+                        Dispatcher.BeginInvoke(new ThreadStart(delegate
+                        {
+                            pokeMap.Position = new PointLatLng(bot.Lat, bot.Lng);
+                        }));
+                        
+                    }
+                    else
+                    {
+                        bot.Lat = (double)objData[0];
+                        bot.Lng = (double)objData[1];
+                    }
+
+                    if (playerMarker == null)
+                    {
+                        Dispatcher.BeginInvoke(new ThreadStart(delegate
+                        {
+                            playerMarker = new GMapMarker(new PointLatLng(bot.Lat, bot.Lng))
+                            {
+                                Shape = Properties.Resources.trainer.ToImage("Player"),
+                                Offset = new Point(-14, -40),
+                                ZIndex = 15                                
+                            };
+                            pokeMap.Markers.Add(playerMarker);
+                        }));                        
+                    }
+                    else
+                    {
+                        bot.gotNewCoord = true;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                
             }
         }
 
@@ -155,10 +229,80 @@ namespace Catchem
             {
                 openedSessions[session].log.Add(Tuple.Create(rowText, rowColor));
                 if (bot == openedSessions[session])
-                {                    
+                {
                     logQueue.Enqueue(Tuple.Create(rowText, rowColor));
                 }
-            }            
+            }
+        }
+
+        private void PushRemovePokemon(ISession session, MapPokemon mapPokemon)
+        {
+            if (openedSessions.ContainsKey(session))
+            {
+                var tBot = openedSessions[session];
+                NewMapObject nMapObj = new NewMapObject("pm_rm", mapPokemon.PokemonId.ToString(), mapPokemon.Latitude, mapPokemon.Longitude, mapPokemon.EncounterId.ToString());
+                tBot.MarkersQueue.Enqueue(nMapObj);
+            }
+        }
+
+        private void PushNewPokemons(ISession session, IEnumerable<MapPokemon> pokemons)
+        {
+            if (openedSessions.ContainsKey(session))
+            {
+                foreach (var pokemon in pokemons)
+                {
+                    var tBot = openedSessions[session];
+                    if (!tBot.mapMarkers.ContainsKey(pokemon.EncounterId.ToString()) && tBot.MarkersQueue.Count(x => x.uid == pokemon.EncounterId.ToString()) == 0)
+                    {
+                        NewMapObject nMapObj = new NewMapObject("pm", pokemon.PokemonId.ToString(), pokemon.Latitude, pokemon.Longitude, pokemon.EncounterId.ToString());
+                        tBot.MarkersQueue.Enqueue(nMapObj);
+                    }
+                }
+            }
+        }
+
+        private void PushNewPokestop(ISession session, IEnumerable<FortData> pstops)
+        {
+            if (openedSessions.ContainsKey(session))
+            {
+                foreach (var pstop in pstops)
+                {
+                    var tBot = openedSessions[session];
+                    if (!tBot.mapMarkers.ContainsKey(pstop.Id) && tBot.MarkersQueue.Count(x => x.uid == pstop.Id) == 0)
+                    {
+                        bool lured = pstop.LureInfo?.LureExpiresTimestampMs > DateTime.UtcNow.ToUnixTime();
+                        NewMapObject nMapObj = new NewMapObject("ps" + (lured ? "_lured" : ""), "PokeStop", pstop.Latitude, pstop.Longitude, pstop.Id);
+                        openedSessions[session].MarkersQueue.Enqueue(nMapObj);
+                    }
+                }
+            }
+        }
+
+        private async void MovePlayer()
+        {
+            int delay = 25;
+            while (!windowClosing)
+            {
+                if (bot != null && playerMarker != null)
+                {
+                    if (bot.moveRequired)
+                    {
+                        if (bot.gotNewCoord)
+                        {
+                            bot._latStep = (bot.Lat - bot._lat) / (2000 / delay);
+                            bot._lngStep = (bot.Lng - bot._lng) / (2000 / delay);
+                            bot.gotNewCoord = false;
+                        }
+
+                        bot._lat += bot._latStep;
+                        bot._lng += bot._lngStep;
+                        playerMarker.Position = new PointLatLng(bot._lat, bot._lng);
+                        if (Math.Abs(bot._lat - bot.Lat) < 0.000000001 && Math.Abs(bot._lng - bot.Lng) < 0.000000001)
+                            bot.moveRequired = false;
+                    }
+                }
+                await Task.Delay(delay);
+            }
         }
 
 
@@ -166,31 +310,45 @@ namespace Catchem
         {
             while (!windowClosing)
             {
-                if (markerQueue.Count > 0)
+                if (bot?.MarkersQueue.Count > 0)
                 {
-                    var newMapObj = markerQueue.Dequeue();
+                    var newMapObj = bot.MarkersQueue.Dequeue();
                     switch (newMapObj.oType)
                     {
                         case "ps":
-                            if (!mapMarkers.ContainsKey(newMapObj.uid))
+                            if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
                             {
-                                var icn = newMapObj.oName != "lured" ? Properties.Resources.pstop : Properties.Resources.pstop_lured;
                                 GMapMarker marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
                                 {
-                                    Shape = icn.ToImage()
+                                    Shape = Properties.Resources.pstop.ToImage("PokeStop"),
+                                    Offset = new Point(-16, -32),
+                                    ZIndex = 5
                                 };
                                 pokeMap.Markers.Add(marker);
-                                mapMarkers.Add(newMapObj.uid, marker);
+                                bot.mapMarkers.Add(newMapObj.uid, marker);
+                            }
+                            break;
+                        case "ps_lured":
+                            if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
+                            {
+                                GMapMarker marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
+                                {
+                                    Shape = Properties.Resources.pstop_lured.ToImage("Lured PokeStop"),
+                                    Offset = new Point(-16, -32),
+                                    ZIndex = 5
+                                };
+                                pokeMap.Markers.Add(marker);
+                                bot.mapMarkers.Add(newMapObj.uid, marker);
                             }
                             break;
                         case "pm_rm":
-                            if (mapMarkers.ContainsKey(newMapObj.uid))
+                            if (bot.mapMarkers.ContainsKey(newMapObj.uid))
                             {
-                                pokeMap.Markers.Remove(mapMarkers[newMapObj.uid]);
+                                pokeMap.Markers.Remove(bot.mapMarkers[newMapObj.uid]);
                             }
                             break;
                         case "pm":
-                            if (!mapMarkers.ContainsKey(newMapObj.uid))
+                            if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
                             {
                                 CreatePokemonMarker(newMapObj.oName, newMapObj.lat, newMapObj.lng, newMapObj.uid);
                             }
@@ -215,7 +373,7 @@ namespace Catchem
                 ZIndex = 10
             };
             pokeMap.Markers.Add(marker);
-            mapMarkers.Add(uid, marker);
+            bot.mapMarkers.Add(uid, marker);
         }
 
         private async void LogWorker()
@@ -230,7 +388,7 @@ namespace Catchem
                 await Task.Delay(10);
             }
         }
-        
+
 
         private class BotWindowData
         {
@@ -238,6 +396,7 @@ namespace Catchem
 
             public List<Tuple<string, Color>> log = new List<Tuple<string, Color>>();
             public Dictionary<string, GMapMarker> mapMarkers = new Dictionary<string, GMapMarker>();
+            public Queue<NewMapObject> MarkersQueue = new Queue<NewMapObject>();
             public StateMachine machine = null;
             public Statistics stats = null;
             public StatisticsAggregator aggregator = null;
@@ -275,7 +434,7 @@ namespace Catchem
                 ts = new TimeSpan();
                 timer = new DispatcherTimer();
                 timer.Interval = new TimeSpan(0, 0, 1);
-                timer.Tick += delegate(object o, EventArgs args)
+                timer.Tick += delegate (object o, EventArgs args)
                 {
                     ts.Add(new TimeSpan(0, 0, 1));
                     runTime.Content = ts.ToString();
@@ -307,13 +466,13 @@ namespace Catchem
         #region Controll's events
         private void authBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
             bot.globalSettings.Auth.AuthType = (AuthType)(sender as ComboBox).SelectedItem;
         }
 
         private void loginBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
             if (bot.globalSettings.Auth.AuthType == AuthType.Google)
                 bot.globalSettings.Auth.GoogleUsername = (sender as TextBox).Text;
             else
@@ -322,7 +481,7 @@ namespace Catchem
 
         private void passwordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
             if (bot.globalSettings.Auth.AuthType == AuthType.Google)
                 bot.globalSettings.Auth.GooglePassword = (sender as PasswordBox).Password;
             else
@@ -331,27 +490,27 @@ namespace Catchem
 
         private void proxyUriBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
             bot.globalSettings.ProxyUri = (sender as TextBox).Text;
         }
 
         private void useProxyChb_Checked(object sender, RoutedEventArgs e)
         {
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
             bot.globalSettings.UseProxy = (bool)(sender as CheckBox).IsChecked;
             proxyUriBox.IsEnabled = proxyPasswordBox.IsEnabled = proxyLoginBox.IsEnabled = bot.globalSettings.UseProxy;
-            
+
         }
 
         private void proxyLoginBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
             bot.globalSettings.ProxyLogin = (sender as TextBox).Text;
         }
 
         private void proxyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
             bot.globalSettings.ProxyPass = (sender as PasswordBox).Password;
         }
 
@@ -390,7 +549,7 @@ namespace Catchem
             session.EventDispatcher.EventReceived += evt => newBot.aggregator.Listen(evt, session);
 
             session.Navigation.UpdatePositionEvent +=
-                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
+                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng});
 
             newBot.machine.SetFailureState(new LoginState());
 
@@ -502,8 +661,9 @@ namespace Catchem
 
         private void rebuildUI()
         {
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
 
+            LoadingUi = true;
             settings_grid.IsEnabled = true;
 
             authBox.SelectedItem = bot.globalSettings.Auth.AuthType;
@@ -522,6 +682,56 @@ namespace Catchem
             proxyUriBox.Text = bot.globalSettings.ProxyUri;
             proxyLoginBox.Text = bot.globalSettings.ProxyLogin;
             proxyPasswordBox.Password = bot.globalSettings.ProxyPass;
+
+
+            c_autoLevelPokemons.IsChecked = bot.globalSettings.AutomaticallyLevelUpPokemon;
+            c_EvolveAllPokemonAboveIv.IsChecked = bot.globalSettings.EvolveAllPokemonAboveIv;
+            c_EvolveAboveIvValue.Text = bot.globalSettings.EvolveAboveIvValue.ToString();
+            c_EvolveAllPokemonWithEnoughCandy.IsChecked = bot.globalSettings.EvolveAllPokemonWithEnoughCandy;
+            c_KeepMinCp.Text = bot.globalSettings.KeepMinCp.ToString();
+            c_KeepMinDuplicatePokemon.Text = bot.globalSettings.KeepMinDuplicatePokemon.ToString();
+            c_KeepMinIvPercentage.Text = bot.globalSettings.KeepMinIvPercentage.ToString();
+            c_MaxPokeballsPerPokemon.Text = bot.globalSettings.MaxPokeballsPerPokemon.ToString();
+            c_KeepPokemonsThatCanEvolve.IsChecked = bot.globalSettings.KeepPokemonsThatCanEvolve;
+            c_PrioritizeIvOverCp.IsChecked = bot.globalSettings.PrioritizeIvOverCp;
+            c_RenameOnlyAboveIv.IsChecked = bot.globalSettings.RenameOnlyAboveIv;
+            c_RenamePokemon.IsChecked = bot.globalSettings.RenamePokemon;
+            c_RenameTemplate.Text = bot.globalSettings.RenameTemplate;
+
+
+            c_altitude.Text = bot.globalSettings.DefaultAltitude.ToString();
+            c_latitude.Text = bot.globalSettings.DefaultLatitude.ToString();
+            c_longtitude.Text = bot.globalSettings.DefaultLongitude.ToString();
+            c_teleport.IsChecked = bot.globalSettings.Teleport;
+            c_UseDiscoveryPathing.IsChecked = bot.globalSettings.UseDiscoveryPathing;
+            c_MaxSpawnLocationOffset.Text = bot.globalSettings.MaxSpawnLocationOffset.ToString();
+            c_MaxTravelDistanceInMeters.Text = bot.globalSettings.MaxTravelDistanceInMeters.ToString();
+
+            c_MinDelayBetweenSnipes.Text = bot.globalSettings.MinDelayBetweenSnipes.ToString();
+            c_MinPokeballsToSnipe.Text = bot.globalSettings.MinPokeballsToSnipe.ToString();
+            c_MinPokeballsWhileSnipe.Text = bot.globalSettings.MinPokeballsWhileSnipe.ToString();
+
+            c_TranslationLanguageCode.Text = bot.globalSettings.TranslationLanguageCode;
+            c_TotalAmountOfPokebalsToKeep.Text = bot.globalSettings.TotalAmountOfPokebalsToKeep.ToString();
+            c_TotalAmountOfPotionsToKeep.Text = bot.globalSettings.TotalAmountOfPotionsToKeep.ToString();
+            c_TotalAmountOfRevivesToKeep.Text = bot.globalSettings.TotalAmountOfRevivesToKeep.ToString();
+            c_TransferDuplicatePokemon.IsChecked = bot.globalSettings.TransferDuplicatePokemon;
+            c_UseEggIncubators.IsChecked = bot.globalSettings.UseEggIncubators;
+            c_UseLuckyEggsMinPokemonAmount.Text = bot.globalSettings.UseLuckyEggsMinPokemonAmount.ToString();
+            c_UseLuckyEggsWhileEvolving.IsChecked = bot.globalSettings.UseLuckyEggsWhileEvolving;
+            c_UseTransferIvForSnipe.IsChecked = bot.globalSettings.UseTransferIvForSnipe;
+            c_UseGreatBallAboveCp.Text = bot.globalSettings.UseGreatBallAboveCp.ToString();
+            c_UseUltraBallAboveCp.Text = bot.globalSettings.UseUltraBallAboveCp.ToString();
+            c_UseMasterBallAboveCp.Text = bot.globalSettings.UseMasterBallAboveCp.ToString();
+            c_UsePokemonToNotCatchFilter.IsChecked = bot.globalSettings.UsePokemonToNotCatchFilter;
+            c_SnipeAtPokestops.IsChecked = bot.globalSettings.SnipeAtPokestops;
+            c_SnipeIgnoreUnknownIv.IsChecked = bot.globalSettings.SnipeIgnoreUnknownIv;
+            c_StartupWelcomeDelay.IsChecked = bot.globalSettings.StartupWelcomeDelay;
+            c_UpgradePokemonIvMinimum.Text = bot.globalSettings.UpgradePokemonIvMinimum.ToString();
+            c_UpgradePokemonCpMinimum.Text = bot.globalSettings.UpgradePokemonCpMinimum.ToString();
+            c_WalkingSpeedInKilometerPerHour.Text = bot.globalSettings.WalkingSpeedInKilometerPerHour.ToString();
+
+            LoadingUi = false;
         }
 
         private BotWindowData CreateBowWindowData(GlobalSettings _s, string name)
@@ -534,7 +744,7 @@ namespace Catchem
             //                session.Translation.GetTranslation(TranslationString.StatsTemplateString),
             //                session.Translation.GetTranslation(TranslationString.StatsXpTemplateString));
 
-            return new BotWindowData(name, _s, new StateMachine(), stats, new StatisticsAggregator(stats), 
+            return new BotWindowData(name, _s, new StateMachine(), stats, new StatisticsAggregator(stats),
                 new WpfEventListener(), new ClientSettings(_s), new LogicSettings(_s));
 
         }
@@ -546,6 +756,304 @@ namespace Catchem
 
             // Clear InputBox.
             InputTextBox.Text = String.Empty;
+        }
+
+        private void c_autoLevelPokemons_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.AutomaticallyLevelUpPokemon = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_EvolveAllPokemonAboveIv_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.EvolveAllPokemonAboveIv = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_EvolveAllPokemonWithEnoughCandy_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.EvolveAllPokemonWithEnoughCandy = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_KeepPokemonsThatCanEvolve_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.KeepPokemonsThatCanEvolve = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_PrioritizeIvOverCp_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.PrioritizeIvOverCp = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_RenameOnlyAboveIv_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.RenameOnlyAboveIv = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_RenamePokemon_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.RenamePokemon = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_teleport_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.Teleport = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_UseDiscoveryPathing_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.UseDiscoveryPathing = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_EvolveAboveIvValue_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            float val = 0;
+            if (float.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.EvolveAboveIvValue = val;
+        }
+
+        private void c_KeepMinCp_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.KeepMinCp = val;
+        }
+
+        private void c_KeepMinDuplicatePokemon_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.KeepMinDuplicatePokemon = val;
+        }
+
+        private void c_KeepMinIvPercentage_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            float val = 0;
+            if (float.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.KeepMinIvPercentage = val;
+        }
+
+        private void c_MaxPokeballsPerPokemon_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.MaxPokeballsPerPokemon = val;
+        }
+
+        private void c_RenameTemplate_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.RenameTemplate = (sender as TextBox).Text;
+        }
+
+        private void c_altitude_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.DefaultAltitude = val;
+        }
+
+        private void c_latitude_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.DefaultLatitude = val;
+        }
+
+        private void c_longtitude_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.DefaultLongitude = val;
+        }
+
+        private void c_MinDelayBetweenSnipes_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.MinDelayBetweenSnipes = val;
+        }
+
+        private void c_MinPokeballsToSnipe_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.MinPokeballsToSnipe = val;
+        }
+
+        private void c_MinPokeballsWhileSnipe_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.MinPokeballsWhileSnipe = val;
+        }
+
+        private void c_MaxSpawnLocationOffset_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.MaxSpawnLocationOffset = val;
+        }
+
+        private void c_MaxTravelDistanceInMeters_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.MaxTravelDistanceInMeters = val;
+        }
+
+        private void c_WalkingSpeedInKilometerPerHour_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.WalkingSpeedInKilometerPerHour = val;
+        }
+
+        private void c_StartupWelcomeDelay_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.StartupWelcomeDelay = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_SnipeAtPokestops_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.SnipeAtPokestops = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_SnipeIgnoreUnknownIv_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.SnipeIgnoreUnknownIv = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_UseTransferIvForSnipe_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.UseTransferIvForSnipe = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_TotalAmountOfPokebalsToKeep_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.TotalAmountOfPokebalsToKeep = val;
+        }
+
+        private void c_TotalAmountOfPotionsToKeep_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.TotalAmountOfPotionsToKeep = val;
+        }
+
+        private void c_TotalAmountOfRevivesToKeep_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.TotalAmountOfRevivesToKeep = val;
+        }
+
+        private void c_TranslationLanguageCode_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.TranslationLanguageCode = (sender as TextBox).Text;
+        }
+
+        private void c_UpgradePokemonCpMinimum_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UpgradePokemonCpMinimum = val;
+        }
+
+        private void c_UpgradePokemonIvMinimum_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UpgradePokemonIvMinimum = val;
+        }
+
+        private void c_UsePokemonToNotCatchFilter_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.UsePokemonToNotCatchFilter = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_UseMasterBallAboveCp_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseMasterBallAboveCp = val;
+        }
+
+        private void c_UseUltraBallAboveCp_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseUltraBallAboveCp = val;
+        }
+
+        private void c_UseGreatBallAboveCp_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseGreatBallAboveCp = val;
+        }
+
+        private void c_UseLuckyEggsWhileEvolving_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.UseLuckyEggsWhileEvolving = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_UseLuckyEggsMinPokemonAmount_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseLuckyEggsMinPokemonAmount = val;
+        }
+
+        private void c_UseEggIncubators_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.UseEggIncubators = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_TransferDuplicatePokemon_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.TransferDuplicatePokemon = (bool)(sender as CheckBox).IsChecked;
         }
         #endregion
 
@@ -580,8 +1088,10 @@ namespace Catchem
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             windowClosing = true;
-            if (bot == null) return;
+            if (bot == null || LoadingUi) return;
             bot.globalSettings.StoreData(subPath + "\\" + bot.profileName);
         }
+
+
     }
 }

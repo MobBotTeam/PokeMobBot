@@ -63,6 +63,13 @@ namespace PoGo.PokeMobBot.Logic.Logging
             _logger.Write(message, level, color, session);
             Log(string.Concat($"[{DateTime.Now.ToString("HH:mm:ss")}] ", message));
         }
+
+        public static void PushToUi(string msgType, ISession session, params object[] obj)
+        {
+            if (_logger == null)
+                return;
+            _logger.SendWindowMsg(msgType, session, obj);
+        }
     }
 
     public enum LogLevel

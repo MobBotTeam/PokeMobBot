@@ -28,17 +28,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (upgradeResult.Result.ToString().ToLower().Contains("success"))
                 {
                     Logger.Write("Pokemon Upgraded:" + upgradeResult.UpgradedPokemon.PokemonId + ":" +
-                                 upgradeResult.UpgradedPokemon.Cp);
+                                 upgradeResult.UpgradedPokemon.Cp, session: session);
                 }
                 else if (upgradeResult.Result.ToString().ToLower().Contains("insufficient"))
                 {
-                    Logger.Write("Pokemon Upgrade Failed Not Enough Resources");
+                    Logger.Write("Pokemon Upgrade Failed Not Enough Resources", session: session);
                 }
                 else
                 {
                     Logger.Write(
                         "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
-                        upgradeResult.UpgradedPokemon.PokemonId);
+                        upgradeResult.UpgradedPokemon.PokemonId, session: session);
                 }
             }
             else if (session.LogicSettings.LevelUpByCPorIv.ToLower().Contains("cp"))
@@ -50,17 +50,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (upgradeResult.Result.ToString().ToLower().Contains("success"))
                 {
                     Logger.Write("Pokemon Upgraded:" + upgradeResult.UpgradedPokemon.PokemonId + ":" +
-                                 upgradeResult.UpgradedPokemon.Cp);
+                                 upgradeResult.UpgradedPokemon.Cp, session: session);
                 }
                 else if (upgradeResult.Result.ToString().ToLower().Contains("insufficient"))
                 {
-                    Logger.Write("Pokemon Upgrade Failed Not Enough Resources");
+                    Logger.Write("Pokemon Upgrade Failed Not Enough Resources", session: session);
                 }
                 else
                 {
-                    Logger.Write(
-                        "Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
-                        upgradeResult.UpgradedPokemon.PokemonId);
+                    Logger.Write("Pokemon Upgrade Failed Unknown Error, Pokemon Could Be Max Level For Your Level The Pokemon That Caused Issue Was:" +
+                        upgradeResult.UpgradedPokemon.PokemonId, session: session);
                 }
             }
         }

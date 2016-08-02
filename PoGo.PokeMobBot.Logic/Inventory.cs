@@ -240,12 +240,12 @@ namespace PoGo.PokeMobBot.Logic
 
             Logger.Write(session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
                 currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
-                currentAmountOfMasterballs));
+                currentAmountOfMasterballs), session: session);
 
             if (!_logicSettings.ItemRecycleFilter.Any(s => _pokeballs.Contains(s.Key)))
             {
                 Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForBallsToRecycle,
-                    amountOfPokeballsToKeep));
+                    amountOfPokeballsToKeep), session: session);
                 var pokeballsToRecycle = GetPokeballsToRecycle(session, myItems);
                 itemsToRecylce.AddRange(pokeballsToRecycle);
             }
@@ -253,7 +253,7 @@ namespace PoGo.PokeMobBot.Logic
             if (!_logicSettings.ItemRecycleFilter.Any(s => _potions.Contains(s.Key)))
             {
                 Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForPotionsToRecycle,
-                    amountOfPotionsToKeep));
+                    amountOfPotionsToKeep), session: session);
                 var potionsToRecycle = GetPotionsToRecycle(session, myItems);
                 itemsToRecylce.AddRange(potionsToRecycle);
             }
@@ -261,7 +261,7 @@ namespace PoGo.PokeMobBot.Logic
             if (!_logicSettings.ItemRecycleFilter.Any(s => _revives.Contains(s.Key)))
             {
                 Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForRevivesToRecycle,
-                    amountOfRevivesToKeep));
+                    amountOfRevivesToKeep), session: session);
                 var revivesToRecycle = GetRevivesToRecycle(session, myItems);
                 itemsToRecylce.AddRange(revivesToRecycle);
             }
@@ -302,7 +302,7 @@ namespace PoGo.PokeMobBot.Logic
             if (amountOfPokeballsToKeep < 1)
             {
                 Logger.Write(session.Translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect),
-                    LogLevel.Error, ConsoleColor.Red);
+                    LogLevel.Error, ConsoleColor.Red, session: session);
                 return new List<ItemData>();
             }
 
@@ -423,7 +423,7 @@ namespace PoGo.PokeMobBot.Logic
             if (amountOfPotionsToKeep < 1)
             {
                 Logger.Write(session.Translation.GetTranslation(TranslationString.PotionsToKeepIncorrect),
-                    LogLevel.Error, ConsoleColor.Red);
+                    LogLevel.Error, ConsoleColor.Red, session: session);
                 return new List<ItemData>();
             }
 
@@ -439,7 +439,7 @@ namespace PoGo.PokeMobBot.Logic
             if (amountOfRevivesToKeep < 1)
             {
                 Logger.Write(session.Translation.GetTranslation(TranslationString.RevivesToKeepIncorrect),
-                    LogLevel.Error, ConsoleColor.Red);
+                    LogLevel.Error, ConsoleColor.Red, session: session);
                 return new List<ItemData>();
             }
 

@@ -407,6 +407,8 @@ namespace PoGo.PokeMobBot.Logic
         public double WalkingSpeedInKilometerPerHour = 15.0;
         public int WebSocketPort = 14251;
 
+        public bool UseDiscoveryPathing = true;
+
         public static GlobalSettings Default => new GlobalSettings();
 
         public static GlobalSettings Load(string path)
@@ -723,5 +725,7 @@ namespace PoGo.PokeMobBot.Logic
         public int DelayRecyleItem => _settings.DelayRecyleItem;
         public int DelaySnipePokemon => _settings.DelaySnipePokemon;
         public int DelayTransferPokemon => _settings.DelayTransferPokemon;
+
+        public bool UseDiscoveryPathing => _settings.UseDiscoveryPathing;
     }
 }

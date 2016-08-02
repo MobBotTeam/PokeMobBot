@@ -58,12 +58,31 @@ namespace Catchem
                 LogLevel.Evolve, session: session);
         }
 
+        public void HandleEvent(UpdatePositionEvent evt, ISession session)
+        {
+            Logger.PushToUi("p_loc", session, new object[] { evt.Latitude, evt.Longitude });
+        }
+
         public void HandleEvent(TransferPokemonEvent evt, ISession session)
         {
-            Logger.Write(
-                session.Translation.GetTranslation(TranslationString.EventPokemonTransferred, evt.Id, evt.Cp,
+            Logger.Write(session.Translation.GetTranslation(TranslationString.EventPokemonTransferred, evt.Id, evt.Cp,
                     evt.Perfection.ToString("0.00"), evt.BestCp, evt.BestPerfection.ToString("0.00"), evt.FamilyCandies),
                 LogLevel.Transfer, session: session);
+        }
+
+        public void HandleEvent(PokeStopListEvent evt, ISession session)
+        {
+            Logger.PushToUi("ps", session, new object[] { evt.Forts });
+        }
+
+        public void HandleEvent(PokemonsFoundEvent evt, ISession session)
+        {
+            Logger.PushToUi("pm", session, new object[] { evt.Pokemons });
+        }
+
+        public void HandleEvent(PokemonDisappearEvent evt, ISession session)
+        {
+            Logger.PushToUi("pm_rm", session, new object[] { evt.Pokemon });
         }
 
         public void HandleEvent(ItemRecycledEvent evt, ISession session)
@@ -92,23 +111,20 @@ namespace Catchem
             var itemString = evt.InventoryFull
                 ? session.Translation.GetTranslation(TranslationString.InvFullPokestopLooting)
                 : evt.Items;
-            Logger.Write(
-                session.Translation.GetTranslation(TranslationString.EventFortUsed, evt.Name, evt.Exp, evt.Gems,
+            Logger.Write(session.Translation.GetTranslation(TranslationString.EventFortUsed, evt.Name, evt.Exp, evt.Gems,
                     itemString),
                 LogLevel.Pokestop, session: session);
         }
 
         public void HandleEvent(FortFailedEvent evt, ISession session)
         {
-            Logger.Write(
-                session.Translation.GetTranslation(TranslationString.EventFortFailed, evt.Name, evt.Try, evt.Max),
+            Logger.Write(session.Translation.GetTranslation(TranslationString.EventFortFailed, evt.Name, evt.Try, evt.Max),
                 LogLevel.Pokestop, ConsoleColor.DarkRed, session: session);
         }
 
         public void HandleEvent(FortTargetEvent evt, ISession session)
         {
-            Logger.Write(
-                session.Translation.GetTranslation(TranslationString.EventFortTargeted, evt.Name,
+            Logger.Write(session.Translation.GetTranslation(TranslationString.EventFortTargeted, evt.Name,
                     Math.Round(evt.Distance)),
                 LogLevel.Info, ConsoleColor.DarkRed, session: session);
         }
@@ -165,8 +181,7 @@ namespace Catchem
                 ? session.Translation.GetTranslation(TranslationString.Candies, evt.FamilyCandies)
                 : "";
 
-            Logger.Write(
-                session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType, evt.Id,
+            Logger.Write(session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType, evt.Id,
                     evt.Level, evt.Cp, evt.MaxCp, evt.Perfection.ToString("0.00"), evt.Probability,
                     evt.Distance.ToString("F2"),
                     returnRealBallName(evt.Pokeball), evt.BallAmount, familyCandies), LogLevel.Caught, session: session);
@@ -222,7 +237,7 @@ namespace Catchem
             var strPerfect = session.Translation.GetTranslation(TranslationString.CommonWordPerfect);
             var strName = session.Translation.GetTranslation(TranslationString.CommonWordName).ToUpper();
 
-            Logger.Write($"====== {strHeader} ======", LogLevel.Info, ConsoleColor.Yellow);
+            Logger.Write($"====== {strHeader} ======", LogLevel.Info, ConsoleColor.Yellow, session: session);
             foreach (var pokemon in evt.PokemonList)
                 Logger.Write(
                     $"# CP {pokemon.Item1.Cp.ToString().PadLeft(4, ' ')}/{pokemon.Item2.ToString().PadLeft(4, ' ')} | ({pokemon.Item3.ToString("0.00")}% {strPerfect})\t| Lvl {pokemon.Item4.ToString("00")}\t {strName}: {pokemon.Item1.PokemonId.ToString().PadRight(10, ' ')}\t MOVE1: {pokemon.Item5.ToString().PadRight(20, ' ')} MOVE2: {pokemon.Item6}",

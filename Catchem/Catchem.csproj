@@ -71,8 +71,8 @@
       <HintPath>..\packages\Google.Protobuf.3.0.0-beta4\lib\net45\Google.Protobuf.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="POGOProtos, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\POGOProtos.1.3.0\lib\net45\POGOProtos.dll</HintPath>
+    <Reference Include="POGOProtos, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\POGOProtos.1.5.0\lib\net45\POGOProtos.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -614,9 +614,6 @@
     <None Include="Resources\112.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\trainer.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\no_name.png" />
   </ItemGroup>
   <ItemGroup>
@@ -633,6 +630,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\trainer.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

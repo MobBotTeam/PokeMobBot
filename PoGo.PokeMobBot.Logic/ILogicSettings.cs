@@ -110,6 +110,7 @@ namespace PoGo.PokeMobBot.Logic
         int TotalAmountOfPokebalsToKeep { get; }
         int TotalAmountOfPotionsToKeep { get; }
         int TotalAmountOfRevivesToKeep { get; }
+        bool UseDiscoveryPathing { get; }
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
 

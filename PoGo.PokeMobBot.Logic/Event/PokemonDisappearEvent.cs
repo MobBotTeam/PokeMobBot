@@ -2,13 +2,14 @@
 
 using System.Collections.Generic;
 using POGOProtos.Map.Fort;
+using POGOProtos.Map.Pokemon;
 
 #endregion
 
 namespace PoGo.PokeMobBot.Logic.Event
 {
-    public class PokeStopListEvent : IEvent
+    public class PokemonDisappearEvent : IEvent
     {
-        public IEnumerable<FortData> Forts;
+        public MapPokemon Pokemon;
     }
 }

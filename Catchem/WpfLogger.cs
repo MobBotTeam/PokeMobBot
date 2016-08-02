@@ -113,11 +113,6 @@ namespace Catchem
             }
         }
 
-        public void PushObjectInfo(string infoType, ISession session, params object[] objData)
-        {
-            SendWindowMsg(infoType, session, objData);
-        }
-
         public void SendWindowMsg(string msgType, ISession session, params object[] objData)
         {
             MainWindow.botWindow.ReceiveMsg(msgType, session, objData);

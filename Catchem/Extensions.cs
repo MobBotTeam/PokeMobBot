@@ -66,13 +66,19 @@ namespace Catchem
         {
             System.Windows.Controls.Image img = new System.Windows.Controls.Image();
             img.Source = pid.ToBitmap().loadBitmap();
+            var tt = new ToolTip();
+            tt.Content = pid.ToString();
+            img.ToolTip = tt;
             return img;
         }
 
-        public static System.Windows.Controls.Image ToImage(this System.Drawing.Bitmap source)
+        public static System.Windows.Controls.Image ToImage(this System.Drawing.Bitmap source, string toolTipText = "no_text")
         {
             System.Windows.Controls.Image img = new System.Windows.Controls.Image();
             img.Source = source.loadBitmap();
+            var tt = new ToolTip();
+            tt.Content = toolTipText;
+            img.ToolTip = tt;
             return img;
         }
 

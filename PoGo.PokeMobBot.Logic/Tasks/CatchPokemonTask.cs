@@ -77,6 +77,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         ? pokemon.Longitude
                         : currentFortData.Longitude);
 
+                var rect = 1.950 + session.Client.rnd.NextDouble() * 0.05;
+                var spin = 0.85 + session.Client.rnd.NextDouble() * 0.15;
                 caughtPokemonResponse =
                     await session.Client.Encounter.CatchPokemon(
                         encounter is EncounterResponse || encounter is IncenseEncounterResponse
@@ -84,7 +86,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             : encounterId,
                         encounter is EncounterResponse || encounter is IncenseEncounterResponse
                             ? pokemon.SpawnPointId
-                            : currentFortData.Id, pokeball);
+                            : currentFortData.Id, pokeball, rect, spin);
 
                 var evt = new PokemonCaptureEvent {Status = caughtPokemonResponse.Status};
 

@@ -43,8 +43,9 @@ namespace PoGo.PokeMobBot.Logic
             LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
             // Logger.Write($"Distance to target location: {distanceToTarget:0.##} meters. Will take {distanceToTarget/speedInMetersPerSecond:0.##} seconds!", LogLevel.Info);
 
-            var nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
-            var nextWaypointDistance = speedInMetersPerSecond;
+            //Randomizing next step, we don't like straight lines!
+            var nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation) *(1 + _client.rnd.NextDouble() * 0.06 - 0.03);
+            var nextWaypointDistance = speedInMetersPerSecond * (1 + _client.rnd.NextDouble() * 0.2 - 0.1);
             var waypoint = LocationUtils.CreateWaypoint(sourceLocation, nextWaypointDistance, nextWaypointBearing);
 
             //Initial walking
@@ -76,8 +77,8 @@ namespace PoGo.PokeMobBot.Logic
                 }
 
                 nextWaypointDistance = Math.Min(currentDistanceToTarget,
-                    millisecondsUntilGetUpdatePlayerLocationResponse/1000*speedInMetersPerSecond);
-                nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
+                    (millisecondsUntilGetUpdatePlayerLocationResponse/1000*speedInMetersPerSecond) * (1 + _client.rnd.NextDouble() * 0.2 - 0.1));
+                nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation) * (1 + _client.rnd.NextDouble() * 0.06 - 0.03);
                 waypoint = LocationUtils.CreateWaypoint(sourceLocation, nextWaypointDistance, nextWaypointBearing);
 
                 requestSendDateTime = DateTime.Now;

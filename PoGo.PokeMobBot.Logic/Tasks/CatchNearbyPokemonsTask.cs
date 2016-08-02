@@ -22,9 +22,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForPokemon), LogLevel.Debug);
+            Logger.Write(session.Translation.GetTranslation(TranslationString.LookingForPokemon), LogLevel.Debug, session: session);
 
             var pokemons = await GetNearbyPokemons(session);
+            session.EventDispatcher.Send(new PokemonsFoundEvent { Pokemons = pokemons });
             foreach (var pokemon in pokemons)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -36,14 +37,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (pokeBallsCount + greatBallsCount + ultraBallsCount + masterBallsCount == 0)
                 {
-                    Logger.Write(session.Translation.GetTranslation(TranslationString.ZeroPokeballInv));
+                    Logger.Write(session.Translation.GetTranslation(TranslationString.ZeroPokeballInv), session: session);
                     return;
                 }
 
                 if (session.LogicSettings.UsePokemonToNotCatchFilter &&
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
-                    Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonSkipped, pokemon.PokemonId));
+                    Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonSkipped, pokemon.PokemonId), session: session);
                     continue;
                 }
 
@@ -82,6 +83,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             session.Translation.GetTranslation(TranslationString.EncounterProblem, encounter.Status)
                     });
                 }
+                session.EventDispatcher.Send(new PokemonDisappearEvent { Pokemon = pokemon });
 
                 // If pokemon is not last pokemon in list, create delay between catches, else keep moving.
                 if (!Equals(pokemons.ElementAtOrDefault(pokemons.Count() - 1), pokemon))

@@ -110,7 +110,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
                         break;
                     default:
                         Logger.Write(session.Translation.GetTranslation(TranslationString.UnhandledGpxData),
-                            LogLevel.Info);
+                            LogLevel.Info, session: session);
                         break;
                 }
             }
