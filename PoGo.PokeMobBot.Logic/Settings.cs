@@ -109,6 +109,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool StartupWelcomeDelay = false;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
+        public string WebSocketCertificate = null;
 
         //coords and movement
         public bool Teleport = false;
