@@ -19,7 +19,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             cancellationToken.ThrowIfCancellationRequested();
             await session.Inventory.RefreshCachedInventory();
             var currentTotalItems = await session.Inventory.GetTotalItemCount();
-            if (session.Profile.PlayerData.MaxItemStorage * session.LogicSettings.RecycleInventoryAtUsagePercentage > currentTotalItems)
+            var recycleInventoryAtUsagePercentage = session.LogicSettings.RecycleInventoryAtUsagePercentage > 1
+                ? session.LogicSettings.RecycleInventoryAtUsagePercentage / 100 : session.LogicSettings.RecycleInventoryAtUsagePercentage;
+            if (session.Profile.PlayerData.MaxItemStorage * recycleInventoryAtUsagePercentage > currentTotalItems)
                 return;
             var items = await session.Inventory.GetItemsToRecycle(session);
             foreach (var item in items)

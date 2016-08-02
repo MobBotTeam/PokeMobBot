@@ -53,7 +53,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     return;
                 }
 
-                var isLowProbability = probability < session.LogicSettings.UseBerryBelowCatchProbability;
+                var useBerryBelowCatchProbability = session.LogicSettings.UseBerryBelowCatchProbability > 1
+                    ? session.LogicSettings.UseBerryBelowCatchProbability / 100 : session.LogicSettings.UseBerryBelowCatchProbability;
+                var isLowProbability = probability < useBerryBelowCatchProbability;
                 var isHighCp = encounter != null &&
                                (encounter is EncounterResponse
                                    ? encounter.WildPokemon?.PokemonData?.Cp
@@ -214,17 +216,23 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
             var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
+            var useUltraBallBelowCatchProbability = session.LogicSettings.UseUltraBallBelowCatchProbability > 1
+                ? session.LogicSettings.UseUltraBallBelowCatchProbability / 100 : session.LogicSettings.UseUltraBallBelowCatchProbability;
+            var useGreatBallBelowCatchProbability = session.LogicSettings.UseGreatBallBelowCatchProbability > 1
+                ? session.LogicSettings.UseGreatBallBelowCatchProbability / 100 : session.LogicSettings.UseGreatBallBelowCatchProbability;
+
+
             if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() ||
                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
             if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
-                probability <= session.LogicSettings.UseUltraBallBelowCatchProbability)
+                probability <= useUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
             if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
-                probability <= session.LogicSettings.UseGreatBallBelowCatchProbability)
+                probability <= useGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
             if (pokeBallsCount > 0 && iV < session.LogicSettings.UseGreatBallAboveIv ||
-                probability > session.LogicSettings.UseGreatBallBelowCatchProbability)
+                probability > useGreatBallBelowCatchProbability)
                 return ItemId.ItemPokeBall;
 
             return ItemId.ItemUnknown;
