@@ -181,9 +181,7 @@ namespace PoGo.PokeMobBot.CLI
                 ? session.Translation.GetTranslation(TranslationString.CatchStatusAttempt, strStatus, evt.Attempt)
                 : session.Translation.GetTranslation(TranslationString.CatchStatus, strStatus);
 
-            var familyCandies = evt.FamilyCandies > 0
-                ? session.Translation.GetTranslation(TranslationString.Candies, evt.FamilyCandies)
-                : "";
+            var familyCandies = evt.FamilyCandies;
 
             Logger.Write(
                 session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType, session.Translation.GetPokemonName(evt.Id),
