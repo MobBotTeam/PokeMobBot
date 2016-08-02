@@ -34,20 +34,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (duplicatePokemon.Cp >=
-                    session.Inventory.GetPokemonTransferFilter(duplicatePokemon.PokemonId).KeepMinCp ||
-                    PokemonInfo.CalculatePokemonPerfection(duplicatePokemon) >
-                    session.Inventory.GetPokemonTransferFilter(duplicatePokemon.PokemonId).KeepMinIvPercentage)
-                {
-                    continue;
-                }
-
-                await session.Client.Inventory.TransferPokemon(duplicatePokemon.Id);
-                await session.Inventory.DeletePokemonFromInvById(duplicatePokemon.Id);
-
                 var bestPokemonOfType = (session.LogicSettings.PrioritizeIvOverCp
                     ? await session.Inventory.GetHighestPokemonOfTypeByIv(duplicatePokemon)
                     : await session.Inventory.GetHighestPokemonOfTypeByCp(duplicatePokemon)) ?? duplicatePokemon;
+
+                await session.Client.Inventory.TransferPokemon(duplicatePokemon.Id);
+                await session.Inventory.DeletePokemonFromInvById(duplicatePokemon.Id);
 
                 var setting = pokemonSettings.Single(q => q.PokemonId == duplicatePokemon.PokemonId);
                 var family = pokemonFamilies.First(q => q.FamilyId == setting.FamilyId);

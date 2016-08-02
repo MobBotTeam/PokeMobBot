@@ -96,10 +96,14 @@ namespace PoGo.PokeMobBot.Logic
 
     public class GlobalSettings
     {
-        [JsonIgnore] internal AuthSettings Auth = new AuthSettings();
-        [JsonIgnore] public string GeneralConfigPath;
-        [JsonIgnore] public string ProfilePath;
-        [JsonIgnore] public string ProfileConfigPath;
+        [JsonIgnore]
+        internal AuthSettings Auth = new AuthSettings();
+        [JsonIgnore]
+        public string GeneralConfigPath;
+        [JsonIgnore]
+        public string ProfilePath;
+        [JsonIgnore]
+        public string ProfileConfigPath;
 
         //bot start
         public bool AutoUpdate = true;
@@ -450,7 +454,7 @@ namespace PoGo.PokeMobBot.Logic
         };
 
         public static GlobalSettings Default => new GlobalSettings();
-        
+
         public static GlobalSettings Load(string path)
         {
             GlobalSettings settings;
@@ -632,7 +636,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public string ProfilePath => _settings.ProfilePath;
         public string ProfileConfigPath => _settings.ProfileConfigPath;
-        public int SnipeRequestTimeoutSeconds => _settings.SnipeRequestTimeoutSeconds*1000;
+        public int SnipeRequestTimeoutSeconds => _settings.SnipeRequestTimeoutSeconds * 1000;
         public string GeneralConfigPath => _settings.GeneralConfigPath;
         public bool AutoUpdate => _settings.AutoUpdate;
         public bool TransferConfigAndAuthOnUpdate => _settings.TransferConfigAndAuthOnUpdate;
