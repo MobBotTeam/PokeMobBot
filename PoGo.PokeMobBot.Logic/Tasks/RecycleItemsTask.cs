@@ -13,7 +13,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class RecycleItemsTask
     {
-        private static int diff;
 
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
@@ -126,27 +125,27 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             //int weparToRecycle = weparCount - weparToKeep;
             if (razzCount > razzToKeep)
             {
-                await RemoveItems(razzCount, ItemId.ItemRazzBerry, cancellationToken, session);
+                await RemoveItems(razzToRecycle, ItemId.ItemRazzBerry, cancellationToken, session);
             }
 
             //if (blukCount > blukToKeep)
             //{
-            //    await RemoveItems(blukCount, ItemId.ItemBlukBerry, cancellationToken, session);
+            //    await RemoveItems(blukToRecycle, ItemId.ItemBlukBerry, cancellationToken, session);
             //}
 
             //if nanabCount > nanabToKeep)
             //{
-            //    await RemoveItems(nanabCount, ItemId.ItemNanabBerry, cancellationToken, session);
+            //    await RemoveItems(nanabToRecycle, ItemId.ItemNanabBerry, cancellationToken, session);
             //}
 
             //if (pinapCount > pinapToKeep)
             //{
-            //    await RemoveItems(pinapCount, ItemId.ItemPinapBerry, cancellationToken, session);
+            //    await RemoveItems(pinapToRecycle, ItemId.ItemPinapBerry, cancellationToken, session);
             //}
 
             //if (weparCount > weparToKeep)
             //{
-            //    await RemoveItems(weparCount, ItemId.ItemWeparBerry, cancellationToken, session);
+            //    await RemoveItems(weparToRecycle, ItemId.ItemWeparBerry, cancellationToken, session);
             //}
         }
 
