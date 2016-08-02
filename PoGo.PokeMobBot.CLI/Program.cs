@@ -94,7 +94,7 @@ namespace PoGo.PokeMobBot.CLI
 
             var aggregator = new StatisticsAggregator(stats);
             var listener = new ConsoleEventListener();
-            var websocket = new WebSocketInterface(settings.WebSocketPort, session, settings.WebSocketCertificate);
+            var websocket = new WebSocketInterface(settings.WebSocketPort, session);
 
             session.EventDispatcher.EventReceived += evt => listener.Listen(evt, session);
             session.EventDispatcher.EventReceived += evt => aggregator.Listen(evt, session);
