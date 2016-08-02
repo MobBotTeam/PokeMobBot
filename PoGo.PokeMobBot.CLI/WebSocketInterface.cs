@@ -23,24 +23,30 @@ namespace PoGo.PokeMobBot.CLI
         private PokeStopListEvent _lastPokeStopList;
         private ProfileEvent _lastProfile;
 
-        public WebSocketInterface(int port, Session session)
+        public WebSocketInterface(int port, Session session, string certificate)
         {
             _session = session;
             var translations = session.Translation;
             _server = new WebSocketServer();
-            var setupComplete = _server.Setup(new ServerConfig
+            var config = new ServerConfig
             {
                 Name = "MobBotWebSocket",
                 Ip = "Any",
                 Port = port,
                 Mode = SocketMode.Tcp,
-                Security = "tls",
-                Certificate = new CertificateConfig
+            };
+
+            if(certificate != null)
+            {
+                config.Security = "tls";
+                config.Certificate = new CertificateConfig
                 {
-                    FilePath = @"cert.pfx",
+                    FilePath = certificate,
                     Password = "necro"
-                }
-            });
+                };
+            }
+
+            var setupComplete = _server.Setup(config);
 
             if (setupComplete == false)
             {
