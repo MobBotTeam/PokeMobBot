@@ -260,7 +260,7 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfIncense = await GetItemAmountByType(ItemId.ItemIncenseOrdinary);
             var currentAmountofRevives = await GetItemAmountByType(ItemId.ItemRevive);
 
-            session.EventDispatcher.Send(new StatsEvent()
+            session.EventDispatcher.Send(new NoticeEvent()
             {
                 Message = session.Translation.GetTranslation(TranslationString.CurrentInventoryA,
                     currentAmountOfPokeballs, currentAmountOfRazzBerry, currentAmountOfPotions, currentAmountOfIncense, currentAmountofRevives)
@@ -272,7 +272,7 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfSpicyIncense = await GetItemAmountByType(ItemId.ItemIncenseSpicy);
             var currentAmountofMaxRevives = await GetItemAmountByType(ItemId.ItemMaxRevive);
 
-            session.EventDispatcher.Send(new StatsEvent()
+            session.EventDispatcher.Send(new NoticeEvent()
             {
                 Message = session.Translation.GetTranslation(TranslationString.CurrentInventoryB,
                     currentAmountOfGreatballs, currentAmountOfBlukBerry, currentAmountOfSuperPotions, currentAmountOfSpicyIncense, currentAmountofMaxRevives)
@@ -284,7 +284,7 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfCoolIncense = await GetItemAmountByType(ItemId.ItemIncenseCool);
             var currentAmountofLuckyEggs = await GetItemAmountByType(ItemId.ItemLuckyEgg);
 
-            session.EventDispatcher.Send(new StatsEvent()
+            session.EventDispatcher.Send(new NoticeEvent()
             {
                 Message = session.Translation.GetTranslation(TranslationString.CurrentInventoryC,
                     currentAmountOfUltraballs, currentAmountOfNanabBerry, currentAmountOfHyperPotions, currentAmountOfCoolIncense, currentAmountofLuckyEggs),
@@ -296,7 +296,7 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfFloralIncense = await GetItemAmountByType(ItemId.ItemIncenseFloral);
             var currentAmountofLureModule = await GetItemAmountByType(ItemId.ItemUnknown);
 
-            session.EventDispatcher.Send(new StatsEvent()
+            session.EventDispatcher.Send(new NoticeEvent()
             {
                 Message = session.Translation.GetTranslation(TranslationString.CurrentInventoryD,
                     currentAmountOfMasterballs, currentAmountOfWeparBerry, currentAmountOfMaxPotions, currentAmountOfFloralIncense, currentAmountofLureModule),
@@ -305,7 +305,7 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfPinapBerry = await GetItemAmountByType(ItemId.ItemPinapBerry);
             var currentAmountOfTroyThing = await GetItemAmountByType(ItemId.ItemTroyDisk);
 
-            session.EventDispatcher.Send(new StatsEvent()
+            session.EventDispatcher.Send(new NoticeEvent()
             {
                 Message = session.Translation.GetTranslation(TranslationString.CurrentInventoryE,
                     currentAmountOfPinapBerry, currentAmountOfTroyThing),
