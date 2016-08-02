@@ -81,6 +81,8 @@ namespace PoGo.PokeMobBot.Logic.Logging
         Egg = 10,
         Update = 11,
         Info = 12,
-        Debug = 13
+        Debug = 13,
+        Escape = 14,
+        Flee =15
     }
 }
