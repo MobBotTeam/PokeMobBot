@@ -251,6 +251,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public async Task<IEnumerable<ItemData>> GetItemsToRecycle(ISession session)
         {
+            await session.Inventory.RefreshCachedInventory();
             var itemsToRecycle = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
@@ -258,24 +259,86 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfGreatballs = await GetItemAmountByType(ItemId.ItemGreatBall);
             var currentAmountOfUltraballs = await GetItemAmountByType(ItemId.ItemUltraBall);
             var currentAmountOfMasterballs = await GetItemAmountByType(ItemId.ItemMasterBall);
+            var totalBalls = currentAmountOfPokeballs + currentAmountOfGreatballs
+                + currentAmountOfUltraballs + currentAmountOfMasterballs;
 
             session.EventDispatcher.Send(new NoticeEvent()
             {
                 Message = session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
                     currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
-                    currentAmountOfMasterballs)
+                    currentAmountOfMasterballs, totalBalls)
             });
 
             var currentAmountOfPotions = await GetItemAmountByType(ItemId.ItemPotion);
             var currentAmountOfSuperPotions = await GetItemAmountByType(ItemId.ItemSuperPotion);
             var currentAmountOfHyperPotions = await GetItemAmountByType(ItemId.ItemHyperPotion);
             var currentAmountOfMaxPotions= await GetItemAmountByType(ItemId.ItemMaxPotion);
+            var totalPotions = currentAmountOfPotions + currentAmountOfSuperPotions
+                + currentAmountOfHyperPotions + currentAmountOfMaxPotions;
 
             session.EventDispatcher.Send(new NoticeEvent()
             {
                 Message = session.Translation.GetTranslation(TranslationString.CurrentPotionInv,
                     currentAmountOfPotions, currentAmountOfSuperPotions, currentAmountOfHyperPotions,
-                    currentAmountOfMaxPotions)
+                    currentAmountOfMaxPotions, totalPotions)
+            });
+
+            var currentAmountofRazz = await GetItemAmountByType(ItemId.ItemRazzBerry);
+            var currentAmountofBluk = await GetItemAmountByType(ItemId.ItemBlukBerry);
+            var currentAmountofNanab = await GetItemAmountByType(ItemId.ItemNanabBerry);
+            var currentAmountofPinap = await GetItemAmountByType(ItemId.ItemPinapBerry);
+            var currentAmountofWepar = await GetItemAmountByType(ItemId.ItemWeparBerry);
+            var totalBerries = currentAmountofRazz + currentAmountofBluk
+                + currentAmountofNanab + currentAmountofPinap + currentAmountofWepar;
+
+            session.EventDispatcher.Send(new NoticeEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.CurrentBerryInv,
+                    currentAmountofRazz, currentAmountofBluk, currentAmountofNanab,
+                    currentAmountofPinap, currentAmountofWepar, totalBerries)
+            });
+
+            var currentAmountofRevive = await GetItemAmountByType(ItemId.ItemRevive);
+            var currentAmountofMaxRevive = await GetItemAmountByType(ItemId.ItemMaxRevive);
+            var totalRevives = currentAmountofRevive + currentAmountofMaxRevive;
+
+            session.EventDispatcher.Send(new NoticeEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.CurrentReviveInv,
+                    currentAmountofRevive, currentAmountofMaxRevive, totalRevives)
+            });
+
+            var currentAmountofIncense = await GetItemAmountByType(ItemId.ItemIncenseOrdinary);
+            var currentAmountofIncenseCool = await GetItemAmountByType(ItemId.ItemIncenseCool);
+            var currentAmountofIncenseFloral = await GetItemAmountByType(ItemId.ItemIncenseFloral);
+            var currentAmountofIncenseSpicy = await GetItemAmountByType(ItemId.ItemIncenseSpicy);
+            var totalIncense = currentAmountofIncense + currentAmountofIncenseCool
+                + currentAmountofIncenseFloral + currentAmountofIncenseSpicy;
+
+            session.EventDispatcher.Send(new NoticeEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.CurrentIncenseInv,
+                    currentAmountofIncense, currentAmountofIncenseCool, currentAmountofIncenseFloral, 
+                    currentAmountofIncenseSpicy, totalIncense)
+            });
+
+            var currentAmountofLures = await GetItemAmountByType(ItemId.ItemTroyDisk);
+            var currentAmountofLuckyEggs = await GetItemAmountByType(ItemId.ItemLuckyEgg);
+            var currentAmountofIncubators = await GetItemAmountByType(ItemId.ItemIncubatorBasic);
+            var currentMisc = currentAmountofLures + currentAmountofLuckyEggs + currentAmountofIncubators;
+
+            session.EventDispatcher.Send(new NoticeEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.CurrentMiscInv,
+                    currentAmountofLures, currentAmountofLuckyEggs, currentAmountofIncubators, currentMisc)
+            });
+
+            var currentInvUsage = await session.Inventory.GetTotalItemCount();
+            var maxInvUsage = session.Profile.PlayerData.MaxItemStorage;
+
+            session.EventDispatcher.Send(new NoticeEvent()
+            {
+                Message = session.Translation.GetTranslation(TranslationString.CurrentInvUsage, currentInvUsage, maxInvUsage)
             });
 
             var otherItemsToRecycle = myItems
@@ -338,6 +401,14 @@ namespace PoGo.PokeMobBot.Logic
             return
                 inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokemonData)
                     .Where(p => p != null && p.PokemonId > 0);
+        }
+
+        public async Task<int> GetPokemonsCount()
+        {
+            var inventory = await GetCachedInventory();
+            return
+                inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokemonData)
+                    .Where(p => p != null && p.PokemonId > 0).Count();
         }
 
         public async Task<IEnumerable<PokemonSettings>> GetPokemonSettings()
