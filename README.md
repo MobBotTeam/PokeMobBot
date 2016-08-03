@@ -25,30 +25,35 @@ You can donate Bitcoins to FeroxRev the man who worked really hard on the API li
 
 <h2><a name="features">Features</a></h2>
 
- - [PTC Login / Google]
- - [Get Map Objects and Inventory]
- - [Search for gyms/pokestops/spawns]
- - [Farm pokestops]
- - [Farm all Pokemon in neighbourhood]
- - [Throw Berries/use best pokeball]
- - [Transfers duplicate pokemons]
- - [Evolve all pokemons]
- - [Throws away unneeded items]
- - [Humanlike Walking]
- - [Configurable Custom Pathing]
- - [Softban bypass]
- - [AutoUpdate / VersionCheck]
- - [Multilanguage Support]
- - [Use lucky egg while evolve]
- - [Egg Hatching Automatically]
- - [Multi bot support]
- - [Snipe pokemon]
- - [Power-Up pokemon]
+ - PTC Login / Google
+ - Get Map Objects and Inventory
+ - Search for gyms/pokestops/spawns
+ - Farm pokestops
+ - Farm all Pokemon in neighbourhood
+ - Throw Berries/use best pokeball
+ - Transfers duplicate pokemons
+ - Evolve all pokemons
+ - Throws away unneeded items
+ - Humanlike Walking
+ - Configurable Custom Pathing
+ - Softban bypass
+ - AutoUpdate / VersionCheck
+ - Multilanguage Support
+ - Use lucky egg while evolve
+ - Egg Hatching Automatically
+ - Multi bot support
+ - Snipe pokemon
+ - Power-Up pokemon
  
 <h2><a name="getting-started">Getting Started</a></h2>
 Make sure you check out our [Wiki](https://github.com/PocketMobsters/PokeMobBot/wiki) to get started.
 <br/>
 <h2><a name="credits">Credits</a></h2><br/>
-Thanks to Feroxs' hard work on the API & Console we are able to manage something like this.<br/>
-Without him, this would not have been available. <3
-Thanks to everyone who voluntaired by contributing to the Pull Requests!
+Ferox - API and Console, without such contributions, projects like this would never have been possible.<br/>
+PokeMobBot Dev team & staff - Their relentless work day after day on adding new features, ironing out bugs and maintaining the ever growing community.<br/>
+Everyone else who submitted Pull Requests - Big or small, the work from unmentioned contributors are what makes this project community-oriented.<br/>
+<br/>
+<h2><a name="copyright">Copyright</a></h2><br/>
+ Copyright (c) 2016, PokeMobBot Team  All rights reserved.<br/>
+ Copyrights licensed under the GNU AGPLv3 License.<br/>
+ See the accompanying LICENSE file for terms.<br/>

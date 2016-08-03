@@ -52,7 +52,7 @@
     },
 	{
       "Key": "eventUseLuckyEggMinPokemonCheck",
-      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+      "Value": "Не достатньо Покемонів для викоритсстання Lucky Egg. Необхідно {0} ще. ({1}/{2})"
     },
     {
       "Key": "eventPokemonEvolvedSuccess",
@@ -73,11 +73,11 @@
     {
       "Key": "eventPokemonCapture",
       "Value":
-        "=> ({0}) ({1}) {2} {3} -рівень (CР: {4} / {5} | VI: {6}%) з {7}% шансом на {8} м ісп. {9} ({10} залишилося) {11} "
+        "=> ({0}) ({1}) {2} {3} - рівень (CР: {4} / {5} | IV: {6}%) з {7}% шансом на {8} м викор. {9} ({10} залишилося) {11} "
     },
     {
       "Key": "eventNoPokeballs",
-      "Value": "Немає Pokeball'ів - Ми упустили {0} (CP: {1})"
+      "Value": "Немає Pokeball'ів - Ми втратили {0} (CP: {1})"
     },
     {
       "Key": "catchStatusAttempt",
@@ -161,7 +161,7 @@
     },
     {
       "Key": "logEntryRecycling",
-      "Value": "видаляємо"
+      "Value": "Видаляємо"
     },
     {
       "Key": "logEntryPKMN",
@@ -198,7 +198,7 @@
     {
       "Key": "ptcOffline",
       "Value":
-        "PTC сервера можливо не працюють АБО невірно вказані дані облікового запису. Спробуйте використовувати логін від Google аккаунта"
+        "PTC сервера можливо не працюють АБО невірно вказані дані облікового запису. Спробуйте увійти через Google аккаунт"
     },
     {
       "Key": "accessTokenExpired",
@@ -234,7 +234,7 @@
     },
     {
       "Key": "coordinatesAreInvalid",
-      "Value": "Координати у файлі \" Coords.ini \"невірні, використовуємо координати за умовчанням"
+      "Value": "Координати у файлі \" Coords.ini \" невірні, використовуємо координати за умовчанням"
     },
     {
       "Key": "gotUpToDateVersion",
@@ -303,7 +303,7 @@
     },
     {
       "Key": "desiredDestTooFar",
-      "Value": "Зазначене местоназначеніе {0}, {1} занадто далеко від поточної позиції {2}, {3}"
+      "Value": "Зазначене місце призначення {0}, {1} занадто далеко від поточної позиції {2}, {3}"
     },
     {
       "Key": "pokemonRename",
@@ -369,7 +369,7 @@
     {
       "Key": "googleTwoFactorAuth",
       "Value":
-        "Оскільки у Вас включена двухфакторная аутентифікація Google, Вам потрібно помістити пароль Програми Google в файл auth.json"
+        "Оскільки у Вас включена двофакторна аутентифікація Google, Вам потрібно помістити пароль Програми Google в файл auth.json"
     },
     {
       "Key": "googleTwoFactorAuthExplanation",

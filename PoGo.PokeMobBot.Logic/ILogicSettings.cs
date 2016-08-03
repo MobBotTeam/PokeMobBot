@@ -96,6 +96,10 @@ namespace PoGo.PokeMobBot.Logic
         //incubator
         bool UseEggIncubators { get; }
 
+        //display
+        bool DisplayPokemonMaxPoweredCp { get; }
+        bool DisplayPokemonMovesetRank { get; }
+
         //rename
         bool RenameOnlyAboveIv { get; }
         bool RenamePokemon { get; }
@@ -144,6 +148,11 @@ namespace PoGo.PokeMobBot.Logic
         //favorite
 
         //recycle
+        bool AutomaticInventoryManagement { get; }
+        int AutomaticMaxAllPokeballs { get; }
+        int AutomaticMaxAllPotions { get; }
+        int AutomaticMaxAllRevives { get; }
+        int AutomaticMaxAllBerries { get; }
         int TotalAmountOfPokeballsToKeep { get; }
         int TotalAmountOfGreatballsToKeep { get; }
         int TotalAmountOfUltraballsToKeep { get; }

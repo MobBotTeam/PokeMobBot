@@ -37,7 +37,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                 {
                     DoLogin();
                 }
-                catch (Exception ex) when (ex is PtcOfflineException || ex is AccessTokenExpiredException)
+                catch (PtcOfflineException)
                 {
                     _session.EventDispatcher.Send(new ErrorEvent
                     {
@@ -49,7 +49,19 @@ namespace PoGo.PokeMobBot.Logic.Common
                     });
                     await Task.Delay(20000);
                 }
-                catch (InvalidResponseException)
+                catch (AccessTokenExpiredException)
+                {
+                    _session.EventDispatcher.Send(new ErrorEvent
+                    {
+                        Message = _session.Translation.GetTranslation(TranslationString.AccessTokenExpired)
+                    });
+                    _session.EventDispatcher.Send(new NoticeEvent
+                    {
+                        Message = _session.Translation.GetTranslation(TranslationString.TryingAgainIn, 2)
+                    });
+                    await Task.Delay(2000);
+                }
+                catch (Exception ex) when (ex is InvalidResponseException || ex is TaskCanceledException)
                 {
                     _session.EventDispatcher.Send(new ErrorEvent
                     {
@@ -81,6 +93,10 @@ namespace PoGo.PokeMobBot.Logic.Common
                     catch (AggregateException ae)
                     {
                         throw ae.Flatten().InnerException;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex.InnerException;
                     }
                     break;
                 case AuthType.Google:
