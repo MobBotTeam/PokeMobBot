@@ -28,6 +28,7 @@ namespace PoGo.PokeMobBot.Logic.State
         {
             Settings = settings;
             LogicSettings = logicSettings;
+            ApiFailureStrategy = new ApiFailureStrategy(this);
             EventDispatcher = new EventDispatcher();
             Translation = Common.Translation.Load(logicSettings);
             Reset(settings, LogicSettings);
@@ -48,9 +49,11 @@ namespace PoGo.PokeMobBot.Logic.State
 
         public IEventDispatcher EventDispatcher { get; }
 
+        public ApiFailureStrategy ApiFailureStrategy { get; set; }
+
         public void Reset(ISettings settings, ILogicSettings logicSettings)
         {
-            Client = new Client(Settings) {AuthType = settings.AuthType};
+            Client = new Client(Settings, ApiFailureStrategy);
             // ferox wants us to set this manually
             Inventory = new Inventory(Client, logicSettings);
             Navigation = new Navigation(Client);
