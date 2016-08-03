@@ -758,6 +758,7 @@ namespace Catchem
                 if (!newBot.Started)
                 {
                     session.Client.Player.SetCoordinates(newBot.globalSettings.DefaultLatitude, newBot.globalSettings.DefaultLongitude, newBot.globalSettings.DefaultAltitude);
+                    session.Client.Login = new PokemonGo.RocketAPI.Rpc.Login(session.Client);
                     newBot.Start();
                     newBot.machine.AsyncStart(new VersionCheckState(), session, newBot.cancellationToken);
                     if (session.LogicSettings.UseSnipeLocationServer)
