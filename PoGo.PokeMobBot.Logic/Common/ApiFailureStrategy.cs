@@ -94,6 +94,10 @@ namespace PoGo.PokeMobBot.Logic.Common
                     {
                         throw ae.Flatten().InnerException;
                     }
+                    catch (Exception ex)
+                    {
+                        throw ex.InnerException;
+                    }
                     break;
                 case AuthType.Google:
                     await
