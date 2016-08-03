@@ -211,16 +211,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData));
 
-            var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
-            var greatBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemGreatBall);
-            var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
-            var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
-
             var useUltraBallBelowCatchProbability = session.LogicSettings.UseUltraBallBelowCatchProbability > 1
                 ? session.LogicSettings.UseUltraBallBelowCatchProbability / 100 : session.LogicSettings.UseUltraBallBelowCatchProbability;
             var useGreatBallBelowCatchProbability = session.LogicSettings.UseGreatBallBelowCatchProbability > 1
                 ? session.LogicSettings.UseGreatBallBelowCatchProbability / 100 : session.LogicSettings.UseGreatBallBelowCatchProbability;
 
+            await session.Inventory.RefreshCachedInventory();
+            var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
+            var greatBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemGreatBall);
+            var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
+            var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
             if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() &&
                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
@@ -233,6 +233,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 return ItemId.ItemGreatBall;
             if (pokeBallsCount > 0)
                 return ItemId.ItemPokeBall;
+            if (greatBallsCount > 0)
+                return ItemId.ItemGreatBall;
+            if (ultraBallsCount > 0)
+                return ItemId.ItemUltraBall;
 
             return ItemId.ItemUnknown;
         }
