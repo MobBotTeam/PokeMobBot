@@ -85,7 +85,7 @@ namespace PoGo.PokeMobBot.Logic.State
 
         public void Reset(ISettings settings, ILogicSettings logicSettings)
         {
-            Client = new Client(Settings, null);
+            Client = new Client(settings, null);
             // ferox wants us to set this manually
             Inventory = new Inventory(Client, logicSettings);
             Navigation = new Navigation(Client);

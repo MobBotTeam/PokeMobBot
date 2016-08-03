@@ -579,7 +579,7 @@ namespace Catchem
         private void authBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (bot == null || LoadingUi) return;
-            bot.globalSettings.Auth.AuthType = (AuthType)(sender as ComboBox).SelectedItem;
+            bot.globalSettings.Auth.AuthType = (AuthType)(sender as ComboBox).SelectedItem;            
         }
 
         private void loginBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -757,6 +757,7 @@ namespace Catchem
             {
                 if (!newBot.Started)
                 {
+                    session.Client.Player.SetCoordinates(newBot.globalSettings.DefaultLatitude, newBot.globalSettings.DefaultLongitude, newBot.globalSettings.DefaultAltitude);
                     newBot.Start();
                     newBot.machine.AsyncStart(new VersionCheckState(), session, newBot.cancellationToken);
                     if (session.LogicSettings.UseSnipeLocationServer)
@@ -1381,8 +1382,8 @@ namespace Catchem
                 }
                 else
                 {
-                    bot.Lat = lat;
-                    bot.Lng = lng;                    
+                    bot.Lat = bot._lat = lat;
+                    bot.Lng = bot._lng = lng;
                     bot.globalSettings.DefaultLatitude = lat;
                     bot.globalSettings.DefaultLongitude = lng;
                     DrawPlayerMarker();
