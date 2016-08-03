@@ -1,5 +1,4 @@
-<h1>Catchem PokemonGO bot</h1>
-<h2>with modern UI</h2>
+<h1>Catchem PokemonGO bot <i>with modern UI</i></h1>
 <h4>Baed on PokeMobBot project</h4>
 
 
