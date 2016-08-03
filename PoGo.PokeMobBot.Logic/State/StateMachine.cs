@@ -42,6 +42,7 @@ namespace PoGo.PokeMobBot.Logic.State
                     {
                         Message = session.Translation.GetTranslation(TranslationString.NianticServerUnstable)
                     });
+                    state = _initialState;
                 }
                 catch (OperationCanceledException)
                 {

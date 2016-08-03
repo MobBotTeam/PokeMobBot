@@ -194,6 +194,7 @@ namespace PoGo.PokeMobBot.Logic
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                 .OrderByDescending(x => x.Cp)
+                .ThenByDescending(PokemonInfo.CalculatePokemonPerfection)
                 .FirstOrDefault();
         }
 
@@ -203,6 +204,7 @@ namespace PoGo.PokeMobBot.Logic
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                 .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                .ThenByDescending(x => x.Cp)
                 .FirstOrDefault();
         }
 
@@ -210,14 +212,18 @@ namespace PoGo.PokeMobBot.Logic
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax).Take(limit);
+            return pokemons.OrderByDescending(x => x.Cp)
+                .ThenByDescending(PokemonInfo.CalculatePokemonPerfection)
+                .Take(limit);
         }
 
         public async Task<IEnumerable<PokemonData>> GetHighestsPerfect(int limit)
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection).Take(limit);
+            return pokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                .ThenByDescending(x => x.Cp)
+                .Take(limit);
         }
 
 

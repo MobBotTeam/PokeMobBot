@@ -1,4 +1,4 @@
-﻿{
+{
   "TranslationStrings": [
     {
       "Key": "pokeball",
@@ -197,6 +197,10 @@
       "Value": "PTC服务器可能关闭或您的帐号错误错误，请尝试谷歌帐号登录"
     },
     {
+      "Key": "accessTokenExpired",
+      "Value": "该 token 已经过期. 请重新登陆获取新的 token."
+    },
+    {
       "Key": "tryingAgainIn",
       "Value": "将在 {0} 秒后重试..."
     },
@@ -384,7 +388,615 @@
       "Key": "noPokemonToSnipe",
       "Value": "[狙击手] 没有找到特殊宠物！"
     }
+  ],
+    "pokemon": [
+    {
+      "Key": "Missingno",
+      "Value": "Missingno"
+    },
+    {
+      "Key": "Bulbasaur",
+      "Value": "妙蛙种子"
+    },
+    {
+      "Key": "Ivysaur",
+      "Value": "妙蛙草"
+    },
+    {
+      "Key": "Venusaur",
+      "Value": "妙蛙花"
+    },
+    {
+      "Key": "Charmander",
+      "Value": "小火龙"
+    },
+    {
+      "Key": "Charmeleon",
+      "Value": "火恐龙"
+    },
+    {
+      "Key": "Charizard",
+      "Value": "喷火龙"
+    },
+    {
+      "Key": "Squirtle",
+      "Value": "杰尼龟"
+    },
+    {
+      "Key": "Wartortle",
+      "Value": "卡咪龟"
+    },
+    {
+      "Key": "Blastoise",
+      "Value": "水箭龟"
+    },
+    {
+      "Key": "Caterpie",
+      "Value": "绿毛虫"
+    },
+    {
+      "Key": "Metapod",
+      "Value": "铁甲蛹"
+    },
+    {
+      "Key": "Butterfree",
+      "Value": "巴大蝶"
+    },
+    {
+      "Key": "Weedle",
+      "Value": "独角虫"
+    },
+    {
+      "Key": "Kakuna",
+      "Value": "铁壳蛹"
+    },
+    {
+      "Key": "Beedrill",
+      "Value": "大针蜂"
+    },
+    {
+      "Key": "Pidgey",
+      "Value": "波波"
+    },
+    {
+      "Key": "Pidgeotto",
+      "Value": "比比鸟"
+    },
+    {
+      "Key": "Pidgeot",
+      "Value": "大比鸟"
+    },
+    {
+      "Key": "Rattata",
+      "Value": "小拉达"
+    },
+    {
+      "Key": "Raticate",
+      "Value": "拉达"
+    },
+    {
+      "Key": "Spearow",
+      "Value": "烈雀"
+    },
+    {
+      "Key": "Fearow",
+      "Value": "大嘴雀"
+    },
+    {
+      "Key": "Ekans",
+      "Value": "阿柏蛇"
+    },
+    {
+      "Key": "Arbok",
+      "Value": "阿柏怪"
+    },
+    {
+      "Key": "Pikachu",
+      "Value": "皮卡丘"
+    },
+    {
+      "Key": "Raichu",
+      "Value": "雷丘"
+    },
+    {
+      "Key": "Sandshrew",
+      "Value": "穿山鼠"
+    },
+    {
+      "Key": "Sandslash",
+      "Value": "穿山王"
+    },
+    {
+      "Key": "NidoranFemale",
+      "Value": "尼多兰"
+    },
+    {
+      "Key": "Nidorina",
+      "Value": "尼多娜"
+    },
+    {
+      "Key": "Nidoqueen",
+      "Value": "尼多后"
+    },
+    {
+      "Key": "NidoranMale",
+      "Value": "尼多朗"
+    },
+    {
+      "Key": "Nidorino",
+      "Value": "尼多力诺"
+    },
+    {
+      "Key": "Nidoking",
+      "Value": "尼多王"
+    },
+    {
+      "Key": "Clefairy",
+      "Value": "皮皮"
+    },
+    {
+      "Key": "Clefable",
+      "Value": "皮可西"
+    },
+    {
+      "Key": "Vulpix",
+      "Value": "六尾"
+    },
+    {
+      "Key": "Ninetales",
+      "Value": "九尾"
+    },
+    {
+      "Key": "Jigglypuff",
+      "Value": "胖丁"
+    },
+    {
+      "Key": "Wigglytuff",
+      "Value": "胖可丁"
+    },
+    {
+      "Key": "Zubat",
+      "Value": "超音蝠"
+    },
+    {
+      "Key": "Golbat",
+      "Value": "大嘴蝠"
+    },
+    {
+      "Key": "Oddish",
+      "Value": "走路草"
+    },
+    {
+      "Key": "Gloom",
+      "Value": "臭臭花"
+    },
+    {
+      "Key": "Vileplume",
+      "Value": "霸王花"
+    },
+    {
+      "Key": "Paras",
+      "Value": "派拉斯"
+    },
+    {
+      "Key": "Parasect",
+      "Value": "派拉斯特"
+    },
+    {
+      "Key": "Venonat",
+      "Value": "毛球"
+    },
+    {
+      "Key": "Venomoth",
+      "Value": "摩鲁蛾"
+    },
+    {
+      "Key": "Diglett",
+      "Value": "地鼠"
+    },
+    {
+      "Key": "Dugtrio",
+      "Value": "三地鼠"
+    },
+    {
+      "Key": "Meowth",
+      "Value": "喵喵"
+    },
+    {
+      "Key": "Persian",
+      "Value": "猫老大"
+    },
+    {
+      "Key": "Psyduck",
+      "Value": "可达鸭"
+    },
+    {
+      "Key": "Golduck",
+      "Value": "哥达鸭"
+    },
+    {
+      "Key": "Mankey",
+      "Value": "猴怪"
+    },
+    {
+      "Key": "Primeape",
+      "Value": "火爆猴"
+    },
+    {
+      "Key": "Growlithe",
+      "Value": "卡蒂狗"
+    },
+    {
+      "Key": "Arcanine",
+      "Value": "风速狗"
+    },
+    {
+      "Key": "Poliwag",
+      "Value": "蚊香蝌蚪"
+    },
+    {
+      "Key": "Poliwhirl",
+      "Value": "蚊香君"
+    },
+    {
+      "Key": "Poliwrath",
+      "Value": "蚊香泳士"
+    },
+    {
+      "Key": "Abra",
+      "Value": "凯西"
+    },
+    {
+      "Key": "Kadabra",
+      "Value": "勇基拉"
+    },
+    {
+      "Key": "Alakazam",
+      "Value": "胡地"
+    },
+    {
+      "Key": "Machop",
+      "Value": "腕力"
+    },
+    {
+      "Key": "Machoke",
+      "Value": "豪力"
+    },
+    {
+      "Key": "Machamp",
+      "Value": "怪力"
+    },
+    {
+      "Key": "Bellsprout",
+      "Value": "喇叭芽"
+    },
+    {
+      "Key": "Weepinbell",
+      "Value": "口呆花"
+    },
+    {
+      "Key": "Victreebel",
+      "Value": "大食花"
+    },
+    {
+      "Key": "Tentacool",
+      "Value": "玛瑙水母"
+    },
+    {
+      "Key": "Tentacruel",
+      "Value": "毒刺水母"
+    },
+    {
+      "Key": "Geodude",
+      "Value": "小拳石"
+    },
+    {
+      "Key": "Graveler",
+      "Value": "隆隆石"
+    },
+    {
+      "Key": "Golem",
+      "Value": "隆隆岩"
+    },
+    {
+      "Key": "Ponyta",
+      "Value": "小火马"
+    },
+    {
+      "Key": "Rapidash",
+      "Value": "烈焰马"
+    },
+    {
+      "Key": "Slowpoke",
+      "Value": "呆呆兽"
+    },
+    {
+      "Key": "Slowbro",
+      "Value": "呆壳兽"
+    },
+    {
+      "Key": "Magnemite",
+      "Value": "小磁怪"
+    },
+    {
+      "Key": "Magneton",
+      "Value": "三合一磁怪"
+    },
+    {
+      "Key": "Farfetchd",
+      "Value": "大葱鸭"
+    },
+    {
+      "Key": "Doduo",
+      "Value": "嘟嘟"
+    },
+    {
+      "Key": "Dodrio",
+      "Value": "嘟嘟利"
+    },
+    {
+      "Key": "Seel",
+      "Value": "小海狮"
+    },
+    {
+      "Key": "Dewgong",
+      "Value": "白海狮"
+    },
+    {
+      "Key": "Grimer",
+      "Value": "臭泥"
+    },
+    {
+      "Key": "Muk",
+      "Value": "臭臭泥"
+    },
+    {
+      "Key": "Shellder",
+      "Value": "大舌贝"
+    },
+    {
+      "Key": "Cloyster",
+      "Value": "刺甲贝"
+    },
+    {
+      "Key": "Gastly",
+      "Value": "鬼斯"
+    },
+    {
+      "Key": "Haunter",
+      "Value": "鬼斯通"
+    },
+    {
+      "Key": "Gengar",
+      "Value": "耿鬼"
+    },
+    {
+      "Key": "Onix",
+      "Value": "大岩蛇"
+    },
+    {
+      "Key": "Drowzee",
+      "Value": "催眠貘"
+    },
+    {
+      "Key": "Hypno",
+      "Value": "引梦貘人"
+    },
+    {
+      "Key": "Krabby",
+      "Value": "大钳蟹"
+    },
+    {
+      "Key": "Kingler",
+      "Value": "巨钳蟹"
+    },
+    {
+      "Key": "Voltorb",
+      "Value": "霹雳电球"
+    },
+    {
+      "Key": "Electrode",
+      "Value": "顽皮雷弹"
+    },
+    {
+      "Key": "Exeggcute",
+      "Value": "蛋蛋"
+    },
+    {
+      "Key": "Exeggutor",
+      "Value": "椰蛋树"
+    },
+    {
+      "Key": "Cubone",
+      "Value": "卡拉卡拉"
+    },
+    {
+      "Key": "Marowak",
+      "Value": "嘎啦嘎啦"
+    },
+    {
+      "Key": "Hitmonlee",
+      "Value": "飞腿郎"
+    },
+    {
+      "Key": "Hitmonchan",
+      "Value": "快拳郎"
+    },
+    {
+      "Key": "Lickitung",
+      "Value": "大舌头"
+    },
+    {
+      "Key": "Koffing",
+      "Value": "瓦斯弹"
+    },
+    {
+      "Key": "Weezing",
+      "Value": "双弹瓦斯"
+    },
+    {
+      "Key": "Rhyhorn",
+      "Value": "独角犀牛"
+    },
+    {
+      "Key": "Rhydon",
+      "Value": "钻角犀兽"
+    },
+    {
+      "Key": "Chansey",
+      "Value": "吉利蛋"
+    },
+    {
+      "Key": "Tangela",
+      "Value": "蔓藤怪"
+    },
+    {
+      "Key": "Kangaskhan",
+      "Value": "袋兽"
+    },
+    {
+      "Key": "Horsea",
+      "Value": "墨海马"
+    },
+    {
+      "Key": "Seadra",
+      "Value": "海刺龙"
+    },
+    {
+      "Key": "Goldeen",
+      "Value": "角金鱼"
+    },
+    {
+      "Key": "Seaking",
+      "Value": "金鱼王"
+    },
+    {
+      "Key": "Staryu",
+      "Value": "海星星"
+    },
+    {
+      "Key": "Starmie",
+      "Value": "宝石海星"
+    },
+    {
+      "Key": "MrMime",
+      "Value": "魔墙人偶"
+    },
+    {
+      "Key": "Scyther",
+      "Value": "飞天螳螂"
+    },
+    {
+      "Key": "Jynx",
+      "Value": "迷唇姐"
+    },
+    {
+      "Key": "Electabuzz",
+      "Value": "电击兽"
+    },
+    {
+      "Key": "Magmar",
+      "Value": "鸭嘴火兽"
+    },
+    {
+      "Key": "Pinsir",
+      "Value": "凯罗斯"
+    },
+    {
+      "Key": "Tauros",
+      "Value": "肯泰罗"
+    },
+    {
+      "Key": "Magikarp",
+      "Value": "鲤鱼王"
+    },
+    {
+      "Key": "Gyarados",
+      "Value": "暴鲤龙"
+    },
+    {
+      "Key": "Lapras",
+      "Value": "拉普拉斯"
+    },
+    {
+      "Key": "Ditto",
+      "Value": "百变怪"
+    },
+    {
+      "Key": "Eevee",
+      "Value": "伊布"
+    },
+    {
+      "Key": "Vaporeon",
+      "Value": "水伊布"
+    },
+    {
+      "Key": "Jolteon",
+      "Value": "雷伊布"
+    },
+    {
+      "Key": "Flareon",
+      "Value": "火伊布"
+    },
+    {
+      "Key": "Porygon",
+      "Value": "多边兽"
+    },
+    {
+      "Key": "Omanyte",
+      "Value": "菊石兽"
+    },
+    {
+      "Key": "Omastar",
+      "Value": "多刺菊石兽"
+    },
+    {
+      "Key": "Kabuto",
+      "Value": "化石盔"
+    },
+    {
+      "Key": "Kabutops",
+      "Value": "镰刀盔"
+    },
+    {
+      "Key": "Aerodactyl",
+      "Value": "化石翼龙"
+    },
+    {
+      "Key": "Snorlax",
+      "Value": "卡比兽"
+    },
+    {
+      "Key": "Articuno",
+      "Value": "急冻鸟"
+    },
+    {
+      "Key": "Zapdos",
+      "Value": "闪电鸟"
+    },
+    {
+      "Key": "Moltres",
+      "Value": "火焰鸟"
+    },
+    {
+      "Key": "Dratini",
+      "Value": "迷你龙"
+    },
+    {
+      "Key": "Dragonair",
+      "Value": "哈克龙"
+    },
+    {
+      "Key": "Dragonite",
+      "Value": "快龙"
+    },
+    {
+      "Key": "Mewtwo",
+      "Value": "超梦"
+    },
+    {
+      "Key": "Mew",
+      "Value": "梦幻"
+    }
   ]
-,
-  "Pokemon": [
-  ]}
+}
