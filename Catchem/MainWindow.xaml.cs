@@ -286,23 +286,16 @@ namespace Catchem
                 try
                 {
                     var tBot = openedSessions[session];
-                    try
-                    {
-                        if (tBot.mapMarkers.ContainsKey(fortDatas[i].Id) || tBot.MarkersQueue.Count(x => x.uid == fortDatas[i].Id) != 0)
-                        continue;
-                    }
-                    catch (Exception ex)
-                    {
-                        // ignored
-                    }
+                    if (tBot.mapMarkers.ContainsKey(fortDatas[i].Id) || tBot.MarkersQueue.Count(x => x.uid == fortDatas[i].Id) != 0)
+                    continue;
                     var lured = fortDatas[i].LureInfo?.LureExpiresTimestampMs > DateTime.UtcNow.ToUnixTime();
                     var nMapObj = new NewMapObject("ps" + (lured ? "_lured" : ""), "PokeStop", fortDatas[i].Latitude,
                         fortDatas[i].Longitude, fortDatas[i].Id);
                     openedSessions[session].MarkersQueue.Enqueue(nMapObj);
                 }
-                catch (Exception ex)
+                catch
                 {
-                    // ignored
+                    i--;
                 }
             }
         }
@@ -461,14 +454,14 @@ namespace Catchem
             public GlobalSettings globalSettings = null;
 
             public Label runTime;
-            public Label level;
+            public Label xpph;
             public bool Started = false;
 
             private DispatcherTimer timer;
             private TimeSpan ts;
 
-            public double Lat = 55.43213;
-            public double Lng = 37.633987;
+            public double Lat;
+            public double Lng;
             public bool gotNewCoord = false;
             public bool moveRequired = false;
             private double _la, _ln;
@@ -504,6 +497,8 @@ namespace Catchem
                 listener = wel;
                 settings = cs;
                 logic = l;
+                Lat = globalSettings.DefaultLatitude;
+                Lng = globalSettings.DefaultLongitude;
 
                 ts = new TimeSpan();
                 timer = new DispatcherTimer();
@@ -514,6 +509,14 @@ namespace Catchem
                     runTime.Content = ts.ToString();
                 };
                 cts = new CancellationTokenSource();
+            }
+
+            public void UpdateXppH()
+            {
+                if (stats == null || ts.TotalHours == 0)
+                    xpph.Content = 0;
+                else
+                    xpph.Content = "Xp/h: " + (stats.TotalExperience / ts.TotalHours).ToString("0.0");
             }
 
             private void WipeData()
@@ -744,7 +747,7 @@ namespace Catchem
             };
             botGrid.Children.Add(lvRuntime);
 
-            newBot.level = lbLevel;
+            newBot.xpph = lbLevel;
             newBot.runTime = lvRuntime;
 
             botPanel.Children.Add(botGrid);
@@ -802,8 +805,7 @@ namespace Catchem
             if (_bot == null) throw new ArgumentNullException(nameof(_bot));
             Dispatcher.BeginInvoke(new ThreadStart(delegate
             {
-                _bot.level.Content =
-                    $"{_bot.stats?.ExportStats?.HoursUntilLvl.ToString("00")}:{_bot.stats?.ExportStats?.MinutesUntilLevel.ToString("00")}";
+                _bot.UpdateXppH();
             }));
             if (bot == _bot)
             {
@@ -837,6 +839,8 @@ namespace Catchem
 
             LoadingUi = true;
             settings_grid.IsEnabled = true;
+            if (!tabControl.IsEnabled)
+                tabControl.IsEnabled = true;
 
             authBox.SelectedItem = bot.globalSettings.Auth.AuthType;
             if (bot.globalSettings.Auth.AuthType == AuthType.Google)
@@ -1010,7 +1014,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             float val = 0;
-            if (float.TryParse((sender as TextBox).Text, out val))
+            if (float.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.EvolveAboveIvValue = val;
         }
 
@@ -1018,7 +1022,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.KeepMinCp = val;
         }
 
@@ -1026,7 +1030,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.KeepMinDuplicatePokemon = val;
         }
 
@@ -1034,7 +1038,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             float val = 0;
-            if (float.TryParse((sender as TextBox).Text, out val))
+            if (float.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.KeepMinIvPercentage = val;
         }
 
@@ -1042,8 +1046,13 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.MaxPokeballsPerPokemon = val;
+        }
+
+        private static string BeautifyToNum(string text)
+        {
+            return text.Trim().Replace('.', ',').Replace(" ", "");
         }
 
         private void c_RenameTemplate_TextChanged(object sender, TextChangedEventArgs e)
@@ -1056,7 +1065,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.DefaultAltitude = val;
         }
 
@@ -1064,7 +1073,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.DefaultLatitude = val;
         }
 
@@ -1072,7 +1081,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.DefaultLongitude = val;
         }
 
@@ -1080,7 +1089,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.MinDelayBetweenSnipes = val;
         }
 
@@ -1088,7 +1097,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.MinPokeballsToSnipe = val;
         }
 
@@ -1096,7 +1105,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.MinPokeballsWhileSnipe = val;
         }
 
@@ -1104,7 +1113,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.MaxSpawnLocationOffset = val;
         }
 
@@ -1112,7 +1121,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.MaxTravelDistanceInMeters = val;
         }
 
@@ -1120,7 +1129,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.WalkingSpeedInKilometerPerHour = val;
         }
 
@@ -1152,7 +1161,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.TotalAmountOfPokeballsToKeep = val;
         }
 
@@ -1160,7 +1169,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.TotalAmountOfPotionsToKeep = val;
         }
 
@@ -1168,7 +1177,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.TotalAmountOfRevivesToKeep = val;
         }
 
@@ -1182,7 +1191,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UpgradePokemonCpMinimum = val;
         }
 
@@ -1190,7 +1199,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UpgradePokemonIvMinimum = val;
         }
 
@@ -1211,7 +1220,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseLuckyEggsMinPokemonAmount = val;
         }
 
@@ -1231,7 +1240,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseMasterBallBelowCatchProbability = val;
         }
 
@@ -1239,7 +1248,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseUltraBallBelowCatchProbability = val;
         }
 
@@ -1247,7 +1256,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseGreatBallBelowCatchProbability = val;
         }
 
@@ -1255,7 +1264,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseUltraBallAboveIv = val;
         }
 
@@ -1263,7 +1272,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseGreatBallAboveIv = val;
         }
 
@@ -1278,7 +1287,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.ThrowAccuracyMin = val;
         }
 
@@ -1286,7 +1295,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.ThrowAccuracyMax = val;
         }
 
@@ -1294,7 +1303,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.ThrowSpinFrequency = val;
         }
 
@@ -1302,7 +1311,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseBerryMinCp = val;
         }
 
@@ -1310,7 +1319,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             float val = 0;
-            if (float.TryParse((sender as TextBox).Text, out val))
+            if (float.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseBerryMinIv = val;
         }
 
@@ -1318,7 +1327,7 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.UseBerryBelowCatchProbability = val;
         }
 
@@ -1326,14 +1335,14 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
+            if (int.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.TotalAmountOfBerriesToKeep = val;
         }
         private void c_RecycleInventoryAtUsagePercentage_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (bot == null || LoadingUi) return;
             double val = 0;
-            if (double.TryParse((sender as TextBox).Text, out val))
+            if (double.TryParse(BeautifyToNum((sender as TextBox).Text), out val))
                 bot.globalSettings.RecycleInventoryAtUsagePercentage = val;
         }
         #endregion
@@ -1372,8 +1381,12 @@ namespace Catchem
                 }
                 else
                 {
+                    bot.Lat = lat;
+                    bot.Lng = lng;                    
                     bot.globalSettings.DefaultLatitude = lat;
                     bot.globalSettings.DefaultLongitude = lng;
+                    DrawPlayerMarker();
+                    UpdateCoordBoxes();
                 }
             }
         }
