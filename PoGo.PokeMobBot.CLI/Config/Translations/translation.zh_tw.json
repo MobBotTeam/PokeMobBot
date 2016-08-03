@@ -48,6 +48,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "使用幸運蛋，剩餘數量：{0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "成功進化 {0} 獲得 {1} 經驗值"
@@ -364,5 +368,7 @@
       "Key": "missingCredentialsPtc",
       "Value": "您需要在auth.json中填寫Ptc賬戶和密碼！"
     }
+  ],
+  "Pokemon": [
   ]
 }

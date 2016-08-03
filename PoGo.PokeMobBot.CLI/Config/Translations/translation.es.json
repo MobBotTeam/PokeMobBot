@@ -32,7 +32,7 @@
     },
     {
       "Key": "eventFortUsed",
-      "Value": "PX: {0}, Gemas: {1}, Objetos: {2}"
+      "Value": "{0} - PX: {1}, Gemas: {2}, Objetos: {3}"
     },
     {
       "Key": "eventFortFailed",
@@ -49,6 +49,10 @@
     {
       "Key": "eventUsedLuckyEgg",
       "Value": "Huevo Suerte usado. Te quedan {0}"
+    },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
     },
     {
       "Key": "eventPokemonEvolvedSuccess",
@@ -404,5 +408,7 @@
       "Key": "displayHighestMOVE2Header",
       "Value": "MOVIMIENTO2"
     }
+  ],
+  "Pokemon": [
   ]
 }

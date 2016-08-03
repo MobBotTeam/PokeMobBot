@@ -45,6 +45,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Bruker Lucky Egg, gjenstående egg: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} Suksess for {1}xp"
@@ -122,5 +126,7 @@
       "Key": "incubatorStatusUpdate",
       "Value": "Incubator oppdatering: {0:0.00}km igjen"
     }
+  ],
+  "Pokemon": [
   ]
 }

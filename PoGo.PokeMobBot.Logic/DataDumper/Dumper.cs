@@ -15,16 +15,21 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         /// </summary>
         /// <param name="session"></param>
         /// <param name="filename" />
+        /// <param name="extension">Extension to be used for naming the file.</param>
         /// File to clear/param>
-        public static void ClearDumpFile(ISession session, string filename)
+        public static void ClearDumpFile(ISession session, string filename, string extension = "txt")
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps");
             var file = Path.Combine(path,
-                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt");
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.{extension}");
+            try
+            {
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
-            // Clears all contents of a file first if overwrite is true
-            File.WriteAllText(file, string.Empty);
+                // Clears all contents of a file first if overwrite is true
+                File.WriteAllText(file, string.Empty);
+            }
+            catch(IOException) { }
         }
 
         /// <summary>
@@ -33,11 +38,16 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         /// <param name="session"></param>
         /// <param name="data">Dumps the string data to the file</param>
         /// <param name="filename">Filename to be used for naming the file.</param>
-        public static void Dump(ISession session, string data, string filename)
+        /// <param name="extension">Extension to be used for naming the file.</param>
+        public static void Dump(ISession session, string data, string filename, string extension = "txt")
         {
             string uniqueFileName = $"{filename}";
 
-            DumpToFile(session, data, uniqueFileName);
+            try
+            {
+                DumpToFile(session, data, uniqueFileName, extension);
+            }
+            catch(IOException) { }
         }
 
         /// <summary>
@@ -46,19 +56,24 @@ namespace PoGo.PokeMobBot.Logic.DataDumper
         /// <param name="session"></param>
         /// <param name="data">Dumps the string data to the file</param>
         /// <param name="filename">Filename to be used for naming the file.</param>
-        private static void DumpToFile(ISession session, string data, string filename)
+        /// <param name="extension">Extension to be used for naming the file.</param>
+        private static void DumpToFile(ISession session, string data, string filename, string extension = "txt")
         {
             var path = Path.Combine(session.LogicSettings.ProfilePath, "Dumps",
-                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt");
+                $"PokeMobBot-{filename}-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.{extension}");
 
-            using (
-                var dumpFile =
-                    File.AppendText(path)
-                )
+            try
             {
-                dumpFile.WriteLine(data);
-                dumpFile.Flush();
+                using (
+                    var dumpFile =
+                        File.AppendText(path)
+                    )
+                {
+                    dumpFile.WriteLine(data);
+                    dumpFile.Flush();
+                }
             }
+            catch (IOException) { }
         }
 
         /// <summary>

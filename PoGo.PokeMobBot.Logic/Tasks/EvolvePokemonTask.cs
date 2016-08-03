@@ -21,6 +21,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // Refresh inventory so that the player stats are fresh
+            await session.Inventory.RefreshCachedInventory();
+
             var pokemonToEvolveTask = await session.Inventory.GetPokemonToEvolve(session.LogicSettings.PokemonsToEvolve);
             var pokemonToEvolve = pokemonToEvolveTask.ToList();
 
@@ -42,6 +45,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     else
                     {
                         // Wait until we have enough pokemon
+                        session.EventDispatcher.Send(new UseLuckyEggMinPokemonEvent
+                        {
+                            Diff = session.LogicSettings.UseLuckyEggsMinPokemonAmount - pokemonToEvolve.Count,
+                            CurrCount = pokemonToEvolve.Count,
+                            MinPokemon = session.LogicSettings.UseLuckyEggsMinPokemonAmount
+                        });
                         return;
                     }
                 }
@@ -57,6 +66,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Exp = evolveResponse.ExperienceAwarded,
                         Result = evolveResponse.Result
                     });
+
+                    await DelayingEvolveUtils.Delay(session.LogicSettings.DelayEvolvePokemon, 0, session.LogicSettings.DelayEvolveVariation);
                 }
             }
         }
@@ -78,7 +89,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if(session.LogicSettings.Teleport)
                 await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
             else
-                DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
+                await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
         }
     }
 }

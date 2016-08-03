@@ -50,6 +50,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Använde Lucky Egg, {0} stycken kvar"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} utvecklades för {1}xp"
@@ -383,5 +387,7 @@
       "Key": "noPokemonToSnipe",
       "Value": "[Krypskytt] Inga Pokemons funna!"
     }
+  ],
+  "Pokemon": [
   ]
 }

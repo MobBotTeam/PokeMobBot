@@ -49,6 +49,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Memakai Lucky Egg, tersisa: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} berhasil untuk {1}xp"
@@ -246,6 +250,10 @@
       "Key": "finishedUnpackingFiles",
       "Value": "Selesai mengbongkar file - file..."
     },
+	{
+      "Key": "FinishedTransferringConfig",
+      "Value": "Menyelesaikan perpindahan konfig ke versi baru..."
+    },
     {
       "Key": "updateFinished",
       "Value": "Update telah selesai, anda dapat menutup window ini sekarang."
@@ -380,5 +388,7 @@
       "Key": "noPokemonToSnipe",
       "Value": "[Sniper] Tidak ditemukan Pokemon untuk di Snipe!"
     }
+  ],
+  "Pokemon": [
   ]
 }

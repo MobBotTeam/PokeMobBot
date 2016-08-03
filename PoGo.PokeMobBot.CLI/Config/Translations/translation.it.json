@@ -49,6 +49,10 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Usato Fortunuovo, rimanenti: {0}"
     },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+    },
     {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} con successo per {1}pe"
@@ -385,5 +389,7 @@
       "Key": "noPokemonToSnipe",
       "Value": "[Sniper] Nessun Pokémon trovato per lo snipe!"
     }
+  ],
+  "Pokemon": [
   ]
 }

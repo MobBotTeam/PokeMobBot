@@ -19,7 +19,7 @@ namespace PoGo.PokeMobBot.Logic.Logging
             using (
                 var log =
                     File.AppendText(Path.Combine(_path,
-                        $"NecroBot-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt"))
+                        $"PokeMobBot-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt"))
                 )
             {
                 log.WriteLine(message);
@@ -33,6 +33,7 @@ namespace PoGo.PokeMobBot.Logic.Logging
         ///     unset.
         /// </summary>
         /// <param name="logger"></param>
+        /// <param name="subPath"></param>
         public static void SetLogger(ILogger logger, string subPath = "")
         {
             _logger = logger;
@@ -51,7 +52,7 @@ namespace PoGo.PokeMobBot.Logic.Logging
         }
 
         /// <summary>
-        ///     Log a specific message to the logger setup by <see cref="SetLogger(ILogger)" /> .
+        ///     Log a specific message to the logger setup by <see cref="SetLogger(ILogger,string)" /> .
         /// </summary>
         /// <param name="message">The message to log.</param>
         /// <param name="level">Optional level to log. Default <see cref="LogLevel.Info" />.</param>

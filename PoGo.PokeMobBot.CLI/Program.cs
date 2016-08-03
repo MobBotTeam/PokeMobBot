@@ -17,8 +17,16 @@ namespace PoGo.PokeMobBot.CLI
 {
     internal class Program
     {
+        // http://stackoverflow.com/questions/2586612/how-to-keep-a-net-console-app-running Save some CPU Cycles, speed things up
+        static ManualResetEvent _quitEvent = new ManualResetEvent(false);
+
         private static void Main(string[] args)
         {
+            Console.CancelKeyPress += (sender, eArgs) => {
+                _quitEvent.Set();
+                eArgs.Cancel = true;
+            };
+
             var culture = CultureInfo.CreateSpecificCulture("en-US");
 
             CultureInfo.DefaultThreadCurrentCulture = culture;
@@ -28,7 +36,12 @@ namespace PoGo.PokeMobBot.CLI
             if (args.Length > 0)
                 subPath = args[0];
 
-            Logger.SetLogger(new ConsoleLogger(LogLevel.Info), subPath);
+#if DEBUG
+            LogLevel logLevel = LogLevel.Debug;
+#else
+            LogLevel logLevel = LogLevel.Info;
+#endif
+            Logger.SetLogger(new ConsoleLogger(logLevel), subPath);
 
             var settings = GlobalSettings.Load(subPath);
 
@@ -36,9 +49,18 @@ namespace PoGo.PokeMobBot.CLI
             if (settings == null)
             {
                 Logger.Write("This is your first start and the bot has generated the default config!", LogLevel.Warning);
-                Logger.Write("We will now shutdown to let you configure the bot and then launch it again.",
-                    LogLevel.Warning);
-                Thread.Sleep(2000);
+                Logger.Write("After pressing a key the config folder will open and this commandline will close", LogLevel.Warning);
+
+                //pauses console until keyinput
+                Console.ReadKey();
+
+                // opens explorer with location "config"
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = "config",
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
                 Environment.Exit(0);
             }
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
@@ -85,20 +107,15 @@ namespace PoGo.PokeMobBot.CLI
             session.Navigation.UpdatePositionEvent +=
                 (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
 
+#if DEBUG
+            machine.AsyncStart(new LoginState(), session);
+#else
             machine.AsyncStart(new VersionCheckState(), session);
+#endif
             if (session.LogicSettings.UseSnipeLocationServer)
                 SnipePokemonTask.AsyncStart(session);
 
-            //Non-blocking key reader
-            //This will allow to process console key presses in another code parts
-            while (true)
-            {
-                if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Enter)
-                {
-                    break;
-                }
-                Thread.Sleep(5);
-            }
+            _quitEvent.WaitOne();
         }
     }
 }

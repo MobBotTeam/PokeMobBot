@@ -55,7 +55,7 @@ namespace PoGo.PokeMobBot.Logic.State
                         return null;
                 }
             }
-            catch (PtcOfflineException)
+            catch (Exception ex) when (ex is PtcOfflineException || ex is AccessTokenExpiredException)
             {
                 session.EventDispatcher.Send(new ErrorEvent
                 {
@@ -145,7 +145,7 @@ namespace PoGo.PokeMobBot.Logic.State
         public async Task DownloadProfile(ISession session)
         {
             session.Profile = await session.Client.Player.GetPlayer();
-            session.EventDispatcher.Send(new ProfileEvent {Profile = session.Profile});
+            session.EventDispatcher.Send(new ProfileEvent { Profile = session.Profile });
         }
     }
 }

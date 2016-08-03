@@ -2,11 +2,10 @@
 
 using System.Threading;
 using PoGo.PokeMobBot.Logic.State;
-using PoGo.PokeMobBot.Logic.Tasks;
 
 #endregion
 
-namespace PoGo.PokeMobBot.Logic.Service
+namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public interface IFarm
     {
