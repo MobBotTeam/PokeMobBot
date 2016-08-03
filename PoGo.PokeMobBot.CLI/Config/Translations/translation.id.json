@@ -22,8 +22,7 @@
     },
     {
       "Key": "farmPokestopsOutsideRadius",
-      "Value":
-        "Kamu di luar dari radius yang kamu tentukan! Jalan ke tempat awal (sekitar {0}m) dalam 5 detik. Apakah file Coords.ini kamu benar?"
+      "Value": "Kamu di luar dari radius yang kamu tentukan! Jalan ke tempat awal (sekitar {0}m) dalam 5 detik. Apakah file Coords.ini kamu benar?"
     },
     {
       "Key": "farmPokestopsNoUsableFound",
@@ -49,11 +48,7 @@
       "Key": "eventUsedLuckyEgg",
       "Value": "Memakai Lucky Egg, tersisa: {0}"
     },
-	{
-      "Key": "eventUseLuckyEggMinPokemonCheck",
-      "Value": "Jumlah Pokemon tidak cukup untuk memicu Lucky Egg. Menunggu {0} lagi. ({1}/{2})"
-    },
-    {
+	    {
       "Key": "eventPokemonEvolvedSuccess",
       "Value": "{0} berhasil untuk {1}xp"
     },
@@ -71,8 +66,7 @@
     },
     {
       "Key": "eventPokemonCapture",
-      "Value":
-        "({0}) | ({1}) {2} Lvl: {3} CP: ({4}/{5}) IV: {6}% | Kemungkinan: {7}% | jarak {8}m | dengan sebuah {9} (tersisa {10}). | {11}"
+      "Value": "({0}) | ({1}) {2} Lvl: {3} CP: ({4}/{5}) IV: {6}% | Kemungkinan: {7}% | jarak {8}m | dengan sebuah {9} (tersisa {10}). | {11}"
     },
     {
       "Key": "eventNoPokeballs",
@@ -274,20 +268,51 @@
       "Key": "pokemonSkipped",
       "Value": "Lewatkan {0}"
     },
+	{
+      "Key": "zeroPokeballInv",
+      "Value": "Anda tidak mempunyai pokeball di inventori, tidak bisa menangkap Pokemon !"
+    },
     {
+      "Key": "currentPokeballInv",
+      "Value": "[Current Inventory] Pokeball: {0} | Greatball: {1} | Ultraball: {2} | Masterball: {3}"
+    },
+    {
+      "Key": "checkingForBallsToRecycle",
+      "Value": "Mengecek for balls untuk di daur ulang, menyimpan {0}"
+    },
+    {
+      "Key": "checkingForPotionsToRecycle",
+      "Value": "Mengecek for potions untuk di daur ulang, menyimpan {0}"
+    },
+    {
+      "Key": "checkingForRevivesToRecycle",
+      "Value": "Mengecek revive untuk di daur ulang, menyimpan {0}"
+    },
+    {
+      "Key": "pokeballsToKeepIncorrect",
+      "Value": "TotalAmountOfPokebalsToKeep salah konfigurasi. Angka lebih kecil dari 1."
+    },
+    {
+      "Key": "potionsToKeepIncorrect",
+      "Value": "TotalAmountOfPotionsToKeep salah konfigurasi. Angka lebih kecil dari 1."
+    },
+    {
+      "Key": "revivesToKeepIncorrect",
+      "Value": "TotalAmountOfRevivesToKeep salah konfigurasi. Angka lebih kecil dari 1."
+    },
+	{
       "Key": "invFullTransferring",
       "Value": "PokemonInventori penuh.Mentransfer pokemon..."
     },
     {
       "Key": "invFullTransferManually",
-      "Value":
-        "PokemonInventori penuh. Mohon Transfer pokemon secara manual atau set TransferDuplicatePokemon menjadi true di setting..."
+      "Value": "Pokemon Inventori penuh! Mohon pindahkan Pokemon secara manual atau atur TransferDuplicatePokemon menjadi true di pengaturan..."
     },
     {
       "Key": "invFullPokestopLooting",
-      "Value": "Inventori penuh, item tidak diambil!"
+      "Value": "Inventori penuh, tidak ada item yang diambil!"
     },
-    {
+	{
       "Key": "encounterProblem",
       "Value": "Masalah Encounter: {0}"
     },
@@ -349,8 +374,7 @@
     },
     {
       "Key": "statsTemplateString",
-      "Value":
-        "{0} - Waktu aktif {1} - Lvl: {2} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Ditransfer: {6:0} | Didaur ulang: {7:0}"
+      "Value": "{0} - Waktu aktif {1} - Lvl: {2} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Ditransfer: {6:0} | Didaur ulang: {7:0}"
     },
     {
       "Key": "statsXpTemplateString",
@@ -384,11 +408,33 @@
       "Key": "snipeScan",
       "Value": "[Sniper] Mencari Pokemon untuk disnipe di {0}..."
     },
+	{
+      "Key": "snipeScanEx",
+      "Value": "[Sniper] Mensnipe {0} dengan {1} IV {2}..."
+    },
     {
       "Key": "noPokemonToSnipe",
       "Value": "[Sniper] Tidak ditemukan Pokemon untuk di Snipe!"
+    },
+	{
+      "Key": "notEnoughPokeballsToSnipe",
+      "Value": "Tidak cukup Pokeball untuk mulai sniping! ({0}/{1})"
+    },
+    {
+      "Key": "displayHighestMove1Header",
+      "Value": "MOVE1"
+    },
+    {
+      "Key": "displayHighestMove2Header",
+      "Value": "MOVE2"
+    },
+	{
+      "Key": "eventUseLuckyEggMinPokemonCheck",
+      "Value": "Jumlah Pokemon tidak cukup untuk memicu Lucky Egg. Menunggu {0} lagi. ({1}/{2})"
+    },
+{
+      "Key": "invFullPokestopLooting",
+      "Value": "Inventori penuh, item tidak diambil!"
     }
-  ],
-  "Pokemon": [
   ]
 }
