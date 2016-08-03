@@ -131,7 +131,7 @@ namespace PoGo.PokeMobBot.Logic
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
                             .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
-                            .ThenBy(n => n.StaminaMax)
+                            .ThenByDescending(n => n.Cp)
                             .Skip(amountToSkip)
                             .ToList());
                     }
@@ -139,7 +139,7 @@ namespace PoGo.PokeMobBot.Logic
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
                             .OrderByDescending(x => x.Cp)
-                            .ThenBy(n => n.StaminaMax)
+                            .ThenByDescending(n => PokemonInfo.CalculatePokemonPerfection(n))
                             .Skip(amountToSkip)
                             .ToList());
                     }
@@ -155,7 +155,7 @@ namespace PoGo.PokeMobBot.Logic
                     .SelectMany(
                         p =>
                             p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
-                                .ThenBy(n => n.StaminaMax)
+                                .ThenByDescending(n => n.Cp)
                                 .Skip(GetPokemonTransferFilter(p.Key).KeepMinDuplicatePokemon)
                                 .ToList());
             }
@@ -165,7 +165,7 @@ namespace PoGo.PokeMobBot.Logic
                 .SelectMany(
                     p =>
                         p.OrderByDescending(x => x.Cp)
-                            .ThenBy(n => n.StaminaMax)
+                            .ThenByDescending(n => PokemonInfo.CalculatePokemonPerfection(n))
                             .Skip(GetPokemonTransferFilter(p.Key).KeepMinDuplicatePokemon)
                             .ToList());
         }
