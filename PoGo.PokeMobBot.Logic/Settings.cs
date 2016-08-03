@@ -305,7 +305,7 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Eevee,
             //PokemonId.Dratini,
             /*criteria: 50 candies commons*/
-            //PokemonId.Spearow
+            //PokemonId.Spearow,
             //PokemonId.Ekans,
             PokemonId.Zubat,
             //PokemonId.Paras,
@@ -334,7 +334,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter = new Dictionary<PokemonId, TransferFilter>
         {
-            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v4
+            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v4.1
             {PokemonId.Venusaur, new TransferFilter(1750, 80, 1)},
             {PokemonId.Charizard, new TransferFilter(1750, 20, 1)},
             {PokemonId.Blastoise, new TransferFilter(1750, 50, 1)},
@@ -360,7 +360,7 @@ namespace PoGo.PokeMobBot.Logic
             {PokemonId.Jynx, new TransferFilter(1250, 90, 1)},
             {PokemonId.Electabuzz, new TransferFilter(1500, 80, 1)},
             {PokemonId.Magmar, new TransferFilter(1750, 90, 1)},
-            {PokemonId.Pinsir, new TransferFilter(1750, 98, 1)},
+            {PokemonId.Pinsir, new TransferFilter(2000, 98, 1)},
             {PokemonId.Tauros, new TransferFilter(500, 90, 1)},
             {PokemonId.Gyarados, new TransferFilter(2000, 90, 1)},
             {PokemonId.Lapras, new TransferFilter(2250, 90, 1)},
