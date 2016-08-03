@@ -214,17 +214,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
             var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
-            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() ||
+            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() &&
                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
-            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
+            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv &&
                 probability <= session.LogicSettings.UseUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
+            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv &&
                 probability <= session.LogicSettings.UseGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
-            if (pokeBallsCount > 0 && iV < session.LogicSettings.UseGreatBallAboveIv ||
-                probability > session.LogicSettings.UseGreatBallBelowCatchProbability)
+            if (pokeBallsCount > 0)
                 return ItemId.ItemPokeBall;
 
             return ItemId.ItemUnknown;
