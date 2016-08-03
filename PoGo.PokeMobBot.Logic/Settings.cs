@@ -197,25 +197,25 @@ namespace PoGo.PokeMobBot.Logic
 
         //recycle
         public bool AutomaticInventoryManagement = false;
-        public int AutomaticMaxAllPokeballs = 180;
+        public int AutomaticMaxAllPokeballs = 100;
         public int AutomaticMaxAllPotions = 60;
-        public int AutomaticMaxAllRevives = 40;
+        public int AutomaticMaxAllRevives = 80;
         public int AutomaticMaxAllBerries = 50;
-        public int TotalAmountOfPokeballsToKeep = 75;
-        public int TotalAmountOfGreatballsToKeep = 50;
-        public int TotalAmountOfUltraballsToKeep = 50;
-        public int TotalAmountOfMasterballsToKeep = 50;
+        public int TotalAmountOfPokeballsToKeep = 0;
+        public int TotalAmountOfGreatballsToKeep = 40;
+        public int TotalAmountOfUltraballsToKeep = 60;
+        public int TotalAmountOfMasterballsToKeep = 100;
         public int TotalAmountOfPotionsToKeep = 0;
         public int TotalAmountOfSuperPotionsToKeep = 0;
-        public int TotalAmountOfHyperPotionsToKeep = 0;
-        public int TotalAmountOfMaxPotionsToKeep = 20;
+        public int TotalAmountOfHyperPotionsToKeep = 20;
+        public int TotalAmountOfMaxPotionsToKeep = 40;
         public int TotalAmountOfRevivesToKeep = 20;
-        public int TotalAmountOfMaxRevivesToKeep = 30;
-        public int TotalAmountOfRazzToKeep = 40;
-        //public int TotalAmountOfBlukToKeep = 40;
-        //public int TotalAmountOfNanabToKeep = 40;
-        //public int TotalAmountOfPinapToKeep = 40;
-        //public int TotalAmountOfWeparToKeep = 40;
+        public int TotalAmountOfMaxRevivesToKeep = 60;
+        public int TotalAmountOfRazzToKeep = 50;
+        //public int TotalAmountOfBlukToKeep = 50;
+        //public int TotalAmountOfNanabToKeep = 50;
+        //public int TotalAmountOfPinapToKeep = 50;
+        //public int TotalAmountOfWeparToKeep = 50;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -314,7 +314,7 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Eevee,
             //PokemonId.Dratini,
             /*criteria: 50 candies commons*/
-            //PokemonId.Spearow
+            //PokemonId.Spearow,
             //PokemonId.Ekans,
             PokemonId.Zubat,
             //PokemonId.Paras,
@@ -343,7 +343,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter = new Dictionary<PokemonId, TransferFilter>
         {
-            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v4
+            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v4.1
             {PokemonId.Venusaur, new TransferFilter(1750, 80, 1)},
             {PokemonId.Charizard, new TransferFilter(1750, 20, 1)},
             {PokemonId.Blastoise, new TransferFilter(1750, 50, 1)},
@@ -369,7 +369,7 @@ namespace PoGo.PokeMobBot.Logic
             {PokemonId.Jynx, new TransferFilter(1250, 90, 1)},
             {PokemonId.Electabuzz, new TransferFilter(1500, 80, 1)},
             {PokemonId.Magmar, new TransferFilter(1750, 90, 1)},
-            {PokemonId.Pinsir, new TransferFilter(1750, 98, 1)},
+            {PokemonId.Pinsir, new TransferFilter(2000, 98, 1)},
             {PokemonId.Tauros, new TransferFilter(500, 90, 1)},
             {PokemonId.Gyarados, new TransferFilter(2000, 90, 1)},
             {PokemonId.Lapras, new TransferFilter(2250, 90, 1)},
@@ -394,57 +394,109 @@ namespace PoGo.PokeMobBot.Logic
             },
             Pokemon = new List<PokemonId>
             {
+                PokemonId.Bulbasaur,
+                PokemonId.Ivysaur,
                 PokemonId.Venusaur,
+                PokemonId.Charmander,
+                PokemonId.Charmeleon,
                 PokemonId.Charizard,
+                PokemonId.Squirtle,
+                PokemonId.Wartortle,
                 PokemonId.Blastoise,
+                PokemonId.Butterfree,
                 PokemonId.Beedrill,
+                PokemonId.Pidgeot,
+                PokemonId.Raticate,
+                PokemonId.Fearow,
+                PokemonId.Arbok,
+                PokemonId.Pikachu,
                 PokemonId.Raichu,
                 PokemonId.Sandslash,
                 PokemonId.Nidoqueen,
                 PokemonId.Nidoking,
                 PokemonId.Clefable,
                 PokemonId.Ninetales,
+                PokemonId.Wigglytuff,
                 PokemonId.Golbat,
                 PokemonId.Vileplume,
+                PokemonId.Parasect,
+                PokemonId.Venomoth,
+                PokemonId.Dugtrio,
+                PokemonId.Persian,
                 PokemonId.Golduck,
                 PokemonId.Primeape,
+                PokemonId.Growlithe,
                 PokemonId.Arcanine,
+                PokemonId.Poliwag,
+                PokemonId.Poliwhirl,
                 PokemonId.Poliwrath,
+                PokemonId.Abra,
+                PokemonId.Kadabra,
                 PokemonId.Alakazam,
+                PokemonId.Machop,
+                PokemonId.Machoke,
                 PokemonId.Machamp,
+                PokemonId.Victreebel,
+                PokemonId.Tentacruel,
                 PokemonId.Golem,
                 PokemonId.Rapidash,
                 PokemonId.Slowbro,
+                PokemonId.Magneton,
                 PokemonId.Farfetchd,
+                PokemonId.Dodrio,
+                PokemonId.Dewgong,
+                PokemonId.Grimer,
                 PokemonId.Muk,
                 PokemonId.Cloyster,
+                PokemonId.Gastly,
+                PokemonId.Haunter,
                 PokemonId.Gengar,
+                PokemonId.Onix,
+                PokemonId.Hypno,
+                PokemonId.Kingler,
+                PokemonId.Electrode,
                 PokemonId.Exeggutor,
                 PokemonId.Marowak,
+                PokemonId.Hitmonlee,
                 PokemonId.Hitmonchan,
                 PokemonId.Lickitung,
+                PokemonId.Koffing,
+                PokemonId.Weezing,
+                PokemonId.Rhyhorn,
                 PokemonId.Rhydon,
                 PokemonId.Chansey,
+                PokemonId.Tangela,
                 PokemonId.Kangaskhan,
+                PokemonId.Seadra,
+                PokemonId.Seaking,
                 PokemonId.Starmie,
                 PokemonId.MrMime,
                 PokemonId.Scyther,
                 PokemonId.Jynx,
                 PokemonId.Electabuzz,
                 PokemonId.Magmar,
+                PokemonId.Pinsir,
+                PokemonId.Tauros,
+                PokemonId.Magikarp,
                 PokemonId.Gyarados,
                 PokemonId.Lapras,
                 PokemonId.Ditto,
+                PokemonId.Eevee,
                 PokemonId.Vaporeon,
                 PokemonId.Jolteon,
                 PokemonId.Flareon,
                 PokemonId.Porygon,
+                PokemonId.Omanyte,
+                PokemonId.Omastar,
+                PokemonId.Kabuto,
                 PokemonId.Kabutops,
                 PokemonId.Aerodactyl,
                 PokemonId.Snorlax,
                 PokemonId.Articuno,
                 PokemonId.Zapdos,
                 PokemonId.Moltres,
+                PokemonId.Dratini,
+                PokemonId.Dragonair,
                 PokemonId.Dragonite,
                 PokemonId.Mewtwo,
                 PokemonId.Mew

@@ -27,7 +27,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             if (encounter is EncounterResponse && pokemon == null)
                 throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse",
-                    "pokemon");
+                    nameof(pokemon));
 
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
@@ -54,7 +54,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 }
 
                 var useBerryBelowCatchProbability = session.LogicSettings.UseBerryBelowCatchProbability > 1
-                    ? session.LogicSettings.UseBerryBelowCatchProbability / 100 : session.LogicSettings.UseBerryBelowCatchProbability;
+                    ? session.LogicSettings.UseBerryBelowCatchProbability/100
+                    : session.LogicSettings.UseBerryBelowCatchProbability;
                 var isLowProbability = probability < useBerryBelowCatchProbability;
                 var isHighCp = encounter != null &&
                                (encounter is EncounterResponse
@@ -212,9 +213,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         : encounter?.PokemonData));
 
             var useUltraBallBelowCatchProbability = session.LogicSettings.UseUltraBallBelowCatchProbability > 1
-                ? session.LogicSettings.UseUltraBallBelowCatchProbability / 100 : session.LogicSettings.UseUltraBallBelowCatchProbability;
+                ? session.LogicSettings.UseUltraBallBelowCatchProbability/100
+                : session.LogicSettings.UseUltraBallBelowCatchProbability;
             var useGreatBallBelowCatchProbability = session.LogicSettings.UseGreatBallBelowCatchProbability > 1
-                ? session.LogicSettings.UseGreatBallBelowCatchProbability / 100 : session.LogicSettings.UseGreatBallBelowCatchProbability;
+                ? session.LogicSettings.UseGreatBallBelowCatchProbability/100
+                : session.LogicSettings.UseGreatBallBelowCatchProbability;
 
             await session.Inventory.RefreshCachedInventory();
             var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
@@ -222,23 +225,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
             var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
-            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() &&
+            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() ||
                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
-            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv &&
+            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
                 probability <= useUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv &&
+            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
                 probability <= useGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
-            if (pokeBallsCount > 0)
-                return ItemId.ItemPokeBall;
-            if (greatBallsCount > 0)
-                return ItemId.ItemGreatBall;
-            if (ultraBallsCount > 0)
-                return ItemId.ItemUltraBall;
-
-            return ItemId.ItemUnknown;
+            return pokeBallsCount > 0 ? ItemId.ItemPokeBall : ItemId.ItemUnknown;
         }
 
         private static async Task UseBerry(ISession session, ulong encounterId, string spawnPointId)
