@@ -6,6 +6,10 @@ using System;
 using System.Globalization;
 using System.Linq;
 using POGOProtos.Networking.Responses;
+using POGOProtos.Inventory.Item;
+using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Event;
 
 #endregion
 
@@ -22,6 +26,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
         private readonly DateTime _initSessionDateTime = DateTime.Now;
 
         private StatsExport _exportStats;
+        private StatsExport _currentStats;
         private string _playerName;
         public int TotalExperience;
         public int TotalItemsRemoved;
@@ -31,8 +36,31 @@ namespace PoGo.PokeMobBot.Logic.Utils
 
         public void Dirty(Inventory inventory)
         {
+            if (_exportStats != null)
+                _currentStats = _exportStats;
+
             _exportStats = GetCurrentInfo(inventory);
             DirtyEvent?.Invoke();
+        }
+
+        public void CheckLevelUp(ISession session)
+        {
+            if (_currentStats != null)
+            {
+                if (_currentStats.Level < _exportStats.Level)
+                {
+                    var response = session.Inventory.GetLevelUpRewards(_exportStats);
+                    if (response.Result.ItemsAwarded.Any<ItemAward>())
+                    {
+                        session.EventDispatcher.Send(new PlayerLevelUpEvent
+                        {
+                            Items = StringUtils.GetSummedFriendlyNameOfItemAwardList(response.Result.ItemsAwarded)
+                        });
+                    }
+                }
+
+                _currentStats = null;
+            }
         }
 
         public event StatisticsDirtyDelegate DirtyEvent;
