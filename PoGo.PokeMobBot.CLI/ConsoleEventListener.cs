@@ -239,14 +239,15 @@ namespace PoGo.PokeMobBot.CLI
                     strHeader = session.Translation.GetTranslation(TranslationString.DisplayHighestsHeader);
                     break;
             }
+
             var strPerfect = session.Translation.GetTranslation(TranslationString.CommonWordPerfect);
             var strName = session.Translation.GetTranslation(TranslationString.CommonWordName).ToUpper();
-
+            
             Logger.Write($"====== {strHeader} ======", LogLevel.Info, ConsoleColor.Yellow);
             Logger.Write($">   CP/BEST/POWERED |\t{strPerfect.PadLeft(6, ' ')}\t| LVL | {strName.PadRight(10, ' ')} | {("MOVE1").PadRight(18, ' ')} | {("MOVE2").PadRight(6, ' ')} | MoveRankVsAveType |", LogLevel.Info, ConsoleColor.Yellow);
             foreach (var pokemon in evt.PokemonList)
                 Logger.Write(
-                  $"# CP {pokemon.Item1.Cp.ToString().PadLeft(4, ' ')}/{pokemon.Item2.Item1.ToString().PadLeft(4, ' ')}/{pokemon.Item2.Item2.ToString().PadLeft(4, ' ')} | {pokemon.Item3.ToString("0.00")}%\t | {pokemon.Item4.ToString("00")} | {pokemon.Item1.PokemonId.ToString().PadRight(10, ' ')} | {pokemon.Item5.ToString().PadRight(18, ' ')} | {pokemon.Item6.ToString().PadRight(13, ' ')} | {pokemon.Item7}",
+                  $"# CP {pokemon.PokeData.Cp.ToString().PadLeft(4, ' ')}/{pokemon.PerfectCp.ToString().PadLeft(4, ' ')}/{pokemon.MaximumPoweredCp.ToString().PadLeft(4, ' ')} | {pokemon.Perfection.ToString("0.00")}%\t | {pokemon.Level.ToString("00")} | {pokemon.PokeData.PokemonId.ToString().PadRight(10, ' ')} | {pokemon.Move1.ToString().PadRight(18, ' ')} | {pokemon.Move2.ToString().PadRight(13, ' ')} | {pokemon.AverageRankVsTypes}",
                     LogLevel.Info, ConsoleColor.Yellow);
         }
 
