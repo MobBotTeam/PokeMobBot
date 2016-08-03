@@ -61,6 +61,7 @@
     <Compile Include="DataDumper\Dumper.cs" />
     <Compile Include="Common\Translations.cs" />
     <Compile Include="Event\DebugEvent.cs" />
+    <Compile Include="Event\PokemonEncounterEvent.cs" />
     <Compile Include="Event\PokemonSettingsEvent.cs" />
     <Compile Include="Event\UseLuckyEggMinPokemonEvent.cs" />
     <Compile Include="Event\DisplayHighestsPokemonEvent.cs" />

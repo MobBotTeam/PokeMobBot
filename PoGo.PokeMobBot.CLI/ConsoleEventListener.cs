@@ -214,6 +214,18 @@ namespace PoGo.PokeMobBot.CLI
                     $"{evt.Bounds.Latitude},{evt.Bounds.Longitude}"));
         }
 
+        public void HandleEvent(PokemonEncounterEvent evt, ISession session)
+        {
+            Logger.Write(
+                $"{evt.WildPokemon.PokemonId.ToString().PadRight(16, ' ')} | " +
+                $"Lvl: {Logic.PoGoUtils.PokemonInfo.GetLevel(evt.WildPokemon),2:#0} | " +
+                $"CP: {evt.WildPokemon.Cp,4:###0}/{Logic.PoGoUtils.PokemonInfo.CalculateMaxCp(evt.WildPokemon),4:###0} | " +
+                $"IV: {Logic.PoGoUtils.PokemonInfo.CalculatePokemonPerfection(evt.WildPokemon),6:##0.00}% | " +
+                $"[{evt.WildPokemon.IndividualAttack,2:#0}/{evt.WildPokemon.IndividualDefense,2:#0}/{evt.WildPokemon.IndividualStamina,2:#0}] | " +
+                $"Location: {evt.MapPokemon.Latitude},{evt.MapPokemon.Longitude}",
+                LogLevel.Caught, ConsoleColor.Green);
+        }
+
         public void HandleEvent(DisplayHighestsPokemonEvent evt, ISession session)
         {
             string strHeader;

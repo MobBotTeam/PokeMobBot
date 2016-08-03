@@ -29,6 +29,26 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse",
                     "pokemon");
 
+            if (encounter is EncounterResponse)
+            {
+                session.EventDispatcher.Send(new PokemonEncounterEvent
+                {
+                    WildPokemon = encounter.WildPokemon?.PokemonData,
+                    MapPokemon = pokemon
+                });
+
+                DataDumper.Dumper.Dump(session,
+                    $"[{DateTime.Now.ToString("HH:mm:ss")}] | " +
+                    $"{encounter.WildPokemon?.PokemonData?.PokemonId.ToString().PadRight(16, ' ')} | " +
+                    $"Lvl: {PokemonInfo.GetLevel(encounter.WildPokemon?.PokemonData),2:#0} | " +
+                    $"CP: {encounter.WildPokemon?.PokemonData?.Cp,4:###0}/{PokemonInfo.CalculateMaxCp(encounter.WildPokemon?.PokemonData),4:###0} | " +
+                    $"IV: {PokemonInfo.CalculatePokemonPerfection(encounter.WildPokemon?.PokemonData),6:##0.00}% | " +
+                    $"[{encounter.WildPokemon?.PokemonData?.IndividualAttack,2:#0}/{encounter.WildPokemon?.PokemonData?.IndividualDefense,2:#0}/{encounter.WildPokemon?.PokemonData?.IndividualStamina,2:#0}] | " +
+                    $"Location: {pokemon.Latitude},{pokemon.Longitude} | " +
+                    $"EncounterId: {pokemon.EncounterId}",
+                    "encounters");
+            }
+
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
             do
