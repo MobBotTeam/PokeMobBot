@@ -279,25 +279,20 @@ namespace Catchem
             if (!openedSessions.ContainsKey(session)) return;
             foreach (var pstop in pstops)
             {
-                var tBot = openedSessions[session];
-                if (tBot.mapMarkers.ContainsKey(pstop.Id) || tBot.MarkersQueue.Count(x => x.uid == pstop.Id) != 0)
-                    continue;
-                var lured = pstop.LureInfo?.LureExpiresTimestampMs > DateTime.UtcNow.ToUnixTime();
-                var nMapObj = new NewMapObject("ps" + (lured ? "_lured" : ""), "PokeStop", pstop.Latitude, pstop.Longitude, pstop.Id);
-                openedSessions[session].MarkersQueue.Enqueue(nMapObj);
-            }
-        }
-
-        private async void UpdateStartWorker()
-        {
-            const int delay = 500;
-            while (!windowClosing)
-            {
-                if (bot != null && playerMarker != null && bot.Started)
+                try
                 {
-
+                    var tBot = openedSessions[session];
+                    if (tBot.mapMarkers.ContainsKey(pstop.Id) || tBot.MarkersQueue.Count(x => x.uid == pstop.Id) != 0)
+                        continue;
+                    var lured = pstop.LureInfo?.LureExpiresTimestampMs > DateTime.UtcNow.ToUnixTime();
+                    var nMapObj = new NewMapObject("ps" + (lured ? "_lured" : ""), "PokeStop", pstop.Latitude,
+                        pstop.Longitude, pstop.Id);
+                    openedSessions[session].MarkersQueue.Enqueue(nMapObj);
                 }
-                await Task.Delay(delay);
+                catch (Exception ex)
+                {
+                    // ignored
+                }
             }
         }
 
@@ -336,58 +331,63 @@ namespace Catchem
             {
                 if (bot?.MarkersQueue.Count > 0)
                 {
-                    var newMapObj = bot.MarkersQueue.Dequeue();
-                    switch (newMapObj.oType)
+                    try
                     {
-                        case "ps":
-                            if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
-                            {
-                                var marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
-                                {
-                                    Shape = Properties.Resources.pstop.ToImage("PokeStop"),
-                                    Offset = new Point(-16, -32),
-                                    ZIndex = 5
-                                };
-                                pokeMap.Markers.Add(marker);
-                                bot.mapMarkers.Add(newMapObj.uid, marker);
-                            }
-                            break;
-                        case "ps_lured":
-                            if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
-                            {
-                                var marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
-                                {
-                                    Shape = Properties.Resources.pstop_lured.ToImage("Lured PokeStop"),
-                                    Offset = new Point(-16, -32),
-                                    ZIndex = 5
-                                };
-                                pokeMap.Markers.Add(marker);
-                                bot.mapMarkers.Add(newMapObj.uid, marker);
-                            }
-                            break;
-                        case "pm_rm":
-                            if (bot.mapMarkers.ContainsKey(newMapObj.uid))
-                            {
-                                pokeMap.Markers.Remove(bot.mapMarkers[newMapObj.uid]);
-                                bot.mapMarkers.Remove(newMapObj.uid);
-                            }
-                            break;
-                        case "forcemove_done":
-                            if (forceMoveMarker != null)
-                            {
-                                pokeMap.Markers.Remove(forceMoveMarker);
-                            }
-                            break;
-                        case "pm":
-                            if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
-                            {
-                                CreatePokemonMarker(newMapObj);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
 
+                        var newMapObj = bot.MarkersQueue.Dequeue();
+                        switch (newMapObj.oType)
+                        {
+                            case "ps":
+                                if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
+                                {
+                                    var marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
+                                    {
+                                        Shape = Properties.Resources.pstop.ToImage("PokeStop"),
+                                        Offset = new Point(-16, -32),
+                                        ZIndex = 5
+                                    };
+                                    pokeMap.Markers.Add(marker);
+                                    bot.mapMarkers.Add(newMapObj.uid, marker);
+                                }
+                                break;
+                            case "ps_lured":
+                                if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
+                                {
+                                    var marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
+                                    {
+                                        Shape = Properties.Resources.pstop_lured.ToImage("Lured PokeStop"),
+                                        Offset = new Point(-16, -32),
+                                        ZIndex = 5
+                                    };
+                                    pokeMap.Markers.Add(marker);
+                                    bot.mapMarkers.Add(newMapObj.uid, marker);
+                                }
+                                break;
+                            case "pm_rm":
+                                if (bot.mapMarkers.ContainsKey(newMapObj.uid))
+                                {
+                                    pokeMap.Markers.Remove(bot.mapMarkers[newMapObj.uid]);
+                                    bot.mapMarkers.Remove(newMapObj.uid);
+                                }
+                                break;
+                            case "forcemove_done":
+                                if (forceMoveMarker != null)
+                                {
+                                    pokeMap.Markers.Remove(forceMoveMarker);
+                                }
+                                break;
+                            case "pm":
+                                if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
+                                {
+                                    CreatePokemonMarker(newMapObj);
+                                }
+                                break;
+                        }
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
                 await Task.Delay(10);
             }
@@ -784,17 +784,27 @@ namespace Catchem
         private void StatsOnDirtyEvent(BotWindowData _bot)
         {
             if (_bot == null) throw new ArgumentNullException(nameof(_bot));
+            Dispatcher.BeginInvoke(new ThreadStart(delegate
+            {
+                _bot.level.Content =
+                    $"{_bot.stats.ExportStats.HoursUntilLvl.ToString("00")}:{_bot.stats.ExportStats.MinutesUntilLevel.ToString("00")}";
+            }));
             if (bot == _bot)
             {
-                Playername.Content = curSession.Profile.PlayerData.Username;
-                l_StarDust.Content = curSession.Profile.PlayerData.Currencies[1].Amount;
-                l_Stardust_farmed.Content = bot.stats.TotalStardust;
-                l_xp.Content = bot.stats.ExportStats.CurrentXp;
-                l_xp_farmed.Content = bot.stats.TotalExperience.ToString();
-                l_coins.Content = curSession.Profile.PlayerData.Currencies[0].Amount;
-                l_Pokemons_farmed.Content = bot.stats.TotalPokemons;
-                l_Pokemons_transfered.Content = bot.stats.TotalPokemonsTransfered;
-                l_Pokestops_farmed.Content = bot.stats.TotalPokestops;
+                Dispatcher.BeginInvoke(new ThreadStart(delegate
+                {
+                    Playername.Content = curSession.Profile.PlayerData.Username;
+                    l_StarDust.Content = bot.stats.TotalStardust;
+                    l_Stardust_farmed.Content = bot.stats.TotalStardust == 0 ? 0 : bot.stats.TotalStardust - curSession.Profile.PlayerData.Currencies[1].Amount;
+                    l_xp.Content = bot.stats.ExportStats.CurrentXp;
+                    l_xp_farmed.Content = bot.stats.TotalExperience.ToString();
+                    l_coins.Content = curSession.Profile.PlayerData.Currencies[0].Amount;
+                    l_Pokemons_farmed.Content = bot.stats.TotalPokemons;
+                    l_Pokemons_transfered.Content = bot.stats.TotalPokemonsTransfered;
+                    l_Pokestops_farmed.Content = bot.stats.TotalPokestops;
+                    l_level.Content = bot.stats.ExportStats.Level;
+                    l_level_nextime.Content = $"{bot.stats.ExportStats.HoursUntilLvl.ToString("00")}:{bot.stats.ExportStats.MinutesUntilLevel.ToString("00")}";
+                }));
             }
         }
 
