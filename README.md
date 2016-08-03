@@ -13,6 +13,7 @@
 
  - Discovery pathing function -> bot continue to walk in radom direction from pokestop to pokestop, it pick closest pokestop each turn!
  - Force move option, just double click to the map and bot will start moving there!
+ - Proxy support
 
 <h2>Credits</h2>
 Thanks to Feroxs' hard work on the API & Console we are able to manage something like this.
