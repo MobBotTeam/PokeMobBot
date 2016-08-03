@@ -317,6 +317,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             session.Translation.GetTranslation(
                                 TranslationString.InvFullTransferManually)
                     });
+
+                    // Don't snipe any more pokemon if inventory is full.
+                    break;
                 }
                 else
                 {
