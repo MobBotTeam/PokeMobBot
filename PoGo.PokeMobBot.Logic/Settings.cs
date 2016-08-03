@@ -192,21 +192,21 @@ namespace PoGo.PokeMobBot.Logic
         public float FavoriteMinIvPercentage = 95;
 
         //recycle
-        public int TotalAmountOfPokeballsToKeep = 75;
-        public int TotalAmountOfGreatballsToKeep = 50;
-        public int TotalAmountOfUltraballsToKeep = 50;
-        public int TotalAmountOfMasterballsToKeep = 50;
+        public int TotalAmountOfPokeballsToKeep = 0;
+        public int TotalAmountOfGreatballsToKeep = 40;
+        public int TotalAmountOfUltraballsToKeep = 60;
+        public int TotalAmountOfMasterballsToKeep = 100;
         public int TotalAmountOfPotionsToKeep = 0;
         public int TotalAmountOfSuperPotionsToKeep = 0;
-        public int TotalAmountOfHyperPotionsToKeep = 0;
-        public int TotalAmountOfMaxPotionsToKeep = 20;
+        public int TotalAmountOfHyperPotionsToKeep = 20;
+        public int TotalAmountOfMaxPotionsToKeep = 40;
         public int TotalAmountOfRevivesToKeep = 20;
-        public int TotalAmountOfMaxRevivesToKeep = 30;
-        public int TotalAmountOfRazzToKeep = 40;
-        //public int TotalAmountOfBlukToKeep = 40;
-        //public int TotalAmountOfNanabToKeep = 40;
-        //public int TotalAmountOfPinapToKeep = 40;
-        //public int TotalAmountOfWeparToKeep = 40;
+        public int TotalAmountOfMaxRevivesToKeep = 60;
+        public int TotalAmountOfRazzToKeep = 50;
+        //public int TotalAmountOfBlukToKeep = 50;
+        //public int TotalAmountOfNanabToKeep = 50;
+        //public int TotalAmountOfPinapToKeep = 50;
+        //public int TotalAmountOfWeparToKeep = 50;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
