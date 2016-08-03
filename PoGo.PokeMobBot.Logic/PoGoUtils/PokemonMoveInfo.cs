@@ -22,9 +22,10 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
         }
         public int GetRankVsType(string key)
         {
-            if (_RankVsType.ContainsKey(key))
-                return _RankVsType[key];
-            else
+            if (_RankVsType.ContainsKey(key)) { 
+                int result = _RankVsType[key];
+                return result;
+            }else
                 return 0;
         }
 
