@@ -95,6 +95,7 @@ namespace PoGo.PokeMobBot.Logic
         
         //incubator
         bool UseEggIncubators { get; } 
+        bool AlwaysPrefferLongDistanceEgg { get; }
         
         //rename
         bool RenameOnlyAboveIv { get; }

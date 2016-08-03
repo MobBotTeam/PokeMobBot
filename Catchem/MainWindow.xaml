@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Catchem"
         xmlns:WindowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation" x:Class="Catchem.MainWindow"
         mc:Ignorable="d"
-        Title="Catchem" Height="574.5" Width="1030" MinWidth="1030" MinHeight="600" Closing="Window_Closing" Icon="unnamed.ico">
+        Title="Catchem" Height="774.5" Width="1221" MinWidth="1030" MinHeight="600" Closing="Window_Closing" Icon="unnamed.ico">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFB2EF9C" Offset="0"/>
@@ -80,43 +80,37 @@
                                 <TextBox Template="{StaticResource pogo}" x:Name="loginBox" Height="32" Margin="95,50,10,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" TextChanged="loginBox_TextChanged" Foreground="#FF56C2B0"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="groupBox2" Header="Pokemons" Margin="0,147,0,0" VerticalAlignment="Top" Height="667">
+                        <GroupBox x:Name="groupBox2" Header="Pokemons" Margin="0,147,0,0" VerticalAlignment="Top" Height="541">
                             <Grid>
                                 <CheckBox x:Name="c_autoLevelPokemons" Content="Auto Level Pokemons" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Checked="c_autoLevelPokemons_Checked" Unchecked="c_autoLevelPokemons_Checked"/>
                                 <CheckBox x:Name="c_EvolveAllPokemonAboveIv" Content="Evolve All Pokemon Above Iv" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,31,0,0" Checked="c_EvolveAllPokemonAboveIv_Checked" Unchecked="c_EvolveAllPokemonAboveIv_Checked"/>
                                 <Label x:Name="label8" Content="Evolve Iv Value" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Width="131"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_EvolveAboveIvValue" HorizontalAlignment="Left" Height="29" Margin="141,54,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="138" TextChanged="c_EvolveAboveIvValue_TextChanged"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_EvolveAboveIvValue" Height="29" Margin="233,54,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_EvolveAboveIvValue_TextChanged"/>
                                 <CheckBox x:Name="c_EvolveAllPokemonWithEnoughCandy" Content="Evolve All Pokemon With Enough Candy" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,88,0,0" Checked="c_EvolveAllPokemonWithEnoughCandy_Checked" Unchecked="c_EvolveAllPokemonWithEnoughCandy_Checked"/>
                                 <Label x:Name="label8_Copy" Content="Keep Min Cp" HorizontalAlignment="Left" Margin="10,110,0,0" VerticalAlignment="Top" Width="131"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_KeepMinCp" HorizontalAlignment="Left" Height="29" Margin="141,109,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="138" TextChanged="c_KeepMinCp_TextChanged"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_KeepMinCp" Height="29" Margin="233,109,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_KeepMinCp_TextChanged"/>
                                 <Label x:Name="label8_Copy1" Content="Keep Min Duplicate" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Width="131"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_KeepMinDuplicatePokemon" HorizontalAlignment="Left" Height="29" Margin="141,143,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="138" TextChanged="c_KeepMinDuplicatePokemon_TextChanged"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_KeepMinDuplicatePokemon" Height="29" Margin="233,143,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_KeepMinDuplicatePokemon_TextChanged"/>
                                 <Label x:Name="label8_Copy2" Content="Keep Min Iv %" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Width="131"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_KeepMinIvPercentage" HorizontalAlignment="Left" Height="29" Margin="141,177,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="138" TextChanged="c_KeepMinIvPercentage_TextChanged"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_KeepMinIvPercentage" Height="29" Margin="233,177,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_KeepMinIvPercentage_TextChanged"/>
                                 <Label x:Name="label8_Copy3" Content="Pokeballs/Pokemon" HorizontalAlignment="Left" Margin="10,212,0,0" VerticalAlignment="Top" Width="131"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_MaxPokeballsPerPokemon" HorizontalAlignment="Left" Height="29" Margin="141,211,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="138" TextChanged="c_MaxPokeballsPerPokemon_TextChanged"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_MaxPokeballsPerPokemon" Height="29" Margin="233,211,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_MaxPokeballsPerPokemon_TextChanged"/>
                                 <CheckBox x:Name="c_KeepPokemonsThatCanEvolve" Content="Keep Pokemons That Can Evolve" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,243,0,0" Checked="c_KeepPokemonsThatCanEvolve_Checked" Unchecked="c_KeepPokemonsThatCanEvolve_Checked"/>
                                 <CheckBox x:Name="c_PrioritizeIvOverCp" Content="Prioritize Iv Over Cp" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,264,0,0" Checked="c_PrioritizeIvOverCp_Checked" Unchecked="c_PrioritizeIvOverCp_Checked"/>
                                 <CheckBox x:Name="c_RenameOnlyAboveIv" Content="Rename Only Above Iv" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,285,0,0" Checked="c_RenameOnlyAboveIv_Checked" Unchecked="c_RenameOnlyAboveIv_Checked"/>
                                 <CheckBox x:Name="c_RenamePokemon" Content="Rename Pokemon" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,306,0,0" Checked="c_RenamePokemon_Checked" Unchecked="c_RenamePokemon_Checked"/>
                                 <Label x:Name="label8_Copy4" Content="Rename Template" HorizontalAlignment="Left" Margin="10,329,0,0" VerticalAlignment="Top" Width="131"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_RenameTemplate" HorizontalAlignment="Left" Height="29" Margin="141,328,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="138" TextChanged="c_RenameTemplate_TextChanged"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_RenameTemplate" Height="29" Margin="233,328,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="c_RenameTemplate_TextChanged"/>
                                 <Label x:Name="label8_Copy5" Content="Upgrade Pokemon Cp Min" HorizontalAlignment="Left" Margin="10,363,0,0" VerticalAlignment="Top" Width="155"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_UpgradePokemonCpMinimum" HorizontalAlignment="Left" Height="29" Margin="170,362,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="109" TextChanged="c_UpgradePokemonCpMinimum_TextChanged" />
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UpgradePokemonCpMinimum" Height="29" Margin="233,362,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_UpgradePokemonCpMinimum_TextChanged" />
                                 <Label x:Name="label8_Copy6" Content="Upgrade Pokemon Iv Min" HorizontalAlignment="Left" Margin="10,397,0,0" VerticalAlignment="Top" Width="155"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_UpgradePokemonIvMinimum" HorizontalAlignment="Left" Height="29" Margin="170,396,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="109" TextChanged="c_UpgradePokemonIvMinimum_TextChanged"/>
-                                <CheckBox x:Name="c_UsePokemonToNotCatchFilter" Content="Use Pokemon To Not Catch Filter" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,428,0,0" Checked="c_UsePokemonToNotCatchFilter_Checked" Unchecked="c_UsePokemonToNotCatchFilter_Checked" />
-                                <Label x:Name="label8_Copy7" Content="Use Master Ball Above Cp" HorizontalAlignment="Left" Margin="10,450,0,0" VerticalAlignment="Top" Width="155"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseMasterBallAboveCp" HorizontalAlignment="Left" Height="29" Margin="170,449,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="109" TextChanged="c_UseMasterBallAboveCp_TextChanged" />
-                                <Label x:Name="label8_Copy8" Content="Use Ultra Ball Above Cp" HorizontalAlignment="Left" Margin="10,484,0,0" VerticalAlignment="Top" Width="155"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseUltraBallAboveCp" HorizontalAlignment="Left" Height="29" Margin="170,483,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="109" TextChanged="c_UseUltraBallAboveCp_TextChanged" />
-                                <Label x:Name="label8_Copy9" Content="Use Great Ball Above Cp" HorizontalAlignment="Left" Margin="10,518,0,0" VerticalAlignment="Top" Width="155"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseGreatBallAboveCp" HorizontalAlignment="Left" Height="29" Margin="170,517,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="109" TextChanged="c_UseGreatBallAboveCp_TextChanged" />
-                                <CheckBox x:Name="c_UseLuckyEggsWhileEvolving" Content="Use Lucky Eggs While Evolving" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,552,0,0" Checked="c_UseLuckyEggsWhileEvolving_Checked" Unchecked="c_UseLuckyEggsWhileEvolving_Checked" />
-                                <Label x:Name="label8_Copy10" Content="Lucky Eggs Min Pokemon" HorizontalAlignment="Left" Margin="10,573,0,0" VerticalAlignment="Top" Width="155"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseLuckyEggsMinPokemonAmount" HorizontalAlignment="Left" Height="29" Margin="170,572,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="109" TextChanged="c_UseLuckyEggsMinPokemonAmount_TextChanged" />
-                                <CheckBox x:Name="c_UseEggIncubators" Content="Use Egg Incubators" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,604,0,0" Checked="c_UseEggIncubators_Checked" Unchecked="c_UseEggIncubators_Checked" />
-                                <CheckBox x:Name="c_TransferDuplicatePokemon" Content="Transfer Duplicate Pokemon" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,625,0,0" Checked="c_TransferDuplicatePokemon_Checked" Unchecked="c_TransferDuplicatePokemon_Checked" />
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UpgradePokemonIvMinimum" Height="29" Margin="233,396,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_UpgradePokemonIvMinimum_TextChanged"/>
+                                <CheckBox x:Name="c_UseLuckyEggsWhileEvolving" Content="Use Lucky Eggs While Evolving" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,428,0,0" Checked="c_UseLuckyEggsWhileEvolving_Checked" Unchecked="c_UseLuckyEggsWhileEvolving_Checked" />
+                                <Label x:Name="label8_Copy10" Content="Lucky Eggs Min Pokemon" HorizontalAlignment="Left" Margin="10,449,0,0" VerticalAlignment="Top" Width="155"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseLuckyEggsMinPokemonAmount" Height="29" Margin="233,448,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_UseLuckyEggsMinPokemonAmount_TextChanged" />
+                                <CheckBox x:Name="c_UseEggIncubators" Content="Use Egg Incubators" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,480,0,0" Checked="c_UseEggIncubators_Checked" Unchecked="c_UseEggIncubators_Checked" />
+                                <CheckBox x:Name="c_TransferDuplicatePokemon" Content="Transfer Duplicate Pokemon" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,501,0,0" Checked="c_TransferDuplicatePokemon_Checked" Unchecked="c_TransferDuplicatePokemon_Checked" />
+                                <CheckBox x:Name="c_AlwaysPrefferLongDistanceEgg" Content="Always Preffer Long Distance Egg" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="148,480,0,0" Checked="c_AlwaysPrefferLongDistanceEgg_Checked" Unchecked="c_AlwaysPrefferLongDistanceEgg_Checked" />
                             </Grid>
                         </GroupBox>
                         <GroupBox x:Name="groupBox3" Grid.Column="1" Header="Navigation" Margin="0,147,0,0" VerticalAlignment="Top" Height="295">
@@ -161,7 +155,7 @@
 
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="groupBox4_Copy" Grid.Column="1" Header="Items" Margin="0,641,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.565" Height="164">
+                        <GroupBox x:Name="groupBox4_Copy" Grid.Column="1" Header="Items" Margin="0,641,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.565" Height="233">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="181*"/>
@@ -173,8 +167,46 @@
                                 <TextBox Template="{StaticResource pogo}" x:Name="c_TotalAmountOfPotionsToKeep" Height="29" Margin="5,41,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" Text="0" TextChanged="c_TotalAmountOfPotionsToKeep_TextChanged" />
                                 <Label x:Name="label9_Copy3" Content="Amount Of Revives To Keep" Margin="10,76,0,0" VerticalAlignment="Top" Height="26"/>
                                 <TextBox Template="{StaticResource pogo}" x:Name="c_TotalAmountOfRevivesToKeep" Height="29" Margin="5,75,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" Text="0" TextChanged="c_TotalAmountOfRevivesToKeep_TextChanged" />
-                                <Label x:Name="label9_Copy4" Content="Translation Language Code" Margin="10,110,0,0" VerticalAlignment="Top" Height="26"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_TranslationLanguageCode" Height="29" Margin="5,109,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" TextChanged="c_TranslationLanguageCode_TextChanged"/>
+                                <Label x:Name="label9_Copy4" Content="Translation Language Code" Margin="10,178,0,0" VerticalAlignment="Top" Height="26"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_TranslationLanguageCode" Height="29" Margin="5,177,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" TextChanged="c_TranslationLanguageCode_TextChanged"/>
+                                <Label x:Name="label9_Copy5" Content="Recycle At Usage Percentage" Margin="10,144,0,0" VerticalAlignment="Top" Height="26"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_RecycleInventoryAtUsagePercentage" Height="29" Margin="5,143,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" Text="0" TextChanged="c_RecycleInventoryAtUsagePercentage_TextChanged"/>
+                                <Label x:Name="label9_Copy6" Content="Amount Of BerriesTo Keep" Margin="10,110,0,0" VerticalAlignment="Top" Height="26"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_TotalAmountOfBerriesToKeep" Height="29" Margin="5,109,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" Text="0" TextChanged="c_TotalAmountOfBerriesToKeep_TextChanged" />
+
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox x:Name="groupBox4_Copy1" Header="Catch" Margin="0,688,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.565" Height="433">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="181*"/>
+                                    <ColumnDefinition Width="108*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label x:Name="label8_Copy7" Content="Master Ball Below Catch Probability" HorizontalAlignment="Left" Margin="13,3,0,0" VerticalAlignment="Top" Width="209"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseMasterBallBelowCatchProbability" Height="29" Margin="5,0,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_UseMasterBallBelowCatchProbability_TextChanged" Grid.Column="1"/>
+                                <Label x:Name="label8_Copy11" Content="Great Ball Below Catch Probability" HorizontalAlignment="Left" Margin="11,35,0,0" VerticalAlignment="Top" Width="209" RenderTransformOrigin="0.5,0.5" />
+
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseGreatBallBelowCatchProbability" Height="29" Margin="5,34,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_UseGreatBallBelowCatchProbability_TextChanged" Grid.Column="1" />
+                                <Label x:Name="label8_Copy12" Content="Ultra Ball Below Catch Probability" HorizontalAlignment="Left" Margin="13,69,0,0" VerticalAlignment="Top" Width="209"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseUltraBallBelowCatchProbability" Height="29" Margin="5,68,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_UseUltraBallBelowCatchProbability_TextChanged" Grid.Column="1" />
+                                <Label x:Name="label8_Copy13" Content="Throw Accuracy Min" HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" Width="220" Grid.ColumnSpan="2"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_ThrowAccuracyMin" Height="29" Margin="5,120,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_ThrowAccuracyMin_TextChanged" Grid.Column="1" />
+                                <Label x:Name="label8_Copy14" Content="Throw Accuracy Max" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Width="220" Grid.ColumnSpan="2"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_ThrowAccuracyMax" Height="29" Margin="5,154,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_ThrowAccuracyMax_TextChanged" Grid.Column="1" />
+                                <Label x:Name="label8_Copy15" Content="Throw Spin Frequency" HorizontalAlignment="Left" Margin="10,189,0,0" VerticalAlignment="Top" Width="220" Grid.ColumnSpan="2"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_ThrowSpinFrequency" Height="29" Margin="5,188,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_ThrowSpinFrequency_TextChanged" Grid.Column="1" />
+                                <CheckBox x:Name="c_HumanizeThrows" Content="Humanize Throws" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="13,100,0,0" Checked="c_HumanizeThrows_Checked" Unchecked="c_HumanizeThrows_Checked" Width="207" />
+                                <CheckBox x:Name="c_UsePokemonToNotCatchFilter" Content="Use Pokemon To Not Catch Filter" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="13,220,0,0" Checked="c_UsePokemonToNotCatchFilter_Checked" Unchecked="c_UsePokemonToNotCatchFilter_Checked" Width="207" />
+                                <Label x:Name="label8_Copy8" Content="Use Ultra Ball Above Iv" HorizontalAlignment="Left" Margin="10,241,0,0" VerticalAlignment="Top" Width="155"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseUltraBallAboveIv" Height="29" Margin="5,240,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_UseUltraBallAboveIv_TextChanged" Grid.Column="1" />
+                                <Label x:Name="label8_Copy9" Content="Use Great Ball AboveIv" HorizontalAlignment="Left" Margin="10,275,0,0" VerticalAlignment="Top" Width="155"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseGreatBallAboveIv" Height="29" Margin="5,274,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" TextChanged="c_UseGreatBallAboveIv_TextChanged" Grid.Column="1" />
+                                <Label x:Name="label8_Copy16" Content="Use Berry Min Cp" HorizontalAlignment="Left" Margin="10,309,0,0" VerticalAlignment="Top" Width="155"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseBerryMinCp" Height="29" Margin="5,308,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Grid.Column="1" TextChanged="c_UseBerryMinCp_TextChanged" />
+                                <Label x:Name="label8_Copy17" Content="Use Berry Min Iv" HorizontalAlignment="Left" Margin="10,343,0,0" VerticalAlignment="Top" Width="155"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseBerryMinIv" Height="29" Margin="5,342,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Grid.Column="1" TextChanged="c_UseBerryMinIv_TextChanged" />
+                                <Label x:Name="label8_Copy18" Content="Use Berry Below Catch Probability" HorizontalAlignment="Left" Margin="10,377,0,0" VerticalAlignment="Top" Width="210"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_UseBerryBelowCatchProbability" Height="29" Margin="5,376,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Grid.Column="1" TextChanged="c_UseBerryBelowCatchProbability_TextChanged" />
 
                             </Grid>
                         </GroupBox>
@@ -258,7 +290,7 @@
             <Grid Background="Black" Opacity="0.45"/>
             <Border
             MinWidth="250"
-            CornerRadius="7,7,7,7" Margin="321,222,309,158">
+            CornerRadius="7,7,7,7" Margin="488,222,475,197" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <LinearGradientBrush.RelativeTransform>
@@ -274,9 +306,9 @@
                     </LinearGradientBrush>
                 </Border.Background>
                 <Grid>
-                    <TextBlock Margin="76,13,75,152" Text="Set profile name" FontFamily="Calibri Light" Width="99" Foreground="#FF7E7E7E" FontSize="15" />
-                    <TextBox Template="{StaticResource pogo}" MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="InputTextBox" Margin="21,46,19,106" Width="210" Text="Profile name here..." Foreground="#FF6CCDAC"/>
-                    <Button Style="{StaticResource flatbutton}" x:Name="YesButton" Content="YES" Click="YesButton_Click" Width="Auto" Height="31" Margin="21,86,19,62">
+                    <TextBlock Margin="21,13,19,116" Text="Set profile name" FontFamily="Calibri Light" Foreground="#FF7E7E7E" FontSize="15" TextAlignment="Center" />
+                    <TextBox Template="{StaticResource pogo}" MinWidth="150" VerticalAlignment="Bottom" x:Name="InputTextBox" Margin="21,0,19,84" Width="210" Text="Profile name here..." Foreground="#FF6CCDAC" Height="27"/>
+                    <Button Style="{StaticResource flatbutton}" x:Name="YesButton" Content="YES" Click="YesButton_Click" Width="Auto" Height="31" Margin="21,0,19,48" VerticalAlignment="Bottom">
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <LinearGradientBrush.RelativeTransform>
@@ -292,7 +324,7 @@
                             </LinearGradientBrush>
                         </Button.Background>
                     </Button>
-                    <Button Style="{StaticResource flatbutton}" x:Name="NoButton" Margin="21,124,19,22" Content="CANCEL" Click="NoButton_Click" Width="Auto" Height="33" Background="#FFF7F7F7" Foreground="#FF66CAAD" />
+                    <Button Style="{StaticResource flatbutton}" x:Name="NoButton" Margin="21,0,19,10" Content="CANCEL" Click="NoButton_Click" Width="Auto" Height="33" Background="#FFF7F7F7" Foreground="#FF66CAAD" VerticalAlignment="Bottom" />
                 </Grid>
             </Border>
         </Grid>

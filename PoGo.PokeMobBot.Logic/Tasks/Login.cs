@@ -25,27 +25,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _session = session;
         }
 
-        public void DoLogin()
+        public async void DoLogin()
         {
             try
             {
-                if (_session.Client.AuthType == AuthType.Ptc)
-                {
-                    try
-                    {
-                        _session.Client.Login.DoPtcLogin(_session.Settings.PtcUsername, _session.Settings.PtcPassword, _session.Proxy)
-                            .Wait();
-                    }
-                    catch (AggregateException ae)
-                    {
-                        throw ae.Flatten().InnerException;
-                    }
-                }
-                else
-                {
-                    _session.Client.Login.DoGoogleLogin(_session.Settings.GoogleUsername,
-                        _session.Settings.GooglePassword, _session.Proxy).Wait();
-                }
+                await _session.Client.Login.DoLogin();
             }
             catch (PtcOfflineException)
             {

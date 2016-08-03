@@ -31,9 +31,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                session.Client.CurrentLongitude, session.ForceMoveTo.Latitude, session.ForceMoveTo.Longitude);
-
                 if (session.LogicSettings.Teleport)
                     await session.Client.Player.UpdatePlayerLocation(pokemon.Latitude, pokemon.Longitude,
                         session.Client.Settings.DefaultAltitude);

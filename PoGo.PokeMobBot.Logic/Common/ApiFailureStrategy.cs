@@ -4,10 +4,10 @@ using System;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.State;
-using PokemonGo.RocketAPI.Common;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.Extensions;
+using POGOProtos.Networking.Envelopes;
 
 #endregion
 
@@ -23,7 +23,7 @@ namespace PoGo.PokeMobBot.Logic.Common
             _session = session;
         }
 
-        public async Task<ApiOperation> HandleApiFailure()
+        public async Task<ApiOperation> HandleApiFailure(RequestEnvelope request, ResponseEnvelope response)
         {
             if (_retryCount == 11)
                 return ApiOperation.Abort;
@@ -54,39 +54,11 @@ namespace PoGo.PokeMobBot.Logic.Common
             return ApiOperation.Retry;
         }
 
-        public void HandleApiSuccess()
+        public void HandleApiSuccess(RequestEnvelope request, ResponseEnvelope response)
         {
             _retryCount = 0;
         }
 
-        private async void DoLogin()
-        {
-            switch (_session.Settings.AuthType)
-            {
-                case AuthType.Ptc:
-                    try
-                    {
-                        await
-                            _session.Client.Login.DoPtcLogin(_session.Settings.PtcUsername,
-                                _session.Settings.PtcPassword, _session.Proxy);
-                    }
-                    catch (AggregateException ae)
-                    {
-                        throw ae.Flatten().InnerException;
-                    }
-                    break;
-                case AuthType.Google:
-                    await
-                        _session.Client.Login.DoGoogleLogin(_session.Settings.GoogleUsername,
-                            _session.Settings.GooglePassword, _session.Proxy);
-                    break;
-                default:
-                    _session.EventDispatcher.Send(new ErrorEvent
-                    {
-                        Message = _session.Translation.GetTranslation(TranslationString.WrongAuthType)
-                    });
-                    break;
-            }
-        }
+        private async void DoLogin() => await _session.Client.Login.DoLogin();
     }
 }

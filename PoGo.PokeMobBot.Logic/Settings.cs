@@ -96,10 +96,14 @@ namespace PoGo.PokeMobBot.Logic
 
     public class GlobalSettings
     {
-        public int AmountOfPokemonToDisplayOnStart = 10;
-
         [JsonIgnore]
         public AuthSettings Auth = new AuthSettings();
+        [JsonIgnore]
+        public string GeneralConfigPath;
+        [JsonIgnore]
+        public string ProfilePath;
+        [JsonIgnore]
+        public string ProfileConfigPath;
 
         //bot start
         public bool AutoUpdate = true;
@@ -120,6 +124,7 @@ namespace PoGo.PokeMobBot.Logic
         public int MaxTravelDistanceInMeters = 1000;
         public bool UseGpxPathing = false;
         public string GpxFile = "GPXPath.GPX";
+        public bool UseDiscoveryPathing = true;
 
         //delays
         public int DelayBetweenPlayerActions = 5000;
@@ -143,6 +148,7 @@ namespace PoGo.PokeMobBot.Logic
 
         //incubator
         public bool UseEggIncubators = true;
+        public bool AlwaysPrefferLongDistanceEgg = false;
 
         //rename
         public bool RenamePokemon = false;
@@ -164,12 +170,12 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseLuckyEggsWhileEvolving = false;
         public int UseLuckyEggsMinPokemonAmount = 30;
 
+        //proxy
         public bool UseProxy = false;
         public string ProxyUri = "proxy.com:1234";
         public string ProxyLogin = "pLogin";
         public string ProxyPass = "pPass";
 
-        [JsonIgnore] public string GeneralConfigPath;
         //levelup
         public bool AutomaticallyLevelUpPokemon = false;
         public string LevelUpByCPorIv = "iv";
@@ -502,9 +508,9 @@ namespace PoGo.PokeMobBot.Logic
                 settings.SnipeLocationServer = Default.SnipeLocationServer;
             }
 
+            settings.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
             settings.ProfilePath = profilePath;
             settings.ProfileConfigPath = profileConfigPath;
-            settings.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
 
             var firstRun = !File.Exists(configFile);
 
@@ -704,6 +710,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool KeepPokemonsThatCanEvolve => _settings.KeepPokemonsThatCanEvolve;
         public bool TransferDuplicatePokemon => _settings.TransferDuplicatePokemon;
         public bool UseEggIncubators => _settings.UseEggIncubators;
+        public bool AlwaysPrefferLongDistanceEgg => _settings.AlwaysPrefferLongDistanceEgg;
         public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
         public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
         public double UseMasterBallBelowCatchProbability => _settings.UseMasterBallBelowCatchProbability;

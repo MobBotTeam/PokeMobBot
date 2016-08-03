@@ -841,17 +841,23 @@ namespace Catchem
             c_MinPokeballsWhileSnipe.Text = bot.globalSettings.MinPokeballsWhileSnipe.ToString();
 
             c_TranslationLanguageCode.Text = bot.globalSettings.TranslationLanguageCode;
-            c_TotalAmountOfPokebalsToKeep.Text = bot.globalSettings.TotalAmountOfPokebalsToKeep.ToString();
+            c_TotalAmountOfPokebalsToKeep.Text = bot.globalSettings.TotalAmountOfPokeballsToKeep.ToString();
             c_TotalAmountOfPotionsToKeep.Text = bot.globalSettings.TotalAmountOfPotionsToKeep.ToString();
             c_TotalAmountOfRevivesToKeep.Text = bot.globalSettings.TotalAmountOfRevivesToKeep.ToString();
+            c_TotalAmountOfBerriesToKeep.Text = bot.globalSettings.TotalAmountOfBerriesToKeep.ToString();
             c_TransferDuplicatePokemon.IsChecked = bot.globalSettings.TransferDuplicatePokemon;
             c_UseEggIncubators.IsChecked = bot.globalSettings.UseEggIncubators;
             c_UseLuckyEggsMinPokemonAmount.Text = bot.globalSettings.UseLuckyEggsMinPokemonAmount.ToString();
             c_UseLuckyEggsWhileEvolving.IsChecked = bot.globalSettings.UseLuckyEggsWhileEvolving;
             c_UseTransferIvForSnipe.IsChecked = bot.globalSettings.UseTransferIvForSnipe;
-            c_UseGreatBallAboveCp.Text = bot.globalSettings.UseGreatBallAboveCp.ToString();
-            c_UseUltraBallAboveCp.Text = bot.globalSettings.UseUltraBallAboveCp.ToString();
-            c_UseMasterBallAboveCp.Text = bot.globalSettings.UseMasterBallAboveCp.ToString();
+
+            c_UseGreatBallAboveIv.Text = bot.logic.UseGreatBallAboveIv.ToString();
+            c_UseUltraBallAboveIv.Text = bot.globalSettings.UseUltraBallAboveIv.ToString();
+
+            c_UseUltraBallBelowCatchProbability.Text = bot.globalSettings.UseUltraBallBelowCatchProbability.ToString();
+            c_UseGreatBallBelowCatchProbability.Text = bot.globalSettings.UseGreatBallBelowCatchProbability.ToString();
+            c_UseMasterBallBelowCatchProbability.Text = bot.globalSettings.UseMasterBallBelowCatchProbability.ToString();
+
             c_UsePokemonToNotCatchFilter.IsChecked = bot.globalSettings.UsePokemonToNotCatchFilter;
             c_SnipeAtPokestops.IsChecked = bot.globalSettings.SnipeAtPokestops;
             c_SnipeIgnoreUnknownIv.IsChecked = bot.globalSettings.SnipeIgnoreUnknownIv;
@@ -859,6 +865,17 @@ namespace Catchem
             c_UpgradePokemonIvMinimum.Text = bot.globalSettings.UpgradePokemonIvMinimum.ToString();
             c_UpgradePokemonCpMinimum.Text = bot.globalSettings.UpgradePokemonCpMinimum.ToString();
             c_WalkingSpeedInKilometerPerHour.Text = bot.globalSettings.WalkingSpeedInKilometerPerHour.ToString();
+
+            c_HumanizeThrows.IsChecked = bot.globalSettings.HumanizeThrows;
+            c_ThrowAccuracyMin.Text = bot.globalSettings.ThrowAccuracyMin.ToString();
+            c_ThrowAccuracyMax.Text = bot.globalSettings.ThrowAccuracyMax.ToString();
+            c_ThrowSpinFrequency.Text = bot.globalSettings.ThrowSpinFrequency.ToString();
+
+            c_UseBerryMinCp.Text = bot.globalSettings.UseBerryMinCp.ToString();
+            c_UseBerryMinIv.Text = bot.globalSettings.UseBerryMinIv.ToString();
+            c_UseBerryBelowCatchProbability.Text = bot.globalSettings.UseBerryBelowCatchProbability.ToString();
+
+            c_RecycleInventoryAtUsagePercentage.Text = bot.globalSettings.RecycleInventoryAtUsagePercentage.ToString();
 
             LoadingUi = false;
         }
@@ -1094,7 +1111,7 @@ namespace Catchem
             if (bot == null || LoadingUi) return;
             int val = 0;
             if (int.TryParse((sender as TextBox).Text, out val))
-                bot.globalSettings.TotalAmountOfPokebalsToKeep = val;
+                bot.globalSettings.TotalAmountOfPokeballsToKeep = val;
         }
 
         private void c_TotalAmountOfPotionsToKeep_TextChanged(object sender, TextChangedEventArgs e)
@@ -1140,30 +1157,7 @@ namespace Catchem
             if (bot == null || LoadingUi) return;
             bot.globalSettings.UsePokemonToNotCatchFilter = (bool)(sender as CheckBox).IsChecked;
         }
-
-        private void c_UseMasterBallAboveCp_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (bot == null || LoadingUi) return;
-            int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
-                bot.globalSettings.UseMasterBallAboveCp = val;
-        }
-
-        private void c_UseUltraBallAboveCp_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (bot == null || LoadingUi) return;
-            int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
-                bot.globalSettings.UseUltraBallAboveCp = val;
-        }
-
-        private void c_UseGreatBallAboveCp_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (bot == null || LoadingUi) return;
-            int val = 0;
-            if (int.TryParse((sender as TextBox).Text, out val))
-                bot.globalSettings.UseGreatBallAboveCp = val;
-        }
+                
 
         private void c_UseLuckyEggsWhileEvolving_Checked(object sender, RoutedEventArgs e)
         {
@@ -1189,6 +1183,116 @@ namespace Catchem
         {
             if (bot == null || LoadingUi) return;
             bot.globalSettings.TransferDuplicatePokemon = (bool)(sender as CheckBox).IsChecked;
+        }
+
+        private void c_UseMasterBallBelowCatchProbability_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseMasterBallBelowCatchProbability = val;
+        }
+
+        private void c_UseUltraBallBelowCatchProbability_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseUltraBallBelowCatchProbability = val;
+        }
+
+        private void c_UseGreatBallBelowCatchProbability_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseGreatBallBelowCatchProbability = val;
+        }
+
+        private void c_UseUltraBallAboveIv_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseUltraBallAboveIv = val;
+        }
+
+        private void c_UseGreatBallAboveIv_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseGreatBallAboveIv = val;
+        }
+
+        private void c_HumanizeThrows_Checked(object sender, RoutedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            bot.globalSettings.HumanizeThrows = (bool)(sender as CheckBox).IsChecked;
+        }
+
+
+        private void c_ThrowAccuracyMin_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.ThrowAccuracyMin = val;
+        }
+
+        private void c_ThrowAccuracyMax_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.ThrowAccuracyMax = val;
+        }
+
+        private void c_ThrowSpinFrequency_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.ThrowSpinFrequency = val;
+        }
+
+        private void c_UseBerryMinCp_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseBerryMinCp = val;
+        }
+
+        private void c_UseBerryMinIv_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            float val = 0;
+            if (float.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseBerryMinIv = val;
+        }
+
+        private void c_UseBerryBelowCatchProbability_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.UseBerryBelowCatchProbability = val;
+        }
+
+        private void c_TotalAmountOfBerriesToKeep_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            int val = 0;
+            if (int.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.TotalAmountOfBerriesToKeep = val;
+        }
+        private void c_RecycleInventoryAtUsagePercentage_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (bot == null || LoadingUi) return;
+            double val = 0;
+            if (double.TryParse((sender as TextBox).Text, out val))
+                bot.globalSettings.RecycleInventoryAtUsagePercentage = val;
         }
         #endregion
 
@@ -1241,6 +1345,11 @@ namespace Catchem
             {
                 _b.Stop();
             }
+        }
+
+        private void c_AlwaysPrefferLongDistanceEgg_Checked(object sender, RoutedEventArgs e)
+        {
+            bot.globalSettings.AlwaysPrefferLongDistanceEgg = (bool)(sender as CheckBox).IsChecked;
         }
     }
 }

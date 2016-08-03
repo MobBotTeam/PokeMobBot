@@ -66,6 +66,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             session.LogicSettings.WalkingSpeedInKilometerPerHour, null, cancellationToken);
                     }
 
+                    if (session.ForceMoveTo != null)
+                    {
+                        await ForceMoveTask.Execute(session, cancellationToken);
+                        pokestopList = await GetPokeStops(session);
+                    }
 
 
                     var displayStatsHit = 0;
