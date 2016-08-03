@@ -226,10 +226,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
             if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
-                probability <= session.LogicSettings.UseUltraBallBelowCatchProbability)
+                probability <= useUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
             if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
-                probability <= session.LogicSettings.UseGreatBallBelowCatchProbability)
+                probability <= useGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
             return pokeBallsCount > 0 ? ItemId.ItemPokeBall : ItemId.ItemUnknown;
         }
