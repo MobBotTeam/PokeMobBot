@@ -28,10 +28,6 @@ namespace PoGo.PokeMobBot.Logic.State
                 {
                     await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
                 }
-            if (session.LogicSettings.TransferLowStatPokemon)
-            {
-                await TransferLowStatPokemonTask.Execute(session, cancellationToken);
-            }
                 if (session.LogicSettings.AutomaticallyLevelUpPokemon)
                 {
                     await LevelUpPokemonTask.Execute(session, cancellationToken);

@@ -109,7 +109,6 @@ namespace PoGo.PokeMobBot.Logic
         public bool StartupWelcomeDelay = false;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
-        public string WebSocketCertificate = null;
 
         //coords and movement
         public bool Teleport = false;
@@ -152,9 +151,7 @@ namespace PoGo.PokeMobBot.Logic
 
         //transfer
         public bool TransferDuplicatePokemon = true;
-        public bool TransferLowStatPokemon = false;
         public bool PrioritizeIvOverCp = true;
-        public bool PrioritizeIvAndCp = false;
         public int KeepMinCp = 1250;
         public float KeepMinIvPercentage = 95;
         public int KeepMinDuplicatePokemon = 1;
@@ -308,7 +305,7 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Eevee,
             //PokemonId.Dratini,
             /*criteria: 50 candies commons*/
-            PokemonId.Spearow,
+            //PokemonId.Spearow
             //PokemonId.Ekans,
             PokemonId.Zubat,
             //PokemonId.Paras,
@@ -337,44 +334,44 @@ namespace PoGo.PokeMobBot.Logic
 
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter = new Dictionary<PokemonId, TransferFilter>
         {
-            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v3
-            {PokemonId.Venusaur, new TransferFilter(1500, 40, 1)},
-            {PokemonId.Charizard, new TransferFilter(1500, 20, 1)},
-            {PokemonId.Blastoise, new TransferFilter(1500, 20, 1)},
+            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v4
+            {PokemonId.Venusaur, new TransferFilter(1750, 80, 1)},
+            {PokemonId.Charizard, new TransferFilter(1750, 20, 1)},
+            {PokemonId.Blastoise, new TransferFilter(1750, 50, 1)},
             {PokemonId.Nidoqueen, new TransferFilter(1750, 80, 1)},
             {PokemonId.Nidoking, new TransferFilter(1750, 80, 1)},
             {PokemonId.Clefable, new TransferFilter(1500, 60, 1)},
             {PokemonId.Vileplume, new TransferFilter(1750, 80, 1)},
             {PokemonId.Golduck, new TransferFilter(1750, 80, 1)},
-            {PokemonId.Arcanine, new TransferFilter(2000, 90, 1)},
-            {PokemonId.Poliwrath, new TransferFilter(1500, 80, 1)},
+            {PokemonId.Arcanine, new TransferFilter(2250, 90, 1)},
+            {PokemonId.Poliwrath, new TransferFilter(1750, 80, 1)},
             {PokemonId.Machamp, new TransferFilter(1250, 80, 1)},
             {PokemonId.Victreebel, new TransferFilter(1250, 60, 1)},
             {PokemonId.Golem, new TransferFilter(1500, 80, 1)},
-            {PokemonId.Slowbro, new TransferFilter(1750, 80, 1)},
-            {PokemonId.Farfetchd, new TransferFilter(1000, 90, 1)},
+            {PokemonId.Slowbro, new TransferFilter(1750, 90, 1)},
+            {PokemonId.Farfetchd, new TransferFilter(1250, 90, 1)},
             {PokemonId.Muk, new TransferFilter(2000, 80, 1)},
             {PokemonId.Exeggutor, new TransferFilter(2250, 80, 1)},
             {PokemonId.Lickitung, new TransferFilter(1500, 80, 1)},
             {PokemonId.Chansey, new TransferFilter(1500, 95, 1)},
             {PokemonId.Kangaskhan, new TransferFilter(1500, 60, 1)},
-            {PokemonId.MrMime, new TransferFilter(250, 40, 1)},
+            {PokemonId.MrMime, new TransferFilter(1250, 80, 1)},
             {PokemonId.Scyther, new TransferFilter(1750, 90, 1)},
             {PokemonId.Jynx, new TransferFilter(1250, 90, 1)},
             {PokemonId.Electabuzz, new TransferFilter(1500, 80, 1)},
-            {PokemonId.Magmar, new TransferFilter(1750, 80, 1)},
+            {PokemonId.Magmar, new TransferFilter(1750, 90, 1)},
             {PokemonId.Pinsir, new TransferFilter(1750, 98, 1)},
             {PokemonId.Tauros, new TransferFilter(500, 90, 1)},
-            {PokemonId.Gyarados, new TransferFilter(1750, 90, 1)},
-            {PokemonId.Lapras, new TransferFilter(2000, 90, 1)},
+            {PokemonId.Gyarados, new TransferFilter(2000, 90, 1)},
+            {PokemonId.Lapras, new TransferFilter(2250, 90, 1)},
             {PokemonId.Eevee, new TransferFilter(1500, 98, 1)},
-            {PokemonId.Vaporeon, new TransferFilter(2000, 98, 1)},
-            {PokemonId.Jolteon, new TransferFilter(2000, 95, 1)},
-            {PokemonId.Flareon, new TransferFilter(2000, 95, 1)},
+            {PokemonId.Vaporeon, new TransferFilter(2250, 98, 1)},
+            {PokemonId.Jolteon, new TransferFilter(2250, 95, 1)},
+            {PokemonId.Flareon, new TransferFilter(2250, 95, 1)},
             {PokemonId.Porygon, new TransferFilter(1500, 95, 1)},
-            {PokemonId.Aerodactyl, new TransferFilter(1750, 95, 1)},
-            {PokemonId.Snorlax, new TransferFilter(2500, 96, 1)},
-            {PokemonId.Dragonite, new TransferFilter(2500, 90, 1)}
+            {PokemonId.Aerodactyl, new TransferFilter(2000, 95, 1)},
+            {PokemonId.Snorlax, new TransferFilter(2750, 96, 1)},
+            {PokemonId.Dragonite, new TransferFilter(2750, 90, 1)}
         };
 
         public SnipeSettings PokemonToSnipe = new SnipeSettings
@@ -394,8 +391,8 @@ namespace PoGo.PokeMobBot.Logic
                 PokemonId.Beedrill,
                 PokemonId.Raichu,
                 PokemonId.Sandslash,
-                PokemonId.Nidoking,
                 PokemonId.Nidoqueen,
+                PokemonId.Nidoking,
                 PokemonId.Clefable,
                 PokemonId.Ninetales,
                 PokemonId.Golbat,
@@ -423,10 +420,9 @@ namespace PoGo.PokeMobBot.Logic
                 PokemonId.Starmie,
                 PokemonId.MrMime,
                 PokemonId.Scyther,
-                PokemonId.Magmar,
+                PokemonId.Jynx,
                 PokemonId.Electabuzz,
                 PokemonId.Magmar,
-                PokemonId.Jynx,
                 PokemonId.Gyarados,
                 PokemonId.Lapras,
                 PokemonId.Ditto,
@@ -652,7 +648,6 @@ namespace PoGo.PokeMobBot.Logic
         public bool EvolveAllPokemonWithEnoughCandy => _settings.EvolveAllPokemonWithEnoughCandy;
         public bool KeepPokemonsThatCanEvolve => _settings.KeepPokemonsThatCanEvolve;
         public bool TransferDuplicatePokemon => _settings.TransferDuplicatePokemon;
-        public bool TransferLowStatPokemon => _settings.TransferLowStatPokemon;
         public bool UseEggIncubators => _settings.UseEggIncubators;
         public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
         public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
@@ -663,7 +658,6 @@ namespace PoGo.PokeMobBot.Logic
         public bool UsePokemonToNotCatchFilter => _settings.UsePokemonToNotCatchFilter;
         public int KeepMinDuplicatePokemon => _settings.KeepMinDuplicatePokemon;
         public bool PrioritizeIvOverCp => _settings.PrioritizeIvOverCp;
-        public bool PrioritizeIvAndCp => _settings.PrioritizeIvAndCp;
         public int MaxTravelDistanceInMeters => _settings.MaxTravelDistanceInMeters;
         public string GpxFile => _settings.GpxFile;
         public bool UseGpxPathing => _settings.UseGpxPathing;
