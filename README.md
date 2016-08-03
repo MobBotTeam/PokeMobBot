@@ -25,25 +25,25 @@ You can donate Bitcoins to FeroxRev the man who worked really hard on the API li
 
 <h2><a name="features">Features</a></h2>
 
- - [PTC Login / Google]
- - [Get Map Objects and Inventory]
- - [Search for gyms/pokestops/spawns]
- - [Farm pokestops]
- - [Farm all Pokemon in neighbourhood]
- - [Throw Berries/use best pokeball]
- - [Transfers duplicate pokemons]
- - [Evolve all pokemons]
- - [Throws away unneeded items]
- - [Humanlike Walking]
- - [Configurable Custom Pathing]
- - [Softban bypass]
- - [AutoUpdate / VersionCheck]
- - [Multilanguage Support]
- - [Use lucky egg while evolve]
- - [Egg Hatching Automatically]
- - [Multi bot support]
- - [Snipe pokemon]
- - [Power-Up pokemon]
+ - PTC Login / Google
+ - Get Map Objects and Inventory
+ - Search for gyms/pokestops/spawns
+ - Farm pokestops
+ - Farm all Pokemon in neighbourhood
+ - Throw Berries/use best pokeball
+ - Transfers duplicate pokemons
+ - Evolve all pokemons
+ - Throws away unneeded items
+ - Humanlike Walking
+ - Configurable Custom Pathing
+ - Softban bypass
+ - AutoUpdate / VersionCheck
+ - Multilanguage Support
+ - Use lucky egg while evolve
+ - Egg Hatching Automatically
+ - Multi bot support
+ - Snipe pokemon
+ - Power-Up pokemon
  
 <h2><a name="getting-started">Getting Started</a></h2>
 Make sure you check out our [Wiki](https://github.com/PocketMobsters/PokeMobBot/wiki) to get started.
