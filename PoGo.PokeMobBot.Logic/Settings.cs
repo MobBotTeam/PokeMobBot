@@ -144,6 +144,10 @@ namespace PoGo.PokeMobBot.Logic
         //incubator
         public bool UseEggIncubators = true;
 
+        //display
+        public bool DisplayPokemonMaxPoweredCp = true;
+        public bool DisplayPokemonMovesetRank = true;
+
         //rename
         public bool RenamePokemon = false;
         public bool RenameOnlyAboveIv = true;
@@ -671,6 +675,8 @@ namespace PoGo.PokeMobBot.Logic
         public bool AutoFavoritePokemon => _settings.AutoFavoritePokemon;
         public string RenameTemplate => _settings.RenameTemplate;
         public int AmountOfPokemonToDisplayOnStart => _settings.AmountOfPokemonToDisplayOnStart;
+        public bool DisplayPokemonMaxPoweredCp => _settings.DisplayPokemonMaxPoweredCp;
+        public bool DisplayPokemonMovesetRank => _settings.DisplayPokemonMovesetRank;
         public bool DumpPokemonStats => _settings.DumpPokemonStats;
         public string TranslationLanguageCode => _settings.TranslationLanguageCode;
         public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter => _settings.ItemRecycleFilter;
