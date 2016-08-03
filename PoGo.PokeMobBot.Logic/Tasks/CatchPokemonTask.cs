@@ -54,7 +54,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 }
 
                 var useBerryBelowCatchProbability = session.LogicSettings.UseBerryBelowCatchProbability > 1
-                    ? session.LogicSettings.UseBerryBelowCatchProbability / 100 : session.LogicSettings.UseBerryBelowCatchProbability;
+                    ? session.LogicSettings.UseBerryBelowCatchProbability/100
+                    : session.LogicSettings.UseBerryBelowCatchProbability;
                 var isLowProbability = probability < useBerryBelowCatchProbability;
                 var isHighCp = encounter != null &&
                                (encounter is EncounterResponse
@@ -90,7 +91,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.HumanizeThrows)
                 {
                     normalizedRecticleSize =
-                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax) *
+                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
                         1.85 + 0.1; // 0.1..1.95
                     spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
                 }
@@ -179,7 +180,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             ? encounter.WildPokemon?.PokemonData
                             : encounter?.PokemonData), 2);
                 evt.Probability =
-                    Math.Round(probability * 100, 2);
+                    Math.Round(probability*100, 2);
                 evt.Distance = distance;
                 evt.Pokeball = pokeball;
                 evt.Attempt = attemptCounter;
@@ -212,9 +213,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         : encounter?.PokemonData));
 
             var useUltraBallBelowCatchProbability = session.LogicSettings.UseUltraBallBelowCatchProbability > 1
-                ? session.LogicSettings.UseUltraBallBelowCatchProbability / 100 : session.LogicSettings.UseUltraBallBelowCatchProbability;
+                ? session.LogicSettings.UseUltraBallBelowCatchProbability/100
+                : session.LogicSettings.UseUltraBallBelowCatchProbability;
             var useGreatBallBelowCatchProbability = session.LogicSettings.UseGreatBallBelowCatchProbability > 1
-                ? session.LogicSettings.UseGreatBallBelowCatchProbability / 100 : session.LogicSettings.UseGreatBallBelowCatchProbability;
+                ? session.LogicSettings.UseGreatBallBelowCatchProbability/100
+                : session.LogicSettings.UseGreatBallBelowCatchProbability;
 
             await session.Inventory.RefreshCachedInventory();
             var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
@@ -245,7 +248,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             await session.Client.Encounter.UseCaptureItem(encounterId, ItemId.ItemRazzBerry, spawnPointId);
             berry.Count -= 1;
-            session.EventDispatcher.Send(new UseBerryEvent { Count = berry.Count });
+            session.EventDispatcher.Send(new UseBerryEvent {Count = berry.Count});
         }
     }
 }
