@@ -18,6 +18,7 @@ using POGOProtos.Inventory;
 using POGOProtos.Inventory.Item;
 using POGOProtos.Networking.Responses;
 using POGOProtos.Settings.Master;
+using PoGo.PokeMobBot.Logic.Utils;
 
 #endregion
 
@@ -82,6 +83,13 @@ namespace PoGo.PokeMobBot.Logic
                 return _cachedInventory;
             }
             return await RefreshCachedInventory();
+        }
+
+        public async Task<LevelUpRewardsResponse> GetLevelUpRewards(StatsExport playerStats)
+        {
+            var rewards = await _client.Player.GetLevelUpRewards(playerStats.Level);
+
+            return rewards;
         }
 
         public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(

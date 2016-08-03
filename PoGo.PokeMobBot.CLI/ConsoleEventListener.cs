@@ -50,6 +50,13 @@ namespace PoGo.PokeMobBot.CLI
             }
         }
 
+        public void HandleEvent(PlayerLevelUpEvent evt, ISession session)
+        {
+            Logger.Write(
+                session.Translation.GetTranslation(TranslationString.EventLevelUpRewards, evt.Items),
+                LogLevel.Info);
+        }
+
         public void HandleEvent(UseLuckyEggEvent evt, ISession session)
         {
             Logger.Write(session.Translation.GetTranslation(TranslationString.EventUsedLuckyEgg, evt.Count),
