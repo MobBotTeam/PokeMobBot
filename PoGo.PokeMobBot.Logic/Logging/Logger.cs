@@ -1,9 +1,10 @@
 #region using directives
 
 using System;
+using System.Collections;
 using System.IO;
 using PoGo.PokeMobBot.Logic.State;
-
+using System.Collections.Generic;
 #endregion
 
 namespace PoGo.PokeMobBot.Logic.Logging
@@ -12,18 +13,28 @@ namespace PoGo.PokeMobBot.Logic.Logging
     {
         private static ILogger _logger;
         private static string _path;
+        private static Queue<string> _logQueue = new Queue<string>();
+        private static bool _writerActive = false;
 
-        private static void Log(string message)
+        private static async void Log(string message)
         {
-            // maybe do a new log rather than appending?
+            _logQueue.Enqueue(message);
+            if (_writerActive) return;
+            _writerActive = true;
             using (
                 var log =
                     File.AppendText(Path.Combine(_path,
                         $"PokeMobBot-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt"))
                 )
             {
-                log.WriteLine(message);
+                while (_logQueue.Count > 0)
+                {
+                    var m = _logQueue.Dequeue();
+                    log.WriteLine(m);
+                    await System.Threading.Tasks.Task.Delay(10);
+                }
                 log.Flush();
+                _writerActive = false;
             }
         }
 
@@ -67,9 +78,7 @@ namespace PoGo.PokeMobBot.Logic.Logging
 
         public static void PushToUi(string msgType, ISession session, params object[] obj)
         {
-            if (_logger == null)
-                return;
-            _logger.SendWindowMsg(msgType, session, obj);
+            _logger?.SendWindowMsg(msgType, session, obj);
         }
     }
 

@@ -787,6 +787,7 @@ namespace Catchem
                 {
                     pokeMap.Position = new PointLatLng(bot._lat, bot._lng);
                     DrawPlayerMarker();
+                    StatsOnDirtyEvent(bot);
                 }
                 foreach (var item in botPanel.GetLogicalChildCollection<Rectangle>())
                 {
@@ -802,23 +803,23 @@ namespace Catchem
             Dispatcher.BeginInvoke(new ThreadStart(delegate
             {
                 _bot.level.Content =
-                    $"{_bot.stats.ExportStats.HoursUntilLvl.ToString("00")}:{_bot.stats.ExportStats.MinutesUntilLevel.ToString("00")}";
+                    $"{_bot.stats?.ExportStats?.HoursUntilLvl.ToString("00")}:{_bot.stats?.ExportStats?.MinutesUntilLevel.ToString("00")}";
             }));
             if (bot == _bot)
             {
                 Dispatcher.BeginInvoke(new ThreadStart(delegate
                 {
-                    Playername.Content = curSession.Profile.PlayerData.Username;
-                    l_StarDust.Content = bot.stats.TotalStardust;
-                    l_Stardust_farmed.Content = bot.stats.TotalStardust == 0 ? 0 : bot.stats.TotalStardust - curSession.Profile.PlayerData.Currencies[1].Amount;
-                    l_xp.Content = bot.stats.ExportStats.CurrentXp;
-                    l_xp_farmed.Content = bot.stats.TotalExperience.ToString();
-                    l_coins.Content = curSession.Profile.PlayerData.Currencies[0].Amount;
-                    l_Pokemons_farmed.Content = bot.stats.TotalPokemons;
-                    l_Pokemons_transfered.Content = bot.stats.TotalPokemonsTransfered;
-                    l_Pokestops_farmed.Content = bot.stats.TotalPokestops;
-                    l_level.Content = bot.stats.ExportStats.Level;
-                    l_level_nextime.Content = $"{bot.stats.ExportStats.HoursUntilLvl.ToString("00")}:{bot.stats.ExportStats.MinutesUntilLevel.ToString("00")}";
+                    Playername.Content = curSession.Profile?.PlayerData?.Username;
+                    l_StarDust.Content = bot.stats?.TotalStardust;
+                    l_Stardust_farmed.Content = bot.stats?.TotalStardust == 0 ? 0 : bot.stats?.TotalStardust - curSession?.Profile?.PlayerData?.Currencies[1].Amount;
+                    l_xp.Content = bot.stats?.ExportStats?.CurrentXp;
+                    l_xp_farmed.Content = bot.stats?.TotalExperience;
+                    l_coins.Content = curSession.Profile?.PlayerData?.Currencies[0].Amount;
+                    l_Pokemons_farmed.Content = bot.stats?.TotalPokemons;
+                    l_Pokemons_transfered.Content = bot.stats?.TotalPokemonsTransfered;
+                    l_Pokestops_farmed.Content = bot.stats?.TotalPokestops;
+                    l_level.Content = bot.stats?.ExportStats?.Level;
+                    l_level_nextime.Content = $"{bot.stats?.ExportStats?.HoursUntilLvl.ToString("00")}:{bot.stats?.ExportStats?.MinutesUntilLevel.ToString("00")}";
                 }));
             }
         }

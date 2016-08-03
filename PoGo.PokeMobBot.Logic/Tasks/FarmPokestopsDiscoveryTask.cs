@@ -46,14 +46,18 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (session.ForceMoveTo != null)                
-                    await ForceMoveTask.Execute(session, cancellationToken);                
+                if (session.ForceMoveTo != null)
+                {
+                    await ForceMoveTask.Execute(session, cancellationToken);
+                }
 
                 var newPokestopList = (await GetPokeStops(session)).OrderBy(i =>
                             LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                                 session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => pokestopList.All(i => i.Id != x.Id) && LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                               session.Client.CurrentLongitude, x.Latitude, x.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters);
+                               session.Client.CurrentLongitude, x.Latitude, x.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters).ToList();
+                session.EventDispatcher.Send(new PokeStopListEvent { Forts = newPokestopList });
                 pokestopList.AddRange(newPokestopList);
+                
                 var pokeStop = pokestopList.OrderBy(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                                session.Client.CurrentLongitude, i.Latitude, i.Longitude)).First(x => x.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime());
                 pokeStop.CooldownCompleteTimestampMs = DateTime.UtcNow.ToUnixTime() + 300 * 1000;
@@ -63,8 +67,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 foreach (var tooFar in tooFarPokestops)
                     pokestopList.Remove(tooFar);
-
-                session.EventDispatcher.Send(new PokeStopListEvent { Forts = newPokestopList });
 
                 var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                     session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
