@@ -1,70 +1,68 @@
-﻿{
+{
   "TranslationStrings": [
     {
       "Key": "pokeball",
-      "Value": "Poké Ball"
+      "Value": "精靈球"
     },
     {
       "Key": "greatPokeball",
-      "Value": "Super Ball"
+      "Value": "超級球"
     },
     {
       "Key": "ultraPokeball",
-      "Value": "Ultra Ball"
+      "Value": "高級球"
     },
     {
       "Key": "masterPokeball",
-      "Value": "Master Ball"
+      "Value": "大師球"
     },
     {
       "Key": "wrongAuthType",
-      "Value": "AuthType desconocido en config.json"
+      "Value": "錯誤的認證信息"
     },
     {
       "Key": "farmPokestopsOutsideRadius",
-      "Value":
-        "¡Estás fuera del radio definido! Andando a la posición inicial (a {0}m) en 5 segundos. ¿Es correcto tu archivo Coords.ini?"
+      "Value": "您已經走出範圍！5秒後返回起點（距離{0}米），請確認系統設置是否正確？"
     },
     {
       "Key": "farmPokestopsNoUsableFound",
-      "Value":
-        "No se encontraron pokeparadas disponibles en tu área. ¿Has configurado una distancia máxima demasiado pequeña?"
+      "Value": "您附近沒有任何可用的補給站，請確認系統設置是否正確？"
     },
     {
       "Key": "eventFortUsed",
-      "Value": "{0} - PX: {1}, Gemas: {2}, Objetos: {3}"
+      "Value": "名稱：{0} 經驗值：{1}, 金幣：{2}, 物品：{3}"
     },
     {
       "Key": "eventFortFailed",
-      "Value": "El avance falló, posible SoftBan. Eliminar SoftBan en: {0}/{1}"
+      "Value": "名稱：{0} 信息：操作失敗，可能被封禁。正在解封：{1}/{2}"
     },
     {
       "Key": "eventFortTargeted",
-      "Value": "{0} en ({1}m)"
+      "Value": "前往補給站：{0} （距離{1}米）"
     },
     {
       "Key": "eventProfileLogin",
-      "Value": "Jugando como {0}"
+      "Value": "登陸賬號 {0}"
     },
     {
       "Key": "eventUsedLuckyEgg",
-      "Value": "Huevo Suerte usado. Te quedan {0}"
+      "Value": "使用幸運蛋，剩餘數量：{0}"
     },
 	{
       "Key": "eventUseLuckyEggMinPokemonCheck",
-      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+      "Value": "因為寵物不足，不足以觸發使用幸運蛋道具的規則。需要 {0} 隻或以上。({1}/{2})"
     },
     {
       "Key": "eventPokemonEvolvedSuccess",
-      "Value": "{0}, obtienes {1}px"
+      "Value": "成功進化 {0} 獲得 {1} 經驗值"
     },
     {
       "Key": "eventPokemonEvolvedFailed",
-      "Value": "Fallado {0}. El resultado fue {1}, parando de evolucionar {2}"
+      "Value": " {0} 進化失敗，原因是 {1}，已取消進化 {2}"
     },
     {
       "Key": "eventPokemonTransferred",
-      "Value": "{0}\t- PC: {1}  IV: {2}%   [Mejor PC: {3}  IV: {4}%] (Caramelos: {5})"
+      "Value": "{0}\t- CP值：{1}  完美度：{2}%   [已擁有 CP值：{3}  完美度：{4}%] （還有{5}顆該種類的糖果）"
     },
     {
       "Key": "eventItemRecycled",
@@ -72,16 +70,15 @@
     },
     {
       "Key": "eventPokemonCapture",
-      "Value":
-        "({0}) | ({1}) {2} Lvl: {3} PC: ({4}/{5}) IV: {6}% | Prob: {7}% | {8}m dist | con {9} (quedan {10}). | {11}"
+      "Value": "({0}) | ({1}) {2} 等級：{3}  CP值：({4}/{5}) 完美度：{6}%| 捕獲機率：{7}%| 距離{8}米 | 剩餘{10}個{9} | {11} "
     },
     {
       "Key": "eventNoPokeballs",
-      "Value": "¡Sin Pokéballs! - Hemos perdido un {0} con {1} PC :("
+      "Value": "沒有精靈球了，我們錯過了一隻 CP值為 {1} 的 {0} "
     },
     {
       "Key": "catchStatusAttempt",
-      "Value": "{0} Intento #{1}"
+      "Value": "{0} 重試 #{1}"
     },
     {
       "Key": "catchStatus",
@@ -89,938 +86,917 @@
     },
     {
       "Key": "candies",
-      "Value": "Caramelos: {0}"
+      "Value": "還有{0}顆該種類的糖果"
     },
     {
       "Key": "unhandledGpxData",
-      "Value": "Error: No controlados los datos en el archivo GPX, intentar omitir."
+      "Value": "在GPX文件中發現異常數據，試圖跳過。"
     },
     {
       "Key": "displayHighestsHeader",
-      "Value": "Pokemons"
+      "Value": "寵物小精靈"
     },
     {
       "Key": "commonWordPerfect",
-      "Value": "perfecto"
+      "Value": "完美度"
     },
     {
       "Key": "commonWordName",
-      "Value": "nombre"
+      "Value": "名稱"
     },
     {
       "Key": "commonWordUnknown",
-      "Value": "Desconocido"
+      "Value": "未知"
     },
     {
       "Key": "displayHighestsCpHeader",
-      "Value": "Pokemons con mayor CP"
+      "Value": "展示最高 CP 值"
     },
     {
       "Key": "displayHighestsPerfectHeader",
-      "Value": "Pokemons con mayor Perfección"
+      "Value": "展示最高完美度"
     },
     {
       "Key": "displayHighestsLevelHeader",
-      "Value": "Pokemons con mayor Nivel"
+      "Value": "展示最高等級"
     },
     {
       "Key": "welcomeWarning",
-      "Value":
-        "Asegúrese de que la Latitud y Longitud son las correctas. Salga del Programa si no es así! Lat: {0} Lng: {1}"
+      "Value": "確認經緯度是否正確，如果錯誤將會退出程序！ 緯度：{0} 經度：{1}"
     },
     {
       "Key": "incubatorPuttingEgg",
-      "Value": "Añadiendo huevo a la incubadora: {0:0.00}km restantes"
+      "Value": "正在將寵物蛋放入孵化器中：剩餘{0:0.00}千米"
     },
     {
       "Key": "incubatorStatusUpdate",
-      "Value": "Actualizando el estado de la incubadora: {0:0.00}km restantes"
+      "Value": "更新孵化器狀態：剩餘{0:0.00}千米"
     },
     {
       "Key": "incubatorEggHatched",
-      "Value": "Huevo incubado ha eclosionado: {0}"
+      "Value": "孵化器已經孵出：{0}"
     },
     {
       "Key": "logEntryError",
-      "Value": "ERROR"
+      "Value": "錯誤"
     },
     {
       "Key": "logEntryAttention",
-      "Value": "ATENCIÓN"
+      "Value": "注意"
     },
     {
       "Key": "logEntryInfo",
-      "Value": "INFO"
+      "Value": "提醒"
     },
     {
       "Key": "logEntryPokestop",
-      "Value": "POKEPARADA"
+      "Value": "補給站"
     },
     {
       "Key": "logEntryFarming",
-      "Value": "FARMING"
+      "Value": "開刷"
     },
     {
       "Key": "logEntryRecycling",
-      "Value": "RECICLAJE"
+      "Value": "刪除"
     },
     {
       "Key": "logEntryPKMN",
-      "Value": "PKMN"
+      "Value": "捕獲"
     },
     {
       "Key": "logEntryTransfered",
-      "Value": "TRANSFERIDO"
+      "Value": "傳送"
     },
     {
       "Key": "logEntryEvolved",
-      "Value": "EVOLUCIONAR"
+      "Value": "進化"
     },
     {
       "Key": "logEntryBerry",
-      "Value": "BAYA"
+      "Value": "漿果"
     },
     {
       "Key": "logEntryEgg",
-      "Value": "HUEVO"
+      "Value": "寵物蛋"
     },
     {
       "Key": "logEntryDebug",
-      "Value": "DEBUG"
+      "Value": "調試"
     },
     {
       "Key": "logEntryUpdate",
-      "Value": "ACTUALIZAR"
+      "Value": "更新"
     },
     {
       "Key": "loggingIn",
-      "Value": "Logueado usando {0}"
+      "Value": "正在登錄{0}賬號"
     },
     {
       "Key": "ptcOffline",
-      "Value": "Servidores de PTC probablemente estén caídos o sus datos de acceso son incorrectos. Prueba con Google."
+      "Value": "PTC服務器可能關閉或您的帳號錯誤錯誤，請嘗試谷歌帳號登錄"
     },
     {
       "Key": "accessTokenExpired",
-      "Value": "Access token expired. Relogin to get a new token."
+      "Value": "該 token 已經過期。請重新登錄獲取新的 token。"
     },
     {
       "Key": "tryingAgainIn",
-      "Value": "Intentar de nuevo en {0} segundos..."
+      "Value": "將在 {0} 秒後重試..."
     },
     {
       "Key": "accountNotVerified",
-      "Value": "Cuenta no verificada! Saliendo..."
+      "Value": "帳號或密碼錯誤！退出..."
     },
     {
       "Key": "openingGoogleDevicePage",
-      "Value": "Abriendo la página de Google Device. Por favor, pegue el código usando CTRL+V."
+      "Value": "正在打開 Google Device 網頁，請用CTRL+V粘貼驗證碼"
     },
     {
       "Key": "couldntCopyToClipboard",
-      "Value": "No se pudo copiar al portapapeles, por favor, hágalo manualmente."
+      "Value": "無法將驗證碼複製到剪貼板，請手動複製"
     },
     {
       "Key": "couldntCopyToClipboard2",
-      "Value": "Ir: {0} & enter {1}"
+      "Value": "打開：{0} 後輸入 {1}"
     },
     {
       "Key": "realisticTravelDetected",
-      "Value": "Detectado viaje realista, utilizando UserSettings.settings"
+      "Value": "檢測到真實的旅行，使用用戶配置"
     },
     {
       "Key": "notRealisticTravel",
-      "Value": "Viaje no realista en {0}, utilizando el último Coords.ini memorizado"
+      "Value": "未檢測到真實的旅行 {0}, 使用上一次保存的配置"
     },
     {
       "Key": "coordinatesAreInvalid",
-      "Value": "Coordenadas en \"Coords.ini\" no son correctas, utilizando las coordenadas predeterminadas"
+      "Value": "無效的座標文件，使用默認座標"
     },
     {
       "Key": "gotUpToDateVersion",
-      "Value": "Perfecto! Ya tienes la versión más reciente {0}"
+      "Value": "恭喜！你已經更新至最新版本：{0}"
     },
     {
       "Key": "autoUpdaterDisabled",
-      "Value": "AutoUpdater está desactivado. Obtenga la última versión en: {0}\n "
+      "Value": "自動更新已禁用，獲取到最新的版本為：{0}\n "
     },
     {
       "Key": "downloadingUpdate",
-      "Value": "Descargando y aplicando la actualización..."
+      "Value": "正在下載安裝更新..."
     },
     {
       "Key": "finishedDownloadingRelease",
-      "Value": "Terminada la descarga de la última actualización..."
+      "Value": "成功下載新版本..."
+    },
+    {
+      "Key": "FinishedTransferringConfig",
+      "Value": "完成你的配置轉移到新版本..."
     },
     {
       "Key": "finishedUnpackingFiles",
-      "Value": "Terminada la desempaquetación de los archivos..."
-    },
-    {
-      "Key": "finishedTransferringConfig",
-      "Value": "Terminado de transferir su configuración a la nueva versión..."
+      "Value": "成功解包..."
     },
     {
       "Key": "updateFinished",
-      "Value": "Actualización terminada, puede cerrar esta ventana ahora."
+      "Value": "更新完成，您現在可以關閉這個窗口。"
     },
     {
       "Key": "lookingForIncensePokemon",
-      "Value": "Buscando incienso para pokemon..."
+      "Value": "正在搜索薰香引來的精靈..."
     },
     {
       "Key": "lookingForPokemon",
-      "Value": "Buscando Pokemon..."
+      "Value": "正在搜索寵物小精靈..."
     },
     {
       "Key": "lookingForLurePokemon",
-      "Value": "Buscando Cebos pokemon..."
+      "Value": "正在搜索誘餌吸引來的精靈..."
     },
     {
       "Key": "pokemonSkipped",
-      "Value": "Omitido {0}"
+      "Value": "跳過：{0}"
     },
     {
       "Key": "invFullTransferring",
-      "Value": "El inventario de pokemons está lleno. Transferir pokemons..."
+      "Value": "背包已滿，正在傳輸精靈..."
     },
     {
       "Key": "invFullTransferManually",
-      "Value":
-        "El inventario de pokemons está lleno. Por favor transfiera los pokemons manualmente o active (true) TransferDuplicatePokemon en el archivo de opciones..."
+      "Value": "背包已滿，請手動傳輸精靈或者修改TransferDuplicatePokemon 為 true..."
     },
     {
       "Key": "invFullPokestopLooting",
-      "Value": "El inventario está lleno, no pudimos pillar nada :("
+      "Value": "背包已滿,無法捕捉精靈!"
     },
     {
       "Key": "encounterProblem",
-      "Value": "Se encontró un problema: {0}"
+      "Value": "發生錯誤：{0}"
     },
     {
       "Key": "encounterProblemLurePokemon",
-      "Value": "Se encontró un problema: Cebo pokemon {0}"
+      "Value": "發生錯誤：誘餌吸引來的精靈 {0}"
     },
     {
       "Key": "desiredDestTooFar",
-      "Value": "El destino deseado {0}, {1} está demasiado lejos de su posición actual {2}, {3}"
+      "Value": "您要去的地方 {0}, {1} 距離您現在的位置太遠了 {2}, {3}"
     },
     {
       "Key": "pokemonRename",
-      "Value": "Pokemon {0} ({1}) renombrado de {2} a {3}."
+      "Value": "正在將精靈 {0} ({1}) 從 {2} 重命名為 {3}."
     },
     {
       "Key": "pokemonIgnoreFilter",
-      "Value": "[Filtro Pokemons Ignorados] - Ignorando {0} tal y como se definió en la configuración actual."
+      "Value": "[精靈忽略過濾器] - 在設置中定義忽略 {0} "
     },
     {
       "Key": "catchStatusAttempt",
-      "Value": "Intento de Captura"
+      "Value": "捕捉-嘗試"
     },
     {
       "Key": "catchStatusError",
-      "Value": "Error de Captura"
+      "Value": "捕捉-錯誤"
     },
     {
       "Key": "catchStatusEscape",
-      "Value": "Captura Fallida"
+      "Value": "捕捉-失敗"
     },
     {
       "Key": "catchStatusFlee",
-      "Value": "Huida"
+      "Value": "捕捉-消失"
     },
     {
       "Key": "catchStatusMissed",
-      "Value": "Capturas Perdidas"
+      "Value": "捕捉-錯過"
     },
     {
       "Key": "catchStatusSuccess",
-      "Value": "Captura Exitosa"
+      "Value": "捕捉-成功"
     },
     {
       "Key": "catchTypeNormal",
-      "Value": "Normal"
+      "Value": "普通"
     },
     {
       "Key": "catchTypeLure",
-      "Value": "Cebo"
+      "Value": "誘餌"
     },
     {
       "Key": "catchTypeIncense",
-      "Value": "Incienso"
+      "Value": "薰香"
     },
     {
       "Key": "webSocketFailStart",
-      "Value": "No se pudo iniciar WebSocketServer en el puerto: {0}"
+      "Value": "無法啟動 WebSocket 服務器的端口：{0}"
     },
     {
       "Key": "statsTemplateString",
-      "Value":
-        "{0} - Activo {1} - Nivel: {2} | EXP/H: {3:0} | P/H: {4:0} | P.Estelar: {5:0} | Transferido: {6:0} | Reciclado: {7:0}"
+      "Value": "{0} - 運行時間 {1} - 等級: {2} | 經驗/小時: {3:0} | 捕獲/小時: {4:0} | 星塵: {5:0} | 傳送: {6:0} | 丟棄: {7:0}"
     },
     {
       "Key": "statsXpTemplateString",
-      "Value": "{0} (próximo nivel en {1}h {2}m | {3}/{4} XP)"
+      "Value": "{0} (預計升到下一級別需要 {1}小時 {2}分鐘 | {3}/{4}經驗 )"
     },
     {
       "Key": "requireInputText",
-      "Value": "El programa continuará después de pulsar una tecla..."
+      "Value": "按任意鍵繼續..."
     },
     {
       "Key": "googleTwoFactorAuth",
-      "Value":
-        "Como tiene habilitado Google autenticación de 2 factores, tendrá que insertar una contraseña específica de la APP en el auth.json"
+      "Value": "當您啟用了谷歌的兩步驗證後，需要在auth.json中輸入應用專用密碼"
     },
     {
       "Key": "googleTwoFactorAuthExplanation",
-      "Value":
-        "Abriendo Google App-Passwords. Por favor, cree una nueva contraseña en la APP (utilizar en otro dispositivo)"
+      "Value": "打開 Google App - 登陸與安全設置 - 密碼和登錄方法 - 應用專用密碼，請設置一個新的應用專用密碼(使用其它設備)"
     },
     {
       "Key": "googleError",
-      "Value": "Asegúrese de que ha introducido el correo electrónico y contraseña correcta."
+      "Value": "請確認輸入了正確的郵箱地址和密碼。"
     },
     {
       "Key": "missingCredentialsGoogle",
-      "Value": "Es necesario rellenar GoogleUsername y GooglePassword en auth.json!"
+      "Value": "您需要在auth.json中填寫谷歌賬戶和密碼！"
     },
     {
       "Key": "missingCredentialsPtc",
-      "Value": "Es necesario rellenar PtcUsername y PtcPassword en auth.json!"
+      "Value": "您需要在auth.json中填寫 PTC 賬戶和密碼！"
     },
     {
       "Key": "snipeScan",
-      "Value": "[Sniper] Escaneando en busca de Pokemons en {0}..."
-    },
-    {
-      "Key": "snipeScanEx",
-      "Value": "[Sniper] Sniping a {0} con {1} IV en {2}..."
+      "Value": "[狙擊手] 正在搜索特殊寵物，坐標：{0}"
     },
     {
       "Key": "noPokemonToSnipe",
-      "Value": "[Sniper] No se encontraron Pokemons :("
-    },
-    {
-      "Key": "notEnoughPokeballsToSnipe",
-      "Value": "No hay suficientes Pokeballs para iniciar Sniping! ({0}/{1})"
-    },
-    {
-      "Key": "displayHighestMOVE1Header",
-      "Value": "MOVIMIENTO1"
-    },
-    {
-      "Key": "displayHighestMOVE2Header",
-      "Value": "MOVIMIENTO2"
+      "Value": "[狙擊手] 沒有找到特殊寵物！"
     }
   ],
-  "pokemon": [
+    "pokemon": [
     {
       "Key": "Missingno",
-      "Value": "Missingno"
+      "Value": "粉紅乳頭"
     },
     {
       "Key": "Bulbasaur",
-      "Value": "Bulbasaur"
+      "Value": "奇異種子"
     },
     {
       "Key": "Ivysaur",
-      "Value": "Ivysaur"
+      "Value": "奇異草"
     },
     {
       "Key": "Venusaur",
-      "Value": "Venusaur"
+      "Value": "奇異花"
     },
     {
       "Key": "Charmander",
-      "Value": "Charmander"
+      "Value": "小火龍"
     },
     {
       "Key": "Charmeleon",
-      "Value": "Charmeleon"
+      "Value": "火恐龍"
     },
     {
       "Key": "Charizard",
-      "Value": "Charizard"
+      "Value": "噴火龍"
     },
     {
       "Key": "Squirtle",
-      "Value": "Squirtle"
+      "Value": "車厘龜"
     },
     {
       "Key": "Wartortle",
-      "Value": "Wartortle"
+      "Value": "卡美龜"
     },
     {
       "Key": "Blastoise",
-      "Value": "Blastoise"
+      "Value": "水箭龜"
     },
     {
       "Key": "Caterpie",
-      "Value": "Caterpie"
+      "Value": "綠毛蟲"
     },
     {
       "Key": "Metapod",
-      "Value": "Metapod"
+      "Value": "鐵甲蟲"
     },
     {
       "Key": "Butterfree",
-      "Value": "Butterfree"
+      "Value": "巴他蝶"
     },
     {
       "Key": "Weedle",
-      "Value": "Weedle"
+      "Value": "獨角蟲"
     },
     {
       "Key": "Kakuna",
-      "Value": "Kakuna"
+      "Value": "鐵殼蛹"
     },
     {
       "Key": "Beedrill",
-      "Value": "Beedrill"
+      "Value": "大針蜂"
     },
     {
       "Key": "Pidgey",
-      "Value": "Pidgey"
+      "Value": "波波"
     },
     {
       "Key": "Pidgeotto",
-      "Value": "Pidgeotto"
+      "Value": "比比鳥"
     },
     {
       "Key": "Pidgeot",
-      "Value": "Pidgeot"
+      "Value": "大比鳥"
     },
     {
       "Key": "Rattata",
-      "Value": "Rattata"
+      "Value": "小哥達"
     },
     {
       "Key": "Raticate",
-      "Value": "Raticate"
+      "Value": "哥達"
     },
     {
       "Key": "Spearow",
-      "Value": "Spearow"
+      "Value": "鬼雀"
     },
     {
       "Key": "Fearow",
-      "Value": "Fearow"
+      "Value": "魔雀"
     },
     {
       "Key": "Ekans",
-      "Value": "Ekans"
+      "Value": "阿柏蛇"
     },
     {
       "Key": "Arbok",
-      "Value": "Arbok"
+      "Value": "阿柏怪"
     },
     {
       "Key": "Pikachu",
-      "Value": "Pikachu"
+      "Value": "比卡超"
     },
     {
       "Key": "Raichu",
-      "Value": "Raichu"
+      "Value": "雷超"
     },
     {
       "Key": "Sandshrew",
-      "Value": "Sandshrew"
+      "Value": "穿山鼠"
     },
     {
       "Key": "Sandslash",
-      "Value": "Sandslash"
+      "Value": "穿山王"
     },
     {
       "Key": "NidoranFemale",
-      "Value": "NidoranF"
+      "Value": "尼美蘭"
     },
     {
       "Key": "Nidorina",
-      "Value": "Nidorina"
+      "Value": "尼美羅"
     },
     {
       "Key": "Nidoqueen",
-      "Value": "Nidoqueen"
+      "Value": "尼美后"
     },
     {
       "Key": "NidoranMale",
-      "Value": "NidoranM"
+      "Value": "尼多郎"
     },
     {
       "Key": "Nidorino",
-      "Value": "Nidorino"
+      "Value": "尼多利"
     },
     {
       "Key": "Nidoking",
-      "Value": "Nidoking"
+      "Value": "尼多王"
     },
     {
       "Key": "Clefairy",
-      "Value": "Clefairy"
+      "Value": "皮皮"
     },
     {
       "Key": "Clefable",
-      "Value": "Clefable"
+      "Value": "皮可斯"
     },
     {
       "Key": "Vulpix",
-      "Value": "Vulpix"
+      "Value": "六尾"
     },
     {
       "Key": "Ninetales",
-      "Value": "Ninetales"
+      "Value": "九尾"
     },
     {
       "Key": "Jigglypuff",
-      "Value": "Jigglypuff"
+      "Value": "波波球"
     },
     {
       "Key": "Wigglytuff",
-      "Value": "Wigglytuff"
+      "Value": "肥波球"
     },
     {
       "Key": "Zubat",
-      "Value": "Zubat"
+      "Value": "波音蝠"
     },
     {
       "Key": "Golbat",
-      "Value": "Golbat"
+      "Value": "大口蝠"
     },
     {
       "Key": "Oddish",
-      "Value": "Oddish"
+      "Value": "行路草"
     },
     {
       "Key": "Gloom",
-      "Value": "Gloom"
+      "Value": "怪味花"
     },
     {
       "Key": "Vileplume",
-      "Value": "Vileplume"
+      "Value": "霸王花"
     },
     {
       "Key": "Paras",
-      "Value": "Paras"
+      "Value": "蘑菇蟲"
     },
     {
       "Key": "Parasect",
-      "Value": "Parasect"
+      "Value": "巨菇蟲"
     },
     {
       "Key": "Venonat",
-      "Value": "Venonat"
+      "Value": "毛毛蟲"
     },
     {
       "Key": "Venomoth",
-      "Value": "Venomoth"
+      "Value": "魔魯風"
     },
     {
       "Key": "Diglett",
-      "Value": "Diglett"
+      "Value": "地鼠"
     },
     {
       "Key": "Dugtrio",
-      "Value": "Dugtrio"
+      "Value": "三頭地鼠"
     },
     {
       "Key": "Meowth",
-      "Value": "Meowth"
+      "Value": "喵喵怪"
     },
     {
       "Key": "Persian",
-      "Value": "Persian"
+      "Value": "高竇貓"
     },
     {
       "Key": "Psyduck",
-      "Value": "Psyduck"
+      "Value": "傻鴨"
     },
     {
       "Key": "Golduck",
-      "Value": "Golduck"
+      "Value": "高超鴨"
     },
     {
       "Key": "Mankey",
-      "Value": "Mankey"
+      "Value": "猴怪"
     },
     {
       "Key": "Primeape",
-      "Value": "Primeape"
+      "Value": "火爆猴"
     },
     {
       "Key": "Growlithe",
-      "Value": "Growlithe"
+      "Value": "護主犬"
     },
     {
       "Key": "Arcanine",
-      "Value": "Arcanine"
+      "Value": "奉神犬"
     },
     {
       "Key": "Poliwag",
-      "Value": "Poliwag"
+      "Value": "蚊香蝌蚪"
     },
     {
       "Key": "Poliwhirl",
-      "Value": "Poliwhirl"
+      "Value": "蚊香蛙"
     },
     {
       "Key": "Poliwrath",
-      "Value": "Poliwrath"
+      "Value": "大力蛙"
     },
     {
       "Key": "Abra",
-      "Value": "Abra"
+      "Value": "卡斯"
     },
     {
       "Key": "Kadabra",
-      "Value": "Kadabra"
+      "Value": "尤基納"
     },
     {
       "Key": "Alakazam",
-      "Value": "Alakazam"
+      "Value": "富迪"
     },
     {
       "Key": "Machop",
-      "Value": "Machop"
+      "Value": "鐵腕"
     },
     {
       "Key": "Machoke",
-      "Value": "Machoke"
+      "Value": "大力"
     },
     {
       "Key": "Machamp",
-      "Value": "Machamp"
+      "Value": "怪力"
     },
     {
       "Key": "Bellsprout",
-      "Value": "Bellsprout"
+      "Value": "喇叭芽"
     },
     {
       "Key": "Weepinbell",
-      "Value": "Weepinbell"
+      "Value": "口呆花"
     },
     {
       "Key": "Victreebel",
-      "Value": "Victreebel"
+      "Value": "大食花"
     },
     {
       "Key": "Tentacool",
-      "Value": "Tentacool"
+      "Value": "大眼水母"
     },
     {
       "Key": "Tentacruel",
-      "Value": "Tentacruel"
+      "Value": "多腳水母"
     },
     {
       "Key": "Geodude",
-      "Value": "Geodude"
+      "Value": "小拳石"
     },
     {
       "Key": "Graveler",
-      "Value": "Graveler"
+      "Value": "滾動石"
     },
     {
       "Key": "Golem",
-      "Value": "Golem"
+      "Value": "滾動岩"
     },
     {
       "Key": "Ponyta",
-      "Value": "Ponyta"
+      "Value": "小火馬"
     },
     {
       "Key": "Rapidash",
-      "Value": "Rapidash"
+      "Value": "烈焰馬"
     },
     {
       "Key": "Slowpoke",
-      "Value": "Slowpoke"
+      "Value": "小呆獸"
     },
     {
       "Key": "Slowbro",
-      "Value": "Slowbro"
+      "Value": "大呆獸"
     },
     {
       "Key": "Magnemite",
-      "Value": "Magnemite"
+      "Value": "小磁怪"
     },
     {
       "Key": "Magneton",
-      "Value": "Magneton"
+      "Value": "三合一磁怪"
     },
     {
       "Key": "Farfetchd",
-      "Value": "Farfetch'd"
+      "Value": "火蔥鴨"
     },
     {
       "Key": "Doduo",
-      "Value": "Doduo"
+      "Value": "多多"
     },
     {
       "Key": "Dodrio",
-      "Value": "Dodrio"
+      "Value": "多多利"
     },
     {
       "Key": "Seel",
-      "Value": "Seel"
+      "Value": "小海獅"
     },
     {
       "Key": "Dewgong",
-      "Value": "Dewgong"
+      "Value": "白海獅"
     },
     {
       "Key": "Grimer",
-      "Value": "Grimer"
+      "Value": "爛泥怪"
     },
     {
       "Key": "Muk",
-      "Value": "Muk"
+      "Value": "爛泥獸"
     },
     {
       "Key": "Shellder",
-      "Value": "Shellder"
+      "Value": "貝殼怪"
     },
     {
       "Key": "Cloyster",
-      "Value": "Cloyster"
+      "Value": "鐵甲貝"
     },
     {
       "Key": "Gastly",
-      "Value": "Gastly"
+      "Value": "鬼斯"
     },
     {
       "Key": "Haunter",
-      "Value": "Haunter"
+      "Value": "鬼斯通"
     },
     {
       "Key": "Gengar",
-      "Value": "Gengar"
+      "Value": "耿鬼"
     },
     {
       "Key": "Onix",
-      "Value": "Onix"
+      "Value": "大岩蛇"
     },
     {
       "Key": "Drowzee",
-      "Value": "Drowzee"
+      "Value": "食夢獸"
     },
     {
       "Key": "Hypno",
-      "Value": "Hypno"
+      "Value": "催眠獸"
     },
     {
       "Key": "Krabby",
-      "Value": "Krabby"
+      "Value": "大鉗蟹"
     },
     {
       "Key": "Kingler",
-      "Value": "Kingler"
+      "Value": "巨鉗蟹"
     },
     {
       "Key": "Voltorb",
-      "Value": "Voltorb"
+      "Value": "霹靂彈"
     },
     {
       "Key": "Electrode",
-      "Value": "Electrode"
+      "Value": "雷霆彈"
     },
     {
       "Key": "Exeggcute",
-      "Value": "Exeggcute"
+      "Value": "蛋蛋"
     },
     {
       "Key": "Exeggutor",
-      "Value": "Exeggutor"
+      "Value": "椰樹獸"
     },
     {
       "Key": "Cubone",
-      "Value": "Cubone"
+      "Value": "卡拉卡拉"
     },
     {
       "Key": "Marowak",
-      "Value": "Marowak"
+      "Value": "格拉格拉"
     },
     {
       "Key": "Hitmonlee",
-      "Value": "Hitmonlee"
+      "Value": "沙古拉"
     },
     {
       "Key": "Hitmonchan",
-      "Value": "Hitmonchan"
+      "Value": "比華拉"
     },
     {
       "Key": "Lickitung",
-      "Value": "Lickitung"
+      "Value": "大舌頭"
     },
     {
       "Key": "Koffing",
-      "Value": "Koffing"
+      "Value": "毒氣丸"
     },
     {
       "Key": "Weezing",
-      "Value": "Weezing"
+      "Value": "毒氣雙子"
     },
     {
       "Key": "Rhyhorn",
-      "Value": "Rhyhorn"
+      "Value": "鐵甲犀牛"
     },
     {
       "Key": "Rhydon",
-      "Value": "Rhydon"
+      "Value": "鐵甲暴龍"
     },
     {
       "Key": "Chansey",
-      "Value": "Chansey"
+      "Value": "吉利蛋"
     },
     {
       "Key": "Tangela",
-      "Value": "Tangela"
+      "Value": "長藤怪"
     },
     {
       "Key": "Kangaskhan",
-      "Value": "Kangaskhan"
+      "Value": "袋獸"
     },
     {
       "Key": "Horsea",
-      "Value": "Horsea"
+      "Value": "噴墨海馬"
     },
     {
       "Key": "Seadra",
-      "Value": "Seadra"
+      "Value": "飛刺海馬"
     },
     {
       "Key": "Goldeen",
-      "Value": "Goldeen"
+      "Value": "獨角金魚"
     },
     {
       "Key": "Seaking",
-      "Value": "Seaking"
+      "Value": "金魚王"
     },
     {
       "Key": "Staryu",
-      "Value": "Staryu"
+      "Value": "海星星"
     },
     {
       "Key": "Starmie",
-      "Value": "Starmie"
+      "Value": "寶石海星"
     },
     {
       "Key": "MrMime",
-      "Value": "Mr. Mime"
+      "Value": "吸盤小丑"
     },
     {
       "Key": "Scyther",
-      "Value": "Scyther"
+      "Value": "飛天螳螂"
     },
     {
       "Key": "Jynx",
-      "Value": "Jynx"
+      "Value": "紅唇娃"
     },
     {
       "Key": "Electabuzz",
-      "Value": "Electabuzz"
+      "Value": "電擊獸"
     },
     {
       "Key": "Magmar",
-      "Value": "Magmar"
+      "Value": "鴨嘴火龍"
     },
     {
       "Key": "Pinsir",
-      "Value": "Pinsir"
+      "Value": "鉗刀甲蟲"
     },
     {
       "Key": "Tauros",
-      "Value": "Tauros"
+      "Value": "大隻牛"
     },
     {
       "Key": "Magikarp",
-      "Value": "Magikarp"
+      "Value": "鯉魚王"
     },
     {
       "Key": "Gyarados",
-      "Value": "Gyarados"
+      "Value": "鯉魚龍"
     },
     {
       "Key": "Lapras",
-      "Value": "Lapras"
+      "Value": "背背龍"
     },
     {
       "Key": "Ditto",
-      "Value": "Ditto"
+      "Value": "百變怪"
     },
     {
       "Key": "Eevee",
-      "Value": "Eevee"
+      "Value": "伊貝"
     },
     {
       "Key": "Vaporeon",
-      "Value": "Vaporeon"
+      "Value": "水伊貝"
     },
     {
       "Key": "Jolteon",
-      "Value": "Jolteon"
+      "Value": "雷伊貝"
     },
     {
       "Key": "Flareon",
-      "Value": "Flareon"
+      "Value": "火伊貝"
     },
     {
       "Key": "Porygon",
-      "Value": "Porygon"
+      "Value": "立方獸"
     },
     {
       "Key": "Omanyte",
-      "Value": "Omanyte"
+      "Value": "菊石獸"
     },
     {
       "Key": "Omastar",
-      "Value": "Omastar"
+      "Value": "多刺菊石獸"
     },
     {
       "Key": "Kabuto",
-      "Value": "Kabuto"
+      "Value": "萬年蟲"
     },
     {
       "Key": "Kabutops",
-      "Value": "Kabutops"
+      "Value": "鐮刀蟲"
     },
     {
       "Key": "Aerodactyl",
-      "Value": "Aerodactyl"
+      "Value": "化石飛龍"
     },
     {
       "Key": "Snorlax",
-      "Value": "Snorlax"
+      "Value": "卡比獸"
     },
     {
       "Key": "Articuno",
-      "Value": "Articuno"
+      "Value": "急凍鳥"
     },
     {
       "Key": "Zapdos",
-      "Value": "Zapdos"
+      "Value": "雷鳥"
     },
     {
       "Key": "Moltres",
-      "Value": "Moltres"
+      "Value": "火鳥"
     },
     {
       "Key": "Dratini",
-      "Value": "Dratini"
+      "Value": "迷你龍"
     },
     {
       "Key": "Dragonair",
-      "Value": "Dragonair"
+      "Value": "哈古龍"
     },
     {
       "Key": "Dragonite",
-      "Value": "Dragonite"
+      "Value": "啟暴龍"
     },
     {
       "Key": "Mewtwo",
-      "Value": "Mewtwo"
+      "Value": "超夢"
     },
     {
       "Key": "Mew",
-      "Value": "Mew"
+      "Value": "夢夢"
     }
   ]
 }

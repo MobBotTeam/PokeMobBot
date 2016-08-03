@@ -25,11 +25,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class SniperInfo
     {
+        public ulong EncounterId { get; set; }
+        public DateTime ExpirationTimestamp { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public double Iv { get; set; }
-        public DateTime TimeStamp { get; set; }
         public PokemonId Id { get; set; }
+        public string SpawnPointId { get; set; }
+        public PokemonMove Move1 { get; set; }
+        public PokemonMove Move2 { get; set; }
+        public double IV { get; set; }
 
         [JsonIgnore]
         public DateTime TimeStampAdded { get; set; } = DateTime.Now;
@@ -44,10 +48,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         }
 
         public long Id { get; set; }
+        [JsonProperty("expires")]
         public double ExpirationTime { get; set; }
+        [JsonProperty("latitude")]
         public double latitude { get; set; }
-        public double longitude { get; set; }
+        [JsonProperty("longitude")]
+        public double longitude { get; set; }        
         public int PokemonId { get; set; }
+        [JsonProperty("pokemon_id")]
         public PokemonId PokemonName { get; set; }
 
         public bool Equals(PokemonLocation obj)
@@ -80,6 +88,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     public class ScanResult
     {
         public string Error { get; set; }
+        [JsonProperty("pokemons")]
         public List<PokemonLocation> Pokemon { get; set; }
     }
 
@@ -144,27 +153,28 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         {
                             locationsToSnipe = SnipeLocations?.Where(q =>
                             (!session.LogicSettings.UseTransferIvForSnipe ||
-                             (q.Iv == 0 && !session.LogicSettings.SnipeIgnoreUnknownIv) ||
-                             (q.Iv >= session.Inventory.GetPokemonTransferFilter(q.Id).KeepMinIvPercentage)) &&
+                             (q.IV == 0 && !session.LogicSettings.SnipeIgnoreUnknownIv) ||
+                             (q.IV >= session.Inventory.GetPokemonTransferFilter(q.Id).KeepMinIvPercentage)) &&
                             !LocsVisited.Contains(new PokemonLocation(q.Latitude, q.Longitude))
-                            && !(q.TimeStamp != default(DateTime) &&
-                                 q.TimeStamp > new DateTime(2016) &&
+                            && !(q.ExpirationTimestamp != default(DateTime) &&
+                                 q.ExpirationTimestamp > new DateTime(2016) &&
                                  // make absolutely sure that the server sent a correct datetime
-                                 q.TimeStamp < DateTime.Now) &&
+                                 q.ExpirationTimestamp < DateTime.Now) &&
                             (q.Id == PokemonId.Missingno || pokemonIds.Contains(q.Id))).ToList() ??
                                                new List<SniperInfo>();
                         }
 
+                        _lastSnipe = DateTime.Now;
+
                         if (locationsToSnipe.Any())
-                        {
-                            _lastSnipe = DateTime.Now;
+                        {   
                             foreach (var location in locationsToSnipe)
                             {
                                 session.EventDispatcher.Send(new SnipeScanEvent
                                 {
                                     Bounds = new Location(location.Latitude, location.Longitude),
                                     PokemonId = location.Id,
-                                    Iv = location.Iv
+                                    Iv = location.IV
                                 });
 
                                 if (
@@ -173,8 +183,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                             cancellationToken))
                                     return;
 
-                                await
-                                    Snipe(session, pokemonIds, location.Latitude, location.Longitude, cancellationToken);
+                                if (!await
+                                    Snipe(session, pokemonIds, location.Latitude, location.Longitude, cancellationToken))
+                                {
+                                    return;
+                                }
                                 LocsVisited.Add(new PokemonLocation(location.Latitude, location.Longitude));
                             }
                         }
@@ -217,6 +230,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 locationsToSnipe.AddRange(notExpiredPokemon);
                             }
 
+                            _lastSnipe = DateTime.Now;
+
                             if (locationsToSnipe.Any())
                             {
                                 foreach (var pokemonLocation in locationsToSnipe)
@@ -227,11 +242,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                                 session, cancellationToken))
                                         return;
 
-                                    LocsVisited.Add(pokemonLocation);
-
-                                    await
+                                    if (!await
                                         Snipe(session, pokemonIds, pokemonLocation.latitude, pokemonLocation.longitude,
-                                            cancellationToken);
+                                            cancellationToken))
+                                    {
+                                        return;
+                                    }
+
+                                    LocsVisited.Add(pokemonLocation);
                                 }
                             }
                             else
@@ -241,15 +259,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                     Message = session.Translation.GetTranslation(TranslationString.NoPokemonToSnipe)
                                 });
                             }
-
-                            _lastSnipe = DateTime.Now;
                         }
                     }
                 }
             }
         }
 
-        private static async Task Snipe(ISession session, IEnumerable<PokemonId> pokemonIds, double Latitude,
+        private static async Task<bool> Snipe(ISession session, IEnumerable<PokemonId> pokemonIds, double Latitude,
             double Longitude, CancellationToken cancellationToken)
         {
             var CurrentLatitude = session.Client.CurrentLatitude;
@@ -269,7 +285,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var mapObjects = session.Client.Map.GetMapObjects().Result;
             var catchablePokemon =
-                mapObjects.MapCells.SelectMany(q => q.CatchablePokemons)
+                mapObjects.Item1.MapCells.SelectMany(q => q.CatchablePokemons)
                     .Where(q => pokemonIds.Contains(q.PokemonId))
                     .ToList();
 
@@ -303,7 +319,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Longitude = CurrentLongitude
                     });
 
-                    await CatchPokemonTask.Execute(session, encounter, pokemon);
+                    if (!await CatchPokemonTask.Execute(session, encounter, pokemon))
+                    {
+                        // Don't snipe any more pokemon if we ran out of one kind of pokeballs.
+                        session.EventDispatcher.Send(new SnipeModeEvent { Active = false });
+                        return false;
+                    }
                 }
                 else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
                 {
@@ -313,6 +334,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             session.Translation.GetTranslation(
                                 TranslationString.InvFullTransferManually)
                     });
+
+                    // Don't snipe any more pokemon if inventory is full.
+                    session.EventDispatcher.Send(new SnipeModeEvent { Active = false });
+                    return false;
                 }
                 else
                 {
@@ -334,6 +359,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             session.EventDispatcher.Send(new SnipeModeEvent { Active = false });
             await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions, cancellationToken);
+
+            return true;
         }
 
         private static ScanResult SnipeScanForPokemon(ISession session, Location location)
@@ -369,7 +396,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 scanResult = JsonConvert.DeserializeObject<ScanResult>(fullresp);
 
-                if (scanResult.Error != string.Empty)
+                if (scanResult.Error != string.Empty && scanResult.Error != null)
                 {
                     if (scanResult.Error.Contains("down for maintenance") || scanResult.Error.Contains("illegal request"))
                         session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.SkipLaggedMaintenance) });
@@ -451,10 +478,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     var a = new SniperInfo
                     {
                         Id = id,
-                        Iv = 100,
+                        IV = 100,
                         Latitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[0]),
                         Longitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[1]),
-                        TimeStamp = DateTime.Now
+                        ExpirationTimestamp = DateTime.Now
                     };
                     SnipeLocations.Add(a);
                 }
@@ -510,10 +537,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             var a = new SniperInfo
                             {
                                 Id = id,
-                                Iv = 100,
+                                IV = 100,
                                 Latitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[0]),
                                 Longitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[1]),
-                                TimeStamp = DateTime.Now
+                                ExpirationTimestamp = DateTime.Now
                             };
                             SnipeLocations.Add(a);
                         }

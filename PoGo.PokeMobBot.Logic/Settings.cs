@@ -144,6 +144,10 @@ namespace PoGo.PokeMobBot.Logic
         //incubator
         public bool UseEggIncubators = true;
 
+        //display
+        public bool DisplayPokemonMaxPoweredCp = true;
+        public bool DisplayPokemonMovesetRank = true;
+
         //rename
         public bool RenamePokemon = false;
         public bool RenameOnlyAboveIv = true;
@@ -180,23 +184,38 @@ namespace PoGo.PokeMobBot.Logic
         public int UseUltraBallAboveIv = 90;
         public double UseGreatBallBelowCatchProbability = 0.5;
         public double UseUltraBallBelowCatchProbability = 0.25;
-        public double UseMasterBallBelowCatchProbability = 0.05;
         public bool UsePokemonToNotCatchFilter = false;
 
         //berries
         public int UseBerryMinCp = 450;
         public float UseBerryMinIv = 95;
-        public double UseBerryBelowCatchProbability = 0.2;
+        public double UseBerryBelowCatchProbability = 0.25;
 
         //favorite
         public bool AutoFavoritePokemon = false;
         public float FavoriteMinIvPercentage = 95;
 
         //recycle
-        public int TotalAmountOfPokeballsToKeep = 100;
-        public int TotalAmountOfPotionsToKeep = 80;
-        public int TotalAmountOfRevivesToKeep = 60;
-        public int TotalAmountOfBerriesToKeep = 80;
+        public bool AutomaticInventoryManagement = false;
+        public int AutomaticMaxAllPokeballs = 100;
+        public int AutomaticMaxAllPotions = 60;
+        public int AutomaticMaxAllRevives = 80;
+        public int AutomaticMaxAllBerries = 50;
+        public int TotalAmountOfPokeballsToKeep = 0;
+        public int TotalAmountOfGreatballsToKeep = 40;
+        public int TotalAmountOfUltraballsToKeep = 60;
+        public int TotalAmountOfMasterballsToKeep = 100;
+        public int TotalAmountOfPotionsToKeep = 0;
+        public int TotalAmountOfSuperPotionsToKeep = 0;
+        public int TotalAmountOfHyperPotionsToKeep = 20;
+        public int TotalAmountOfMaxPotionsToKeep = 40;
+        public int TotalAmountOfRevivesToKeep = 20;
+        public int TotalAmountOfMaxRevivesToKeep = 60;
+        public int TotalAmountOfRazzToKeep = 50;
+        //public int TotalAmountOfBlukToKeep = 50;
+        //public int TotalAmountOfNanabToKeep = 50;
+        //public int TotalAmountOfPinapToKeep = 50;
+        //public int TotalAmountOfWeparToKeep = 50;
         public double RecycleInventoryAtUsagePercentage = 0.90;
 
         //snipe
@@ -295,7 +314,7 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Eevee,
             //PokemonId.Dratini,
             /*criteria: 50 candies commons*/
-            PokemonId.Spearow,
+            //PokemonId.Spearow,
             //PokemonId.Ekans,
             PokemonId.Zubat,
             //PokemonId.Paras,
@@ -324,44 +343,44 @@ namespace PoGo.PokeMobBot.Logic
 
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter = new Dictionary<PokemonId, TransferFilter>
         {
-            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v3
-            {PokemonId.Venusaur, new TransferFilter(1500, 40, 1)},
-            {PokemonId.Charizard, new TransferFilter(1500, 20, 1)},
-            {PokemonId.Blastoise, new TransferFilter(1500, 20, 1)},
+            //criteria: based on NY Central Park and Tokyo variety + sniping optimization v4.1
+            {PokemonId.Venusaur, new TransferFilter(1750, 80, 1)},
+            {PokemonId.Charizard, new TransferFilter(1750, 20, 1)},
+            {PokemonId.Blastoise, new TransferFilter(1750, 50, 1)},
             {PokemonId.Nidoqueen, new TransferFilter(1750, 80, 1)},
             {PokemonId.Nidoking, new TransferFilter(1750, 80, 1)},
             {PokemonId.Clefable, new TransferFilter(1500, 60, 1)},
             {PokemonId.Vileplume, new TransferFilter(1750, 80, 1)},
             {PokemonId.Golduck, new TransferFilter(1750, 80, 1)},
-            {PokemonId.Arcanine, new TransferFilter(2000, 90, 1)},
-            {PokemonId.Poliwrath, new TransferFilter(1500, 80, 1)},
+            {PokemonId.Arcanine, new TransferFilter(2250, 90, 1)},
+            {PokemonId.Poliwrath, new TransferFilter(1750, 80, 1)},
             {PokemonId.Machamp, new TransferFilter(1250, 80, 1)},
             {PokemonId.Victreebel, new TransferFilter(1250, 60, 1)},
             {PokemonId.Golem, new TransferFilter(1500, 80, 1)},
-            {PokemonId.Slowbro, new TransferFilter(1750, 80, 1)},
-            {PokemonId.Farfetchd, new TransferFilter(1000, 90, 1)},
+            {PokemonId.Slowbro, new TransferFilter(1750, 90, 1)},
+            {PokemonId.Farfetchd, new TransferFilter(1250, 90, 1)},
             {PokemonId.Muk, new TransferFilter(2000, 80, 1)},
             {PokemonId.Exeggutor, new TransferFilter(2250, 80, 1)},
             {PokemonId.Lickitung, new TransferFilter(1500, 80, 1)},
             {PokemonId.Chansey, new TransferFilter(1500, 95, 1)},
             {PokemonId.Kangaskhan, new TransferFilter(1500, 60, 1)},
-            {PokemonId.MrMime, new TransferFilter(250, 40, 1)},
+            {PokemonId.MrMime, new TransferFilter(1250, 80, 1)},
             {PokemonId.Scyther, new TransferFilter(1750, 90, 1)},
             {PokemonId.Jynx, new TransferFilter(1250, 90, 1)},
             {PokemonId.Electabuzz, new TransferFilter(1500, 80, 1)},
-            {PokemonId.Magmar, new TransferFilter(1750, 80, 1)},
-            {PokemonId.Pinsir, new TransferFilter(1750, 98, 1)},
+            {PokemonId.Magmar, new TransferFilter(1750, 90, 1)},
+            {PokemonId.Pinsir, new TransferFilter(2000, 98, 1)},
             {PokemonId.Tauros, new TransferFilter(500, 90, 1)},
-            {PokemonId.Gyarados, new TransferFilter(1750, 90, 1)},
-            {PokemonId.Lapras, new TransferFilter(2000, 90, 1)},
+            {PokemonId.Gyarados, new TransferFilter(2000, 90, 1)},
+            {PokemonId.Lapras, new TransferFilter(2250, 90, 1)},
             {PokemonId.Eevee, new TransferFilter(1500, 98, 1)},
-            {PokemonId.Vaporeon, new TransferFilter(2000, 98, 1)},
-            {PokemonId.Jolteon, new TransferFilter(2000, 95, 1)},
-            {PokemonId.Flareon, new TransferFilter(2000, 95, 1)},
+            {PokemonId.Vaporeon, new TransferFilter(2250, 98, 1)},
+            {PokemonId.Jolteon, new TransferFilter(2250, 95, 1)},
+            {PokemonId.Flareon, new TransferFilter(2250, 95, 1)},
             {PokemonId.Porygon, new TransferFilter(1500, 95, 1)},
-            {PokemonId.Aerodactyl, new TransferFilter(1750, 95, 1)},
-            {PokemonId.Snorlax, new TransferFilter(2500, 96, 1)},
-            {PokemonId.Dragonite, new TransferFilter(2500, 90, 1)}
+            {PokemonId.Aerodactyl, new TransferFilter(2000, 95, 1)},
+            {PokemonId.Snorlax, new TransferFilter(2750, 96, 1)},
+            {PokemonId.Dragonite, new TransferFilter(2750, 90, 1)}
         };
 
         public SnipeSettings PokemonToSnipe = new SnipeSettings
@@ -375,58 +394,109 @@ namespace PoGo.PokeMobBot.Logic
             },
             Pokemon = new List<PokemonId>
             {
+                PokemonId.Bulbasaur,
+                PokemonId.Ivysaur,
                 PokemonId.Venusaur,
+                PokemonId.Charmander,
+                PokemonId.Charmeleon,
                 PokemonId.Charizard,
+                PokemonId.Squirtle,
+                PokemonId.Wartortle,
                 PokemonId.Blastoise,
+                PokemonId.Butterfree,
                 PokemonId.Beedrill,
+                PokemonId.Pidgeot,
+                PokemonId.Raticate,
+                PokemonId.Fearow,
+                PokemonId.Arbok,
+                PokemonId.Pikachu,
                 PokemonId.Raichu,
                 PokemonId.Sandslash,
-                PokemonId.Nidoking,
                 PokemonId.Nidoqueen,
+                PokemonId.Nidoking,
                 PokemonId.Clefable,
                 PokemonId.Ninetales,
+                PokemonId.Wigglytuff,
                 PokemonId.Golbat,
                 PokemonId.Vileplume,
+                PokemonId.Parasect,
+                PokemonId.Venomoth,
+                PokemonId.Dugtrio,
+                PokemonId.Persian,
                 PokemonId.Golduck,
                 PokemonId.Primeape,
+                PokemonId.Growlithe,
                 PokemonId.Arcanine,
+                PokemonId.Poliwag,
+                PokemonId.Poliwhirl,
                 PokemonId.Poliwrath,
+                PokemonId.Abra,
+                PokemonId.Kadabra,
                 PokemonId.Alakazam,
+                PokemonId.Machop,
+                PokemonId.Machoke,
                 PokemonId.Machamp,
+                PokemonId.Victreebel,
+                PokemonId.Tentacruel,
                 PokemonId.Golem,
                 PokemonId.Rapidash,
                 PokemonId.Slowbro,
+                PokemonId.Magneton,
                 PokemonId.Farfetchd,
+                PokemonId.Dodrio,
+                PokemonId.Dewgong,
+                PokemonId.Grimer,
                 PokemonId.Muk,
                 PokemonId.Cloyster,
+                PokemonId.Gastly,
+                PokemonId.Haunter,
                 PokemonId.Gengar,
+                PokemonId.Onix,
+                PokemonId.Hypno,
+                PokemonId.Kingler,
+                PokemonId.Electrode,
                 PokemonId.Exeggutor,
                 PokemonId.Marowak,
+                PokemonId.Hitmonlee,
                 PokemonId.Hitmonchan,
                 PokemonId.Lickitung,
+                PokemonId.Koffing,
+                PokemonId.Weezing,
+                PokemonId.Rhyhorn,
                 PokemonId.Rhydon,
                 PokemonId.Chansey,
+                PokemonId.Tangela,
                 PokemonId.Kangaskhan,
+                PokemonId.Seadra,
+                PokemonId.Seaking,
                 PokemonId.Starmie,
                 PokemonId.MrMime,
                 PokemonId.Scyther,
-                PokemonId.Magmar,
+                PokemonId.Jynx,
                 PokemonId.Electabuzz,
                 PokemonId.Magmar,
-                PokemonId.Jynx,
+                PokemonId.Pinsir,
+                PokemonId.Tauros,
+                PokemonId.Magikarp,
                 PokemonId.Gyarados,
                 PokemonId.Lapras,
                 PokemonId.Ditto,
+                PokemonId.Eevee,
                 PokemonId.Vaporeon,
                 PokemonId.Jolteon,
                 PokemonId.Flareon,
                 PokemonId.Porygon,
+                PokemonId.Omanyte,
+                PokemonId.Omastar,
+                PokemonId.Kabuto,
                 PokemonId.Kabutops,
                 PokemonId.Aerodactyl,
                 PokemonId.Snorlax,
                 PokemonId.Articuno,
                 PokemonId.Zapdos,
                 PokemonId.Moltres,
+                PokemonId.Dratini,
+                PokemonId.Dragonair,
                 PokemonId.Dragonite,
                 PokemonId.Mewtwo,
                 PokemonId.Mew
@@ -443,7 +513,7 @@ namespace PoGo.PokeMobBot.Logic
         };
 
         public static GlobalSettings Default => new GlobalSettings();
-        
+
         public static GlobalSettings Load(string path)
         {
             GlobalSettings settings;
@@ -642,7 +712,6 @@ namespace PoGo.PokeMobBot.Logic
         public bool UseEggIncubators => _settings.UseEggIncubators;
         public int UseGreatBallAboveIv => _settings.UseGreatBallAboveIv;
         public int UseUltraBallAboveIv => _settings.UseUltraBallAboveIv;
-        public double UseMasterBallBelowCatchProbability => _settings.UseMasterBallBelowCatchProbability;
         public double UseUltraBallBelowCatchProbability => _settings.UseUltraBallBelowCatchProbability;
         public double UseGreatBallBelowCatchProbability => _settings.UseGreatBallBelowCatchProbability;
         public int DelayBetweenPokemonCatch => _settings.DelayBetweenPokemonCatch;
@@ -663,6 +732,8 @@ namespace PoGo.PokeMobBot.Logic
         public bool AutoFavoritePokemon => _settings.AutoFavoritePokemon;
         public string RenameTemplate => _settings.RenameTemplate;
         public int AmountOfPokemonToDisplayOnStart => _settings.AmountOfPokemonToDisplayOnStart;
+        public bool DisplayPokemonMaxPoweredCp => _settings.DisplayPokemonMaxPoweredCp;
+        public bool DisplayPokemonMovesetRank => _settings.DisplayPokemonMovesetRank;
         public bool DumpPokemonStats => _settings.DumpPokemonStats;
         public string TranslationLanguageCode => _settings.TranslationLanguageCode;
         public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter => _settings.ItemRecycleFilter;
@@ -685,10 +756,26 @@ namespace PoGo.PokeMobBot.Logic
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
         public double SnipingScanOffset => _settings.SnipingScanOffset;
+        public bool AutomaticInventoryManagement => _settings.AutomaticInventoryManagement;
+        public int AutomaticMaxAllPokeballs => _settings.AutomaticMaxAllPokeballs;
+        public int AutomaticMaxAllPotions => _settings.AutomaticMaxAllPotions;
+        public int AutomaticMaxAllRevives => _settings.AutomaticMaxAllRevives;
+        public int AutomaticMaxAllBerries => _settings.AutomaticMaxAllBerries;
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
-        public int TotalAmountOfBerriesToKeep => _settings.TotalAmountOfBerriesToKeep;
+        public int TotalAmountOfGreatballsToKeep => _settings.TotalAmountOfGreatballsToKeep;
+        public int TotalAmountOfUltraballsToKeep => _settings.TotalAmountOfUltraballsToKeep;
+        public int TotalAmountOfMasterballsToKeep => _settings.TotalAmountOfMasterballsToKeep;
+        public int TotalAmountOfRazzToKeep => _settings.TotalAmountOfRazzToKeep;
+        //public int TotalAmountOfBlukToKeep => _settings.TotalAmountOfBlukToKeep;
+        //public int TotalAmountOfNanabToKeep => _settings.TotalAmountOfNanabToKeep;
+        //public int TotalAmountOfPinapToKeep => _settings.TotalAmountOfPinapToKeep;
+        //public int TotalAmountOfWeparToKeep => _settings.TotalAmountOfWeparToKeep;
         public int TotalAmountOfPotionsToKeep => _settings.TotalAmountOfPotionsToKeep;
+        public int TotalAmountOfSuperPotionsToKeep => _settings.TotalAmountOfSuperPotionsToKeep;
+        public int TotalAmountOfHyperPotionsToKeep => _settings.TotalAmountOfHyperPotionsToKeep;
+        public int TotalAmountOfMaxPotionsToKeep => _settings.TotalAmountOfMaxPotionsToKeep;
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
+        public int TotalAmountOfMaxRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public bool Teleport => _settings.Teleport;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
