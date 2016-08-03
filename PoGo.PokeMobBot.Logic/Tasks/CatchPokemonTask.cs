@@ -222,13 +222,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 ? session.LogicSettings.UseGreatBallBelowCatchProbability / 100 : session.LogicSettings.UseGreatBallBelowCatchProbability;
 
 
-            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() ||
+            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() &&
                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
-            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
+            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv &&
                 probability <= useUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
+            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv &&
                 probability <= useGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
             if (pokeBallsCount > 0)
