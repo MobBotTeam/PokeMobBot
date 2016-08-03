@@ -1,5 +1,6 @@
 ﻿#region using directives
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -185,7 +186,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "{0}\t- CP: {1}  IV: {2}%   [Best CP: {3}  IV: {4}%] (Candies: {5})"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventItemRecycled, "{0}x {1}"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventPokemonCapture,
-                "({0}) | {2}, Lvl: {3} | CP: ({4}/{5}) | IV: {6}% | Type: {1} | Chance: {7}% | Dist: {8}m | Used: {9} ({10} left) | XP: {11} | Candy: {12}"),
+                "({0}) | {2}, Lvl: {3} | CP: ({4}/{5}) | IV: {6}% | Type: {1} | Chance: {7}% | Dist: {8}m | Used: {9} ({10} left) | XP: {11} | {12}"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventNoPokeballs,
                 "No Pokeballs - We missed a {0} with CP {1}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CatchStatusAttempt, "{0} Attempt #{1}"),
@@ -391,10 +392,10 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<PokemonId, string>(PokemonId.Raichu, "Raichu"),
             new KeyValuePair<PokemonId, string>(PokemonId.Sandshrew, "Sandshrew"),
             new KeyValuePair<PokemonId, string>(PokemonId.Sandslash, "Sandslash"),
-            new KeyValuePair<PokemonId, string>(PokemonId.NidoranFemale, "Nidoran♀"),
+            new KeyValuePair<PokemonId, string>(PokemonId.NidoranFemale, "NidoranF"),
             new KeyValuePair<PokemonId, string>(PokemonId.Nidorina, "Nidorina"),
             new KeyValuePair<PokemonId, string>(PokemonId.Nidoqueen, "Nidoqueen"),
-            new KeyValuePair<PokemonId, string>(PokemonId.NidoranMale, "Nidoran♂"),
+            new KeyValuePair<PokemonId, string>(PokemonId.NidoranMale, "NidoranM"),
             new KeyValuePair<PokemonId, string>(PokemonId.Nidorino, "Nidorino"),
             new KeyValuePair<PokemonId, string>(PokemonId.Nidoking, "Nidoking"),
             new KeyValuePair<PokemonId, string>(PokemonId.Clefairy, "Clefairy"),
@@ -554,20 +555,28 @@ namespace PoGo.PokeMobBot.Logic.Common
                 jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
                 jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
                 jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-                translations = JsonConvert.DeserializeObject<Translation>(input, jsonSettings);
-                //TODO make json to fill default values as it won't do it now
+                try
+                {
+                    translations = JsonConvert.DeserializeObject<Translation>(input, jsonSettings);
+                    //TODO make json to fill default values as it won't do it now
 
-                var defaultTranslation = new Translation();
+                    var defaultTranslation = new Translation();
 
-                defaultTranslation._translationStrings.Where(
-                    item => translations._translationStrings.All(a => a.Key != item.Key))
-                    .ToList()
-                    .ForEach(translations._translationStrings.Add);
+                    defaultTranslation._translationStrings.Where(
+                        item => translations._translationStrings.All(a => a.Key != item.Key))
+                        .ToList()
+                        .ForEach(translations._translationStrings.Add);
 
-                defaultTranslation._pokemons.Where(
-                    item => translations._pokemons.All(a => a.Key != item.Key))
-                    .ToList()
-                    .ForEach(translations._pokemons.Add);
+                    defaultTranslation._pokemons.Where(
+                        item => translations._pokemons.All(a => a.Key != item.Key))
+                        .ToList()
+                        .ForEach(translations._pokemons.Add);
+                }
+                catch (Exception e)
+                {
+                    translations = new Translation();
+                    translations.Save(Path.Combine(translationPath, "translation.en.json"));
+                }
             }
             else
             {
