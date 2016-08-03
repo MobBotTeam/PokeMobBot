@@ -314,7 +314,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Longitude = CurrentLongitude
                     });
 
-                    await CatchPokemonTask.Execute(session, encounter, pokemon);
+                    if (!await CatchPokemonTask.Execute(session, encounter, pokemon))
+                    {
+                        // Don't snipe any more pokemon if we ran out of one kind of pokeballs.
+                        session.EventDispatcher.Send(new SnipeModeEvent { Active = false });
+                        return false;
+                    }
                 }
                 else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
                 {
