@@ -353,7 +353,10 @@
     },
     {
       "Key": "statsXpTemplateString",
-      "Value": "{0} (Επομενο Level σε {1}h {2}m | {3}/{4} XP)"
+      "Value": "{0} (Επομενο "+
+"Level 
+  "+
+"σε {1}h {2}m | {3}/{4} XP)"
     },
     {
       "Key": "requireInputText",

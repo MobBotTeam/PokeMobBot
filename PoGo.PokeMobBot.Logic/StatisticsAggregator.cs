@@ -52,6 +52,12 @@ namespace PoGo.PokeMobBot.Logic
             _stats.Dirty(session.Inventory);
         }
 
+        public void HandleEvent(EggHatchedEvent evt, ISession session)
+        {
+            _stats.TotalPokemons++;
+            _stats.Dirty(session.Inventory);
+        }
+
         public void HandleEvent(ItemRecycledEvent evt, ISession session)
         {
             _stats.TotalItemsRemoved++;
@@ -61,6 +67,7 @@ namespace PoGo.PokeMobBot.Logic
         public void HandleEvent(FortUsedEvent evt, ISession session)
         {
             _stats.TotalExperience += evt.Exp;
+            _stats.TotalPokestops++;
             _stats.Dirty(session.Inventory);
         }
 

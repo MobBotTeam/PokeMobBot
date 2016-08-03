@@ -65,47 +65,47 @@ namespace Catchem
             //Remember to change to a font that supports your language, otherwise it'll still show as ???
             if (level > _maxLogLevel)
                 return;
-            
+
             switch (level)
             {
                 case LogLevel.Error:
                     SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strError}) {message}", Color.FromRgb(255, 0, 0) });
                     break;
                 case LogLevel.Warning:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strAttention}) {message}", Color.FromRgb(255, 0, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strAttention}) {message}", Color.FromRgb(254, 229, 5) });
                     break;
                 case LogLevel.Info:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strInfo}) {message}", Color.FromRgb(255, 0, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strInfo}) {message}", Color.FromRgb(239, 239, 239) });
                     break;
                 case LogLevel.Pokestop:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strPokestop}) {message}", Color.FromRgb(255, 0, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strPokestop}) {message}", Color.FromRgb(0, 190, 255) });
                     break;
                 case LogLevel.Farming:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strFarming}) {message}", Color.FromRgb(255, 0, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strFarming}) {message}", Color.FromRgb(157, 255, 0) });
                     break;
                 case LogLevel.Recycling:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strRecycling}) {message}", Color.FromRgb(255, 0, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strRecycling}) {message}", Color.FromRgb(255, 106, 240) });
                     break;
                 case LogLevel.Caught:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strPKMN}) {message}", Color.FromRgb(0, 255, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strPKMN}) {message}", Color.FromRgb(8, 206, 8) });
                     break;
                 case LogLevel.Transfer:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strTransfered}) {message}", Color.FromRgb(0, 255, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strTransfered}) {message}", Color.FromRgb(0, 255, 214) });
                     break;
                 case LogLevel.Evolve:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strEvolved}) {message}", Color.FromRgb(0, 255, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strEvolved}) {message}", Color.FromRgb(255, 230, 0) });
                     break;
                 case LogLevel.Berry:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strBerry}) {message}", Color.FromRgb(0, 255, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strBerry}) {message}", Color.FromRgb(255, 0, 194) });
                     break;
                 case LogLevel.Egg:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strEgg}) {message}", Color.FromRgb(0, 255, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strEgg}) {message}", Color.FromRgb(167, 249, 255) });
                     break;
                 case LogLevel.Debug:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strDebug}) {message}", Color.FromRgb(0, 255, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strDebug}) {message}", Colors.White });
                     break;
                 case LogLevel.Update:
-                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strUpdate}) {message}", Color.FromRgb(0, 255, 0) });
+                    SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strUpdate}) {message}", Color.FromRgb(0, 26, 255) });
                     break;
                 default:
                     SendWindowMsg("log", session, new object[] { $"[{DateTime.Now.ToString("HH:mm:ss")}] ({strError}) {message}", Color.FromRgb(255, 255, 255) });

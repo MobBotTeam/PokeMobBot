@@ -21,17 +21,18 @@ namespace PoGo.PokeMobBot.Logic.Utils
     {
         private readonly DateTime _initSessionDateTime = DateTime.Now;
 
-        private StatsExport _exportStats;
+        public StatsExport ExportStats;
         private string _playerName;
         public int TotalExperience;
         public int TotalItemsRemoved;
         public int TotalPokemons;
         public int TotalPokemonsTransfered;
         public int TotalStardust;
+        public int TotalPokestops;
 
         public void Dirty(Inventory inventory)
         {
-            _exportStats = GetCurrentInfo(inventory);
+            ExportStats = GetCurrentInfo(inventory);
             DirtyEvent?.Invoke();
         }
 
@@ -44,6 +45,7 @@ namespace PoGo.PokeMobBot.Logic.Utils
 
         public StatsExport GetCurrentInfo(Inventory inventory)
         {
+            var pokemons = inventory.GetPokemons().Result.Count();
             var stats = inventory.GetPlayerStats().Result;
             StatsExport output = null;
             var stat = stats.FirstOrDefault();
@@ -78,8 +80,8 @@ namespace PoGo.PokeMobBot.Logic.Utils
 
         public string GetTemplatedStats(string template, string xpTemplate)
         {
-            var xpStats = string.Format(xpTemplate, _exportStats.Level, _exportStats.HoursUntilLvl,
-                _exportStats.MinutesUntilLevel, _exportStats.CurrentXp, _exportStats.LevelupXp);
+            var xpStats = string.Format(xpTemplate, ExportStats.Level, ExportStats.HoursUntilLvl,
+                ExportStats.MinutesUntilLevel, ExportStats.CurrentXp, ExportStats.LevelupXp);
             return string.Format(template, _playerName, FormatRuntime(), xpStats, TotalExperience/GetRuntime(),
                 TotalPokemons/GetRuntime(),
                 TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved);

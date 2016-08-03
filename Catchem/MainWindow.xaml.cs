@@ -14,6 +14,7 @@ using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -124,7 +125,7 @@ namespace Catchem
             await Task.Delay(10);
         }
 
-        void InitBots()
+        internal void InitBots()
         {
             Logger.SetLogger(new WpfLogger(LogLevel.Info), subPath);
 
@@ -132,7 +133,7 @@ namespace Catchem
             {
                 if (item != subPath + "\\Logs")
                 {
-                    initBot(GlobalSettings.Load(item), System.IO.Path.GetFileName(item));
+                    InitBot(GlobalSettings.Load(item), System.IO.Path.GetFileName(item));
                 }
             }
         }
@@ -163,8 +164,6 @@ namespace Catchem
                     break;
                 case "forcemove_done":
                     PushRemoveForceMoveMarker(session);
-                    break;
-                default:
                     break;
             }
         }
@@ -221,7 +220,7 @@ namespace Catchem
             }
             catch (Exception)
             {
-                
+                // ignored
             }
         }
 
@@ -235,75 +234,76 @@ namespace Catchem
 
         private void PushRemoveForceMoveMarker(ISession session)
         {
-            if (openedSessions.ContainsKey(session))
-            {
-                var tBot = openedSessions[session];
-                NewMapObject nMapObj = new NewMapObject("forcemove_done", "", 0, 0, "");
-                tBot.MarkersQueue.Enqueue(nMapObj);
-            }
+            if (!openedSessions.ContainsKey(session)) return;
+            var tBot = openedSessions[session];
+            var nMapObj = new NewMapObject("forcemove_done", "", 0, 0, "");
+            tBot.MarkersQueue.Enqueue(nMapObj);
         }
 
         private void PushRemovePokemon(ISession session, MapPokemon mapPokemon)
         {
-            if (openedSessions.ContainsKey(session))
-            {
-                var tBot = openedSessions[session];
-                NewMapObject nMapObj = new NewMapObject("pm_rm", mapPokemon.PokemonId.ToString(), mapPokemon.Latitude, mapPokemon.Longitude, mapPokemon.EncounterId.ToString());
-                tBot.MarkersQueue.Enqueue(nMapObj);
-            }
+            if (!openedSessions.ContainsKey(session)) return;
+            var tBot = openedSessions[session];
+            var nMapObj = new NewMapObject("pm_rm", mapPokemon.PokemonId.ToString(), mapPokemon.Latitude, mapPokemon.Longitude, mapPokemon.EncounterId.ToString());
+            tBot.MarkersQueue.Enqueue(nMapObj);
         }
 
         private void PushNewPokemons(ISession session, IEnumerable<MapPokemon> pokemons)
         {
-            if (openedSessions.ContainsKey(session))
+            if (!openedSessions.ContainsKey(session)) return;
+            foreach (var pokemon in pokemons)
             {
-                foreach (var pokemon in pokemons)
-                {
-                    var tBot = openedSessions[session];
-                    if (!tBot.mapMarkers.ContainsKey(pokemon.EncounterId.ToString()) && tBot.MarkersQueue.Count(x => x.uid == pokemon.EncounterId.ToString()) == 0)
-                    {
-                        NewMapObject nMapObj = new NewMapObject("pm", pokemon.PokemonId.ToString(), pokemon.Latitude, pokemon.Longitude, pokemon.EncounterId.ToString());
-                        tBot.MarkersQueue.Enqueue(nMapObj);
-                    }
-                }
+                var tBot = openedSessions[session];
+                if (tBot.mapMarkers.ContainsKey(pokemon.EncounterId.ToString()) ||
+                    tBot.MarkersQueue.Count(x => x.uid == pokemon.EncounterId.ToString()) != 0) continue;
+                var nMapObj = new NewMapObject("pm", pokemon.PokemonId.ToString(), pokemon.Latitude, pokemon.Longitude, pokemon.EncounterId.ToString());
+                tBot.MarkersQueue.Enqueue(nMapObj);
             }
         }
+
         private void PushNewWildPokemons(ISession session, IEnumerable<WildPokemon> pokemons)
         {
-            if (openedSessions.ContainsKey(session))
+            if (!openedSessions.ContainsKey(session)) return;
+            foreach (var pokemon in pokemons)
             {
-                foreach (var pokemon in pokemons)
-                {
-                    var tBot = openedSessions[session];
-                    if (!tBot.mapMarkers.ContainsKey(pokemon.EncounterId.ToString()) && tBot.MarkersQueue.Count(x => x.uid == pokemon.EncounterId.ToString()) == 0)
-                    {
-                        NewMapObject nMapObj = new NewMapObject("pm", pokemon.PokemonData.PokemonId.ToString(), pokemon.Latitude, pokemon.Longitude, pokemon.EncounterId.ToString());
-                        tBot.MarkersQueue.Enqueue(nMapObj);
-                    }
-                }
+                var tBot = openedSessions[session];
+                if (tBot.mapMarkers.ContainsKey(pokemon.EncounterId.ToString()) ||
+                    tBot.MarkersQueue.Count(x => x.uid == pokemon.EncounterId.ToString()) != 0) continue;
+                var nMapObj = new NewMapObject("pm", pokemon.PokemonData.PokemonId.ToString(), pokemon.Latitude, pokemon.Longitude, pokemon.EncounterId.ToString());
+                tBot.MarkersQueue.Enqueue(nMapObj);
             }
         }
 
         private void PushNewPokestop(ISession session, IEnumerable<FortData> pstops)
         {
-            if (openedSessions.ContainsKey(session))
+            if (!openedSessions.ContainsKey(session)) return;
+            foreach (var pstop in pstops)
             {
-                foreach (var pstop in pstops)
+                var tBot = openedSessions[session];
+                if (tBot.mapMarkers.ContainsKey(pstop.Id) || tBot.MarkersQueue.Count(x => x.uid == pstop.Id) != 0)
+                    continue;
+                var lured = pstop.LureInfo?.LureExpiresTimestampMs > DateTime.UtcNow.ToUnixTime();
+                var nMapObj = new NewMapObject("ps" + (lured ? "_lured" : ""), "PokeStop", pstop.Latitude, pstop.Longitude, pstop.Id);
+                openedSessions[session].MarkersQueue.Enqueue(nMapObj);
+            }
+        }
+
+        private async void UpdateStartWorker()
+        {
+            const int delay = 500;
+            while (!windowClosing)
+            {
+                if (bot != null && playerMarker != null && bot.Started)
                 {
-                    var tBot = openedSessions[session];
-                    if (!tBot.mapMarkers.ContainsKey(pstop.Id) && tBot.MarkersQueue.Count(x => x.uid == pstop.Id) == 0)
-                    {
-                        bool lured = pstop.LureInfo?.LureExpiresTimestampMs > DateTime.UtcNow.ToUnixTime();
-                        NewMapObject nMapObj = new NewMapObject("ps" + (lured ? "_lured" : ""), "PokeStop", pstop.Latitude, pstop.Longitude, pstop.Id);
-                        openedSessions[session].MarkersQueue.Enqueue(nMapObj);
-                    }
+
                 }
+                await Task.Delay(delay);
             }
         }
 
         private async void MovePlayer()
         {
-            int delay = 25;
+            const int delay = 25;
             while (!windowClosing)
             {
                 if (bot != null && playerMarker != null && bot.Started)
@@ -342,33 +342,33 @@ namespace Catchem
                         case "ps":
                             if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
                             {
-                                newMapObj.marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
+                                var marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
                                 {
                                     Shape = Properties.Resources.pstop.ToImage("PokeStop"),
                                     Offset = new Point(-16, -32),
                                     ZIndex = 5
                                 };
-                                pokeMap.Markers.Add(newMapObj.marker);
-                                bot.mapMarkers.Add(newMapObj.uid, newMapObj);
+                                pokeMap.Markers.Add(marker);
+                                bot.mapMarkers.Add(newMapObj.uid, marker);
                             }
                             break;
                         case "ps_lured":
                             if (!bot.mapMarkers.ContainsKey(newMapObj.uid))
                             {
-                                newMapObj.marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
+                                var marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
                                 {
                                     Shape = Properties.Resources.pstop_lured.ToImage("Lured PokeStop"),
                                     Offset = new Point(-16, -32),
                                     ZIndex = 5
                                 };
-                                pokeMap.Markers.Add(newMapObj.marker);
-                                bot.mapMarkers.Add(newMapObj.uid, newMapObj);
+                                pokeMap.Markers.Add(marker);
+                                bot.mapMarkers.Add(newMapObj.uid, marker);
                             }
                             break;
                         case "pm_rm":
                             if (bot.mapMarkers.ContainsKey(newMapObj.uid))
                             {
-                                pokeMap.Markers.Remove(bot.mapMarkers[newMapObj.uid].marker);
+                                pokeMap.Markers.Remove(bot.mapMarkers[newMapObj.uid]);
                                 bot.mapMarkers.Remove(newMapObj.uid);
                             }
                             break;
@@ -397,14 +397,14 @@ namespace Catchem
         {
             PokemonId pokemon = (PokemonId)Enum.Parse(typeof(PokemonId), newMapObj.oName);
 
-            newMapObj.marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
+            var marker = new GMapMarker(new PointLatLng(newMapObj.lat, newMapObj.lng))
             {
                 Shape = pokemon.ToImage(),
                 Offset = new Point(-15, -30),
                 ZIndex = 10
             };
-            pokeMap.Markers.Add(newMapObj.marker);
-            bot.mapMarkers.Add(newMapObj.uid, newMapObj);
+            pokeMap.Markers.Add(marker);
+            bot.mapMarkers.Add(newMapObj.uid, marker);
         }
 
         private async void LogWorker()
@@ -438,7 +438,7 @@ namespace Catchem
             }
             public List<Tuple<string, Color>> log = new List<Tuple<string, Color>>();
             public Queue<Tuple<string, Color>> logQueue = new Queue<Tuple<string, Color>>();
-            public Dictionary<string, NewMapObject> mapMarkers = new Dictionary<string, NewMapObject>();
+            public Dictionary<string, GMapMarker> mapMarkers = new Dictionary<string, GMapMarker>();
             public Queue<NewMapObject> MarkersQueue = new Queue<NewMapObject>();
             public StateMachine machine = null;
             public Statistics stats = null;
@@ -507,7 +507,7 @@ namespace Catchem
             private void WipeData()
             {
                 log = new List<Tuple<string, Color>>();
-                mapMarkers = new Dictionary<string, NewMapObject>();
+                mapMarkers = new Dictionary<string, GMapMarker>();
                 MarkersQueue = new Queue<NewMapObject>();
                 logQueue = new Queue<Tuple<string, Color>>();
             }
@@ -538,11 +538,7 @@ namespace Catchem
                 while (logQueue.Count > 0)
                     log.Add(logQueue.Dequeue());
                 foreach (var item in log)                
-                    logQueue.Enqueue(item);
-
-                foreach (var item in mapMarkers)
-                    MarkersQueue.Enqueue(item.Value);
-                mapMarkers = new Dictionary<string, NewMapObject>();                           
+                    logQueue.Enqueue(item);                         
             }
         }
 
@@ -553,7 +549,6 @@ namespace Catchem
             public double lat;
             public double lng;
             public string uid;
-            public GMapMarker marker;
             public NewMapObject(string _oType, string _oName, double _lat, double _lng, string _uid)
             {
                 oType = _oType;
@@ -634,12 +629,12 @@ namespace Catchem
             {
                 settings = GlobalSettings.Load(dir.FullName);
             }
-            initBot(settings, input);
+            InitBot(settings, input);
             // Clear InputBox.
             InputTextBox.Text = String.Empty;
         }
 
-        private void initBot(GlobalSettings settings, string profileName = "Unknown")
+        private void InitBot(GlobalSettings settings, string profileName = "Unknown")
         {
             var newBot = CreateBowWindowData(settings, profileName);
 
@@ -651,7 +646,9 @@ namespace Catchem
             session.EventDispatcher.EventReceived += evt => newBot.listener.Listen(evt, session);
             session.EventDispatcher.EventReceived += evt => newBot.aggregator.Listen(evt, session);
             session.Navigation.UpdatePositionEvent +=
-                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
+                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
+
+            newBot.stats.DirtyEvent += () => { StatsOnDirtyEvent(newBot); };
 
             newBot._lat = settings.DefaultLatitude;
             newBot._lng = settings.DefaultLongitude;
@@ -755,7 +752,7 @@ namespace Catchem
             {
                 if (curSession == session)
                 {
-                    clearPokemonData();
+                    ClearPokemonData();
                 }
                 newBot.Stop();
             };
@@ -766,30 +763,49 @@ namespace Catchem
                 {
                     bot.globalSettings.StoreData(subPath + "\\" + bot.profileName);
                     bot.EnqueData();
-                    clearPokemonData();
+                    ClearPokemonData();
                 }
                 this.curSession = session;
                 foreach (var item in botPanel.GetLogicalChildCollection<Rectangle>())
                 {
-                    if (item != o)
-                        item.Fill = new SolidColorBrush(Color.FromArgb(255, 97, 97, 97));
-                    else
-                        item.Fill = new SolidColorBrush(Color.FromArgb(255, 97, 97, 225));
+                    item.Fill = !Equals(item, o) ? new SolidColorBrush(Color.FromArgb(255, 97, 97, 97)) : new SolidColorBrush(Color.FromArgb(255, 97, 97, 225));
                 }
-                clearPokemonData();
-                rebuildUI();
+                ClearPokemonData();
+                RebuildUi();
+
+                foreach (var marker in bot?.mapMarkers.Values)
+                {
+                    pokeMap.Markers.Add(marker);
+                }
                 pokeMap.Position = new PointLatLng(bot._lat, bot._lng);
             };
         }
 
-        private void clearPokemonData()
+        private void StatsOnDirtyEvent(BotWindowData _bot)
+        {
+            if (_bot == null) throw new ArgumentNullException(nameof(_bot));
+            if (bot == _bot)
+            {
+                Playername.Content = curSession.Profile.PlayerData.Username;
+                l_StarDust.Content = curSession.Profile.PlayerData.Currencies[1].Amount;
+                l_Stardust_farmed.Content = bot.stats.TotalStardust;
+                l_xp.Content = bot.stats.ExportStats.CurrentXp;
+                l_xp_farmed.Content = bot.stats.TotalExperience.ToString();
+                l_coins.Content = curSession.Profile.PlayerData.Currencies[0].Amount;
+                l_Pokemons_farmed.Content = bot.stats.TotalPokemons;
+                l_Pokemons_transfered.Content = bot.stats.TotalPokemonsTransfered;
+                l_Pokestops_farmed.Content = bot.stats.TotalPokestops;
+            }
+        }
+
+        private void ClearPokemonData()
         {
             consoleBox.Document.Blocks.Clear();
             pokeMap.Markers.Clear();
             playerMarker = null;
         }
 
-        private void rebuildUI()
+        private void RebuildUi()
         {
             if (bot == null || LoadingUi) return;
 
