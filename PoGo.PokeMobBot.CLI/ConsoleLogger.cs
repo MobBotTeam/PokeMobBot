@@ -53,7 +53,7 @@ namespace PoGo.PokeMobBot.CLI
             switch (level)
             {
                 case LogLevel.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Error}) {message}");
                     break;
                 case LogLevel.Warning:
@@ -80,6 +80,14 @@ namespace PoGo.PokeMobBot.CLI
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Pkmn}) {message}");
                     break;
+                case LogLevel.Escape:
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Pkmn}) {message}");
+                    break;
+                case LogLevel.Flee:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Pkmn}) {message}");
+                    break;
                 case LogLevel.Transfer:
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Transfered}) {message}");
@@ -97,7 +105,7 @@ namespace PoGo.PokeMobBot.CLI
                     Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Egg}) {message}");
                     break;
                 case LogLevel.Debug:
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Debug}) {message}");
                     break;
                 case LogLevel.Update:
