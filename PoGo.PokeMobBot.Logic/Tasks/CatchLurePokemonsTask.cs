@@ -76,7 +76,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 }
                 else
                 {
-                    if (encounter.Result.ToString().Contains("NotAvailable")) return;
+                    if (encounter.Result.ToString().Contains("NotAvailable"))
+                    {
+                        session.EventDispatcher.Send(new PokemonDisappearEvent {Pokemon = pokemon});
+                        return;
+                    }
                     session.EventDispatcher.Send(new WarnEvent
                     {
                         Message =
