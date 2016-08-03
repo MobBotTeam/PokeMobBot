@@ -53,7 +53,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         [JsonProperty("latitude")]
         public double latitude { get; set; }
         [JsonProperty("longitude")]
-        public double longitude { get; set; }
+        public double longitude { get; set; }        
         public int PokemonId { get; set; }
         [JsonProperty("pokemon_id")]
         public PokemonId PokemonName { get; set; }
