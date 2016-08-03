@@ -96,6 +96,10 @@ namespace PoGo.PokeMobBot.Logic
         //incubator
         bool UseEggIncubators { get; }
 
+        //display
+        bool DisplayPokemonMaxPoweredCp { get; }
+        bool DisplayPokemonMovesetRank { get; }
+
         //rename
         bool RenameOnlyAboveIv { get; }
         bool RenamePokemon { get; }
