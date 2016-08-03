@@ -538,7 +538,8 @@ namespace Catchem
                 while (logQueue.Count > 0)
                     log.Add(logQueue.Dequeue());
                 foreach (var item in log)                
-                    logQueue.Enqueue(item);                         
+                    logQueue.Enqueue(item);
+                log = new List<Tuple<string, Color>>();
             }
         }
 
