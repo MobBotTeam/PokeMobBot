@@ -41,7 +41,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 new DisplayHighestsPokemonEvent
                 {
                     SortedBy = "CP",
-                    PokemonList = pokemonPairedWithStatsCp
+                    PokemonList = pokemonPairedWithStatsCp,
+                    DisplayPokemonMaxPoweredCp = session.LogicSettings.DisplayPokemonMaxPoweredCp,
+                    DisplayPokemonMovesetRank = session.LogicSettings.DisplayPokemonMovesetRank
                 });
             if(session.LogicSettings.Teleport)
                 await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
@@ -52,7 +54,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 new DisplayHighestsPokemonEvent
                 {
                     SortedBy = "IV",
-                    PokemonList = pokemonPairedWithStatsIv
+                    PokemonList = pokemonPairedWithStatsIv,
+                    DisplayPokemonMaxPoweredCp = session.LogicSettings.DisplayPokemonMaxPoweredCp,
+                    DisplayPokemonMovesetRank = session.LogicSettings.DisplayPokemonMovesetRank
                 });
             
             var allPokemonInBag = session.LogicSettings.PrioritizeIvOverCp

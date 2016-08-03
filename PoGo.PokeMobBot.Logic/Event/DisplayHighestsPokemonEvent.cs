@@ -17,6 +17,8 @@ namespace PoGo.PokeMobBot.Logic.Event
         public List<PokemonAnalysis> PokemonList;
        // public List<Tuple<PokemonData, Tuple<int,int>, double, double, PokemonMove, PokemonMove,int>> PokemonList;
         public string SortedBy;
-        
+        public bool DisplayPokemonMaxPoweredCp;
+        public bool DisplayPokemonMovesetRank;
+
     }
 }

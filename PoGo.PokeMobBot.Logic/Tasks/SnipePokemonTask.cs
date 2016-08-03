@@ -48,10 +48,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         }
 
         public long Id { get; set; }
+        [JsonProperty("expires")]
         public double ExpirationTime { get; set; }
+        [JsonProperty("latitude")]
         public double latitude { get; set; }
+        [JsonProperty("longitude")]
         public double longitude { get; set; }
         public int PokemonId { get; set; }
+        [JsonProperty("pokemon_id")]
         public PokemonId PokemonName { get; set; }
 
         public bool Equals(PokemonLocation obj)
@@ -84,6 +88,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     public class ScanResult
     {
         public string Error { get; set; }
+        [JsonProperty("pokemons")]
         public List<PokemonLocation> Pokemon { get; set; }
     }
 
@@ -373,7 +378,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 scanResult = JsonConvert.DeserializeObject<ScanResult>(fullresp);
 
-                if (scanResult.Error != string.Empty)
+                if (scanResult.Error != string.Empty && scanResult.Error != null)
                 {
                     if (scanResult.Error.Contains("down for maintenance") || scanResult.Error.Contains("illegal request"))
                         session.EventDispatcher.Send(new WarnEvent { Message = session.Translation.GetTranslation(TranslationString.SkipLaggedMaintenance) });
