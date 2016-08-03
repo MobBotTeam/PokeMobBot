@@ -54,7 +54,7 @@ namespace PoGo.PokeMobBot.CLI
             switch (level)
             {
                 case LogLevel.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Error}) (v{Assembly.GetExecutingAssembly().GetName().Version}) {message}");
                     break;
                 case LogLevel.Warning:
