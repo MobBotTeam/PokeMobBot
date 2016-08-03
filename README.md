@@ -54,7 +54,6 @@ PokeMobBot Dev team & staff - Their relentless work day after day on adding new 
 Everyone else who submitted Pull Requests - Big or small, the work from unmentioned contributors are what makes this project community-oriented.<br/>
 <br/>
 <h2><a name="credits">Copyright</a></h2><br/>
-
  Copyright (c) 2016, PokeMobBot Team  All rights reserved.<br/>
  Copyrights licensed under the GNU AGPLv3 License.<br/>
  See the accompanying LICENSE file for terms.<br/>
