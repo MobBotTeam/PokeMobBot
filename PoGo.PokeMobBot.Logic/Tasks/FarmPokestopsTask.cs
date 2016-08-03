@@ -434,7 +434,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             var mapObjects = await session.Client.Map.GetMapObjects();
 
-            var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts);
+            var pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts);
 
             session.EventDispatcher.Send(new PokeStopListEvent { Forts = pokeStops.ToList() });
 

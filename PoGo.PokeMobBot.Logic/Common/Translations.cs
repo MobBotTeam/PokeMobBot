@@ -596,7 +596,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                         .ToList()
                         .ForEach(translations._pokemons.Add);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     translations = new Translation();
                     translations.Save(Path.Combine(translationPath, "translation.en.json"));
