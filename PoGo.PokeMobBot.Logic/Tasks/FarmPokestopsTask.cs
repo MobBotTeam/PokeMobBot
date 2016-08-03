@@ -412,10 +412,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     {
                         await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
                     }
-                    if (session.LogicSettings.TransferLowStatPokemon)
-                    {
-                        await TransferLowStatPokemonTask.Execute(session, cancellationToken);
-                    }
                     if (session.LogicSettings.RenamePokemon)
                     {
                         await RenamePokemonTask.Execute(session, cancellationToken);
