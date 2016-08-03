@@ -131,7 +131,7 @@ namespace PoGo.PokeMobBot.Logic
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
                             .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
-                            .ThenBy(n => n.Cp)
+                            .ThenByDescending(n => n.Cp)
                             .Skip(amountToSkip)
                             .ToList());
                     }
@@ -139,7 +139,7 @@ namespace PoGo.PokeMobBot.Logic
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
                             .OrderByDescending(x => x.Cp)
-                            .ThenBy(n => PokemonInfo.CalculatePokemonPerfection(n))
+                            .ThenByDescending(n => PokemonInfo.CalculatePokemonPerfection(n))
                             .Skip(amountToSkip)
                             .ToList());
                     }
