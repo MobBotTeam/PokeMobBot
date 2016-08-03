@@ -1,20 +1,20 @@
-﻿#region using directives
+#region using directives
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
-using System;
 
 #endregion
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public class InventoryListTask
+    public class PokemonSettingsTask
     {
         private readonly Inventory _inventory;
         private readonly ILogicSettings _logicSettings;
 
-        public InventoryListTask(Inventory inventory, ILogicSettings logicSettings)
+        public PokemonSettingsTask(Inventory inventory, ILogicSettings logicSettings)
         {
             _inventory = inventory;
             _logicSettings = logicSettings;
@@ -22,16 +22,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         public async Task Execute(Action<IEvent> action)
         {
-            // Refresh inventory so that the player stats are fresh
-            await _inventory.RefreshCachedInventory();
+            var settings = await _inventory.GetPokemonSettings();
 
-            var inventory = await _inventory.GetItems();
-
-            action(
-                new InventoryListEvent
-                {
-                    Items = inventory.ToList()
-                });
+            action(new PokemonSettingsEvent
+            {
+                Data = settings.ToList()
+            });
 
             await Task.Delay(_logicSettings.DelayBetweenPlayerActions);
         }

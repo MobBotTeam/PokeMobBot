@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.State;
 using POGOProtos.Inventory.Item;
+using System;
 
 #endregion
 
@@ -12,26 +13,27 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class PlayerStatsTask
     {
-        private readonly IEventDispatcher _eventDispatcher;
         private readonly Inventory _inventory;
+        private readonly ILogicSettings _logicSettings;
 
-        public PlayerStatsTask(IEventDispatcher eventDispatcher, Inventory inventory)
+        public PlayerStatsTask(Inventory inventory, ILogicSettings logicSettings)
         {
-            _eventDispatcher = eventDispatcher;
             _inventory = inventory;
+            _logicSettings = logicSettings;
         }
 
-        public async Task Execute()
+        public async Task Execute(Action<IEvent> action)
         {
             var PlayersProfile = (await _inventory.GetPlayerStats())
                 .ToList();
 
-
-            _eventDispatcher.Send(
+            action(
                 new PlayerStatsEvent
                 {
                     PlayerStats = PlayersProfile,
                 });
+
+            await Task.Delay(_logicSettings.DelayBetweenPlayerActions);
         }
     }
 }

@@ -46,7 +46,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             FortData currentFortData = null, ulong encounterId = 0)
         {
             if (encounter is EncounterResponse && pokemon == null)
-                throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse", "pokemon");
+                throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse",
+                    "pokemon");
 
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
@@ -126,9 +127,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         spinModifier);
 
                 var lat = encounter is EncounterResponse || encounter is IncenseEncounterResponse
-                            ? pokemon.Latitude : currentFortData.Latitude;
+                    ? pokemon.Latitude
+                    : currentFortData.Latitude;
                 var lng = encounter is EncounterResponse || encounter is IncenseEncounterResponse
-                            ? pokemon.Longitude : currentFortData.Longitude;
+                    ? pokemon.Longitude
+                    : currentFortData.Longitude;
                 var evt = new PokemonCaptureEvent
                 {
                     Status = caughtPokemonResponse.Status,
@@ -212,9 +215,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         private async Task<ItemId> GetBestBall(dynamic encounter, float probability)
         {
-            var pokemonCp = encounter is EncounterResponse
+            /*var pokemonCp = encounter is EncounterResponse //commented for possible future uses
                 ? encounter.WildPokemon?.PokemonData?.Cp
-                : encounter?.PokemonData?.Cp;
+                : encounter?.PokemonData?.Cp;*/
             var pokemonId = encounter is EncounterResponse
                 ? encounter.WildPokemon?.PokemonData?.PokemonId
                 : encounter?.PokemonData?.PokemonId;
@@ -229,29 +232,18 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var ultraBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemUltraBall);
             var masterBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
-            if (ultraBallsCount > 0 && iV >= _logicSettings.UseUltraBallAboveIv)
-                return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && iV >= _logicSettings.UseGreatBallAboveIv)
-                return ItemId.ItemGreatBall;
-
-            if (masterBallsCount > 0 &&
-                ((probability <= _logicSettings.UseMasterBallBelowCatchProbability &&
-                  !_logicSettings.PokemonToUseMasterball.Any()) ||
-                 _logicSettings.PokemonToUseMasterball.Contains(pokemonId)))
+            if (masterBallsCount > 0 && !_logicSettings.PokemonToUseMasterball.Any() ||
+                _logicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
-            if (ultraBallsCount > 0 && probability <= _logicSettings.UseUltraBallBelowCatchProbability)
+            if (ultraBallsCount > 0 && iV >= _logicSettings.UseUltraBallAboveIv ||
+                probability <= _logicSettings.UseUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && probability <= _logicSettings.UseGreatBallBelowCatchProbability)
+            if (greatBallsCount > 0 && iV >= _logicSettings.UseGreatBallAboveIv ||
+                probability <= _logicSettings.UseGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
-
-            if (pokeBallsCount > 0)
+            if (pokeBallsCount > 0 && iV < _logicSettings.UseGreatBallAboveIv ||
+                probability > _logicSettings.UseGreatBallBelowCatchProbability)
                 return ItemId.ItemPokeBall;
-            if (greatBallsCount > 0)
-                return ItemId.ItemGreatBall;
-            if (ultraBallsCount > 0)
-                return ItemId.ItemUltraBall;
-            if (masterBallsCount > 0 && !_logicSettings.PokemonToUseMasterball.Any())
-                return ItemId.ItemMasterBall;
 
             return ItemId.ItemUnknown;
         }

@@ -22,8 +22,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly ITranslation _translation;
         private readonly ILogicSettings _logicSettings;
         private readonly Client _client;
+        private readonly TransferLowStatPokemonTask _lowStatPokemonTask;
 
-        public CatchLurePokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, Inventory inventory, IEventDispatcher eventDispatcher, ITranslation translation, ILogicSettings logicSettings, Client client)
+        public CatchLurePokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, Inventory inventory, IEventDispatcher eventDispatcher, ITranslation translation, ILogicSettings logicSettings, Client client, TransferLowStatPokemonTask lowStatPokemonTask)
         {
             _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
             _catchPokemonTask = catchPokemonTask;
@@ -32,6 +33,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _translation = translation;
             _logicSettings = logicSettings;
             _client = client;
+            _lowStatPokemonTask = lowStatPokemonTask;
         }
 
         public async Task Execute(FortData currentFortData, CancellationToken cancellationToken)
@@ -76,6 +78,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         });
 
                         await _transferDuplicatePokemonTask.Execute(cancellationToken);
+                    }
+                    if (_logicSettings.TransferLowStatPokemon)
+                    {
+                        _eventDispatcher.Send(new WarnEvent
+                        {
+                            Message = _translation.GetTranslation(TranslationString.InvFullTransferring)
+                        });
+                        await _lowStatPokemonTask.Execute(cancellationToken);
                     }
                     else
                         _eventDispatcher.Send(new WarnEvent

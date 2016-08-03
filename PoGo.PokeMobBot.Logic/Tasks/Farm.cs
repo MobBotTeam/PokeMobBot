@@ -1,7 +1,6 @@
 ﻿#region using directives
 
 using System.Threading;
-using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
@@ -23,8 +22,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly FarmPokestopsGpxTask _farmPokestopsGpxTask;
         private readonly FarmPokestopsTask _farmPokestopsTask;
         private readonly ILogicSettings _logicSettings;
+        private readonly TransferLowStatPokemonTask _transferLowStatPokemonTask;
 
-        public Farm(EvolvePokemonTask evolvePokemonTask, LevelUpPokemonTask levelUpPokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask, ILogicSettings logicSettings)
+        public Farm(EvolvePokemonTask evolvePokemonTask, LevelUpPokemonTask levelUpPokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask, ILogicSettings logicSettings, TransferLowStatPokemonTask transferLowStatPokemonTask)
         {
             _evolvePokemonTask = evolvePokemonTask;
             _levelUpPokemonTask = levelUpPokemonTask;
@@ -35,6 +35,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _farmPokestopsGpxTask = farmPokestopsGpxTask;
             _farmPokestopsTask = farmPokestopsTask;
             _logicSettings = logicSettings;
+            _transferLowStatPokemonTask = transferLowStatPokemonTask;
         }
 
         public void Run(CancellationToken cancellationToken)
@@ -50,6 +51,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             if (_logicSettings.TransferDuplicatePokemon)
             {
                 _transferDuplicatePokemonTask.Execute(cancellationToken).Wait(cancellationToken);
+            }
+            if (_logicSettings.TransferLowStatPokemon)
+            {
+                _transferLowStatPokemonTask.Execute(cancellationToken).Wait(cancellationToken);
             }
 
             if (_logicSettings.RenamePokemon)

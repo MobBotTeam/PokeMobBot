@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
 using PoGo.PokeMobBot.Logic.State;
 using PokemonGo.RocketAPI;
@@ -28,7 +27,8 @@ namespace PoGo.PokeMobBot.Logic
         private readonly Client _client;
         private readonly ILogicSettings _logicSettings;
         private readonly PokemonInfo _pokemonInfo;
-        private readonly ILogger _logger;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
 
         private readonly List<ItemId> _pokeballs = new List<ItemId>
         {
@@ -56,17 +56,14 @@ namespace PoGo.PokeMobBot.Logic
         };
 
         private readonly List<ItemId> _revives = new List<ItemId> { ItemId.ItemRevive, ItemId.ItemMaxRevive };
-        private readonly IEventDispatcher _eventDispatcher;
-        private readonly ITranslation _translation;
         private GetInventoryResponse _cachedInventory;
         private DateTime _lastRefresh;
 
-        public Inventory(Client client, ILogicSettings logicSettings, PokemonInfo pokemonInfo, ILogger logger, IEventDispatcher eventDispatcher, ITranslation translation)
+        public Inventory(Client client, ILogicSettings logicSettings, PokemonInfo pokemonInfo, IEventDispatcher eventDispatcher, ITranslation translation)
         {
             _client = client;
             _logicSettings = logicSettings;
             _pokemonInfo = pokemonInfo;
-            _logger = logger;
             _eventDispatcher = eventDispatcher;
             _translation = translation;
         }
@@ -202,6 +199,7 @@ namespace PoGo.PokeMobBot.Logic
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                 .OrderByDescending(x => x.Cp)
+                .ThenByDescending(_pokemonInfo.CalculatePokemonPerfection)
                 .FirstOrDefault();
         }
 
@@ -211,6 +209,7 @@ namespace PoGo.PokeMobBot.Logic
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                 .OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
+                .ThenByDescending(x => x.Cp)
                 .FirstOrDefault();
         }
 
@@ -218,14 +217,18 @@ namespace PoGo.PokeMobBot.Logic
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax).Take(limit);
+            return pokemons.OrderByDescending(x => x.Cp)
+                .ThenByDescending(_pokemonInfo.CalculatePokemonPerfection)
+                .Take(limit);
         }
 
         public async Task<IEnumerable<PokemonData>> GetHighestsPerfect(int limit)
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(_pokemonInfo.CalculatePokemonPerfection).Take(limit);
+            return pokemons.OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
+                .ThenByDescending(x => x.Cp)
+                .Take(limit);
         }
 
 
@@ -261,11 +264,23 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountOfUltraballs = await GetItemAmountByType(ItemId.ItemUltraBall);
             var currentAmountOfMasterballs = await GetItemAmountByType(ItemId.ItemMasterBall);
 
-            _eventDispatcher.Send(new ErrorEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
                 Message = _translation.GetTranslation(TranslationString.CurrentPokeballInv,
                     currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
                     currentAmountOfMasterballs)
+            });
+
+            var currentAmountOfPotions = await GetItemAmountByType(ItemId.ItemPotion);
+            var currentAmountOfSuperPotions = await GetItemAmountByType(ItemId.ItemSuperPotion);
+            var currentAmountOfHyperPotions = await GetItemAmountByType(ItemId.ItemHyperPotion);
+            var currentAmountOfMaxPotions = await GetItemAmountByType(ItemId.ItemMaxPotion);
+
+            _eventDispatcher.Send(new NoticeEvent()
+            {
+                Message = _translation.GetTranslation(TranslationString.CurrentPotionInv,
+                    currentAmountOfPotions, currentAmountOfSuperPotions, currentAmountOfHyperPotions,
+                    currentAmountOfMaxPotions)
             });
 
             var otherItemsToRecycle = myItems
@@ -278,9 +293,7 @@ namespace PoGo.PokeMobBot.Logic
                             Count = x.Count - _logicSettings.ItemRecycleFilter.Single(f => f.Key == x.ItemId).Value,
                             Unseen = x.Unseen
                         });
-
             itemsToRecycle.AddRange(otherItemsToRecycle);
-
             return itemsToRecycle;
         }
 
@@ -296,42 +309,6 @@ namespace PoGo.PokeMobBot.Logic
             return inventory.InventoryDelta.InventoryItems
                 .Select(i => i.InventoryItemData?.PlayerStats)
                 .Where(p => p != null);
-        }
-
-        private List<ItemData> GetPokeballsToRecycle(IReadOnlyList<ItemData> myItems)
-        {
-            var amountOfPokeballsToKeep = _logicSettings.TotalAmountOfPokeballsToKeep;
-            if (amountOfPokeballsToKeep < 1)
-            {
-                _eventDispatcher.Send(new ErrorEvent()
-                {
-                    Message = _translation.GetTranslation(TranslationString.PokeballsToKeepIncorrect)
-                });
-                return new List<ItemData>();
-            }
-
-            var allPokeballs = myItems.Where(s => _pokeballs.Contains(s.ItemId)).ToList();
-            allPokeballs.Sort((ball1, ball2) => ((int)ball1.ItemId).CompareTo((int)ball2.ItemId));
-
-            return TakeAmountOfItems(allPokeballs, amountOfPokeballsToKeep).ToList();
-        }
-
-        private List<ItemData> GetBerriesToRecycle(IReadOnlyList<ItemData> myItems)
-        {
-            var amountOfBerriesToKeep = _logicSettings.TotalAmountOfBerriesToKeep;
-            if (amountOfBerriesToKeep < 1)
-            {
-                _eventDispatcher.Send(new ErrorEvent
-                {
-                    Message = _translation.GetTranslation(TranslationString.BerriesToKeepIncorrect)
-                });
-                return new List<ItemData>();
-            }
-
-            var allPokeballs = myItems.Where(s => _pokeballs.Contains(s.ItemId)).ToList();
-            allPokeballs.Sort((ball1, ball2) => ((int)ball1.ItemId).CompareTo((int)ball2.ItemId));
-
-            return TakeAmountOfItems(allPokeballs, amountOfBerriesToKeep).ToList();
         }
 
         public async Task<int> GetPokedexCount()
@@ -445,42 +422,6 @@ namespace PoGo.PokeMobBot.Logic
                 _logicSettings.KeepMinDuplicatePokemon);
         }
 
-        private List<ItemData> GetPotionsToRecycle(IReadOnlyList<ItemData> myItems)
-        {
-            var amountOfPotionsToKeep = _logicSettings.TotalAmountOfPotionsToKeep;
-            if (amountOfPotionsToKeep < 1)
-            {
-                _eventDispatcher.Send(new ErrorEvent
-                {
-                    Message = _translation.GetTranslation(TranslationString.PotionsToKeepIncorrect)
-                });
-                return new List<ItemData>();
-            }
-
-            var allPotions = myItems.Where(s => _potions.Contains(s.ItemId)).ToList();
-            allPotions.Sort((i1, i2) => ((int)i1.ItemId).CompareTo((int)i2.ItemId));
-
-            return TakeAmountOfItems(allPotions, amountOfPotionsToKeep).ToList();
-        }
-
-        private List<ItemData> GetRevivesToRecycle(IReadOnlyList<ItemData> myItems)
-        {
-            var amountOfRevivesToKeep = _logicSettings.TotalAmountOfRevivesToKeep;
-            if (amountOfRevivesToKeep < 1)
-            {
-                _eventDispatcher.Send(new ErrorEvent
-                {
-                    Message = _translation.GetTranslation(TranslationString.RevivesToKeepIncorrect)
-                });
-                return new List<ItemData>();
-            }
-
-            var allRevives = myItems.Where(s => _revives.Contains(s.ItemId)).ToList();
-            allRevives.Sort((i1, i2) => ((int)i1.ItemId).CompareTo((int)i2.ItemId));
-
-            return TakeAmountOfItems(allRevives, amountOfRevivesToKeep).ToList();
-        }
-
         public async Task<GetInventoryResponse> RefreshCachedInventory()
         {
             var now = DateTime.UtcNow;
@@ -498,38 +439,6 @@ namespace PoGo.PokeMobBot.Logic
                 ss.Release();
             }
         }
-
-        private IEnumerable<ItemData> TakeAmountOfItems(IReadOnlyList<ItemData> items, int ammountToLeave)
-        {
-            var itemsAvailable = 0;
-            foreach (var item in items)
-            {
-                itemsAvailable += item.Count;
-            }
-
-            var itemsToRemove = itemsAvailable - ammountToLeave;
-
-            foreach (var item in items)
-            {
-                if (itemsToRemove > 0 && item.Count > 0)
-                {
-                    if (item.Count < itemsToRemove)
-                    {
-                        // Recycle all of this type
-                        itemsToRemove -= item.Count;
-                        yield return item;
-                    }
-                    else
-                    {
-                        // Recycle remaining amount
-                        var count = itemsToRemove;
-                        itemsToRemove = 0;
-                        yield return new ItemData { ItemId = item.ItemId, Count = count };
-                    }
-                }
-            }
-        }
-
 
         public async Task<UpgradePokemonResponse> UpgradePokemon(ulong pokemonid)
         {

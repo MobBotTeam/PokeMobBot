@@ -1,5 +1,6 @@
 ﻿#region using directives
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
@@ -13,15 +14,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     public class EggsListTask
     {
         private readonly Inventory _inventory;
-        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ILogicSettings _logicSettings;
 
-        public EggsListTask(Inventory inventory, IEventDispatcher eventDispatcher)
+        public EggsListTask(Inventory inventory, ILogicSettings logicSettings)
         {
             _inventory = inventory;
-            _eventDispatcher = eventDispatcher;
+            _logicSettings = logicSettings;
         }
 
-        public async Task Execute()
+        public async Task Execute(Action<IEvent> action)
         {
             // Refresh inventory so that the player stats are fresh
             await _inventory.RefreshCachedInventory();
@@ -42,13 +43,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 .OrderBy(x => x.EggKmWalkedTarget - x.EggKmWalkedStart)
                 .ToList();
 
-            _eventDispatcher.Send(
+            action(
                 new EggsListEvent
                 {
                     PlayerKmWalked = kmWalked,
                     Incubators = incubators,
                     UnusedEggs = unusedEggs
                 });
+
+            await Task.Delay(_logicSettings.DelayBetweenPlayerActions);
         }
     }
 }

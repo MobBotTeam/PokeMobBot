@@ -3,9 +3,9 @@
 using System;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.State;
 using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Enums;
+using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.Extensions;
 using PokemonGo.RocketAPI.Rpc;
 
@@ -40,7 +40,30 @@ namespace PoGo.PokeMobBot.Logic.Common
 
             if (_retryCount % 5 == 0)
             {
-                DoLogin();
+                try
+                {
+                    DoLogin();
+                }
+                catch (Exception ex) when (ex is PtcOfflineException || ex is AccessTokenExpiredException)
+                {
+                    _eventDispatcher.Send(new ErrorEvent
+                    {
+                        Message = _translation.GetTranslation(TranslationString.PtcOffline)
+                    });
+                    _eventDispatcher.Send(new NoticeEvent
+                    {
+                        Message = _translation.GetTranslation(TranslationString.TryingAgainIn, 20)
+                    });
+                    await Task.Delay(20000);
+                }
+                catch (InvalidResponseException)
+                {
+                    _eventDispatcher.Send(new ErrorEvent
+                    {
+                        Message = _translation.GetTranslation(TranslationString.NianticServerUnstable)
+                    });
+                    await Task.Delay(1000);
+                }
             }
 
             return ApiOperation.Retry;

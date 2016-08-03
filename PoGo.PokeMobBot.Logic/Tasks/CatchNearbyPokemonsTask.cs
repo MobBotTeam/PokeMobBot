@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI;
 using POGOProtos.Inventory.Item;
@@ -26,8 +25,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly Inventory _inventory;
         private readonly ILogicSettings _logicSettings;
         private readonly Client _client;
+        private readonly TransferLowStatPokemonTask _transferLowStatPokemonTask;
 
-        public CatchNearbyPokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, LocationUtils locationUtils, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory, ILogicSettings logicSettings, Client client)
+        public CatchNearbyPokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, LocationUtils locationUtils, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory, ILogicSettings logicSettings, Client client, TransferLowStatPokemonTask transferLowStatPokemonTask)
         {
             _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
             _catchPokemonTask = catchPokemonTask;
@@ -37,6 +37,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _inventory = inventory;
             _logicSettings = logicSettings;
             _client = client;
+            _transferLowStatPokemonTask = transferLowStatPokemonTask;
         }
 
         public async Task Execute(CancellationToken cancellationToken)
@@ -97,6 +98,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Message = _translation.GetTranslation(TranslationString.InvFullTransferring)
                         });
                         await _transferDuplicatePokemonTask.Execute(cancellationToken);
+                    }
+                    if (_logicSettings.TransferLowStatPokemon)
+                    {
+                        _eventDispatcher.Send(new WarnEvent
+                        {
+                            Message = _translation.GetTranslation(TranslationString.InvFullTransferring)
+                        });
+                        await _transferLowStatPokemonTask.Execute(cancellationToken);
                     }
                     else
                         _eventDispatcher.Send(new WarnEvent

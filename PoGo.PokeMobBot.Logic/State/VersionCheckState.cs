@@ -200,7 +200,8 @@ namespace PoGo.PokeMobBot.Logic.State
 
                 var gitVersion = new Version($"{match.Groups[1]}.{match.Groups[2]}.{match.Groups[3]}");
                 RemoteVersion = gitVersion;
-                if (gitVersion >= Assembly.GetExecutingAssembly().GetName().Version)
+                var localVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                if (gitVersion >= localVersion)
                 {
                     return true;
                 }
