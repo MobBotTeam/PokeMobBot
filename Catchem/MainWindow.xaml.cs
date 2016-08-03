@@ -59,8 +59,6 @@ namespace Catchem
                 return null;
             }
         }
-
-        GMapMarker forceMoveMarker;
         GMapMarker playerMarker;
 
         bool LoadingUi = false;
@@ -201,16 +199,7 @@ namespace Catchem
 
                     if (playerMarker == null)
                     {
-                        Dispatcher.BeginInvoke(new ThreadStart(delegate
-                        {
-                            playerMarker = new GMapMarker(new PointLatLng(bot.Lat, bot.Lng))
-                            {
-                                Shape = Properties.Resources.trainer.ToImage("Player"),
-                                Offset = new Point(-14, -40),
-                                ZIndex = 15                                
-                            };
-                            pokeMap.Markers.Add(playerMarker);
-                        }));                        
+                        Dispatcher.BeginInvoke(new ThreadStart(DrawPlayerMarker));                        
                     }
                     else
                     {
@@ -222,6 +211,20 @@ namespace Catchem
             {
                 // ignored
             }
+        }
+
+        private void DrawPlayerMarker()
+        {
+            playerMarker = new GMapMarker(new PointLatLng(bot.Lat, bot.Lng))
+            {
+                Shape = Properties.Resources.trainer.ToImage("Player"),
+                Offset = new Point(-14, -40),
+                ZIndex = 15
+            };
+            pokeMap.Markers.Add(playerMarker);
+
+            if (bot.ForceMoveMarker != null)
+                pokeMap.Markers.Add(bot.ForceMoveMarker);
         }
 
         private void PushNewConsoleRow(ISession session, string rowText, Color rowColor)
@@ -277,16 +280,24 @@ namespace Catchem
         private void PushNewPokestop(ISession session, IEnumerable<FortData> pstops)
         {
             if (!openedSessions.ContainsKey(session)) return;
-            foreach (var pstop in pstops)
+            var fortDatas = pstops as FortData[] ?? pstops.ToArray();
+            for (int i = 0; i < fortDatas.Length; i++)
             {
                 try
                 {
                     var tBot = openedSessions[session];
-                    if (tBot.mapMarkers.ContainsKey(pstop.Id) || tBot.MarkersQueue.Count(x => x.uid == pstop.Id) != 0)
+                    try
+                    {
+                        if (tBot.mapMarkers.ContainsKey(fortDatas[i].Id) || tBot.MarkersQueue.Count(x => x.uid == fortDatas[i].Id) != 0)
                         continue;
-                    var lured = pstop.LureInfo?.LureExpiresTimestampMs > DateTime.UtcNow.ToUnixTime();
-                    var nMapObj = new NewMapObject("ps" + (lured ? "_lured" : ""), "PokeStop", pstop.Latitude,
-                        pstop.Longitude, pstop.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        // ignored
+                    }
+                    var lured = fortDatas[i].LureInfo?.LureExpiresTimestampMs > DateTime.UtcNow.ToUnixTime();
+                    var nMapObj = new NewMapObject("ps" + (lured ? "_lured" : ""), "PokeStop", fortDatas[i].Latitude,
+                        fortDatas[i].Longitude, fortDatas[i].Id);
                     openedSessions[session].MarkersQueue.Enqueue(nMapObj);
                 }
                 catch (Exception ex)
@@ -333,7 +344,6 @@ namespace Catchem
                 {
                     try
                     {
-
                         var newMapObj = bot.MarkersQueue.Dequeue();
                         switch (newMapObj.oType)
                         {
@@ -371,9 +381,10 @@ namespace Catchem
                                 }
                                 break;
                             case "forcemove_done":
-                                if (forceMoveMarker != null)
+                                if (bot.ForceMoveMarker != null)
                                 {
-                                    pokeMap.Markers.Remove(forceMoveMarker);
+                                    pokeMap.Markers.Remove(bot.ForceMoveMarker);
+                                    bot.ForceMoveMarker = null;
                                 }
                                 break;
                             case "pm":
@@ -436,6 +447,7 @@ namespace Catchem
                     return cts.Token;
                 }
             }
+            internal GMapMarker ForceMoveMarker;
             public List<Tuple<string, Color>> log = new List<Tuple<string, Color>>();
             public Queue<Tuple<string, Color>> logQueue = new Queue<Tuple<string, Color>>();
             public Dictionary<string, GMapMarker> mapMarkers = new Dictionary<string, GMapMarker>();
@@ -766,19 +778,21 @@ namespace Catchem
                     bot.EnqueData();
                     ClearPokemonData();
                 }
+                foreach (var marker in newBot.mapMarkers.Values)
+                {
+                    pokeMap.Markers.Add(marker);
+                }
                 this.curSession = session;
+                if (bot != null)
+                {
+                    pokeMap.Position = new PointLatLng(bot._lat, bot._lng);
+                    DrawPlayerMarker();
+                }
                 foreach (var item in botPanel.GetLogicalChildCollection<Rectangle>())
                 {
                     item.Fill = !Equals(item, o) ? new SolidColorBrush(Color.FromArgb(255, 97, 97, 97)) : new SolidColorBrush(Color.FromArgb(255, 97, 97, 225));
                 }
-                ClearPokemonData();
-                RebuildUi();
-
-                foreach (var marker in bot?.mapMarkers.Values)
-                {
-                    pokeMap.Markers.Add(marker);
-                }
-                pokeMap.Position = new PointLatLng(bot._lat, bot._lng);
+                RebuildUi();   
             };
         }
 
@@ -1339,19 +1353,19 @@ namespace Catchem
             {
                 if (bot.Started)
                 {
-                    if (forceMoveMarker == null)
+                    if (bot.ForceMoveMarker == null)
                     {
-                        forceMoveMarker = new GMapMarker(mapPos)
+                        bot.ForceMoveMarker = new GMapMarker(mapPos)
                         {
                             Shape = Properties.Resources.force_move.ToImage(),
                             Offset = new Point(-24, -48),
                             ZIndex = int.MaxValue
                         };
-                        pokeMap.Markers.Add(forceMoveMarker);
+                        pokeMap.Markers.Add(bot.ForceMoveMarker);
                     }
                     else
                     {
-                        forceMoveMarker.Position = mapPos;
+                        bot.ForceMoveMarker.Position = mapPos;
                     }
                     curSession.StartForceMove(lat, lng);
                 }

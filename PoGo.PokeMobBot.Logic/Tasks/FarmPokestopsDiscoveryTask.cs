@@ -51,11 +51,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 var newPokestopList = (await GetPokeStops(session)).OrderBy(i =>
                             LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                                session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => !pokestopList.Any(i => i.Id == x.Id) && LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                                session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => pokestopList.All(i => i.Id != x.Id) && LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                                session.Client.CurrentLongitude, x.Latitude, x.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters);
                 pokestopList.AddRange(newPokestopList);
                 var pokeStop = pokestopList.OrderBy(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                               session.Client.CurrentLongitude, i.Latitude, i.Longitude)).Where(x => x.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime()).First();
+                               session.Client.CurrentLongitude, i.Latitude, i.Longitude)).First(x => x.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime());
                 pokeStop.CooldownCompleteTimestampMs = DateTime.UtcNow.ToUnixTime() + 300 * 1000;
 
                 var tooFarPokestops = pokestopList.Where(i => LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
@@ -75,16 +75,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
                         session.Client.Settings.DefaultAltitude);
                 else
-                    await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
-                    session.LogicSettings.WalkingSpeedInKilometerPerHour,
-                    async () =>
-                    {
-                        // Catch normal map Pokemon
-                        await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
-                        //Catch Incense Pokemon
-                        await CatchIncensePokemonsTask.Execute(session, cancellationToken);
-                        return true;
-                    }, cancellationToken);
+                    await moveToPokestop(session, cancellationToken, pokeStop);
 
                 await CatchWildPokemonsTask.Execute(session, cancellationToken);
 
@@ -102,6 +93,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     if (fortSearch.ExperienceAwarded > 0 && timesZeroXPawarded > 0) timesZeroXPawarded = 0;
                     if (fortSearch.ExperienceAwarded == 0)
                     {
+                        if (TimesZeroXPawarded == 0) await moveToPokestop(session, cancellationToken, pokeStop);
                         timesZeroXPawarded++;
 
                         if (timesZeroXPawarded > zeroCheck)
@@ -196,6 +188,20 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     await SnipePokemonTask.Execute(session, cancellationToken);
                 }
             }
+        }
+
+        private static async Task moveToPokestop(ISession session, CancellationToken cancellationToken, FortData pokeStop)
+        {
+            await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
+                session.LogicSettings.WalkingSpeedInKilometerPerHour,
+                async () =>
+                {
+                    // Catch normal map Pokemon
+                    await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                    //Catch Incense Pokemon
+                    await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                    return true;
+                }, cancellationToken);
         }
 
         private static async Task<List<FortData>> GetPokeStops(ISession session)
