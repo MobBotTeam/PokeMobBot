@@ -441,7 +441,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             // Wasn't sure how to make this pretty. Edit as needed.
             if (session.LogicSettings.Teleport)
             {
-                pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts)
+                pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
                     .Where(
                         i =>
                             i.Type == FortType.Checkpoint &&
@@ -455,7 +455,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             }
             else
             {
-                pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts)
+                pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
                     .Where(
                         i =>
                             i.Type == FortType.Checkpoint &&
