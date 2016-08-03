@@ -6,15 +6,15 @@
     },
     {
       "Key": "greatPokeball",
-      "Value": "高级精灵球"
+      "Value": "超级球"
     },
     {
       "Key": "ultraPokeball",
-      "Value": "超级精灵球"
+      "Value": "高级球"
     },
     {
       "Key": "masterPokeball",
-      "Value": "大师精灵球"
+      "Value": "掌门球"
     },
     {
       "Key": "wrongAuthType",
@@ -22,11 +22,11 @@
     },
     {
       "Key": "farmPokestopsOutsideRadius",
-      "Value": "您已经走出范围！5秒后返回起点（距离{0}米），请确认系统设置是否正确？"
+      "Value": "您已经走出范围！5 秒后返回起点（距离 {0} 米），请确认系统设置是否正确？"
     },
     {
       "Key": "farmPokestopsNoUsableFound",
-      "Value": "您附近没有任何可用的补给站，请确认系统设置是否正确？"
+      "Value": "您附近没有可用的补给站，请确认系统设置是否正确？"
     },
     {
       "Key": "eventFortUsed",
@@ -38,7 +38,7 @@
     },
     {
       "Key": "eventFortTargeted",
-      "Value": "前往补给站：{0} （距离{1}米）"
+      "Value": "前往补给站：{0} （距离 {1} 米）"
     },
     {
       "Key": "eventProfileLogin",
@@ -50,7 +50,7 @@
     },
 	{
       "Key": "eventUseLuckyEggMinPokemonCheck",
-      "Value": "Not enough Pokemon to trigger a lucky egg. Waiting for {0} more. ({1}/{2})"
+      "Value": "因为宠物不足，不足以触发使用幸运蛋道具的规则。需要 {0} 只或以上。({1}/{2})"
     },
     {
       "Key": "eventPokemonEvolvedSuccess",
@@ -58,11 +58,11 @@
     },
     {
       "Key": "eventPokemonEvolvedFailed",
-      "Value": " {0} 进化失败，原因是 {1}，已取消进化 {2}"
+      "Value": " {0} 进化失败，原因是 {1}，已取消进化为 {2}"
     },
     {
       "Key": "eventPokemonTransferred",
-      "Value": "{0}\t- CP值：{1}  完美度：{2}%   [已拥有 CP值：{3}  完美度：{4}%] （还有{5}颗该种类的糖果）"
+      "Value": "{0}\t- CP值：{1}  完美度：{2}%   [已拥有 CP值：{3}  完美度：{4}%] （还有 {5} 颗该种类的糖果）"
     },
     {
       "Key": "eventItemRecycled",
@@ -70,11 +70,11 @@
     },
     {
       "Key": "eventPokemonCapture",
-      "Value": "({0}) | ({1}) {2} 等级：{3}  CP值：({4}/{5}) 完美度：{6}%| 捕获几率：{7}%| 距离{8}米 | 剩余{10}个{9} | {11} "
+      "Value": "({0}) | ({1}) {2} 等级：{3}  CP值：({4}/{5}) 完美度：{6}%| 捕获几率：{7}%| 距离 {8} 米 | 剩余 {10} 个 {9} | {11}"
     },
     {
       "Key": "eventNoPokeballs",
-      "Value": "没有精灵球了，我们错过了一只 CP值为 {1} 的 {0} "
+      "Value": "没有精灵球了，我们错过了一只 CP值为 {1} 的 {0}"
     },
     {
       "Key": "catchStatusAttempt",
@@ -86,11 +86,11 @@
     },
     {
       "Key": "candies",
-      "Value": "还有{0}颗该种类的糖果"
+      "Value": "还有 {0} 颗该种类的糖果"
     },
     {
       "Key": "unhandledGpxData",
-      "Value": "在GPX文件中发现异常数据，试图跳过。"
+      "Value": "在 GPX 文件中发现异常数据，试图跳过。"
     },
     {
       "Key": "displayHighestsHeader",
@@ -110,7 +110,7 @@
     },
     {
       "Key": "displayHighestsCpHeader",
-      "Value": "展示最高CP值"
+      "Value": "展示最高 CP 值"
     },
     {
       "Key": "displayHighestsPerfectHeader",
@@ -126,11 +126,11 @@
     },
     {
       "Key": "incubatorPuttingEgg",
-      "Value": "正在将宠物蛋放入孵化器中：剩余{0:0.00}千米"
+      "Value": "正在将宠物蛋放入孵化器中：剩余 {0:0.00} 千米"
     },
     {
       "Key": "incubatorStatusUpdate",
-      "Value": "更新孵化器状态：剩余{0:0.00}千米"
+      "Value": "更新孵化器状态：剩余 {0:0.00} 千米"
     },
     {
       "Key": "incubatorEggHatched",
@@ -190,15 +190,15 @@
     },
     {
       "Key": "loggingIn",
-      "Value": "正在登录{0}账号"
+      "Value": "正在登录 {0} 账号"
     },
     {
       "Key": "ptcOffline",
-      "Value": "PTC服务器可能关闭或您的帐号错误错误，请尝试谷歌帐号登录"
+      "Value": "PTC 服务器可能关闭或您的帐号错误错误，请尝试谷歌帐号登录。"
     },
     {
       "Key": "accessTokenExpired",
-      "Value": "该 token 已经过期. 请重新登陆获取新的 token."
+      "Value": "该 token 已经过期。请重新登陆获取新的 token。"
     },
     {
       "Key": "tryingAgainIn",
@@ -210,11 +210,11 @@
     },
     {
       "Key": "openingGoogleDevicePage",
-      "Value": "正在打开 Google Device 网页，请用CTRL+V粘贴验证码"
+      "Value": "正在打开 Google Device 网页，请用 CTRL + V 粘贴验证码。"
     },
     {
       "Key": "couldntCopyToClipboard",
-      "Value": "无法将验证码复制到剪贴板，请手动复制"
+      "Value": "无法将验证码复制到剪贴板，请手动复制。"
     },
     {
       "Key": "couldntCopyToClipboard2",
@@ -222,11 +222,11 @@
     },
     {
       "Key": "realisticTravelDetected",
-      "Value": "检测到真实的旅行，使用用户配置"
+      "Value": "检测到真实的旅行，使用用户配置。"
     },
     {
       "Key": "notRealisticTravel",
-      "Value": "未检测到真实的旅行 {0}, 使用上一次保存的配置"
+      "Value": "未检测到真实的旅行 {0}, 使用上一次保存的配置。"
     },
     {
       "Key": "coordinatesAreInvalid",
@@ -278,15 +278,15 @@
     },
     {
       "Key": "invFullTransferring",
-      "Value": "包裹满了，正在传输精灵..."
+      "Value": "背包已满，正在传输精灵..."
     },
     {
       "Key": "invFullTransferManually",
-      "Value": "包裹满了，请手动传输精灵或者修改 TransferDuplicatePokemon 为 true "
+      "Value": "背包已满，请手动传输精灵或者修改 TransferDuplicatePokemon 为 true "
     },
     {
       "Key": "invFullPokestopLooting",
-      "Value": "包裹满了，无法捕获精灵！"
+      "Value": "背包已满，无法捕获精灵！"
     },
     {
       "Key": "encounterProblem",
@@ -310,27 +310,27 @@
     },
     {
       "Key": "catchStatusAttempt",
-      "Value": "尝试捕获"
+      "Value": "捕捉-尝试"
     },
     {
       "Key": "catchStatusError",
-      "Value": "捕获错误"
+      "Value": "捕捉-错误"
     },
     {
       "Key": "catchStatusEscape",
-      "Value": "捕获失败"
+      "Value": "捕捉-失败"
     },
     {
       "Key": "catchStatusFlee",
-      "Value": "捕获消失"
+      "Value": "捕捉-消失"
     },
     {
       "Key": "catchStatusMissed",
-      "Value": "错过捕获"
+      "Value": "捕捉-错过"
     },
     {
       "Key": "catchStatusSuccess",
-      "Value": "捕获成功"
+      "Value": "捕捉-成功"
     },
     {
       "Key": "catchTypeNormal",
@@ -346,7 +346,7 @@
     },
     {
       "Key": "webSocketFailStart",
-      "Value": "无法启动WebSocket服务器的端口：{0}"
+      "Value": "无法启动 WebSocket 服务器的端口：{0}"
     },
     {
       "Key": "statsTemplateString",
@@ -362,7 +362,7 @@
     },
     {
       "Key": "googleTwoFactorAuth",
-      "Value": "当您启用了谷歌的两步验证后，需要在auth.json中输入应用专用密码"
+      "Value": "当您启用了谷歌的两步验证后，需要在 auth.json 中输入应用专用密码。"
     },
     {
       "Key": "googleTwoFactorAuthExplanation",
@@ -374,11 +374,11 @@
     },
     {
       "Key": "missingCredentialsGoogle",
-      "Value": "您需要在auth.json中填写谷歌账户和密码！"
+      "Value": "您需要在 auth.json 中填写谷歌账户和密码！"
     },
     {
       "Key": "missingCredentialsPtc",
-      "Value": "您需要在auth.json中填写Ptc账户和密码！"
+      "Value": "您需要在 auth.json 中填写 PTC 账户和密码！"
     },
     {
       "Key": "snipeScan",
@@ -392,7 +392,7 @@
     "pokemon": [
     {
       "Key": "Missingno",
-      "Value": "Missingno"
+      "Value": "MissingNo."
     },
     {
       "Key": "Bulbasaur",
