@@ -22,7 +22,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         private static readonly Random Rng = new Random();
 
-        public static async Task Execute(ISession session, dynamic encounter, MapPokemon pokemon,
+        public static async Task<bool> Execute(ISession session, dynamic encounter, MapPokemon pokemon,
             FortData currentFortData = null, ulong encounterId = 0)
         {
             if (encounter is EncounterResponse && pokemon == null)
@@ -50,7 +50,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 ? encounter.WildPokemon?.PokemonData?.Cp
                                 : encounter?.PokemonData?.Cp) ?? 0
                     });
-                    return;
+                    return false;
                 }
 
                 var useBerryBelowCatchProbability = session.LogicSettings.UseBerryBelowCatchProbability > 1
@@ -196,6 +196,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
             } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed ||
                      caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
+
+            return true;
         }
 
         private static async Task<ItemId> GetBestBall(ISession session, dynamic encounter, float probability)
