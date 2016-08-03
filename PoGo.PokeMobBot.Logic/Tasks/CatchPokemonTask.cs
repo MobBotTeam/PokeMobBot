@@ -27,7 +27,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             if (encounter is EncounterResponse && pokemon == null)
                 throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse",
-                    "pokemon");
+                    nameof(pokemon));
 
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
@@ -88,7 +88,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (session.LogicSettings.HumanizeThrows)
                 {
                     normalizedRecticleSize =
-                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
+                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax) *
                         1.85 + 0.1; // 0.1..1.95
                     spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
                 }
@@ -177,7 +177,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             ? encounter.WildPokemon?.PokemonData
                             : encounter?.PokemonData), 2);
                 evt.Probability =
-                    Math.Round(probability*100, 2);
+                    Math.Round(probability * 100, 2);
                 evt.Distance = distance;
                 evt.Pokeball = pokeball;
                 evt.Attempt = attemptCounter;
@@ -214,19 +214,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
             var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
-            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() &&
+            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() ||
                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
-            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv &&
+            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
                 probability <= session.LogicSettings.UseUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv &&
+            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
                 probability <= session.LogicSettings.UseGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
-            if (pokeBallsCount > 0)
-                return ItemId.ItemPokeBall;
-
-            return ItemId.ItemUnknown;
+            return pokeBallsCount > 0 ? ItemId.ItemPokeBall : ItemId.ItemUnknown;
         }
 
         private static async Task UseBerry(ISession session, ulong encounterId, string spawnPointId)
@@ -240,7 +237,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             await session.Client.Encounter.UseCaptureItem(encounterId, ItemId.ItemRazzBerry, spawnPointId);
             berry.Count -= 1;
-            session.EventDispatcher.Send(new UseBerryEvent {Count = berry.Count});
+            session.EventDispatcher.Send(new UseBerryEvent { Count = berry.Count });
         }
     }
 }
