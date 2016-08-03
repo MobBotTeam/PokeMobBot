@@ -192,6 +192,11 @@ namespace PoGo.PokeMobBot.Logic
         public float FavoriteMinIvPercentage = 95;
 
         //recycle
+        public bool AutomaticInventoryManagement = false;
+        public int AutomaticMaxAllPokeballs = 180;
+        public int AutomaticMaxAllPotions = 60;
+        public int AutomaticMaxAllRevives = 40;
+        public int AutomaticMaxAllBerries = 50;
         public int TotalAmountOfPokeballsToKeep = 75;
         public int TotalAmountOfGreatballsToKeep = 50;
         public int TotalAmountOfUltraballsToKeep = 50;
@@ -693,6 +698,11 @@ namespace PoGo.PokeMobBot.Logic
         public bool SnipeIgnoreUnknownIv => _settings.SnipeIgnoreUnknownIv;
         public int MinDelayBetweenSnipes => _settings.MinDelayBetweenSnipes;
         public double SnipingScanOffset => _settings.SnipingScanOffset;
+        public bool AutomaticInventoryManagement => _settings.AutomaticInventoryManagement;
+        public int AutomaticMaxAllPokeballs => _settings.AutomaticMaxAllPokeballs;
+        public int AutomaticMaxAllPotions => _settings.AutomaticMaxAllPotions;
+        public int AutomaticMaxAllRevives => _settings.AutomaticMaxAllRevives;
+        public int AutomaticMaxAllBerries => _settings.AutomaticMaxAllBerries;
         public int TotalAmountOfPokeballsToKeep => _settings.TotalAmountOfPokeballsToKeep;
         public int TotalAmountOfGreatballsToKeep => _settings.TotalAmountOfGreatballsToKeep;
         public int TotalAmountOfUltraballsToKeep => _settings.TotalAmountOfUltraballsToKeep;
