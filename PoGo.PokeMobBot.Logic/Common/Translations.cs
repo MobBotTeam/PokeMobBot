@@ -37,6 +37,7 @@ namespace PoGo.PokeMobBot.Logic.Common
         EventFortFailed,
         EventFortTargeted,
         EventProfileLogin,
+        EventLevelUpRewards,
         EventUsedLuckyEgg,
         EventUseLuckyEggMinPokemonCheck,
         EventPokemonEvolvedSuccess,
@@ -95,6 +96,12 @@ namespace PoGo.PokeMobBot.Logic.Common
         ZeroPokeballInv,
         CurrentPokeballInv,
         CurrentPotionInv,
+        CurrentBerryInv,
+        CurrentReviveInv,
+        CurrentIncenseInv,
+        CurrentMiscInv,
+        CurrentInvUsage,
+        CurrentPokemonUsage,
         CheckingForBallsToRecycle,
         CheckingForPotionsToRecycle,
         CheckingForRevivesToRecycle,
@@ -175,6 +182,8 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.EventFortTargeted,
                 "Arriving to Pokestop: {0} in ({1}m)"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventProfileLogin, "Playing as {0}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.EventLevelUpRewards,
+                "Leveled Up: {0} | Items: {1}"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventUsedLuckyEgg,
                 "Used Lucky Egg, remaining: {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.EventUseLuckyEggMinPokemonCheck,
@@ -269,9 +278,21 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.ZeroPokeballInv,
                 "You have no pokeballs in your inventory, no more Pokemon can be caught!"),
             new KeyValuePair<TranslationString, string>(TranslationString.CurrentPokeballInv,
-                "[Inventory] Pokeballs: {0} | Greatballs: {1} | Ultraballs: {2} | Masterballs: {3}"),
+                "[Inventory] Pokeballs: {0} | Greatballs: {1} | Ultraballs: {2} | Masterballs: {3} | Total: {4}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CurrentPotionInv,
-                "[Inventory] Potions: {0} | Super Potions: {1} | Hyper Potions: {2} | Max Potions: {3}"),
+                "[Inventory] Potions: {0} | Super Potions: {1} | Hyper Potions: {2} | Max Potions: {3} | Total: {4}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CurrentBerryInv,
+                "[Inventory] Razz Berries: {0} | Bluk Berries: {1} | Nanab Berries: {2} | Pinap Berries: {3} | Wepar Berries: {4} | Total: {5}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CurrentReviveInv,
+                "[Inventory] Revives: {0} | Max Revives: {1} | Total: {2}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CurrentIncenseInv,
+                "[Inventory] Incense: {0} | Cool Incense: {1} | Floral Incense: {2} | Spicy Incense: {3} | Total {4}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CurrentMiscInv,
+                "[Inventory] Lure Modules: {0} | Lucky Eggs: {1} | Incubators: {2} | Total: {3}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CurrentInvUsage,
+                "[Inventory] Inventory Usage: {0}/{1}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.CurrentPokemonUsage,
+                "[Inventory] Pokemon Stored: {0}/{1}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForBallsToRecycle,
                 "Checking for balls to recycle, keeping {0}"),
             new KeyValuePair<TranslationString, string>(TranslationString.CheckingForPotionsToRecycle,
@@ -575,7 +596,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                         .ToList()
                         .ForEach(translations._pokemons.Add);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     translations = new Translation();
                     translations.Save(Path.Combine(translationPath, "translation.en.json"));

@@ -3,6 +3,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
 using PoGo.PokeMobBot.Logic.State;
@@ -21,8 +22,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly ILogicSettings _logicSettings;
         private readonly Client _client;
         private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
 
-        public TransferDuplicatePokemonTask(PokemonInfo pokemonInfo, DelayingUtils delayingUtils, Inventory inventory, ILogicSettings logicSettings, Client client, IEventDispatcher eventDispatcher)
+        public TransferDuplicatePokemonTask(PokemonInfo pokemonInfo, DelayingUtils delayingUtils, Inventory inventory, ILogicSettings logicSettings, Client client, IEventDispatcher eventDispatcher, ITranslation translation)
         {
             _pokemonInfo = pokemonInfo;
             _delayingUtils = delayingUtils;
@@ -30,6 +32,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _logicSettings = logicSettings;
             _client = client;
             _eventDispatcher = eventDispatcher;
+            _translation = translation;
         }
 
         public async Task Execute(CancellationToken cancellationToken)
@@ -47,6 +50,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var pokemonSettings = await _inventory.GetPokemonSettings();
             var pokemonFamilies = await _inventory.GetPokemonFamilies();
+
+            var currentPokemonCount = await _inventory.GetPokemonsCount();
+            var profile = await _client.Player.GetPlayer();
+            var maxPokemonCount = profile.PlayerData.MaxPokemonStorage;
+
+            _eventDispatcher.Send(new NoticeEvent()
+            {
+                Message = _translation.GetTranslation(TranslationString.CurrentPokemonUsage,
+                    currentPokemonCount, maxPokemonCount)
+            });
 
             foreach (var duplicatePokemon in duplicatePokemons)
             {

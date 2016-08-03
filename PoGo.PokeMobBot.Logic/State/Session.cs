@@ -48,6 +48,14 @@ namespace PoGo.PokeMobBot.Logic.State
 
     //    public ITranslation Translation { get; }
 
-    //    public IEventDispatcher EventDispatcher { get; }
+        //public ApiFailureStrategy ApiFailureStrategy { get; set; }
+
+        //public void Reset(ISettings settings, ILogicSettings logicSettings)
+        //{
+        //    Client = new Client(Settings, ApiFailureStrategy);
+        //    // ferox wants us to set this manually
+        //    Inventory = new Inventory(Client, logicSettings);
+        //    Navigation = new Navigation(Client);
+        //}
     //}
 }

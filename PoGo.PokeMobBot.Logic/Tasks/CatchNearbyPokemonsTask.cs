@@ -25,9 +25,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly Inventory _inventory;
         private readonly ILogicSettings _logicSettings;
         private readonly Client _client;
-        private readonly TransferLowStatPokemonTask _transferLowStatPokemonTask;
 
-        public CatchNearbyPokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, LocationUtils locationUtils, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory, ILogicSettings logicSettings, Client client, TransferLowStatPokemonTask transferLowStatPokemonTask)
+        public CatchNearbyPokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, LocationUtils locationUtils, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory, ILogicSettings logicSettings, Client client)
         {
             _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
             _catchPokemonTask = catchPokemonTask;
@@ -37,7 +36,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _inventory = inventory;
             _logicSettings = logicSettings;
             _client = client;
-            _transferLowStatPokemonTask = transferLowStatPokemonTask;
         }
 
         public async Task Execute(CancellationToken cancellationToken)
@@ -99,14 +97,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         });
                         await _transferDuplicatePokemonTask.Execute(cancellationToken);
                     }
-                    if (_logicSettings.TransferLowStatPokemon)
-                    {
-                        _eventDispatcher.Send(new WarnEvent
-                        {
-                            Message = _translation.GetTranslation(TranslationString.InvFullTransferring)
-                        });
-                        await _transferLowStatPokemonTask.Execute(cancellationToken);
-                    }
                     else
                         _eventDispatcher.Send(new WarnEvent
                         {
@@ -137,8 +127,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             var mapObjects = await _client.Map.GetMapObjects();
 
-            var pokemons = mapObjects.MapCells.SelectMany(i => i.CatchablePokemons)
-                .OrderBy(i => _locationUtils.CalculateDistanceInMeters(_client.CurrentLatitude, _client.CurrentLongitude, i.Latitude, i.Longitude));
+            var pokemons = mapObjects.Item1.MapCells.SelectMany(i => i.CatchablePokemons)
+                .OrderBy(
+                    i =>
+                        _locationUtils.CalculateDistanceInMeters(_client.CurrentLatitude,
+                            _client.CurrentLongitude,
+                            i.Latitude, i.Longitude));
 
             return pokemons;
         }

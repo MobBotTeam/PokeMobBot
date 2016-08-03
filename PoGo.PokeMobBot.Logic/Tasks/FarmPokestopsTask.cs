@@ -42,11 +42,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly IEventDispatcher _eventDispatcher;
         private readonly ITranslation _translation;
         private readonly Inventory _inventory;
-        private readonly TransferLowStatPokemonTask _transferLowStatPokemonTask;
 
         public int TimesZeroXPawarded;
 
-        public FarmPokestopsTask(RecycleItemsTask recycleItemsTask, EvolvePokemonTask evolvePokemonTask, LevelUpPokemonTask levelUpPokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, SnipePokemonTask snipePokemonTask, EggWalker eggWalker, CatchNearbyPokemonsTask catchNearbyPokemonsTask, CatchIncensePokemonsTask catchIncensePokemonsTask, CatchLurePokemonsTask catchLurePokemonsTask, DelayingUtils delayingUtils, LocationUtils locationUtils, StringUtils stringUtils, DisplayPokemonStatsTask displayPokemonStatsTask, ISettings settings, Client client, Navigation navigation, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory, TransferLowStatPokemonTask transferLowStatPokemonTask)
+        public FarmPokestopsTask(RecycleItemsTask recycleItemsTask, EvolvePokemonTask evolvePokemonTask, LevelUpPokemonTask levelUpPokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, SnipePokemonTask snipePokemonTask, EggWalker eggWalker, CatchNearbyPokemonsTask catchNearbyPokemonsTask, CatchIncensePokemonsTask catchIncensePokemonsTask, CatchLurePokemonsTask catchLurePokemonsTask, DelayingUtils delayingUtils, LocationUtils locationUtils, StringUtils stringUtils, DisplayPokemonStatsTask displayPokemonStatsTask, ISettings settings, Client client, Navigation navigation, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory)
         {
             _recycleItemsTask = recycleItemsTask;
             _evolvePokemonTask = evolvePokemonTask;
@@ -69,7 +68,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _eventDispatcher = eventDispatcher;
             _translation = translation;
             _inventory = inventory;
-            _transferLowStatPokemonTask = transferLowStatPokemonTask;
         }
 
         public async Task Execute(CancellationToken cancellationToken)
@@ -336,7 +334,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     _client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await _client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
-                _eventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance, Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
+                _eventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance,Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls?.Count > 0 ? fortInfo.ImageUrls[0] : ""});
                 if (_logicSettings.Teleport)
                     await _navigation.Teleport(new GeoCoordinate(fortInfo.Latitude, fortInfo.Longitude,
                        _client.Settings.DefaultAltitude));
@@ -460,10 +458,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     {
                         await _transferDuplicatePokemonTask.Execute(cancellationToken);
                     }
-                    if (_logicSettings.TransferLowStatPokemon)
-                    {
-                        await _transferLowStatPokemonTask.Execute(cancellationToken);
-                    }
                     if (_logicSettings.RenamePokemon)
                     {
                         await _renamePokemonTask.Execute(cancellationToken);
@@ -486,22 +480,39 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         {
             var mapObjects = await _client.Map.GetMapObjects();
 
-            var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts);
+            var pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts);
 
             _eventDispatcher.Send(new PokeStopListEvent { Forts = pokeStops.ToList() });
 
             // Wasn't sure how to make this pretty. Edit as needed.
-            pokeStops = pokeStops
-                .Where(
-                    i =>
-                        i.Type == FortType.Checkpoint &&
-                        i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
-                        ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
-                            _locationUtils.CalculateDistanceInMeters(
-                                _settings.DefaultLatitude, _settings.DefaultLongitude,
-                                i.Latitude, i.Longitude) < _logicSettings.MaxTravelDistanceInMeters) ||
-                        _logicSettings.MaxTravelDistanceInMeters == 0
-                );
+            if (_logicSettings.Teleport)
+            {
+                pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
+                    .Where(
+                        i =>
+                            i.Type == FortType.Checkpoint &&
+                            i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
+                            ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
+                                _locationUtils.CalculateDistanceInMeters(
+                                    _client.CurrentLatitude, _client.CurrentLongitude,
+                                    i.Latitude, i.Longitude) < _logicSettings.MaxTravelDistanceInMeters) ||
+                            _logicSettings.MaxTravelDistanceInMeters == 0
+                    );
+            }
+            else
+            {
+                pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
+                    .Where(
+                        i =>
+                            i.Type == FortType.Checkpoint &&
+                            i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
+                            ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
+                                _locationUtils.CalculateDistanceInMeters(
+                                    _settings.DefaultLatitude, _settings.DefaultLongitude,
+                                    i.Latitude, i.Longitude) < _logicSettings.MaxTravelDistanceInMeters) ||
+                            _logicSettings.MaxTravelDistanceInMeters == 0
+                    );
+            }
 
             return pokeStops.ToList();
         }

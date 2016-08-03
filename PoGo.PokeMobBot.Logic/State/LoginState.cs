@@ -46,30 +46,7 @@ namespace PoGo.PokeMobBot.Logic.State
 
             try
             {
-                switch (_settings.AuthType)
-                {
-                    case AuthType.Ptc:
-                        try
-                        {
-                            await
-                                _login.DoPtcLogin(_settings.PtcUsername, _settings.PtcPassword);
-                        }
-                        catch (AggregateException ae)
-                        {
-                            throw ae.Flatten().InnerException;
-                        }
-                        break;
-                    case AuthType.Google:
-                        await
-                            _login.DoGoogleLogin(_settings.GoogleUsername, _settings.GooglePassword);
-                        break;
-                    default:
-                        _eventDispatcher.Send(new ErrorEvent
-                        {
-                            Message = _translation.GetTranslation(TranslationString.WrongAuthType)
-                        });
-                        return null;
-                }
+                await _client.Login.DoLogin();
             }
             catch (PtcOfflineException)
             {

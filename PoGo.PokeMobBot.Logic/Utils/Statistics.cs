@@ -6,6 +6,10 @@ using System;
 using System.Globalization;
 using System.Linq;
 using POGOProtos.Networking.Responses;
+using POGOProtos.Inventory.Item;
+using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Event;
 
 #endregion
 
@@ -20,8 +24,12 @@ namespace PoGo.PokeMobBot.Logic.Utils
     public class Statistics
     {
         private readonly DateTime _initSessionDateTime = DateTime.Now;
+        private readonly Inventory _inventory;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly StringUtils _stringUtils;
 
         private StatsExport _exportStats;
+        private StatsExport _currentStats;
         private string _playerName;
         public int TotalExperience;
         public int TotalItemsRemoved;
@@ -29,10 +37,40 @@ namespace PoGo.PokeMobBot.Logic.Utils
         public int TotalPokemonsTransfered;
         public int TotalStardust;
 
+        public Statistics(Inventory inventory, IEventDispatcher eventDispatcher, StringUtils stringUtils)
+        {
+            _inventory = inventory;
+            _eventDispatcher = eventDispatcher;
+            _stringUtils = stringUtils;
+        }
+
         public void Dirty(Inventory inventory)
         {
+            if (_exportStats != null)
+                _currentStats = _exportStats;
+
             _exportStats = GetCurrentInfo(inventory);
             DirtyEvent?.Invoke();
+        }
+
+        public void CheckLevelUp()
+        {
+            if (_currentStats != null)
+            {
+                if (_currentStats.Level < _exportStats.Level)
+                {
+                    var response = _inventory.GetLevelUpRewards(_exportStats);
+                    if (response.Result.ItemsAwarded.Any<ItemAward>())
+                    {
+                        _eventDispatcher.Send(new PlayerLevelUpEvent
+                        {
+                            Items = _stringUtils.GetSummedFriendlyNameOfItemAwardList(response.Result.ItemsAwarded)
+                        });
+                    }
+                }
+
+                _currentStats = null;
+            }
         }
 
         public event StatisticsDirtyDelegate DirtyEvent;

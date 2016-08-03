@@ -23,6 +23,7 @@ namespace PoGo.PokeMobBot.Logic
         {
             _stats.SetUsername(evt.Profile);
             _stats.Dirty(_inventory);
+            _stats.CheckLevelUp();
         }
 
         public void HandleEvent(ErrorEvent evt)
@@ -45,24 +46,28 @@ namespace PoGo.PokeMobBot.Logic
         {
             _stats.TotalExperience += evt.Exp;
             _stats.Dirty(_inventory);
+            _stats.CheckLevelUp();
         }
 
         public void HandleEvent(TransferPokemonEvent evt)
         {
             _stats.TotalPokemonsTransfered++;
             _stats.Dirty(_inventory);
+            _stats.CheckLevelUp();
         }
 
         public void HandleEvent(ItemRecycledEvent evt)
         {
             _stats.TotalItemsRemoved++;
             _stats.Dirty(_inventory);
+            _stats.CheckLevelUp();
         }
 
         public void HandleEvent(FortUsedEvent evt)
         {
             _stats.TotalExperience += evt.Exp;
             _stats.Dirty(_inventory);
+            _stats.CheckLevelUp();
         }
 
         public void HandleEvent(FortTargetEvent evt)
@@ -77,6 +82,7 @@ namespace PoGo.PokeMobBot.Logic
                 _stats.TotalPokemons++;
                 _stats.TotalStardust = evt.Stardust;
                 _stats.Dirty(_inventory);
+                _stats.CheckLevelUp();
             }
         }
 

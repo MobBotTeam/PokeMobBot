@@ -42,12 +42,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _inventory = inventory;
         }
 
-        public async Task Execute(dynamic encounter, MapPokemon pokemon,
+        public async Task<bool> Execute(dynamic encounter, MapPokemon pokemon,
             FortData currentFortData = null, ulong encounterId = 0)
         {
             if (encounter is EncounterResponse && pokemon == null)
                 throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse",
-                    "pokemon");
+                    nameof(pokemon));
 
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
@@ -69,10 +69,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 ? encounter.WildPokemon?.PokemonData?.Cp
                                 : encounter?.PokemonData?.Cp) ?? 0
                     });
-                    return;
+                    return false;
                 }
 
-                var isLowProbability = probability < _logicSettings.UseBerryBelowCatchProbability;
+                var useBerryBelowCatchProbability = _logicSettings.UseBerryBelowCatchProbability > 1
+                    ? _logicSettings.UseBerryBelowCatchProbability/100
+                    : _logicSettings.UseBerryBelowCatchProbability;
+                var isLowProbability = probability < useBerryBelowCatchProbability;
                 var isHighCp = encounter != null &&
                                (encounter is EncounterResponse
                                    ? encounter.WildPokemon?.PokemonData?.Cp
@@ -211,6 +214,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     await _delayingUtils.Delay(_logicSettings.DelayBetweenPokemonCatch, 2000);
             } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed ||
                      caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
+
+            return true;
         }
 
         private async Task<ItemId> GetBestBall(dynamic encounter, float probability)
@@ -227,6 +232,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData));
 
+            var useUltraBallBelowCatchProbability = _logicSettings.UseUltraBallBelowCatchProbability > 1
+                ? _logicSettings.UseUltraBallBelowCatchProbability/100
+                : _logicSettings.UseUltraBallBelowCatchProbability;
+            var useGreatBallBelowCatchProbability = _logicSettings.UseGreatBallBelowCatchProbability > 1
+                ? _logicSettings.UseGreatBallBelowCatchProbability/100
+                : _logicSettings.UseGreatBallBelowCatchProbability;
+
+            await _inventory.RefreshCachedInventory();
             var pokeBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemPokeBall);
             var greatBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemGreatBall);
             var ultraBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemUltraBall);
@@ -236,16 +249,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 _logicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
             if (ultraBallsCount > 0 && iV >= _logicSettings.UseUltraBallAboveIv ||
-                probability <= _logicSettings.UseUltraBallBelowCatchProbability)
+                probability <= useUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
             if (greatBallsCount > 0 && iV >= _logicSettings.UseGreatBallAboveIv ||
-                probability <= _logicSettings.UseGreatBallBelowCatchProbability)
+                probability <= useGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
-            if (pokeBallsCount > 0 && iV < _logicSettings.UseGreatBallAboveIv ||
-                probability > _logicSettings.UseGreatBallBelowCatchProbability)
-                return ItemId.ItemPokeBall;
-
-            return ItemId.ItemUnknown;
+            return pokeBallsCount > 0 ? ItemId.ItemPokeBall : ItemId.ItemUnknown;
         }
 
         private async Task UseBerry(ulong encounterId, string spawnPointId)

@@ -8,6 +8,8 @@ using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.DataDumper;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
+using PoGo.PokeMobBot.Logic.Service;
+using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
@@ -15,79 +17,56 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class DisplayPokemonStatsTask
     {
-        private readonly Dumper _dumper;
-        private readonly PokemonInfo _pokemonInfo;
         private readonly Inventory _inventory;
         private readonly ILogicSettings _logicSettings;
         private readonly IEventDispatcher _eventDispatcher;
+        private readonly Dumper _dumper;
         private readonly ITranslation _translation;
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly PokemonAnalysisService _pokemonAnalysisService;
 
-        public List<ulong> PokemonId = new List<ulong>();
-        
-        public List<ulong> PokemonIdcp = new List<ulong>();
+        public static List<ulong> PokemonId = new List<ulong>();
 
-        public DisplayPokemonStatsTask(Dumper dumper, PokemonInfo pokemonInfo, Inventory inventory, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, ITranslation translation)
+
+        public static List<ulong> PokemonIdcp = new List<ulong>();
+
+        public DisplayPokemonStatsTask(Inventory inventory, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, Dumper dumper, ITranslation translation, PokemonInfo pokemonInfo, PokemonAnalysisService pokemonAnalysisService)
         {
-            _dumper = dumper;
-            _pokemonInfo = pokemonInfo;
             _inventory = inventory;
             _logicSettings = logicSettings;
             _eventDispatcher = eventDispatcher;
+            _dumper = dumper;
             _translation = translation;
+            _pokemonInfo = pokemonInfo;
+            _pokemonAnalysisService = pokemonAnalysisService;
         }
 
         public async Task Execute()
         {
-            var highestsPokemonCp =
-                await _inventory.GetHighestsCp(_logicSettings.AmountOfPokemonToDisplayOnStart);
+
+            var trainerLevel = 40;
+
+            var highestsPokemonCp = await _inventory.GetHighestsCp(_logicSettings.AmountOfPokemonToDisplayOnStart);
+            var pokemonPairedWithStatsCp = highestsPokemonCp.Select(pokemon => _pokemonAnalysisService.GetPokemonAnalysis(pokemon, trainerLevel)).ToList();
+
             var highestsPokemonCpForUpgrade = await _inventory.GetHighestsCp(50);
+            var pokemonPairedWithStatsCpForUpgrade = highestsPokemonCpForUpgrade.Select(pokemon => _pokemonAnalysisService.GetPokemonAnalysis(pokemon, trainerLevel)).ToList();
+
+            var highestsPokemonPerfect = await _inventory.GetHighestsPerfect(_logicSettings.AmountOfPokemonToDisplayOnStart);
+            var pokemonPairedWithStatsIv = highestsPokemonPerfect.Select(pokemon => _pokemonAnalysisService.GetPokemonAnalysis(pokemon, trainerLevel)).ToList();
+
             var highestsPokemonIvForUpgrade = await _inventory.GetHighestsPerfect(50);
-            var pokemonPairedWithStatsCp =
-                highestsPokemonCp.Select(
-                    pokemon =>
-                        Tuple.Create(pokemon, _pokemonInfo.CalculateMaxCp(pokemon),
-                            _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
-                            _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon),
- (PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0)
-                                   )).ToList();
-            var pokemonPairedWithStatsCpForUpgrade =
-                highestsPokemonCpForUpgrade.Select(
-                    pokemon =>
-                        Tuple.Create(pokemon, _pokemonInfo.CalculateMaxCp(pokemon),
-                            _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
-                            _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon),
-
-                       (PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0)
-                             )).ToList();
-            var highestsPokemonPerfect =
-                await _inventory.GetHighestsPerfect(_logicSettings.AmountOfPokemonToDisplayOnStart);
-
-            var pokemonPairedWithStatsIv =
-                highestsPokemonPerfect.Select(
-                    pokemon =>
-                        Tuple.Create(pokemon, _pokemonInfo.CalculateMaxCp(pokemon),
-                            _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
-                            _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon),
-
-                       (PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0)
-                             )).ToList();
-            var pokemonPairedWithStatsIvForUpgrade =
-                highestsPokemonIvForUpgrade.Select(
-                    pokemon =>
-                        Tuple.Create(pokemon, _pokemonInfo.CalculateMaxCp(pokemon),
-                            _pokemonInfo.CalculatePokemonPerfection(pokemon), _pokemonInfo.GetLevel(pokemon),
-                            _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon),
-
-                       (PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))) != null ? PokemonMoveInfo.GetPokemonMoveSet(PokemonMoveInfo.GetMoveSetCombinationIndex(pokemon.PokemonId, _pokemonInfo.GetPokemonMove1(pokemon), _pokemonInfo.GetPokemonMove2(pokemon))).GetRankVsType("Average") : 0)
-                            )).ToList();
+            var pokemonPairedWithStatsIvForUpgrade = highestsPokemonIvForUpgrade.Select(pokemon => _pokemonAnalysisService.GetPokemonAnalysis(pokemon, trainerLevel)).ToList();
 
             _eventDispatcher.Send(
                 new DisplayHighestsPokemonEvent
                 {
                     SortedBy = "CP",
-                    PokemonList = pokemonPairedWithStatsCp
+                    PokemonList = pokemonPairedWithStatsCp,
+                    DisplayPokemonMaxPoweredCp = _logicSettings.DisplayPokemonMaxPoweredCp,
+                    DisplayPokemonMovesetRank = _logicSettings.DisplayPokemonMovesetRank
                 });
-            if(_logicSettings.Teleport)
+            if (_logicSettings.Teleport)
                 await Task.Delay(_logicSettings.DelayDisplayPokemon);
             else
                 await Task.Delay(500);
@@ -96,9 +75,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 new DisplayHighestsPokemonEvent
                 {
                     SortedBy = "IV",
-                    PokemonList = pokemonPairedWithStatsIv
+                    PokemonList = pokemonPairedWithStatsIv,
+                    DisplayPokemonMaxPoweredCp = _logicSettings.DisplayPokemonMaxPoweredCp,
+                    DisplayPokemonMovesetRank = _logicSettings.DisplayPokemonMovesetRank
                 });
-            
+
             var allPokemonInBag = _logicSettings.PrioritizeIvOverCp
                 ? await _inventory.GetHighestsPerfect(1000)
                 : await _inventory.GetHighestsCp(1000);
@@ -119,7 +100,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 _dumper.Dump(toDumpTXT, dumpFileName);
                 _dumper.Dump(toDumpCSV, dumpFileName, "csv");
             }
-            if(_logicSettings.Teleport)
+            if (_logicSettings.Teleport)
                 await Task.Delay(_logicSettings.DelayDisplayPokemon);
             else
                 await Task.Delay(500);

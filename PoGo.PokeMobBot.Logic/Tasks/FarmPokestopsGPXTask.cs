@@ -39,11 +39,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly Inventory _inventory;
         private readonly ILogicSettings _logicSettings;
         private readonly Navigation _navigation;
-        private readonly TransferLowStatPokemonTask _transferLowStatPokemonTask;
 
         private DateTime _lastTasksCall = DateTime.Now;
 
-        public FarmPokestopsGpxTask(RecycleItemsTask recycleItemsTask, EvolvePokemonTask evolvePokemonTask, SnipePokemonTask snipePokemonTask, EggWalker eggWalker, CatchLurePokemonsTask catchLurePokemonsTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, CatchNearbyPokemonsTask catchNearbyPokemonsTask, CatchIncensePokemonsTask catchIncensePokemonsTask, UseNearbyPokestopsTask useNearbyPokestopsTask, StringUtils stringUtils, LocationUtils locationUtils, GpxReader gpxReader, Client client, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory, ILogicSettings logicSettings, Navigation navigation, TransferLowStatPokemonTask transferLowStatPokemonTask)
+        public FarmPokestopsGpxTask(RecycleItemsTask recycleItemsTask, EvolvePokemonTask evolvePokemonTask, SnipePokemonTask snipePokemonTask, EggWalker eggWalker, CatchLurePokemonsTask catchLurePokemonsTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, RenamePokemonTask renamePokemonTask, CatchNearbyPokemonsTask catchNearbyPokemonsTask, CatchIncensePokemonsTask catchIncensePokemonsTask, UseNearbyPokestopsTask useNearbyPokestopsTask, StringUtils stringUtils, LocationUtils locationUtils, GpxReader gpxReader, Client client, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory, ILogicSettings logicSettings, Navigation navigation)
         {
             _recycleItemsTask = recycleItemsTask;
             _evolvePokemonTask = evolvePokemonTask;
@@ -64,7 +63,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _inventory = inventory;
             _logicSettings = logicSettings;
             _navigation = navigation;
-            _transferLowStatPokemonTask = transferLowStatPokemonTask;
         }
 
         public async Task Execute(CancellationToken cancellationToken)
@@ -173,10 +171,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             {
                                 await _transferDuplicatePokemonTask.Execute(cancellationToken);
                             }
-                            if (_logicSettings.TransferLowStatPokemon)
-                            {
-                                await _transferLowStatPokemonTask.Execute(cancellationToken);
-                            }
 
                             if (_logicSettings.RenamePokemon)
                             {
@@ -220,7 +214,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var mapObjects = await _client.Map.GetMapObjects();
 
             // Wasn't sure how to make this pretty. Edit as needed.
-            var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts)
+            var pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
                 .Where(
                     i =>
                         i.Type == FortType.Checkpoint &&

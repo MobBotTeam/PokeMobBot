@@ -24,11 +24,10 @@ namespace PoGo.PokeMobBot.Logic.State
         private readonly FarmPokestopsGpxTask _farmPokestopsGpxTask;
         private readonly FarmPokestopsTask _farmPokestopsTask;
         private readonly ILogicSettings _logicSettings;
-        private readonly TransferLowStatPokemonTask _lowStatPokemonTask;
         private readonly IEventDispatcher _eventDispatcher;
         private readonly ITranslation _translation;
 
-        public FarmState(EvolvePokemonTask evolvePokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, LevelUpPokemonTask levelUpPokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask, ILogicSettings logicSettings, TransferLowStatPokemonTask lowStatPokemonTask, IEventDispatcher eventDispatcher, ITranslation translation)
+        public FarmState(EvolvePokemonTask evolvePokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, LevelUpPokemonTask levelUpPokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, ITranslation translation)
         {
             _evolvePokemonTask = evolvePokemonTask;
             _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
@@ -39,7 +38,6 @@ namespace PoGo.PokeMobBot.Logic.State
             _farmPokestopsGpxTask = farmPokestopsGpxTask;
             _farmPokestopsTask = farmPokestopsTask;
             _logicSettings = logicSettings;
-            _lowStatPokemonTask = lowStatPokemonTask;
             _eventDispatcher = eventDispatcher;
             _translation = translation;
         }
@@ -56,10 +54,6 @@ namespace PoGo.PokeMobBot.Logic.State
                 if (_logicSettings.TransferDuplicatePokemon)
                 {
                     await _transferDuplicatePokemonTask.Execute(cancellationToken);
-                }
-                if (_logicSettings.TransferLowStatPokemon)
-                {
-                    await _lowStatPokemonTask.Execute(cancellationToken);
                 }
                 if (_logicSettings.AutomaticallyLevelUpPokemon)
                 {

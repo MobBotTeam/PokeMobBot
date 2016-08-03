@@ -24,6 +24,17 @@ namespace PoGo.PokeMobBot.Logic.PoGoUtils
             return $"({BaseAttack} atk,{BaseDefense} def,{BaseStamina} sta)";
         }
     }
+    public class PokemonAnalysis
+    {
+        public PokemonData PokeData { get; set; }
+        public int PerfectCp { get; set; }
+        public int MaximumPoweredCp { get; set; }
+        public double Perfection { get; set; }
+        public double Level { get; set; }
+        public PokemonMove Move1 { get; set; }
+        public PokemonMove Move2 { get; set; }
+        public int AverageRankVsTypes { get; set; }
+    }
 
     public class PokemonInfo
     {

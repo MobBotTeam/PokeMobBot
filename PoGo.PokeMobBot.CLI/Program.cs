@@ -2,6 +2,7 @@
 
 using System;
 using System.Globalization;
+using System.Reflection;
 using System.Threading;
 using Ninject;
 using PoGo.PokeMobBot.Logic;
@@ -13,6 +14,7 @@ using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
 using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI;
+using PokemonGo.RocketAPI.Extensions;
 using POGOProtos.Networking.Responses;
 
 #endregion
@@ -48,8 +50,8 @@ namespace PoGo.PokeMobBot.CLI
 #endif
 
             IKernel kernel = new StandardKernel();
-            kernel.Bind<Client>().To<Client>().InSingletonScope();
             kernel.Bind<ISettings>().To<ClientSettings>().InSingletonScope();
+            kernel.Bind<IApiFailureStrategy>().To<ApiFailureStrategy>().InSingletonScope();
             kernel.Bind<Inventory>().To<Inventory>().InSingletonScope();
             kernel.Bind<GetPlayerResponse>().To<GetPlayerResponse>().InSingletonScope();
             kernel.Bind<ILogicSettings>().To<LogicSettings>().InSingletonScope();
@@ -57,6 +59,7 @@ namespace PoGo.PokeMobBot.CLI
             kernel.Bind<ITranslation>().To<Translation>().InSingletonScope();
             kernel.Bind<IEventDispatcher>().To<EventDispatcher>().InSingletonScope();
             kernel.Bind<ILogger>().To<ConsoleLogger>().WithConstructorArgument(logLevel);
+            kernel.Bind<FarmPokestopsTask>().To<FarmPokestopsTask>().InSingletonScope();
 
             var logger = kernel.Get<ILogger>();
 
@@ -84,12 +87,14 @@ namespace PoGo.PokeMobBot.CLI
                 Environment.Exit(0);
             }
             //var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
-            var client = kernel.Get<Client>();
-            client.ApiFailure = kernel.Get<ApiFailureStrategy>();
+
+            // very very dirty hacks...
+            var client = new Client(kernel.Get<ISettings>(), null);
+            kernel.Bind<Client>().ToConstant(client);
+            client.ApiFailure = kernel.Get<IApiFailureStrategy>();
+
 
             var translation = kernel.Get<ITranslation>();
-
-
             /*SimpleSession session = new SimpleSession
             {
                 _client = new PokemonGo.RocketAPI.Client(new ClientSettings(settings)),
@@ -107,7 +112,7 @@ namespace PoGo.PokeMobBot.CLI
             */
 
             var machine = kernel.Get<StateMachine>();
-            var stats = new Statistics();
+            var stats = kernel.Get<Statistics>();
             stats.DirtyEvent +=
                 () =>
                     Console.Title =

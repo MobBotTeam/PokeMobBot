@@ -3,11 +3,12 @@
 using System;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Tasks;
 using PokemonGo.RocketAPI;
-using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.Extensions;
-using PokemonGo.RocketAPI.Rpc;
+using POGOProtos.Networking.Envelopes;
 
 #endregion
 
@@ -30,7 +31,23 @@ namespace PoGo.PokeMobBot.Logic.Common
             _translation = translation;
         }
 
-        public async Task<ApiOperation> HandleApiFailure()
+        private async void DoLogin()
+        {
+            try
+            {
+                await _login.DoLogin();
+            }
+            catch (AggregateException ae)
+            {
+                throw ae.Flatten().InnerException;
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException;
+            }
+        }
+
+        public async Task<ApiOperation> HandleApiFailure(RequestEnvelope request, ResponseEnvelope response)
         {
             if (_retryCount == 11)
                 return ApiOperation.Abort;
@@ -44,7 +61,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                 {
                     DoLogin();
                 }
-                catch (Exception ex) when (ex is PtcOfflineException || ex is AccessTokenExpiredException)
+                catch (PtcOfflineException)
                 {
                     _eventDispatcher.Send(new ErrorEvent
                     {
@@ -56,7 +73,19 @@ namespace PoGo.PokeMobBot.Logic.Common
                     });
                     await Task.Delay(20000);
                 }
-                catch (InvalidResponseException)
+                catch (AccessTokenExpiredException)
+                {
+                    _eventDispatcher.Send(new ErrorEvent
+                    {
+                        Message = _translation.GetTranslation(TranslationString.AccessTokenExpired)
+                    });
+                    _eventDispatcher.Send(new NoticeEvent
+                    {
+                        Message = _translation.GetTranslation(TranslationString.TryingAgainIn, 2)
+                    });
+                    await Task.Delay(2000);
+                }
+                catch (Exception ex) when (ex is InvalidResponseException || ex is TaskCanceledException)
                 {
                     _eventDispatcher.Send(new ErrorEvent
                     {
@@ -69,37 +98,9 @@ namespace PoGo.PokeMobBot.Logic.Common
             return ApiOperation.Retry;
         }
 
-        public void HandleApiSuccess()
+        public void HandleApiSuccess(RequestEnvelope request, ResponseEnvelope response)
         {
             _retryCount = 0;
-        }
-
-        private async void DoLogin()
-        {
-            switch (_settings.AuthType)
-            {
-                case AuthType.Ptc:
-                    try
-                    {
-                        await
-                            _login.DoPtcLogin(_settings.PtcUsername, _settings.PtcPassword);
-                    }
-                    catch (AggregateException ae)
-                    {
-                        throw ae.Flatten().InnerException;
-                    }
-                    break;
-                case AuthType.Google:
-                    await
-                        _login.DoGoogleLogin(_settings.GoogleUsername, _settings.GooglePassword);
-                    break;
-                default:
-                    _eventDispatcher.Send(new ErrorEvent
-                    {
-                        Message = _translation.GetTranslation(TranslationString.WrongAuthType)
-                    });
-                    break;
-            }
         }
     }
 }

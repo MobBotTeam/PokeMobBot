@@ -24,9 +24,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         private readonly Client _client;
         private readonly IEventDispatcher _eventDispatcher;
         private readonly ILogicSettings _logicSettings;
-        private readonly TransferLowStatPokemonTask _transferLowStatPokemonTask;
 
-        public UseNearbyPokestopsTask(RecycleItemsTask recycleItemsTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, LocationUtils locationUtils, StringUtils stringUtils, Client client, IEventDispatcher eventDispatcher, ILogicSettings logicSettings, TransferLowStatPokemonTask transferLowStatPokemonTask)
+        public UseNearbyPokestopsTask(RecycleItemsTask recycleItemsTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, LocationUtils locationUtils, StringUtils stringUtils, Client client, IEventDispatcher eventDispatcher, ILogicSettings logicSettings)
         {
             _recycleItemsTask = recycleItemsTask;
             _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
@@ -35,7 +34,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             _client = client;
             _eventDispatcher = eventDispatcher;
             _logicSettings = logicSettings;
-            _transferLowStatPokemonTask = transferLowStatPokemonTask;
         }
 
         //Please do not change GetPokeStops() in this file, it's specifically set
@@ -85,10 +83,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     await _transferDuplicatePokemonTask.Execute(cancellationToken);
                 }
-                if (_logicSettings.TransferLowStatPokemon)
-                {
-                    await _transferLowStatPokemonTask.Execute(cancellationToken);
-                }
             }
         }
 
@@ -98,7 +92,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var mapObjects = await _client.Map.GetMapObjects();
 
             // Wasn't sure how to make this pretty. Edit as needed.
-            var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts)
+            var pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
                 .Where(
                     i =>
                         i.Type == FortType.Checkpoint &&
