@@ -439,17 +439,34 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             session.EventDispatcher.Send(new PokeStopListEvent { Forts = pokeStops.ToList() });
 
             // Wasn't sure how to make this pretty. Edit as needed.
-            pokeStops = pokeStops
-                .Where(
-                    i =>
-                        i.Type == FortType.Checkpoint &&
-                        i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
-                        ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
-                            LocationUtils.CalculateDistanceInMeters(
-                                session.Settings.DefaultLatitude, session.Settings.DefaultLongitude,
-                                i.Latitude, i.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters) ||
-                        session.LogicSettings.MaxTravelDistanceInMeters == 0
-                );
+            if (session.LogicSettings.Teleport)
+            {
+                pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts)
+                    .Where(
+                        i =>
+                            i.Type == FortType.Checkpoint &&
+                            i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
+                            ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
+                                LocationUtils.CalculateDistanceInMeters(
+                                    session.Settings.DefaultLatitude, session.Settings.DefaultLongitude,
+                                    i.Latitude, i.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters) ||
+                            session.LogicSettings.MaxTravelDistanceInMeters == 0
+                    );
+            }
+            else
+            {
+                pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts)
+                    .Where(
+                        i =>
+                            i.Type == FortType.Checkpoint &&
+                            i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
+                            ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
+                                LocationUtils.CalculateDistanceInMeters(
+                                    session.Client.CurrentLatitude, session.Client.CurrentLongitude,
+                                    i.Latitude, i.Longitude) < session.LogicSettings.MaxTravelDistanceInMeters) ||
+                            session.LogicSettings.MaxTravelDistanceInMeters == 0
+                    );
+            }
 
             return pokeStops.ToList();
         }
