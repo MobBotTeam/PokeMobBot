@@ -1,5 +1,5 @@
 <h1>Catchem PokemonGO bot <i>with modern UI</i></h1>
-<h4>Baed on PokeMobBot project</h4>
+<h4>Based on PokeMobBot project</h4>
 
 
 <h3>UI map/console window</h3>
