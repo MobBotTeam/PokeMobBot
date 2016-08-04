@@ -18,7 +18,10 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/8m
 <br>
 <a name="paypal">Feel free to buy us all a beer, by using PayPal:</a>
 
-[![](https://camo.githubusercontent.com/bce14c8e2e39ba0464551b34602b4c60c182526b/68747470733a2f2f7777772e70617970616c6f626a656374732e636f6d2f656e5f55532f692f62746e2f62746e5f646f6e6174655f4c472e676966)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8JTWE86JC7UT6)<br/>
+
+[![](https://camo.githubusercontent.com/bce14c8e2e39ba0464551b34602b4c60c182526b/68747470733a2f2f7777772e70617970616c6f626a656374732e636f6d2f656e5f55532f692f62746e2f62746e5f646f6e6174655f4c472e676966)](http://forum.pokemobbot.com/)
+
+Visit our forum and sign up to donate: http://forum.pokemobbot.com/
 
 <h6><em>[ All PayPal donations are used towards expenses and will have full accounting details posted weekly, beginning 8/5/2016 ]</em></h6><br/>
 You can donate Bitcoins to FeroxRev the man who worked really hard on the API library.
