@@ -2,6 +2,11 @@
 [1.1]: http://i.imgur.com/M4fJ65n.png (ATTENTION)
 [1.2]: http://i.imgur.com/NNcGs1n.png (BTC)
 <!-- title -->
+<h1>THE BOT IS NOT WORKING AT THE MOMENT.</h1>
+<br>
+Check the announcement channel on our Discord: https://discord.gg/8msqsWV <br/>
+<br>
+<br>
 <h1>Pokemon Go Bot based on FeroxRevs API</h1>
 <!-- disclaimer -->
 ![alt text][1.1] <strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong> ![alt text][1.1]
