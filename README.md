@@ -2,7 +2,8 @@
 [1.1]: http://i.imgur.com/M4fJ65n.png (ATTENTION)
 [1.2]: http://i.imgur.com/NNcGs1n.png (BTC)
 <!-- title -->
-<h1>THE BOT IS NOT WORKING AT THE MOMENT.</h1>
+<h1>THE BOT IS NOT WORKING AT THE MOMENT <br> WE ARE WORKING ON THIS</h1>
+<h2><b>Please check our Twitter for more informations!</b> <br>We are answering Dev-Related Questions there too: https://twitter.com/PokeMobBot/with_replies</h2>
 <br>
 Check the announcement channel on our Discord: https://discord.gg/8msqsWV <br/>
 <br>
