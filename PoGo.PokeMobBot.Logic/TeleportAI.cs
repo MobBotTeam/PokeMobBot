@@ -21,75 +21,77 @@ namespace PoGo.PokeMobBot.Logic
 
         public void getDelay(double distance)
               {
+            Random rnd = new Random();
+            int rand = rnd.Next(0, 250);
             if (distance > 2000)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime2000 + "ms");
-                 System.Threading.Thread.Sleep(waitTime2000);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime2000 + rand) + "ms");
+                 System.Threading.Thread.Sleep(waitTime2000 + rand);
             }
             else if (distance > 1500)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime1500 + "ms");
-                System.Threading.Thread.Sleep(waitTime1500);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime1500 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime1500 + rand);
             }
             else if (distance > 1250)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime1250 + "ms");
-                System.Threading.Thread.Sleep(waitTime1250);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime1250 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime1250 + rand);
             }
             else if (distance > 1000)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime1000 + "ms");
-                System.Threading.Thread.Sleep(waitTime1000);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime1000 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime1000 + rand);
             }
             else if (distance > 900)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime900 + "ms");
-                System.Threading.Thread.Sleep(waitTime900);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime900 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime900 + rand);
             }
             else if (distance > 800)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime800 + "ms");
-                System.Threading.Thread.Sleep(waitTime800);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime800 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime800 + rand);
             }
             else if (distance > 700)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime700 + "ms");
-                System.Threading.Thread.Sleep(waitTime700);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime700 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime700 + rand);
             }
             else if (distance > 600)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime600 + "ms");
-                System.Threading.Thread.Sleep(waitTime600);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime600 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime600 + rand);
             }
             else if (distance > 500)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime500 + "ms");
-                System.Threading.Thread.Sleep(waitTime500);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime500 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime500 + rand);
             }
             else if (distance > 400)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime400 + "ms");
-                System.Threading.Thread.Sleep(waitTime400);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime400 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime400 + rand);
             }
             else if (distance > 300)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime300 + "ms");
-                System.Threading.Thread.Sleep(waitTime300);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime300 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime300 + rand);
             }
             else if (distance > 200)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime200 + "ms");
-                System.Threading.Thread.Sleep(waitTime200);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime200 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime200 + rand);
             }
             else if (distance > 100)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime100 + "ms");
-                System.Threading.Thread.Sleep(waitTime100);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime100 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime100 + rand);
             }
             else if (distance > 50)
             {
-                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + waitTime50 + "ms");
-                System.Threading.Thread.Sleep(waitTime50);
+                Logging.Logger.Write("We are teleporting " + distance + " meters so we will wait " + (waitTime50 + rand) + "ms");
+                System.Threading.Thread.Sleep(waitTime50 + rand);
             }
             
 
@@ -109,17 +111,20 @@ namespace PoGo.PokeMobBot.Logic
             if (distance > 2000)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime2000 + "ms.");
-                waitTime2000 = waitTime2000 + 100;
+                int i = waitTime2000 + 100;
+                this.waitTime2000 = i;
             }
             else if (distance > 1500)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime1500 + "ms.");
-                waitTime1500 = waitTime1500 + 100;
+                int i = waitTime1500 + 100;
+                this.waitTime1500 = i;
             }
             else if (distance > 1250)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime1250 + "ms.");
-                waitTime1250 = waitTime1250 + 100;
+                int i = waitTime1250 + 100;
+                this.waitTime1000 = i;
             }
             else if (distance > 1000)
             {
@@ -129,46 +134,51 @@ namespace PoGo.PokeMobBot.Logic
             else if (distance > 900)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime900 + "ms.");
-                waitTime900 = waitTime900 + 100;
+                int i = waitTime900 + 100;
+                this.waitTime1000 = i;
             }
             else if (distance > 800)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime800 + "ms.");
-                waitTime800 = waitTime800 + 100;
+                int i = waitTime800 + 100;
+                this.waitTime900 = i;
             }
             else if (distance > 700)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime700 + "ms.");
-                waitTime700 = waitTime700 + 100;
+                int i = waitTime700 + 100;
+                this.waitTime700 = i;
             }
             else if (distance > 600)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime600 + "ms.");
-                waitTime600 = waitTime600 + 100;
+                int i = waitTime600 + 100;
+                this.waitTime600 = i;
             }
             else if (distance > 500)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime500 + "ms.");
-                waitTime500 = waitTime500 + 100;
+                int i = waitTime500 + 100;
+                this.waitTime500 = i;
             }
             else if (distance > 400)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime400 + "ms.");
-                waitTime400 = waitTime400 + 100;
-                this.waitTime500 = waitTime500 + 100;
+                int i = waitTime400 + 100;
+                this.waitTime500 = i;
             }
             else if (distance > 300)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime300 + "ms.");
-                waitTime300 = waitTime300 + 100;
-                this.waitTime300 = waitTime300 + 100;
+                int i = waitTime300 + 100;
+                this.waitTime300 = i;
             }
             else if (distance > 200)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime200 + "ms.");
 
-                waitTime200 = waitTime200 + 100;
-                this.waitTime200 = waitTime200 + 100;
+                int i = waitTime200 + 100;
+                this.waitTime200 = i;
             }
             else if (distance > 100)
             {
