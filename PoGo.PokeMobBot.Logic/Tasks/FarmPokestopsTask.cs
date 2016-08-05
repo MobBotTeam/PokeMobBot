@@ -21,6 +21,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public static class FarmPokestopsTask
     {
+
         public static int TimesZeroXPawarded;
 
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
@@ -33,6 +34,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
         public static async Task Teleport(ISession session, CancellationToken cancellationToken)
         {
+
+            TeleportAI tele = new TeleportAI();
             int stopsToHit = 20; //We should return to the main loop after some point, might as well limit this.
             //Not sure where else we could put this? Configs maybe if we incorporate
             //deciding how many pokestops in a row we want to hit before doing things like recycling?
@@ -98,10 +101,18 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                     session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance, Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
-                    if (session.LogicSettings.Teleport)
+                    if (session.LogicSettings.TeleAI)
+
+                    {
                         await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
                             session.Client.Settings.DefaultAltitude);
-
+                        tele.getDelay(distance);
+                    }
+                    else if (session.LogicSettings.Teleport)
+                    {
+                        await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
+                            session.Client.Settings.DefaultAltitude);
+                    }
                     else
                     {
                         await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
@@ -174,7 +185,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         }
                     } while (fortTry < retryNumber - zeroCheck);
                     //Stop trying if softban is cleaned earlier or if 40 times fort looting failed.
-
+                    if (fortTry > 1)
+                    {
+                        int distance2 = (int)distance;
+                        tele.addDelay(distance2);
+                    }
 
                     if (session.LogicSettings.Teleport)
                         await Task.Delay(session.LogicSettings.DelayPokestop);

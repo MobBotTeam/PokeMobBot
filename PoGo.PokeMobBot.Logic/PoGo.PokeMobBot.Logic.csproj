@@ -88,6 +88,7 @@
     <Compile Include="Event\EggIncubatorStatusEvent.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Inventory.cs" />
+    <Compile Include="ITeleSettings.cs" />
     <Compile Include="Localization\Localizer.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="ILogicSettings.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Tasks\TransferPokemonTask.cs" />
     <Compile Include="Tasks\UseIncubatorsTask.cs" />
     <Compile Include="Tasks\UseNearbyPokestopsTask.cs" />
+    <Compile Include="TeleportAI.cs" />
     <Compile Include="Utils\DelayingEvolveUtils.cs" />
     <Compile Include="Utils\DelayingUtils.cs" />
     <Compile Include="Utils\EggWalker.cs" />

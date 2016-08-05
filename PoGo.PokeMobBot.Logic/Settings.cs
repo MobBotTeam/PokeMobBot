@@ -112,6 +112,8 @@ namespace PoGo.PokeMobBot.Logic
 
         //coords and movement
         public bool Teleport = false;
+        //TeleAI will override Teleport if both enabled
+        public bool TeleAI = false;
         public double DefaultLatitude = 40.785091;
         public double DefaultLongitude = -73.968285;
         public double DefaultAltitude = 10;
@@ -513,6 +515,7 @@ namespace PoGo.PokeMobBot.Logic
         };
 
         public static GlobalSettings Default => new GlobalSettings();
+        
 
         public static GlobalSettings Load(string path)
         {
@@ -574,6 +577,7 @@ namespace PoGo.PokeMobBot.Logic
 
             settings.Save(configFile);
             settings.Auth.Load(Path.Combine(profileConfigPath, "auth.json"));
+            TeleSettings.Load(path);
 
             if (firstRun)
             {
@@ -777,6 +781,7 @@ namespace PoGo.PokeMobBot.Logic
         public int TotalAmountOfRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public int TotalAmountOfMaxRevivesToKeep => _settings.TotalAmountOfRevivesToKeep;
         public bool Teleport => _settings.Teleport;
+        public bool TeleAI => _settings.TeleAI;
         public int DelayCatchIncensePokemon => _settings.DelayCatchIncensePokemon;
         public int DelayCatchNearbyPokemon => _settings.DelayCatchNearbyPokemon;
         public int DelayPositionCheckState => _settings.DelayPositionCheckState;
@@ -801,4 +806,307 @@ namespace PoGo.PokeMobBot.Logic
         public double UseBerryBelowCatchProbability => _settings.UseBerryBelowCatchProbability;
 
     }
+    public class TeleSettings
+    {
+        [JsonIgnore]
+        public string GeneralConfigPath;
+        [JsonIgnore]
+        public string ProfilePath;
+        [JsonIgnore]
+        public string ProfileConfigPath;
+
+        //bot start
+        public int waitTime50 = 0;
+        public int waitTime100 = 0;
+        public int waitTime200 = 0;
+        public int waitTime300 = 0;
+        public int waitTime400 = 0;
+        public int waitTime500 = 0;
+        public int waitTime600 = 0;
+        public int waitTime700 = 0;
+        public int waitTime800 = 0;
+        public int waitTime900 = 0;
+        public int waitTime1000 = 0;
+        public int waitTime1250 = 0;
+        public int waitTime1500 = 0;
+        public int waitTime2000 = 0;
+
+
+
+
+        public static TeleSettings Load(string path)
+        {
+            TeleSettings settings2;
+            var profilePath = Path.Combine(Directory.GetCurrentDirectory(), path);
+            var profileConfigPath = Path.Combine(profilePath, "config");
+            var configFile = Path.Combine(profileConfigPath, "teleai.json");
+
+            if (File.Exists(configFile))
+            {
+                try
+                {
+                    //if the file exists, load the settings
+                    var input = File.ReadAllText(configFile);
+
+                    var jsonSettings = new JsonSerializerSettings();
+                    jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                    jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
+                    jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
+
+                    settings2 = JsonConvert.DeserializeObject<TeleSettings>(input, jsonSettings);
+                }
+                catch (JsonReaderException exception)
+                {
+                    Logger.Write("JSON Exception: " + exception.Message, LogLevel.Error);
+                    return null;
+                }
+            }
+            else
+            {
+                settings2 = new TeleSettings();
+            }
+
+
+
+            settings2.ProfilePath = profilePath;
+            settings2.ProfileConfigPath = profileConfigPath;
+            settings2.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
+
+            var firstRun = !File.Exists(configFile);
+
+            settings2.Save(configFile);
+
+            if (firstRun)
+            {
+                return null;
+            }
+
+            return settings2;
+        }
+
+        public void Save(string path)
+        {
+            var output = JsonConvert.SerializeObject(this, Formatting.Indented,
+                new StringEnumConverter { CamelCaseText = true });
+
+            var folder = Path.GetDirectoryName(path);
+            if (folder != null && !Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            File.WriteAllText(path, output);
+        }
+
+    }
+    public class TeleLogicSettings : ITeleSettings
+    {
+        public TeleSettings _settings;
+
+
+        public TeleLogicSettings(TeleSettings settings)
+        {
+            _settings = settings;
+        }
+
+        public int waitTime50 => _settings.waitTime50;
+        public int waitTime100 => _settings.waitTime100;
+        public int waitTime200 => _settings.waitTime200;
+        public int waitTime300 => _settings.waitTime300;
+        public int waitTime400 => _settings.waitTime400;
+        public int waitTime500 => _settings.waitTime500;
+        public int waitTime600 => _settings.waitTime600;
+        public int waitTime700 => _settings.waitTime700;
+        public int waitTime800 => _settings.waitTime800;
+        public int waitTime900 => _settings.waitTime900;
+        public int waitTime1000 => _settings.waitTime1000;
+        public int waitTime1250 => _settings.waitTime1250;
+        public int waitTime1500 => _settings.waitTime1500;
+        public int waitTime2000 => _settings.waitTime2000;
+
+        int ITeleSettings.waitTime50
+        {
+            get
+            {
+                return _settings.waitTime50;
+            }
+
+            set
+            {
+                _settings.waitTime50 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime100
+        {
+            get
+            {
+                return _settings.waitTime100;
+            }
+
+            set
+            {
+                _settings.waitTime100 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime200
+        {
+            get
+            {
+                return _settings.waitTime200;
+            }
+
+            set
+            {
+                _settings.waitTime200 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime300
+        {
+            get
+            {
+                return _settings.waitTime300;
+            }
+
+            set
+            {
+                _settings.waitTime300 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime400
+        {
+            get
+            {
+                return _settings.waitTime400;
+            }
+
+            set
+            {
+                _settings.waitTime400 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime500
+        {
+            get
+            {
+                return _settings.waitTime500;
+            }
+
+            set
+            {
+                _settings.waitTime500 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime600
+        {
+            get
+            {
+                return _settings.waitTime600;
+            }
+
+            set
+            {
+                _settings.waitTime600 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime700
+        {
+            get
+            {
+                return _settings.waitTime700;
+            }
+
+            set
+            {
+                _settings.waitTime700 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime800
+        {
+            get
+            {
+                return _settings.waitTime800;
+            }
+
+            set
+            {
+                _settings.waitTime800 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime900
+        {
+            get
+            {
+                return _settings.waitTime900;
+            }
+
+            set
+            {
+                _settings.waitTime900 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime1000
+        {
+            get
+            {
+                return _settings.waitTime1000;
+            }
+
+            set
+            {
+                _settings.waitTime1000 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime1250
+        {
+            get
+            {
+                return _settings.waitTime1250;
+            }
+
+            set
+            {
+                _settings.waitTime1250 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime1500
+        {
+            get
+            {
+                return _settings.waitTime1500;
+            }
+
+            set
+            {
+                _settings.waitTime1500 = value;
+            }
+        }
+
+        int ITeleSettings.waitTime2000
+        {
+            get
+            {
+                return _settings.waitTime2000;
+            }
+
+            set
+            {
+                _settings.waitTime2000 = value;
+            }
+        }
+    
+}
+
+
 }
