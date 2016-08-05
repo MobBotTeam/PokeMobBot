@@ -839,7 +839,7 @@ namespace PoGo.PokeMobBot.Logic
             TeleSettings settings2;
             var profilePath = Path.Combine(Directory.GetCurrentDirectory(), path);
             var profileConfigPath = Path.Combine(profilePath, "config");
-            var configFile = Path.Combine(profileConfigPath, "teleai.json");
+            var configFile = Path.Combine(profileConfigPath, "TeleAI.json");
 
             if (File.Exists(configFile))
             {
@@ -899,7 +899,7 @@ namespace PoGo.PokeMobBot.Logic
         }
 
     }
-    public class TeleLogicSettings : ITeleSettings
+    public class TeleLogicSettings
     {
         public TeleSettings _settings;
 
@@ -923,190 +923,5 @@ namespace PoGo.PokeMobBot.Logic
         public int waitTime1250 => _settings.waitTime1250;
         public int waitTime1500 => _settings.waitTime1500;
         public int waitTime2000 => _settings.waitTime2000;
-
-        int ITeleSettings.waitTime50
-        {
-            get
-            {
-                return _settings.waitTime50;
-            }
-
-            set
-            {
-                _settings.waitTime50 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime100
-        {
-            get
-            {
-                return _settings.waitTime100;
-            }
-
-            set
-            {
-                _settings.waitTime100 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime200
-        {
-            get
-            {
-                return _settings.waitTime200;
-            }
-
-            set
-            {
-                _settings.waitTime200 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime300
-        {
-            get
-            {
-                return _settings.waitTime300;
-            }
-
-            set
-            {
-                _settings.waitTime300 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime400
-        {
-            get
-            {
-                return _settings.waitTime400;
-            }
-
-            set
-            {
-                _settings.waitTime400 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime500
-        {
-            get
-            {
-                return _settings.waitTime500;
-            }
-
-            set
-            {
-                _settings.waitTime500 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime600
-        {
-            get
-            {
-                return _settings.waitTime600;
-            }
-
-            set
-            {
-                _settings.waitTime600 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime700
-        {
-            get
-            {
-                return _settings.waitTime700;
-            }
-
-            set
-            {
-                _settings.waitTime700 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime800
-        {
-            get
-            {
-                return _settings.waitTime800;
-            }
-
-            set
-            {
-                _settings.waitTime800 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime900
-        {
-            get
-            {
-                return _settings.waitTime900;
-            }
-
-            set
-            {
-                _settings.waitTime900 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime1000
-        {
-            get
-            {
-                return _settings.waitTime1000;
-            }
-
-            set
-            {
-                _settings.waitTime1000 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime1250
-        {
-            get
-            {
-                return _settings.waitTime1250;
-            }
-
-            set
-            {
-                _settings.waitTime1250 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime1500
-        {
-            get
-            {
-                return _settings.waitTime1500;
-            }
-
-            set
-            {
-                _settings.waitTime1500 = value;
-            }
-        }
-
-        int ITeleSettings.waitTime2000
-        {
-            get
-            {
-                return _settings.waitTime2000;
-            }
-
-            set
-            {
-                _settings.waitTime2000 = value;
-            }
-        }
-    
-}
-
-
+    }
 }

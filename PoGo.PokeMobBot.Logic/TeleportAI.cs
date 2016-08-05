@@ -14,23 +14,9 @@ using System.Threading.Tasks;
 
 namespace PoGo.PokeMobBot.Logic
 {
-    public class TeleportAI : ITeleSettings
+    public class TeleportAI : TeleSettings
     {
-        public int waitTime50 { get; set; }
-        public int waitTime100 { get; set; }
-        public int waitTime200 { get; set; }
-        public int waitTime300 { get; set; }
-        public int waitTime400 { get; set; }
-        public int waitTime500 { get; set; }
-        public int waitTime600 { get; set; }
-        public int waitTime700 { get; set; }
-        public int waitTime800 { get; set; }
-        public int waitTime900 { get; set; }
-        public int waitTime1000 { get; set; }
-        public int waitTime1250 { get; set; }
-        public int waitTime1500 { get; set; }
-        public int waitTime2000 { get; set; }
-        public int teleDelay { get; internal set; }
+
 
 
         public void getDelay(double distance)
@@ -115,12 +101,10 @@ namespace PoGo.PokeMobBot.Logic
         public void addDelay(int distance)
 
         {  
-            TeleSettings settings2 = new TeleSettings();
             var profilePath = Path.Combine(Directory.GetCurrentDirectory());
             var profileConfigPath = Path.Combine(profilePath, "config");
-            var configFile = Path.Combine(profileConfigPath, "teleai.json");
-            String path2 = settings2.GeneralConfigPath;
-            settings2.Save(configFile);
+            var configFile = Path.Combine(profileConfigPath, "TeleAI.json");
+            Save(configFile);
 
             if (distance > 2000)
             {
@@ -171,20 +155,20 @@ namespace PoGo.PokeMobBot.Logic
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime400 + "ms.");
                 waitTime400 = waitTime400 + 100;
-                this.waitTime500 = waitTime500;
+                this.waitTime500 = waitTime500 + 100;
             }
             else if (distance > 300)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime300 + "ms.");
                 waitTime300 = waitTime300 + 100;
-                this.waitTime300 = waitTime300;
+                this.waitTime300 = waitTime300 + 100;
             }
             else if (distance > 200)
             {
                 Logging.Logger.Write("SoftBanned From Jumping  " + distance + " meters. Adding 100ms delay. Total: " + waitTime200 + "ms.");
 
                 waitTime200 = waitTime200 + 100;
-                this.waitTime200 = waitTime200;
+                this.waitTime200 = waitTime200 + 100;
             }
             else if (distance > 100)
             {
