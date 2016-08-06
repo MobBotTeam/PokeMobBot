@@ -74,7 +74,6 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                     var displayStatsHit = 0;
                     var eggWalker = new EggWalker(1000, session);
-
                     if (pokestopList.Count <= 0)
                     {
                         session.EventDispatcher.Send(new WarnEvent
@@ -96,26 +95,32 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     var pokeStop = pokestopList[0];
                     pokestopList.RemoveAt(0);
 
-                    var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
+                    Random rand = new Random();
+                    int MaxDistanceFromStop = 25;
+        var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                         session.Client.CurrentLongitude, pokeStop.Latitude, pokeStop.Longitude);
+                    var randLat = pokeStop.Latitude + rand.NextDouble() * ((double)MaxDistanceFromStop / 111111);
+                    var randLong = pokeStop.Longitude + rand.NextDouble() * ((double)MaxDistanceFromStop / 111111);
                     var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                     session.EventDispatcher.Send(new FortTargetEvent { Id = fortInfo.FortId, Name = fortInfo.Name, Distance = distance, Latitude = fortInfo.Latitude, Longitude = fortInfo.Longitude, Description = fortInfo.Description, url = fortInfo.ImageUrls[0] });
                     if (session.LogicSettings.TeleAI)
 
                     {
-                        await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
-                            session.Client.Settings.DefaultAltitude);
+                        //test purposes
+                        Logger.Write("We are within " + distance + " meters of the PokeStop.");
+                        await session.Client.Player.UpdatePlayerLocation(randLat, randLong, session.Client.Settings.DefaultAltitude);
                         tele.getDelay(distance);
                     }
                     else if (session.LogicSettings.Teleport)
                     {
-                        await session.Client.Player.UpdatePlayerLocation(fortInfo.Latitude, fortInfo.Longitude,
-                            session.Client.Settings.DefaultAltitude);
+                        //test purposes
+                        Logger.Write("We are within " + distance + " meters of the PokeStop.");
+                        await session.Client.Player.UpdatePlayerLocation(randLat, randLong, session.Client.Settings.DefaultAltitude);
                     }
                     else
                     {
-                        await session.Navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude),
+                        await session.Navigation.HumanLikeWalking(new GeoCoordinate(randLat, randLong),
                         session.LogicSettings.WalkingSpeedInKilometerPerHour,
                         async () =>
                         {
@@ -125,6 +130,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             await CatchIncensePokemonsTask.Execute(session, cancellationToken);
                             return true;
                         }, cancellationToken);
+
+                        //test purposes
+                        Logger.Write("We are within " + distance + " meters of the PokeStop.");
                     }
 
                     FortSearchResponse fortSearch;
@@ -319,6 +327,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         await CatchIncensePokemonsTask.Execute(session, cancellationToken);
                         return true;
                     }, cancellationToken);
+                    //test purposes
+                    Logger.Write("We are within " + distance + " meters of the PokeStop.");
                 }
                 
                 FortSearchResponse fortSearch;

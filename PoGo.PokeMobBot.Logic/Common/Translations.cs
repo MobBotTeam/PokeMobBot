@@ -151,7 +151,9 @@ namespace PoGo.PokeMobBot.Logic.Common
         WebErrorGatewayTimeout,
         WebErrorBadGateway,
         SkipLaggedTimeout,
-        SkipLaggedMaintenance
+        SkipLaggedMaintenance,
+        TeleAI,
+        TeleAIBan
     }
 
     public class Translation : ITranslation
@@ -215,6 +217,10 @@ namespace PoGo.PokeMobBot.Logic.Common
                 "DisplayHighestsLevel"),
             new KeyValuePair<TranslationString, string>(TranslationString.WelcomeWarning,
                 "Make sure Lat & Lng are right. Exit Program if not! Lat: {0} Lng: {1}"),
+            new KeyValuePair<TranslationString, string>(TranslationString.TeleAI,
+                "We are teleporting {0} meters so we will wait {1}ms"),
+            new KeyValuePair<TranslationString, string>(TranslationString.TeleAIBan,
+                "SoftBanned From Jumping  {0} meters. Adding 100ms delay. Total: {1}ms."),
             new KeyValuePair<TranslationString, string>(TranslationString.IncubatorPuttingEgg,
                 "Putting egg in incubator: {0:0.00}km left"),
             new KeyValuePair<TranslationString, string>(TranslationString.IncubatorStatusUpdate,
