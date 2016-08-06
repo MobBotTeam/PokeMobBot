@@ -88,7 +88,6 @@
     <Compile Include="Event\EggIncubatorStatusEvent.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Inventory.cs" />
-    <Compile Include="ITeleSettings.cs" />
     <Compile Include="Localization\Localizer.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="ILogicSettings.cs" />
