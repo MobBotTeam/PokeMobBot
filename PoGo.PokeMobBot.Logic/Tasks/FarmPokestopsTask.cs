@@ -108,10 +108,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         session.LogicSettings.WalkingSpeedInKilometerPerHour,
                         async () =>
                         {
-                            // Catch normal map Pokemon
-                            await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
-                            //Catch Incense Pokemon
-                            await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                            if (session.LogicSettings.CatchWildPokemon)
+                            {
+                                // Catch normal map Pokemon
+                                await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                                //Catch Incense Pokemon
+                                await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                            }
                             return true;
                         }, cancellationToken);
                     }
@@ -184,13 +187,19 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                     //Catch Lure Pokemon
 
-
-                    if (pokeStop.LureInfo != null)
+                    if (session.LogicSettings.CatchWildPokemon)
                     {
-                        await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                        if (pokeStop.LureInfo != null)
+                        {
+                            await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                        }
+                        // Catch normal map Pokemon
+                        if (session.LogicSettings.Teleport)
+                            await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                        //Catch Incense Pokemon
+                        await CatchIncensePokemonsTask.Execute(session, cancellationToken);
                     }
-                    if (session.LogicSettings.Teleport)
-                        await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                    
 
                     await eggWalker.ApplyDistance(distance, cancellationToken);
 
@@ -298,10 +307,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     session.LogicSettings.WalkingSpeedInKilometerPerHour,
                     async () =>
                     {
-                        // Catch normal map Pokemon
-                        await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
-                        //Catch Incense Pokemon
-                        await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                        if (session.LogicSettings.CatchWildPokemon)
+                        {
+                            // Catch normal map Pokemon
+                            await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
+                            //Catch Incense Pokemon
+                            await CatchIncensePokemonsTask.Execute(session, cancellationToken);
+                        }
                         return true;
                     }, cancellationToken);
                 }
@@ -378,14 +390,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 //Catch Lure Pokemon
 
-
-                if (pokeStop.LureInfo != null)
+                if (session.LogicSettings.CatchWildPokemon)
                 {
-                    await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                    if (pokeStop.LureInfo != null)
+                    {
+                        await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                    }
+                    if (session.LogicSettings.Teleport)
+                        await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
                 }
-                if(session.LogicSettings.Teleport)
-                    await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
-
                 await eggWalker.ApplyDistance(distance, cancellationToken);
 
                 if (++stopsHit%5 == 0) //TODO: OR item/pokemon bag is full
