@@ -96,10 +96,14 @@ namespace PoGo.PokeMobBot.Logic
 
     public class GlobalSettings
     {
-        [JsonIgnore] internal AuthSettings Auth = new AuthSettings();
-        [JsonIgnore] public string GeneralConfigPath;
-        [JsonIgnore] public string ProfilePath;
-        [JsonIgnore] public string ProfileConfigPath;
+        [JsonIgnore]
+        internal AuthSettings Auth = new AuthSettings();
+        [JsonIgnore]
+        public string GeneralConfigPath;
+        [JsonIgnore]
+        public string ProfilePath;
+        [JsonIgnore]
+        public string ProfileConfigPath;
 
         //bot start
         public bool AutoUpdate = true;
@@ -109,6 +113,13 @@ namespace PoGo.PokeMobBot.Logic
         public bool StartupWelcomeDelay = false;
         public string TranslationLanguageCode = "en";
         public int WebSocketPort = 14251;
+
+        //proxy configuration
+        public bool proxyEnable = false;
+        public bool proxyEnableAuth = false;
+        public string proxyHost = "localhost:8080";
+        public string proxyUser = "user";
+        public string proxyPass = "secret";
 
         //coords and movement
         public bool Teleport = false;
@@ -682,6 +693,37 @@ namespace PoGo.PokeMobBot.Logic
 
             set { _settings.Auth.GooglePassword = value; }
         }
+
+        bool ISettings.proxyEnable
+        {
+            get { return _settings.proxyEnable; }
+            set { _settings.proxyEnable = value; }
+        }
+
+        bool ISettings.proxyEnableAuth
+        {
+            get { return _settings.proxyEnableAuth; }
+            set { _settings.proxyEnableAuth = value; }
+        }
+
+        string ISettings.proxyHost
+        {
+            get { return _settings.proxyHost; }
+            set { _settings.proxyHost = value; }
+        }
+
+        string ISettings.proxyUser
+        {
+            get { return _settings.proxyUser; }
+            set { _settings.proxyUser = value; }
+        }
+
+        string ISettings.proxyPass
+        {
+            get { return _settings.proxyPass; }
+            set { _settings.proxyPass = value; }
+        }
+
     }
 
     public class LogicSettings : ILogicSettings
@@ -695,7 +737,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public string ProfilePath => _settings.ProfilePath;
         public string ProfileConfigPath => _settings.ProfileConfigPath;
-        public int SnipeRequestTimeoutSeconds => _settings.SnipeRequestTimeoutSeconds*1000;
+        public int SnipeRequestTimeoutSeconds => _settings.SnipeRequestTimeoutSeconds * 1000;
         public string GeneralConfigPath => _settings.GeneralConfigPath;
         public bool AutoUpdate => _settings.AutoUpdate;
         public bool TransferConfigAndAuthOnUpdate => _settings.TransferConfigAndAuthOnUpdate;
