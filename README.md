@@ -18,7 +18,7 @@
 <br>
 <!-- news -->
 ## API Calls changed ( Bot is not working ATM! )
-Niantic have changed API responses, meaning that this bot is currently in a not usable state. We are working hard on getting the Bot back up & running. You can always check the current status at [our Twitter](https://twitter.com/PokeMobBot)
+Niantic has changed some API responses, that means our Bot is currently non-functional. We are working hard on getting it back up & running ASAP. Feel free to check the current status at [our Twitter Page](https://twitter.com/PokeMobBot)
 <br>
 <!-- information -->
 <h2><a name="features">Features</a></h2>
