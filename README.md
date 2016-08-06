@@ -55,9 +55,9 @@ Make sure you check out our [Wiki](https://github.com/PocketMobsters/PokeMobBot/
 MD5 Hash (v1.1.3) : bc0b52fb3d64c6d712820ff31a89ea61 <br>
 <br>
 <h2><a name="credits">Credits</a></h2><br>
-Ferox - API and Console, without such contributions, projects like this would never have been possible. <br/>
-PokeMobBot Dev team & staff - Their relentless work day after day on adding new features, ironing out bugs and maintaining the ever growing community.<br>
-Everyone else who submitted Pull Requests - Big or small, the work from unmentioned contributors are what makes this project community-oriented. <br>
+**Ferox** - API and Console, without such contributions, projects like this would never have been possible. <br/>
+**PokeMobTeam Dev & staff** - Their relentless work day after day on adding new features, ironing out bugs and maintaining the ever growing community.<br>
+**Everyone else who submitted Pull Requests** - Big or small, the work from unmentioned contributors are what makes this project community-oriented. <br>
 <br>
 <h2><a name="copyright">Copyright</a></h2><br>
  Copyright (c) 2016, MobBotTeam  All rights reserved.<br>
