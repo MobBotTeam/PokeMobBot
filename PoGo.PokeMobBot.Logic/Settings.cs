@@ -185,6 +185,8 @@ namespace PoGo.PokeMobBot.Logic
 
     public class CatchSettings
     {
+        public bool CatchWildPokemon = true;
+
         //catch
         public bool HumanizeThrows = false;
         public double ThrowAccuracyMin = 0.80;
@@ -838,6 +840,8 @@ namespace PoGo.PokeMobBot.Logic
         public int UseBerryMinCp => _settings.CatchSettings.UseBerryMinCp;
         public float UseBerryMinIv => _settings.CatchSettings.UseBerryMinIv;
         public double UseBerryBelowCatchProbability => _settings.CatchSettings.UseBerryBelowCatchProbability;
+
+        public bool CatchWildPokemon => _settings.CatchSettings.CatchWildPokemon;
 
     }
 }

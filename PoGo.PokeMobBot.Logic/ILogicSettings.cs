@@ -183,6 +183,7 @@ namespace PoGo.PokeMobBot.Logic
         int SnipeLocationServerPort { get; }
         string SnipeLocationServer { get; }
         int SnipeRequestTimeoutSeconds { get; }
+        bool CatchWildPokemon { get; }
 
         //paths
         string GeneralConfigPath { get; }
@@ -201,5 +202,6 @@ namespace PoGo.PokeMobBot.Logic
 
         Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter { get; }
         SnipeSettings PokemonToSnipe { get; }
+
     }
 }
