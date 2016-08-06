@@ -5,6 +5,7 @@ using System.Text;
 using PoGo.PokeMobBot.CLI.Models;
 using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
+using System.Reflection;
 
 #endregion
 
@@ -54,7 +55,7 @@ namespace PoGo.PokeMobBot.CLI
             {
                 case LogLevel.Error:
                     Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Error}) {message}");
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Error}) (v{Assembly.GetExecutingAssembly().GetName().Version}) {message}");
                     break;
                 case LogLevel.Warning:
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
