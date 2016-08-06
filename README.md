@@ -11,7 +11,7 @@ Check the announcement channel on our Discord: https://discord.gg/8msqsWV <br/>
 <h1>Pokemon Go Bot based on FeroxRevs API</h1>
 <!-- disclaimer -->
 ![alt text][1.1] <strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong> ![alt text][1.1]
-![](http://i.imgur.com/bkTrqKb.png)
+![](https://github.com/MobBotTeam/PokeMobBot/wiki)
 <br>
 Chatting about this Repository can be done on our Discord: https://discord.gg/8msqsWV <br/>
 <br>
