@@ -96,23 +96,23 @@ namespace PoGo.PokeMobBot.Logic
 
     public class DelaySettings
     {//delays
-        public int DelayBetweenPlayerActions = 5000;
-        public int DelayPositionCheckState = 1000;
+        public int DelayBetweenPlayerActions = 5;
+        public int DelayPositionCheckState = 200;
         public int DelayPokestop = 1000;
-        public int DelayCatchPokemon = 1000;
-        public int DelayBetweenPokemonCatch = 2000;
-        public int DelayCatchNearbyPokemon = 1000;
-        public int DelayCatchLurePokemon = 1000;
-        public int DelayCatchIncensePokemon = 1000;
-        public int DelayEvolvePokemon = 1000;
+        public int DelayCatchPokemon = 5;
+        public int DelayBetweenPokemonCatch = 5;
+        public int DelayCatchNearbyPokemon = 5;
+        public int DelayCatchLurePokemon = 5;
+        public int DelayCatchIncensePokemon = 5;
+        public int DelayEvolvePokemon = 5;
         public double DelayEvolveVariation = 0.3;
-        public int DelayTransferPokemon = 1000;
-        public int DelayDisplayPokemon = 1000;
-        public int DelayUseLuckyEgg = 1000;
-        public int DelaySoftbanRetry = 1000;
-        public int DelayRecyleItem = 1000;
-        public int DelaySnipePokemon = 1000;
-        public int MinDelayBetweenSnipes = 60000;
+        public int DelayTransferPokemon = 5;
+        public int DelayDisplayPokemon = 5;
+        public int DelayUseLuckyEgg = 5;
+        public int DelaySoftbanRetry = 5;
+        public int DelayRecyleItem = 5;
+        public int DelaySnipePokemon = 250;
+        public int MinDelayBetweenSnipes = 10000;
         public double SnipingScanOffset = 0.003;
     }
 
@@ -152,11 +152,11 @@ namespace PoGo.PokeMobBot.Logic
         public bool KeepPokemonsThatCanEvolve = false;
 
         //evolve
-        public bool EvolveAllPokemonWithEnoughCandy = false;
+        public bool EvolveAllPokemonWithEnoughCandy = true;
         public bool EvolveAllPokemonAboveIv = false;
         public float EvolveAboveIvValue = 95;
         public bool UseLuckyEggsWhileEvolving = false;
-        public int UseLuckyEggsMinPokemonAmount = 30;
+        public int UseLuckyEggsMinPokemonAmount = 50;
 
         //levelup
         public bool AutomaticallyLevelUpPokemon = false;
@@ -176,7 +176,7 @@ namespace PoGo.PokeMobBot.Logic
         public double DefaultLatitude = 40.785091;
         public double DefaultLongitude = -73.968285;
         public double DefaultAltitude = 10;
-        public double WalkingSpeedInKilometerPerHour = 15.0;
+        public double WalkingSpeedInKilometerPerHour = 50.0;
         public int MaxSpawnLocationOffset = 10;
         public int MaxTravelDistanceInMeters = 1000;
         public bool UseGpxPathing = false;
@@ -187,14 +187,14 @@ namespace PoGo.PokeMobBot.Logic
     {
         //catch
         public bool HumanizeThrows = false;
-        public double ThrowAccuracyMin = 0.50;
+        public double ThrowAccuracyMin = 0.80;
         public double ThrowAccuracyMax = 1.00;
-        public double ThrowSpinFrequency = 0.75;
+        public double ThrowSpinFrequency = 0.80;
         public int MaxPokeballsPerPokemon = 6;
         public int UseGreatBallAboveIv = 80;
         public int UseUltraBallAboveIv = 90;
-        public double UseGreatBallBelowCatchProbability = 0.5;
-        public double UseUltraBallBelowCatchProbability = 0.25;
+        public double UseGreatBallBelowCatchProbability = 0.35;
+        public double UseUltraBallBelowCatchProbability = 0.2;
         public bool UsePokemonToNotCatchFilter = false;
 
         //berries
@@ -236,7 +236,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool SnipeIgnoreUnknownIv = false;
         public bool UseTransferIvForSnipe = false;
         public int MinPokeballsToSnipe = 20;
-        public int MinPokeballsWhileSnipe = 0;
+        public int MinPokeballsWhileSnipe = 5;
         public bool UseSnipeLocationServer = false;
         public bool UsePokeSnipersLocationServer = false;
         public string SnipeLocationServer = "localhost";
