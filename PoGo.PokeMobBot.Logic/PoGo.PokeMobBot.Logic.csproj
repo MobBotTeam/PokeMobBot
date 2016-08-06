@@ -136,6 +136,7 @@
     <Compile Include="Tasks\TransferPokemonTask.cs" />
     <Compile Include="Tasks\UseIncubatorsTask.cs" />
     <Compile Include="Tasks\UseNearbyPokestopsTask.cs" />
+    <Compile Include="TeleportAI.cs" />
     <Compile Include="Utils\DelayingEvolveUtils.cs" />
     <Compile Include="Utils\DelayingUtils.cs" />
     <Compile Include="Utils\EggWalker.cs" />
