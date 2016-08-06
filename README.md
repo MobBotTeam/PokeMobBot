@@ -1,3 +1,5 @@
+
+[![Github All Releases](https://img.shields.io/github/downloads/MobBotTeam/PokeMobBot/total.svg)](https://github.com/MobBotTeam/PokeMobBot/releases)
 <!-- define warning icon -->
 [1.1]: https://i.imgur.com/M4fJ65n.png (ATTENTION)
 <!-- title -->
