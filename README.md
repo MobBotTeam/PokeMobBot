@@ -9,7 +9,7 @@
 </div>
 <br>
 <!-- shields -->
-[![Twitter Follow](https://img.shields.io/twitter/follow/shields_io.svg?style=social&label=Follow&maxAge=2592000?style=flat-square)](https://twitter.com/PokeMobBot)
+[![Twitter Follow](https://img.shields.io/twitter/follow/PokeMobBot.svg?style=social&label=Follow&maxAge=2592000?style=flat-square)](https://twitter.com/PokeMobBot)
 [![Discord](https://img.shields.io/badge/discord-PokeMobBot-blue.svg)](https://discord.gg/8msqsWV)
 [![Github All Releases](https://img.shields.io/github/downloads/MobBotTeam/PokeMobBot/total.svg)](https://github.com/MobBotTeam/PokeMobBot/releases)
 [![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/MobBotTeam/PokeMobBot/development/LICENSE)
