@@ -47,25 +47,25 @@ Niantic has changed some API responses, that means our Bot is currently non-func
 
 <h2><a name="getting-started">Getting Started</a></h2>
 Make sure you check out our [Wiki](https://github.com/PocketMobsters/PokeMobBot/wiki) to get started. <br>
-MD5 Hash (v1.1.3) : <b>bc0b52fb3d64c6d712820ff31a89ea61</b> <br>
+MD5 Hash (v1.1.3) : <b>bc0b52fb3d64c6d712820ff31a89ea61</b>
 
 <br>
 <h2><a name="donating">Donating</a></h2>
 Wish to donate? Register on our forums and donate there: [![](https://i.imgur.com/9al9LSj.gif)](http://forum.pokemobbot.com/)
 <h6><em>[ All PayPal donations are used towards expenses and will have full accounting details posted weekly, beginning 8/5/2016 ]</em></h6><br>
-Donate Bitcoins to FeroxRev (the original API library developer): 1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e <br>
+Donate Bitcoins to FeroxRev (the original API library developer): 1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e
 
 <br>
-<h2><a name="credits">Credits</a></h2><br>
+<h2><a name="credits">Credits</a></h2>
 **Ferox** - API and Console, without such contributions, projects like this would never have been possible. <br/>
 **PokeMobTeam Dev & staff** - Their relentless work day after day on adding new features, ironing out bugs and maintaining the ever growing community.<br>
-**Everyone else who submitted Pull Requests** - Big or small, the work from unmentioned contributors are what makes this project community-oriented. <br>
+**Everyone else who submitted Pull Requests** - Big or small, the work from unmentioned contributors are what makes this project community-oriented.
 
 <br>
 <h2><a name="copyright">Copyright</a></h2>
 Copyright (c) 2016, MobBotTeam  All rights reserved.<br>
 Copyrights licensed under the GNU AGPLv3 License.<br>
-See the accompanying LICENSE file for terms.<br>
+See the accompanying LICENSE file for terms.
  
 <br>
 <h2><a name="legal">Legal</a></h2>
