@@ -151,7 +151,9 @@ namespace PoGo.PokeMobBot.Logic.Common
         WebErrorGatewayTimeout,
         WebErrorBadGateway,
         SkipLaggedTimeout,
-        SkipLaggedMaintenance
+        SkipLaggedMaintenance,
+        TeleAI,
+        TeleAIBan
     }
 
     public class Translation : ITranslation
@@ -171,6 +173,10 @@ namespace PoGo.PokeMobBot.Logic.Common
             new KeyValuePair<TranslationString, string>(TranslationString.MasterPokeball, "MasterBall"),
             new KeyValuePair<TranslationString, string>(TranslationString.WrongAuthType,
                 "Unknown AuthType in config.json"),
+            new KeyValuePair<TranslationString, string>(TranslationString.TeleAI,
+                "We are teleporting {0} meters so we will wait {1}ms"),
+            new KeyValuePair<TranslationString, string>(TranslationString.TeleAIBan,
+                "SoftBanned From Jumping  {0} meters. Adding 100ms delay. Total: {1}ms."),
             new KeyValuePair<TranslationString, string>(TranslationString.FarmPokestopsOutsideRadius,
                 "You're outside of your defined radius! Walking to start ({0}m away) in 5 seconds. Is your Coords.ini file correct?"),
             new KeyValuePair<TranslationString, string>(TranslationString.FarmPokestopsNoUsableFound,

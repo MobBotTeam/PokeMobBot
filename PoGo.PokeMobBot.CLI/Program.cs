@@ -65,7 +65,7 @@ namespace PoGo.PokeMobBot.CLI
 
             var globalSettingsRepository = kernel.Get<GlobalSettingsRepository>();
 
-            var settings = globalSettingsRepository.Get(subPath);
+            var settings = globalSettingsRepository.Load(subPath);
             kernel.Bind<GlobalSettings>().ToConstant(settings);
 
 

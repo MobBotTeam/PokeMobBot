@@ -22,16 +22,16 @@ namespace PoGo.PokeMobBot.Logic.Repository
             _defaultAuthSettings = defaultAuthSettings;
         }
 
-        public AuthSettings Get(string filePath)
+        public AuthSettings Load(string filePath) //TODO: should be ctr argument
         {
-            _filePath = filePath;
-
             try
             {
-                if (File.Exists(filePath))
+                _filePath = filePath;
+
+                if (File.Exists(_filePath))
                 {
                     //if the file exists, load the settings
-                    var input = File.ReadAllText(filePath);
+                    var input = File.ReadAllText(_filePath);
 
                     var settings = new JsonSerializerSettings();
                     settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
@@ -40,15 +40,7 @@ namespace PoGo.PokeMobBot.Logic.Repository
                 }
                 else
                 {
-                    var output = JsonConvert.SerializeObject(_defaultAuthSettings, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
-
-                    var folder = Path.GetDirectoryName(filePath);
-                    if (folder != null && !Directory.Exists(folder))
-                    {
-                        Directory.CreateDirectory(folder);
-                    }
-
-                    File.WriteAllText(filePath, output);
+                    Save(_defaultAuthSettings); // TODO: load method shouldn't have a side effect where it creates a new file
                 }
             }
             catch (JsonReaderException exception)
@@ -77,20 +69,24 @@ namespace PoGo.PokeMobBot.Logic.Repository
             return null;
         }
 
-        public void Save()
+        public void Save(string path, AuthSettings authSettings)
+        {
+            var output = JsonConvert.SerializeObject(authSettings, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+
+            var folder = Path.GetDirectoryName(path);
+            if (folder != null && !Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            File.WriteAllText(path, output);
+        }
+
+        public void Save(AuthSettings authSettings)
         {
             if (!string.IsNullOrEmpty(_filePath))
             {
-                var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                    new StringEnumConverter { CamelCaseText = true });
-
-                var folder = Path.GetDirectoryName(_filePath);
-                if (folder != null && !Directory.Exists(folder))
-                {
-                    Directory.CreateDirectory(folder);
-                }
-
-                File.WriteAllText(_filePath, output);
+                Save(_filePath, authSettings);
             }
         }
     }

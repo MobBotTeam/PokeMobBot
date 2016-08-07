@@ -51,7 +51,7 @@ namespace PoGo.PokeMobBot.CLI
             {
                 Name = "MobBotWebSocket",
                 Ip = "Any",
-                Port = settings.WebSocketPort,
+                Port = settings.StartUpSettings.WebSocketPort,
                 Mode = SocketMode.Tcp,
                 Security = "tls",
                 Certificate = new CertificateConfig
@@ -63,7 +63,7 @@ namespace PoGo.PokeMobBot.CLI
 
             if (setupComplete == false)
             {
-                _eventDispatcher.Send(new ErrorEvent() { Message = _translation.GetTranslation(TranslationString.WebSocketFailStart, settings.WebSocketPort) });
+                _eventDispatcher.Send(new ErrorEvent() { Message = _translation.GetTranslation(TranslationString.WebSocketFailStart, settings.StartUpSettings.WebSocketPort) });
                 return;
             }
 

@@ -70,6 +70,7 @@ namespace PoGo.PokeMobBot.Logic
 
         //coords and movement
         bool Teleport { get; }
+        bool TeleAI { get; }
         double WalkingSpeedInKilometerPerHour { get; }
         int MaxTravelDistanceInMeters { get; }
         bool UseGpxPathing { get; }
@@ -183,6 +184,7 @@ namespace PoGo.PokeMobBot.Logic
         int SnipeLocationServerPort { get; }
         string SnipeLocationServer { get; }
         int SnipeRequestTimeoutSeconds { get; }
+        bool CatchWildPokemon { get; }
 
         //paths
         string GeneralConfigPath { get; }
@@ -201,5 +203,6 @@ namespace PoGo.PokeMobBot.Logic
 
         Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter { get; }
         SnipeSettings PokemonToSnipe { get; }
+
     }
 }

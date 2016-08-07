@@ -266,7 +266,7 @@ namespace PoGo.PokeMobBot.Logic.State
             var oldConf = GetJObject(Path.Combine(configDir, "config.json.old"));
             var oldAuth = GetJObject(Path.Combine(configDir, "auth.json.old"));
 
-            _globalSettingsRepository.Get("");
+            _globalSettingsRepository.Load("");
 
             var newConf = GetJObject(Path.Combine(configDir, "config.json"));
             var newAuth = GetJObject(Path.Combine(configDir, "auth.json"));

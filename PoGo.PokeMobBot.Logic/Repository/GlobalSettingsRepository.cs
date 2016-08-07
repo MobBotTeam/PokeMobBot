@@ -10,18 +10,20 @@ namespace PoGo.PokeMobBot.Logic.Repository
         private readonly ILogger _logger;
         private readonly GlobalSettings _defaultGlobalSettings;
         private readonly AuthSettingsRepository _authSettingsRepository;
+        private readonly TeleSettingsRepository _teleSettingsRepository;
 
-        public GlobalSettingsRepository(ILogger logger, GlobalSettings defaultGlobalSettings, AuthSettingsRepository authSettingsRepository)
+        public GlobalSettingsRepository(ILogger logger, GlobalSettings defaultGlobalSettings, AuthSettingsRepository authSettingsRepository, TeleSettingsRepository teleSettingsRepository)
         {
             _logger = logger;
             _defaultGlobalSettings = defaultGlobalSettings;
             _authSettingsRepository = authSettingsRepository;
+            _teleSettingsRepository = teleSettingsRepository;
         }
 
-        public GlobalSettings Get(string subPath)
+        public GlobalSettings Load(string path)
         {
             GlobalSettings settings;
-            var profilePath = Path.Combine(Directory.GetCurrentDirectory(), subPath);
+            var profilePath = Path.Combine(Directory.GetCurrentDirectory(), path);
             var profileConfigPath = Path.Combine(profilePath, "config");
             var configFile = Path.Combine(profileConfigPath, "config.json");
 
@@ -47,12 +49,12 @@ namespace PoGo.PokeMobBot.Logic.Repository
             }
             else
             {
-                settings = _defaultGlobalSettings;
+                settings = new GlobalSettings();
             }
 
-            if (settings.WebSocketPort == 0)
+            if (settings.StartUpSettings.WebSocketPort == 0)
             {
-                settings.WebSocketPort = 14251;
+                settings.StartUpSettings.WebSocketPort = 14251;
             }
 
             if (settings.PokemonToSnipe == null)
@@ -60,14 +62,14 @@ namespace PoGo.PokeMobBot.Logic.Repository
                 settings.PokemonToSnipe = _defaultGlobalSettings.PokemonToSnipe;
             }
 
-            if (settings.RenameTemplate == null)
+            if (settings.PokemonSettings.RenameTemplate == null)
             {
-                settings.RenameTemplate = _defaultGlobalSettings.RenameTemplate;
+                settings.PokemonSettings.RenameTemplate = _defaultGlobalSettings.PokemonSettings.RenameTemplate;
             }
 
-            if (settings.SnipeLocationServer == null)
+            if (settings.SnipeSettings.SnipeLocationServer == null)
             {
-                settings.SnipeLocationServer = _defaultGlobalSettings.SnipeLocationServer;
+                settings.SnipeSettings.SnipeLocationServer = _defaultGlobalSettings.SnipeSettings.SnipeLocationServer;
             }
 
             settings.ProfilePath = profilePath;
@@ -76,8 +78,8 @@ namespace PoGo.PokeMobBot.Logic.Repository
 
             var firstRun = !File.Exists(configFile);
 
-            settings.Save(configFile);
-            settings.Auth = _authSettingsRepository.Get(Path.Combine(profileConfigPath, "auth.json"));
+            Save(configFile);
+            settings.Auth = _authSettingsRepository.Load(Path.Combine(profileConfigPath, "auth.json"));
 
             if (firstRun)
             {
@@ -85,6 +87,20 @@ namespace PoGo.PokeMobBot.Logic.Repository
             }
 
             return settings;
+        }
+
+        public void Save(string fullPath)
+        {
+            var output = JsonConvert.SerializeObject(_defaultGlobalSettings, Formatting.Indented,
+                new StringEnumConverter { CamelCaseText = true });
+
+            var folder = Path.GetDirectoryName(fullPath);
+            if (folder != null && !Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            File.WriteAllText(fullPath, output);
         }
     }
 }
