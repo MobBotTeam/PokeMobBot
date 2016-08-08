@@ -299,7 +299,7 @@ namespace Catchem
                 }
                 catch (Exception )//ex)
                 {
-                    // ignored
+                    i--;
                 }
             }
         }
@@ -457,8 +457,8 @@ namespace Catchem
             private readonly DispatcherTimer _timer;
             private TimeSpan _ts;
 
-            public double Lat = 55.43213;
-            public double Lng = 37.633987;
+            public double Lat;
+            public double Lng;
             public bool GotNewCoord;
             public bool MoveRequired;
             private double _la, _ln;
@@ -507,6 +507,14 @@ namespace Catchem
                     RunTime.Content = _ts.ToString();
                 };
                 _cts = new CancellationTokenSource();
+            }
+
+            public void UpdateXppH()
+            {
+                if (stats == null || ts.TotalHours == 0)
+                    xpph.Content = 0;
+                else
+                    xpph.Content = "Xp/h: " + (stats.TotalExperience / ts.TotalHours).ToString("0.0");
             }
 
             private void WipeData()
@@ -723,6 +731,8 @@ namespace Catchem
             {
                 if (!newBot.Started)
                 {
+                    session.Client.Player.SetCoordinates(newBot.globalSettings.DefaultLatitude, newBot.globalSettings.DefaultLongitude, newBot.globalSettings.DefaultAltitude);
+                    session.Client.Login = new PokemonGo.RocketAPI.Rpc.Login(session.Client);
                     newBot.Start();
                     newBot.Machine.AsyncStart(new VersionCheckState(), session, newBot.CancellationToken);
                     if (session.LogicSettings.UseSnipeLocationServer)
@@ -772,8 +782,7 @@ namespace Catchem
             if (_bot == null) throw new ArgumentNullException(nameof(_bot));
             Dispatcher.BeginInvoke(new ThreadStart(delegate
             {
-                _bot.Level.Content =
-                    $"{_bot.Stats?.ExportStats?.HoursUntilLvl.ToString("00")}:{_bot.Stats?.ExportStats?.MinutesUntilLevel.ToString("00")}";
+                _bot.UpdateXppH();
             }));
             if (Bot == _bot)
             {
@@ -807,6 +816,8 @@ namespace Catchem
 
             _loadingUi = true;
             settings_grid.IsEnabled = true;
+            if (!tabControl.IsEnabled)
+                tabControl.IsEnabled = true;
 
             authBox.SelectedItem = Bot.GlobalSettings.Auth.AuthType;
             if (Bot.GlobalSettings.Auth.AuthType == AuthType.Google)
@@ -1064,8 +1075,12 @@ namespace Catchem
                 }
                 else
                 {
-                    Bot.GlobalSettings.DefaultLatitude = lat;
-                    Bot.GlobalSettings.DefaultLongitude = lng;
+                    Bot.Lat = Bot._lat = lat;
+                    Bot.Lng = Bot._lng = lng;
+                    Bot.globalSettings.DefaultLatitude = lat;
+                    Bot.globalSettings.DefaultLongitude = lng;
+                    DrawPlayerMarker();
+                    UpdateCoordBoxes();
                 }
             }
         }

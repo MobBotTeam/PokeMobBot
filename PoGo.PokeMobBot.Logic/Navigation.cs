@@ -40,7 +40,7 @@ namespace PoGo.PokeMobBot.Logic
             var speedInMetersPerSecond = walkingSpeedInKilometersPerHour/3.6;
 
             var sourceLocation = new GeoCoordinate(_client.CurrentLatitude, _client.CurrentLongitude);
-            LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
+            var distanceTo = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
             // Logger.Write($"Distance to target location: {distanceToTarget:0.##} meters. Will take {distanceToTarget/speedInMetersPerSecond:0.##} seconds!", LogLevel.Info);
 
             //Randomizing next step, we don't like straight lines!
@@ -57,6 +57,8 @@ namespace PoGo.PokeMobBot.Logic
 
             UpdatePositionEvent?.Invoke(waypoint.Latitude, waypoint.Longitude);
 
+            var altitudeStep = (_client.rnd.NextDouble() * 10 - 5) * (nextWaypointDistance / distanceTo);
+            var altitude = _client.Settings.DefaultAltitude + altitudeStep;
             do
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -85,7 +87,8 @@ namespace PoGo.PokeMobBot.Logic
                 result =
                     await
                         _client.Player.UpdatePlayerLocation(waypoint.Latitude, waypoint.Longitude,
-                            _client.Settings.DefaultAltitude);
+                            altitude);
+                altitude += altitudeStep;
 
                 UpdatePositionEvent?.Invoke(waypoint.Latitude, waypoint.Longitude);
 

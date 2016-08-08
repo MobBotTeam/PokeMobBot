@@ -21,20 +21,27 @@ namespace PoGo.PokeMobBot.Logic.Logging
             _logQueue.Enqueue(message);
             if (_writerActive) return;
             _writerActive = true;
-            using (
-                var log =
-                    File.AppendText(Path.Combine(_path,
-                        $"PokeMobBot-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt"))
-                )
+            try
             {
-                while (_logQueue.Count > 0)
+                using (
+                    var log =
+                        File.AppendText(Path.Combine(_path,
+                            $"PokeMobBot-{DateTime.Today.ToString("yyyy-MM-dd")}-{DateTime.Now.ToString("HH")}.txt"))
+                    )
                 {
-                    var m = _logQueue.Dequeue();
-                    log.WriteLine(m);
-                    await System.Threading.Tasks.Task.Delay(10);
+                    while (_logQueue.Count > 0)
+                    {
+                        var m = _logQueue.Dequeue();
+                        log.WriteLine(m);
+                        await System.Threading.Tasks.Task.Delay(10);
+                    }
+                    log.Flush();
+                    _writerActive = false;
                 }
-                log.Flush();
-                _writerActive = false;
+            }
+            catch
+            {
+                //ignore
             }
         }
 
