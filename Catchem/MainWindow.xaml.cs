@@ -451,7 +451,7 @@ namespace Catchem
             public readonly GlobalSettings GlobalSettings;
 
             public Label RunTime;
-            public Label Level;
+            public Label Xpph;
             public bool Started;
 
             private readonly DispatcherTimer _timer;
@@ -511,10 +511,10 @@ namespace Catchem
 
             public void UpdateXppH()
             {
-                if (stats == null || ts.TotalHours == 0)
-                    xpph.Content = 0;
+                if (Stats == null || Math.Abs(_ts.TotalHours) < 0.0000001)
+                    Xpph.Content = 0;
                 else
-                    xpph.Content = "Xp/h: " + (stats.TotalExperience / ts.TotalHours).ToString("0.0");
+                    Xpph.Content = "Xp/h: " + (Stats.TotalExperience / _ts.TotalHours).ToString("0.0");
             }
 
             private void WipeData()
@@ -721,7 +721,7 @@ namespace Catchem
             };
             botGrid.Children.Add(lvRuntime);
 
-            newBot.Level = lbLevel;
+            newBot.Xpph = lbLevel;
             newBot.RunTime = lvRuntime;
 
             botPanel.Children.Add(botGrid);
@@ -731,7 +731,7 @@ namespace Catchem
             {
                 if (!newBot.Started)
                 {
-                    session.Client.Player.SetCoordinates(newBot.globalSettings.DefaultLatitude, newBot.globalSettings.DefaultLongitude, newBot.globalSettings.DefaultAltitude);
+                    session.Client.Player.SetCoordinates(newBot.GlobalSettings.DefaultLatitude, newBot.GlobalSettings.DefaultLongitude, newBot.GlobalSettings.DefaultAltitude);
                     session.Client.Login = new PokemonGo.RocketAPI.Rpc.Login(session.Client);
                     newBot.Start();
                     newBot.Machine.AsyncStart(new VersionCheckState(), session, newBot.CancellationToken);
@@ -780,10 +780,7 @@ namespace Catchem
         private void StatsOnDirtyEvent(BotWindowData _bot)
         {
             if (_bot == null) throw new ArgumentNullException(nameof(_bot));
-            Dispatcher.BeginInvoke(new ThreadStart(delegate
-            {
-                _bot.UpdateXppH();
-            }));
+            Dispatcher.BeginInvoke(new ThreadStart(_bot.UpdateXppH));
             if (Bot == _bot)
             {
                 Dispatcher.BeginInvoke(new ThreadStart(delegate
@@ -1077,8 +1074,8 @@ namespace Catchem
                 {
                     Bot.Lat = Bot._lat = lat;
                     Bot.Lng = Bot._lng = lng;
-                    Bot.globalSettings.DefaultLatitude = lat;
-                    Bot.globalSettings.DefaultLongitude = lng;
+                    Bot.GlobalSettings.DefaultLatitude = lat;
+                    Bot.GlobalSettings.DefaultLongitude = lng;
                     DrawPlayerMarker();
                     UpdateCoordBoxes();
                 }
