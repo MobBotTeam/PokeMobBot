@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Catchem"
         xmlns:WindowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation" x:Class="Catchem.MainWindow"
         mc:Ignorable="d"
-        Title="Catchem" Height="649" Width="1200" MinWidth="1030" MinHeight="775" Closing="Window_Closing" Icon="unnamed.ico">
+        Title="Catchem" Height="506.5" Width="1200" MinWidth="1030" MinHeight="775" Closing="Window_Closing" Icon="unnamed.ico">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFB2EF9C" Offset="0"/>
@@ -124,8 +124,8 @@
                         <GroupBox x:Name="groupBox3" Header="Navigation" Margin="0,147,-1,0" VerticalAlignment="Top" Height="294" Grid.Column="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="83*"/>
-                                    <ColumnDefinition Width="206*"/>
+                                    <ColumnDefinition Width="189*"/>
+                                    <ColumnDefinition Width="251*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label x:Name="label7" Content="Altitude" Margin="10,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26"/>
                                 <TextBox Template="{StaticResource pogo}" x:Name="c_DefaultAltitude" Grid.Column="1" Height="29" Margin="10,13,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
@@ -133,19 +133,19 @@
                                 <TextBox Template="{StaticResource pogo}" x:Name="c_DefaultLatitude" Grid.Column="1" Height="29" Margin="10,47,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
                                 <Label x:Name="label7_Copy1" Content="Longtitude" Margin="10,81,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26"/>
                                 <TextBox Template="{StaticResource pogo}" x:Name="c_DefaultLongitude" Grid.Column="1" Height="29" Margin="10,81,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
-                                <CheckBox x:Name="c_Teleport" Content="Teleport" Grid.Column="1" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Width="196" Checked="BotPropertyChanged" Unchecked="BotPropertyChanged"/>
-                                <Label x:Name="label7_Copy2" Content="Max Spawn Location Offset" Margin="10,136,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26" Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="171"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_MaxSpawnLocationOffset" Grid.Column="1" Height="29" Margin="103,136,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
-                                <Label x:Name="label7_Copy3" Content="Max Travel Distance In Meters" Margin="10,170,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26" Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="171"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_MaxTravelDistanceInMeters" Grid.Column="1" Height="29" Margin="103,170,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
-                                <CheckBox x:Name="c_UseDiscoveryPathing" Content="Use Discovery Pathing" Grid.Column="1" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" Width="196" Checked="BotPropertyChanged" Unchecked="BotPropertyChanged"/>
-                                <Label x:Name="label7_Copy4" Content="Walking Speed In Kmph" Margin="10,222,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26" Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="171"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_WalkingSpeedInKilometerPerHour" Grid.Column="1" Height="29" Margin="103,222,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
-                                <CheckBox x:Name="c_StartupWelcomeDelay" Content="Startup Welcome Delay" Grid.Column="1" HorizontalAlignment="Left" Margin="10,253,0,0" VerticalAlignment="Top" Width="196" Checked="BotPropertyChanged" Unchecked="BotPropertyChanged" />
+                                <CheckBox x:Name="c_Teleport" Content="Teleport" Grid.Column="1" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Width="196" Checked="BotPropertyChanged" Unchecked="BotPropertyChanged" Height="16"/>
+                                <Label x:Name="label7_Copy2" Content="Max Spawn Location Offset" Margin="10,136,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26" HorizontalAlignment="Left" Width="179"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_MaxSpawnLocationOffset" Grid.Column="1" Height="29" Margin="10,136,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
+                                <Label x:Name="label7_Copy3" Content="Max Travel Distance In Meters" Margin="10,170,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26" HorizontalAlignment="Left" Width="179"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_MaxTravelDistanceInMeters" Grid.Column="1" Height="29" Margin="10,170,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
+                                <CheckBox x:Name="c_UseDiscoveryPathing" Content="Use Discovery Pathing" Grid.Column="1" HorizontalAlignment="Left" Margin="10,201,0,0" VerticalAlignment="Top" Width="196" Checked="BotPropertyChanged" Unchecked="BotPropertyChanged" Height="16"/>
+                                <Label x:Name="label7_Copy4" Content="Walking Speed In Kmph" Margin="10,222,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26" HorizontalAlignment="Left" Width="179"/>
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_WalkingSpeedInKilometerPerHour" Grid.Column="1" Height="29" Margin="10,222,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged"/>
+                                <CheckBox x:Name="c_StartupWelcomeDelay" Content="Startup Welcome Delay" Grid.Column="1" HorizontalAlignment="Left" Margin="10,253,0,0" VerticalAlignment="Top" Width="196" Checked="BotPropertyChanged" Unchecked="BotPropertyChanged" Height="16" />
 
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="groupBox4" Grid.Column="1" Header="Snipe" Margin="0,919,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.565" Height="200">
+                        <GroupBox x:Name="groupBox4" Grid.Column="1" Header="Snipe" Margin="0,943,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.565" Height="200">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="181*"/>
@@ -163,7 +163,7 @@
 
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="groupBox4_Copy" Grid.Column="1" Header="Items" Margin="0,1119,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.565" Height="232">
+                        <GroupBox x:Name="groupBox4_Copy" Header="Items" Margin="0,1121,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.565" Height="232">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="181*"/>
@@ -218,14 +218,14 @@
 
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="groupBox3_Copy" Grid.Column="1" Header="Device Info" Margin="0,441,0,0" VerticalAlignment="Top" Height="478">
+                        <GroupBox x:Name="groupBox3_Copy" Grid.Column="1" Header="Device Info" Margin="0,441,0,0" VerticalAlignment="Top" Height="502">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="170*"/>
-                                    <ColumnDefinition Width="269*"/>
+                                    <ColumnDefinition Width="189*"/>
+                                    <ColumnDefinition Width="251*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label x:Name="label11" Content="DeviceId" Margin="10,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26"/>
-                                <TextBox Template="{StaticResource pogo}" x:Name="c_DeviceId" Grid.Column="1" Height="29" Margin="10,13,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged" />
+                                <TextBox Template="{StaticResource pogo}" x:Name="c_DeviceId" Grid.Column="1" Height="29" Margin="10,13,77,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged" />
                                 <Label x:Name="label7_Copy5" Content="Android Board Name" Margin="10,47,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26"/>
                                 <TextBox Template="{StaticResource pogo}" x:Name="c_AndroidBoardName" Grid.Column="1" Height="29" Margin="10,47,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged" />
                                 <Label x:Name="label7_Copy6" Content="Android Bootloader" Margin="10,81,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26"/>
@@ -250,6 +250,8 @@
                                 <TextBox Template="{StaticResource pogo}" x:Name="c_FirmwareType" Grid.Column="1" Height="29" Margin="10,387,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged" />
                                 <Label x:Name="label7_Copy16" Content="Firmware Fingerprint" Margin="10,421,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.423" Height="26"/>
                                 <TextBox Template="{StaticResource pogo}" x:Name="c_FirmwareFingerprint" Grid.Column="1" Height="29" Margin="10,421,10,0" TextWrapping="Wrap" VerticalAlignment="Top" TextChanged="BotPropertyChanged" />
+                                <Button x:Name="b_getDataFromRealPhone" Content="Get Data from Your Android Phone" HorizontalAlignment="Left" Margin="10,455,0,0" VerticalAlignment="Top" Width="230" Grid.Column="1" Click="b_getDataFromRealPhone_Click" />
+                                <Button x:Name="b_generateRandomDeviceId" Content="Random" HorizontalAlignment="Left" Margin="178,17,0,0" VerticalAlignment="Top" Width="62" Grid.Column="1" Click="b_generateRandomDeviceId_Click" />
 
                             </Grid>
                         </GroupBox>

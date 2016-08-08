@@ -26,6 +26,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using static System.String;
+using LogLevel = PoGo.PokeMobBot.Logic.Logging.LogLevel;
 
 namespace Catchem
 {
@@ -647,6 +648,7 @@ namespace Catchem
 
             _openedSessions.Add(session, newBot);
 
+            #region bot panel UI
             Grid botGrid = new Grid()
             {
                 Height = 120,
@@ -774,6 +776,7 @@ namespace Catchem
                 }
                 RebuildUi();   
             };
+            #endregion
         }
 
         // ReSharper disable once InconsistentNaming
@@ -828,6 +831,7 @@ namespace Catchem
                 passwordBox.Password = Bot.GlobalSettings.Auth.PtcPassword;
             }
 
+            #region Mapping settings to UIElements
             foreach (var uiElem in settings_grid.GetLogicalChildCollection<TextBox>())
             {
                 var found = false;
@@ -881,6 +885,7 @@ namespace Catchem
                         break;
                     }
             }
+            #endregion
 
             _loadingUi = false;
         }
@@ -907,6 +912,57 @@ namespace Catchem
 
             // Clear InputBox.
             InputTextBox.Text = Empty;
+        }
+
+        private void pokeMap_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var mousePos = e.GetPosition(pokeMap);
+            //Getting real coordinates from mouse click
+            var mapPos = pokeMap.FromLocalToLatLng((int)mousePos.X, (int)mousePos.Y);
+            var lat = mapPos.Lat;
+            var lng = mapPos.Lng;
+
+            if (Bot != null)
+            {
+                if (Bot.Started)
+                {
+                    if (Bot.ForceMoveMarker == null)
+                    {
+                        Bot.ForceMoveMarker = new GMapMarker(mapPos)
+                        {
+                            Shape = Properties.Resources.force_move.ToImage(),
+                            Offset = new Point(-24, -48),
+                            ZIndex = int.MaxValue
+                        };
+                        pokeMap.Markers.Add(Bot.ForceMoveMarker);
+                    }
+                    else
+                    {
+                        Bot.ForceMoveMarker.Position = mapPos;
+                    }
+                    _curSession.StartForceMove(lat, lng);
+                }
+                else
+                {
+                    Bot.Lat = Bot._lat = lat;
+                    Bot.Lng = Bot._lng = lng;
+                    Bot.GlobalSettings.DefaultLatitude = lat;
+                    Bot.GlobalSettings.DefaultLongitude = lng;
+                    DrawPlayerMarker();
+                    UpdateCoordBoxes();
+                }
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _windowClosing = true;
+            if (Bot == null || _loadingUi) return;
+            Bot.GlobalSettings.StoreData(subPath + "\\" + Bot.ProfileName);
+            foreach (var b in _openedSessions.Values)
+            {
+                b.Stop();
+            }
         }
 
         #region Property <-> Settings
@@ -1040,59 +1096,40 @@ namespace Catchem
             HandleUiElementChangedEvent(sender);
         }
         #endregion
+
         #endregion
 
-        private void pokeMap_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var mousePos = e.GetPosition(pokeMap);
-            //Getting real coordinates from mouse click
-            var mapPos = pokeMap.FromLocalToLatLng((int)mousePos.X, (int)mousePos.Y);
-            var lat = mapPos.Lat;
-            var lng = mapPos.Lng;
 
-            if (Bot != null)
-            {
-                if (Bot.Started)
-                {
-                    if (Bot.ForceMoveMarker == null)
-                    {
-                        Bot.ForceMoveMarker = new GMapMarker(mapPos)
-                        {
-                            Shape = Properties.Resources.force_move.ToImage(),
-                            Offset = new Point(-24, -48),
-                            ZIndex = int.MaxValue
-                        };
-                        pokeMap.Markers.Add(Bot.ForceMoveMarker);
-                    }
-                    else
-                    {
-                        Bot.ForceMoveMarker.Position = mapPos;
-                    }
-                    _curSession.StartForceMove(lat, lng);
-                }
-                else
-                {
-                    Bot.Lat = Bot._lat = lat;
-                    Bot.Lng = Bot._lng = lng;
-                    Bot.GlobalSettings.DefaultLatitude = lat;
-                    Bot.GlobalSettings.DefaultLongitude = lng;
-                    DrawPlayerMarker();
-                    UpdateCoordBoxes();
-                }
-            }
+        #region Android Device Tests
+
+        private void b_getDataFromRealPhone_Click(object sender, RoutedEventArgs e)
+        {
+            StartFillFromRealDevice();
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void StartFillFromRealDevice()
         {
-            _windowClosing = true;
-            if (Bot == null || _loadingUi) return;
-            Bot.GlobalSettings.StoreData(subPath + "\\" + Bot.ProfileName);
-            foreach (var b in _openedSessions.Values)
-            {
-                b.Stop();
-            }
+            var dd = await Adb.GetDeviceData();
+            c_DeviceId.Text = Bot.GlobalSettings.Auth.DeviceId = dd.DeviceId;
+            c_AndroidBoardName.Text = Bot.GlobalSettings.Auth.AndroidBoardName = dd.AndroidBoardName;
+            c_AndroidBootloader.Text = Bot.GlobalSettings.Auth.AndroidBootloader = dd.AndroidBootloader;
+            c_DeviceBrand.Text = Bot.GlobalSettings.Auth.DeviceBrand = dd.DeviceBrand;
+            c_DeviceModel.Text = Bot.GlobalSettings.Auth.DeviceModel = dd.DeviceModel;
+            c_DeviceModelIdentifier.Text = Bot.GlobalSettings.Auth.DeviceModelIdentifier = dd.DeviceModelIdentifier;
+            c_HardwareManufacturer.Text = Bot.GlobalSettings.Auth.HardwareManufacturer = dd.HardwareManufacturer;
+            c_HardwareModel.Text = Bot.GlobalSettings.Auth.HardwareModel = dd.HardwareModel;
+            c_FirmwareBrand.Text = Bot.GlobalSettings.Auth.FirmwareBrand = dd.FirmwareBrand;
+            c_FirmwareTags.Text = Bot.GlobalSettings.Auth.FirmwareTags = dd.FirmwareTags;
+            c_FirmwareType.Text = Bot.GlobalSettings.Auth.FirmwareType = dd.FirmwareType;
+            c_FirmwareFingerprint.Text = Bot.GlobalSettings.Auth.FirmwareFingerprint = dd.FirmwareFingerprint;
         }
 
-       
+        private void b_generateRandomDeviceId_Click(object sender, RoutedEventArgs e)
+        {
+            c_DeviceId.Text = AuthSettings.RandomString(16, "0123456789abcdef");
+        }
+        #endregion
+
+
     }
 }

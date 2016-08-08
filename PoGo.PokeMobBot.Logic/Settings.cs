@@ -103,7 +103,7 @@ namespace PoGo.PokeMobBot.Logic
                     SetDevInfoByKey(DeviceInfoHelper.DeviceInfoSets.Keys.ToArray()[rndIdx]);
                 }
                 if (string.IsNullOrEmpty(this.DeviceId) || this.DeviceId == "8525f5d8201f78b5")
-                    this.DeviceId = this.RandomString(16, "0123456789abcdef"); // changed to random hex as full alphabet letters could have been flagged
+                    this.DeviceId = RandomString(16, "0123456789abcdef"); // changed to random hex as full alphabet letters could have been flagged
 
                 // Jurann: Note that some device IDs I saw when adding devices had smaller numbers, only 12 or 14 chars instead of 16 - probably not important but noted here anyway
 
@@ -155,21 +155,21 @@ namespace PoGo.PokeMobBot.Logic
             }
         }
 
-        private string RandomString(int length, string alphabet = "abcdefghijklmnopqrstuvwxyz0123456789")
+        public static string RandomString(int length, string alphabet = "abcdefghijklmnopqrstuvwxyz0123456789")
         {
             var outOfRange = Byte.MaxValue + 1 - (Byte.MaxValue + 1) % alphabet.Length;
 
             return string.Concat(
                 Enumerable
                     .Repeat(0, Int32.MaxValue)
-                    .Select(e => this.RandomByte())
+                    .Select(e => RandomByte())
                     .Where(randomByte => randomByte < outOfRange)
                     .Take(length)
                     .Select(randomByte => alphabet[randomByte % alphabet.Length])
             );
         }
 
-        private byte RandomByte()
+        private static byte RandomByte()
         {
             using (var randomizationProvider = new RNGCryptoServiceProvider())
             {
