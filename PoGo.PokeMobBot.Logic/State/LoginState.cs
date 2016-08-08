@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PokemonGo.RocketAPI.Enums;
@@ -85,6 +86,21 @@ namespace PoGo.PokeMobBot.Logic.State
                 await Task.Delay(2000, cancellationToken);
                 Environment.Exit(0);
             }
+            catch (InvalidProtocolBufferException ex) when (ex.Message.Contains("SkipLastField"))
+            {
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = "IP Banned..."
+                });
+                await Task.Delay(2000, cancellationToken);
+                Environment.Exit(0);
+            }
+            catch (Exception)
+            {
+                //Logger.Write(e.ToString());
+                await Task.Delay(20000, cancellationToken);
+                return this;
+            }
 
             await DownloadProfile(session);
 
@@ -119,8 +135,19 @@ namespace PoGo.PokeMobBot.Logic.State
 
         public async Task DownloadProfile(ISession session)
         {
-            session.Profile = await session.Client.Player.GetPlayer();
-            session.EventDispatcher.Send(new ProfileEvent { Profile = session.Profile });
+            try
+            {
+                session.Profile = await session.Client.Player.GetPlayer();
+                session.EventDispatcher.Send(new ProfileEvent { Profile = session.Profile });
+            }
+            catch (System.UriFormatException e)
+            {
+                session.EventDispatcher.Send(new ErrorEvent { Message = e.ToString() });
+            }
+            catch (Exception ex)
+            {
+                session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
+            }
         }
     }
 }

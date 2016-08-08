@@ -24,10 +24,10 @@ namespace PoGo.PokeMobBot.Logic.State
             "https://raw.githubusercontent.com/Lunat1q/Catchem/Catchem/PoGo.PokeMobBot.Logic/Properties/AssemblyInfo.cs";
 
         public const string LatestReleaseApi =
-            "https://api.github.com/repos/PocketMobsters/PokeMobBot/releases/latest";
+            "https://api.github.com/repos/Lunat1q/Catchem/releases/latest";
 
         private const string LatestRelease =
-            "https://github.com/PocketMobsters/PokeMobBot/releases";
+            "https://github.com/Lunat1q/Catchem/releases";
 
         public static Version RemoteVersion;
 

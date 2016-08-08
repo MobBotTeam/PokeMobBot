@@ -115,7 +115,7 @@ namespace Catchem
 
         public void SendWindowMsg(string msgType, ISession session, params object[] objData)
         {
-            MainWindow.botWindow.ReceiveMsg(msgType, session, objData);
+            MainWindow.BotWindow.ReceiveMsg(msgType, session, objData);
         }
     }
 }

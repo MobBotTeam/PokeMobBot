@@ -10,6 +10,11 @@ using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Enums;
 using POGOProtos.Enums;
 using POGOProtos.Inventory.Item;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
+using PoGo.PokeMobBot.Logic.Utils;
 
 #endregion
 
@@ -25,6 +30,53 @@ namespace PoGo.PokeMobBot.Logic
         public string GooglePassword;
         public string PtcUsername;
         public string PtcPassword;
+        // device data
+        [DefaultValue("random")]
+        public string DevicePackageName;
+        [DefaultValue("8525f5d8201f78b5")]
+        public string DeviceId;
+        [DefaultValue("msm8996")]
+        public string AndroidBoardName;
+        [DefaultValue("1.0.0.0000")]
+        public string AndroidBootloader;
+        [DefaultValue("HTC")]
+        public string DeviceBrand;
+        [DefaultValue("HTC 10")]
+        public string DeviceModel;
+        [DefaultValue("pmewl_00531")]
+        public string DeviceModelIdentifier;
+        [DefaultValue("qcom")]
+        public string DeviceModelBoot;
+        [DefaultValue("HTC")]
+        public string HardwareManufacturer;
+        [DefaultValue("HTC 10")]
+        public string HardwareModel;
+        [DefaultValue("pmewl_00531")]
+        public string FirmwareBrand;
+        [DefaultValue("release-keys")]
+        public string FirmwareTags;
+        [DefaultValue("user")]
+        public string FirmwareType;
+        [DefaultValue("htc/pmewl_00531/htc_pmewl:6.0.1/MMB29M/770927.1:user/release-keys")]
+        public string FirmwareFingerprint;
+
+        public AuthSettings()
+        {
+            InitializePropertyDefaultValues(this);
+        }
+
+        public void InitializePropertyDefaultValues(object obj)
+        {
+            FieldInfo[] fields = obj.GetType().GetFields();
+
+            foreach (FieldInfo field in fields)
+            {
+                var d = field.GetCustomAttribute<DefaultValueAttribute>();
+
+                if (d != null)
+                    field.SetValue(obj, d.Value);
+            }
+        }
 
         public void Load(string path)
         {
@@ -42,10 +94,20 @@ namespace PoGo.PokeMobBot.Logic
 
                     JsonConvert.PopulateObject(input, this, settings);
                 }
-                else
+                
+                if (this.DevicePackageName.Equals("random", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Save(_filePath);
+                    // Random is set, so pick a random device package and set it up - it will get saved to disk below and re-used in subsequent sessions
+                    Random rnd = new Random();
+                    int rndIdx = rnd.Next(0, DeviceInfoHelper.DeviceInfoSets.Keys.Count + 1);
+                    SetDevInfoByKey(DeviceInfoHelper.DeviceInfoSets.Keys.ToArray()[rndIdx]);
                 }
+                if (string.IsNullOrEmpty(this.DeviceId) || this.DeviceId == "8525f5d8201f78b5")
+                    this.DeviceId = this.RandomString(16, "0123456789abcdef"); // changed to random hex as full alphabet letters could have been flagged
+
+                // Jurann: Note that some device IDs I saw when adding devices had smaller numbers, only 12 or 14 chars instead of 16 - probably not important but noted here anyway
+
+                Save(_filePath);
             }
             catch (JsonReaderException exception)
             {
@@ -90,6 +152,55 @@ namespace PoGo.PokeMobBot.Logic
             if (!string.IsNullOrEmpty(_filePath))
             {
                 Save(_filePath);
+            }
+        }
+
+        private string RandomString(int length, string alphabet = "abcdefghijklmnopqrstuvwxyz0123456789")
+        {
+            var outOfRange = Byte.MaxValue + 1 - (Byte.MaxValue + 1) % alphabet.Length;
+
+            return string.Concat(
+                Enumerable
+                    .Repeat(0, Int32.MaxValue)
+                    .Select(e => this.RandomByte())
+                    .Where(randomByte => randomByte < outOfRange)
+                    .Take(length)
+                    .Select(randomByte => alphabet[randomByte % alphabet.Length])
+            );
+        }
+
+        private byte RandomByte()
+        {
+            using (var randomizationProvider = new RNGCryptoServiceProvider())
+            {
+                var randomBytes = new byte[1];
+                randomizationProvider.GetBytes(randomBytes);
+                return randomBytes.Single();
+            }
+        }
+
+        private void SetDevInfoByKey(string devKey)
+        {
+            this.DevicePackageName = devKey;
+            if (DeviceInfoHelper.DeviceInfoSets.ContainsKey(this.DevicePackageName))
+            {
+                this.AndroidBoardName = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["AndroidBoardName"];
+                this.AndroidBootloader = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["AndroidBootloader"];
+                this.DeviceBrand = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["DeviceBrand"];
+                this.DeviceId = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["DeviceId"];
+                this.DeviceModel = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["DeviceModel"];
+                this.DeviceModelBoot = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["DeviceModelBoot"];
+                this.DeviceModelIdentifier = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["DeviceModelIdentifier"];
+                this.FirmwareBrand = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["FirmwareBrand"];
+                this.FirmwareFingerprint = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["FirmwareFingerprint"];
+                this.FirmwareTags = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["FirmwareTags"];
+                this.FirmwareType = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["FirmwareType"];
+                this.HardwareManufacturer = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["HardwareManufacturer"];
+                this.HardwareModel = DeviceInfoHelper.DeviceInfoSets[this.DevicePackageName]["HardwareModel"];
+            }
+            else
+            {
+                throw new ArgumentException("Invalid device info package! Check your auth.config file and make sure a valid DevicePackageName is set or simply set it to 'random'...");
             }
         }
     }
@@ -245,9 +356,9 @@ namespace PoGo.PokeMobBot.Logic
         public List<PokemonId> PokemonsNotToTransfer = new List<PokemonId>
         {
             //criteria: from SS Tier to A Tier + Regional Exclusive
-            //PokemonId.Venusaur,
-            //PokemonId.Charizard,
-            //PokemonId.Blastoise,
+            PokemonId.Venusaur,
+            PokemonId.Charizard,
+            PokemonId.Blastoise,
             //PokemonId.Nidoqueen,
             //PokemonId.Nidoking,
             //PokemonId.Clefable,
@@ -260,25 +371,25 @@ namespace PoGo.PokeMobBot.Logic
             //PokemonId.Golem,
             //PokemonId.Slowbro,
             //PokemonId.Farfetchd,
-            //PokemonId.Muk,
+            PokemonId.Muk,
             //PokemonId.Exeggutor,
             //PokemonId.Lickitung,
-            //PokemonId.Chansey,
+            PokemonId.Chansey,
             //PokemonId.Kangaskhan,
             //PokemonId.MrMime,
             //PokemonId.Tauros,
-            //PokemonId.Gyarados,
+            PokemonId.Gyarados,
             //PokemonId.Lapras,
             PokemonId.Ditto,
             //PokemonId.Vaporeon,
             //PokemonId.Jolteon,
             //PokemonId.Flareon,
             //PokemonId.Porygon,
-            //PokemonId.Snorlax,
+            PokemonId.Snorlax,
             PokemonId.Articuno,
             PokemonId.Zapdos,
             PokemonId.Moltres,
-            //PokemonId.Dragonite,
+            PokemonId.Dragonite,
             PokemonId.Mewtwo,
             PokemonId.Mew
         };
@@ -567,7 +678,11 @@ namespace PoGo.PokeMobBot.Logic
         public string GoogleRefreshToken
         {
             get { return null; }
-            set { GoogleRefreshToken = null; }
+            set
+            {
+                if (value == null && GoogleRefreshToken == null) return;
+                GoogleRefreshToken = null;
+            }
         }
 
         AuthType ISettings.AuthType
@@ -682,6 +797,81 @@ namespace PoGo.PokeMobBot.Logic
                 _settings.ProxyPass = value;
             }
         }
+#region Device Config Values
+
+        string DevicePackageName
+        {
+            get { return _settings.Auth.DevicePackageName; }
+            set { _settings.Auth.DevicePackageName = value; }
+        }
+        string ISettings.DeviceId
+        {
+            get { return _settings.Auth.DeviceId; }
+            set { _settings.Auth.DeviceId = value; }
+        }
+        string ISettings.AndroidBoardName
+        {
+            get { return _settings.Auth.AndroidBoardName; }
+            set { _settings.Auth.AndroidBoardName = value; }
+        }
+        string ISettings.AndroidBootloader
+        {
+            get { return _settings.Auth.AndroidBootloader; }
+            set { _settings.Auth.AndroidBootloader = value; }
+        }
+        string ISettings.DeviceBrand
+        {
+            get { return _settings.Auth.DeviceBrand; }
+            set { _settings.Auth.DeviceBrand = value; }
+        }
+        string ISettings.DeviceModel
+        {
+            get { return _settings.Auth.DeviceModel; }
+            set { _settings.Auth.DeviceModel = value; }
+        }
+        string ISettings.DeviceModelIdentifier
+        {
+            get { return _settings.Auth.DeviceModelIdentifier; }
+            set { _settings.Auth.DeviceModelIdentifier = value; }
+        }
+        string ISettings.DeviceModelBoot
+        {
+            get { return _settings.Auth.DeviceModelBoot; }
+            set { _settings.Auth.DeviceModelBoot = value; }
+        }
+        string ISettings.HardwareManufacturer
+        {
+            get { return _settings.Auth.HardwareManufacturer; }
+            set { _settings.Auth.HardwareManufacturer = value; }
+        }
+        string ISettings.HardwareModel
+        {
+            get { return _settings.Auth.HardwareModel; }
+            set { _settings.Auth.HardwareModel = value; }
+        }
+        string ISettings.FirmwareBrand
+        {
+            get { return _settings.Auth.FirmwareBrand; }
+            set { _settings.Auth.FirmwareBrand = value; }
+        }
+        string ISettings.FirmwareTags
+        {
+            get { return _settings.Auth.FirmwareTags; }
+            set { _settings.Auth.FirmwareTags = value; }
+        }
+        string ISettings.FirmwareType
+        {
+            get { return _settings.Auth.FirmwareType; }
+            set { _settings.Auth.FirmwareType = value; }
+        }
+        string ISettings.FirmwareFingerprint
+        {
+            get { return _settings.Auth.FirmwareFingerprint; }
+            set { _settings.Auth.FirmwareFingerprint = value; }
+        }
+
+        #endregion Device Config Values
+
     }
 
     public class LogicSettings : ILogicSettings

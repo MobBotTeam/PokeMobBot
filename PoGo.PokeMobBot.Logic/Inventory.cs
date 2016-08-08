@@ -196,6 +196,14 @@ namespace PoGo.PokeMobBot.Logic
                 .OrderByDescending(x => x.Cp)
                 .FirstOrDefault();
         }
+        public async Task<int> GetStarDust()
+        {
+            var StarDust =await  _client.Player.GetPlayer();
+            var gdrfds = StarDust.PlayerData.Currencies;
+            var SplitStar = gdrfds[1].Amount;
+            return SplitStar;
+
+        }
 
         public async Task<PokemonData> GetHighestPokemonOfTypeByIv(PokemonData pokemon)
         {
@@ -305,6 +313,16 @@ namespace PoGo.PokeMobBot.Logic
             var hfgds = await _client.Inventory.GetInventory();
 
             return hfgds.InventoryDelta.InventoryItems.Count(t => t.ToString().ToLower().Contains("pokedex"));
+        }
+
+        public async Task<List<InventoryItem>> GetPokeDexItems()
+        {
+            List<InventoryItem> PokeDex = new List<InventoryItem>();
+            var inventory = await _client.Inventory.GetInventory();
+
+            return (from items in inventory.InventoryDelta.InventoryItems
+                   where items.InventoryItemData?.PokedexEntry != null
+                   select items).ToList();
         }
 
         public async Task<List<Candy>> GetPokemonFamilies()
