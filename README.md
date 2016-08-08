@@ -1,7 +1,7 @@
 <h1>Catchem PokemonGO bot <i>with modern UI</i></h1>
 <h4>Based on PokeMobBot project</h4>
 
-
+In action: [Gifv](http://i.imgur.com/UXGkHS4.gifv)
 <h3>UI map/console window</h3>
 ![botUI1](http://i.imgur.com/JjeQpCn.png)
 <h3>UI settings window</h3>
