@@ -53,7 +53,6 @@ MD5 Hash (v1.1.3) : <b>bc0b52fb3d64c6d712820ff31a89ea61</b>
 <h2><a name="donating">Donating</a></h2>
 Wish to donate? Register on our forums and donate there: [![](https://i.imgur.com/9al9LSj.gif)](http://forum.pokemobbot.com/)
 <h6><em>[ All PayPal donations are used towards expenses and will have full accounting details posted weekly, beginning 8/5/2016 ]</em></h6><br>
-Donate Bitcoins to FeroxRev (the original API library developer): 1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e
 
 <br>
 <h2><a name="credits">Credits</a></h2>
