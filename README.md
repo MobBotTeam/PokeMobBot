@@ -9,16 +9,25 @@
 </div>
 <br>
 <!-- shields -->
+[![PoGo Version](https://img.shields.io/badge/Pokemon_Go-0.33.0-blue.svg)](#)
 [![Twitter Follow](https://img.shields.io/twitter/follow/PokeMobBot.svg?style=social&label=Follow&maxAge=2592000?style=flat-square)](https://twitter.com/PokeMobBot)
 [![Discord](https://img.shields.io/badge/discord-PokeMobBot-blue.svg)](https://discord.gg/8msqsWV)
-[![Github All Releases](https://img.shields.io/github/downloads/MobBotTeam/PokeMobBot/total.svg)](https://github.com/MobBotTeam/PokeMobBot/releases)
 [![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/MobBotTeam/PokeMobBot/development/LICENSE)
+[![Github All Releases](https://img.shields.io/github/downloads/MobBotTeam/PokeMobBot/total.svg)](https://github.com/MobBotTeam/PokeMobBot/releases)
+
 <br>
-<b>Join our Discord to hang out & Chat: https://discord.gg/8msqsWV </b><br/>
+<div style="text-align:center">
+ <b>Join our Discord to hang out & Chat:</b> <br>
+ <a href="https://discord.gg/8msqsWV">
+    <img alt="Logo" src="https://discordapp.com/api/guilds/206065054846681088/widget.png?style=banner2">
+ </a>
+</div>
+<br/>
 <br>
 <!-- news -->
-## API Calls changed ( Bot is not working ATM! )
-Niantic has changed some API responses, that means our Bot is currently non-functional. We are working hard on getting it back up & running ASAP. Feel free to check the current status at [our Twitter Page](https://twitter.com/PokeMobBot)
+## Bot is working, MobBot Redux Version in Development
+The latest Version is compatible with PoGo 0.33. Keep in mind that many of the API calls made by us ( and every other open source Bot out there ) are wrong. They will most likely flag you and get you banned.<br>
+Thats why we started to work on a new Bot some while ago. MobBot Redux will feature a fully modular architecture, Plugins API and a totally redone API that focuses on emulating the client. More Informations & Updates on this on [our Twitter Page](https://twitter.com/PokeMobBot).
 <br>
 <!-- information -->
 <h2><a name="features">Features</a></h2>
