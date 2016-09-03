@@ -19,6 +19,9 @@ namespace PoGo.PokeMobBot.CLI.Models
 
         internal static string Farming;
 
+        internal static string Favorite;
+
+        internal static string UnFavorite;
         internal static string Info;
 
         internal static string Pkmn;
@@ -84,6 +87,12 @@ namespace PoGo.PokeMobBot.CLI.Models
             Update =
                 session?.Translation.GetTranslation(
                     TranslationString.LogEntryUpdate) ?? "UPDATE";
+            Favorite =
+                session?.Translation.GetTranslation(
+                    TranslationString.LogEntryFavorite) ?? "FAVORITE";
+            UnFavorite =
+                            session?.Translation.GetTranslation(
+                                TranslationString.LogEntryUnFavorite) ?? "UNFAVORITE";
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿#region using directives
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +22,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            
+            
 
             // Refresh inventory so that the player stats are fresh
             await session.Inventory.RefreshCachedInventory();
@@ -86,6 +90,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
                         });
                 }
+                else if (encounter.Status == EncounterResponse.Types.Status.EncounterPokemonFled)
+                {
+                    session.EventDispatcher.Send(new WarnEvent
+                    {
+                        Message = session.Translation.GetTranslation(TranslationString.EncounterProblemPokemonFlee, session.Translation.GetPokemonName(encounter.WildPokemon.PokemonData.PokemonId))
+                    });
+                }
                 else
                 {
                     session.EventDispatcher.Send(new WarnEvent
@@ -95,27 +106,16 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     });
                 }
 
-                // If pokemon is not last pokemon in list, create delay between catches, else keep moving.
-                if (!Equals(pokemons.ElementAtOrDefault(pokemons.Count() - 1), pokemon))
-                {
-                    if(session.LogicSettings.Teleport)
-                        await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch);
-                    else
-                        await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch, cancellationToken);
-                }
+                // always wait the delay amount between catches, ideally to prevent you from making another call too early after a catch event
+                await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch);
             }
         }
 
-        private static async Task<IOrderedEnumerable<MapPokemon>> GetNearbyPokemons(ISession session)
+        private static async Task<List<PokemonCacheItem>> GetNearbyPokemons(ISession session)
         {
-            var mapObjects = await session.Client.Map.GetMapObjects();
+            //var mapObjects = await session.Client.Map.GetMapObjects();
 
-            var pokemons = mapObjects.Item1.MapCells.SelectMany(i => i.CatchablePokemons)
-                .OrderBy(
-                    i =>
-                        LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                            session.Client.CurrentLongitude,
-                            i.Latitude, i.Longitude));
+            var pokemons = await session.MapCache.MapPokemons(session);
 
             return pokemons;
         }

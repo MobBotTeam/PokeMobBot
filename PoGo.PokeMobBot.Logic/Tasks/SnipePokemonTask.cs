@@ -285,7 +285,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var mapObjects = session.Client.Map.GetMapObjects().Result;
             var catchablePokemon =
-                mapObjects.Item1.MapCells.SelectMany(q => q.CatchablePokemons)
+                mapObjects.MapCells.SelectMany(q => q.CatchablePokemons)
                     .Where(q => pokemonIds.Contains(q.PokemonId))
                     .ToList();
 
@@ -294,6 +294,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             foreach (var pokemon in catchablePokemon)
             {
+                //var pokemon = new PokemonCacheItem(_pokemon);
                 cancellationToken.ThrowIfCancellationRequested();
 
                 EncounterResponse encounter;
@@ -319,7 +320,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Longitude = CurrentLongitude
                     });
 
-                    if (!await CatchPokemonTask.Execute(session, encounter, pokemon))
+                    if (!await CatchPokemonTask.Execute(session, encounter, new PokemonCacheItem(pokemon)))
                     {
                         // Don't snipe any more pokemon if we ran out of one kind of pokeballs.
                         session.EventDispatcher.Send(new SnipeModeEvent { Active = false });
@@ -475,10 +476,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     PokemonId id;
                     Enum.TryParse(result.Value<string>("name"), out id);
+                    double iv;
+                    Double.TryParse(result.Value<string>("iv"), out iv);
                     var a = new SniperInfo
                     {
                         Id = id,
-                        IV = 100,
+                        IV = iv,
                         Latitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[0]),
                         Longitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[1]),
                         ExpirationTimestamp = DateTime.Now
@@ -534,10 +537,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         {
                             PokemonId id;
                             Enum.TryParse(result.Value<string>("name"), out id);
+                            double iv;
+                            Double.TryParse(result.Value<string>("iv"), out iv);
                             var a = new SniperInfo
                             {
                                 Id = id,
-                                IV = 100,
+                                IV = iv,
                                 Latitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[0]),
                                 Longitude = Convert.ToDouble(result.Value<string>("coords").Split(',')[1]),
                                 ExpirationTimestamp = DateTime.Now
@@ -583,6 +588,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                         scanResult = new ScanResult { Pokemon = new List<PokemonLocation>() };
                     }
+                    await Task.Delay(5000, cancellationToken);
                 }
                 else
                 {
@@ -622,8 +628,9 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         // most likely System.IO.IOException
                         session.EventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                     }
+                    await Task.Delay(5000, cancellationToken);
                 }
-                await Task.Delay(5000, cancellationToken);
+               
             }
         }
     }

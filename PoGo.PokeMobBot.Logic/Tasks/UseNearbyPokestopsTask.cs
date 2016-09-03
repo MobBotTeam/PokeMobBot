@@ -29,6 +29,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             while (pokestopList.Any())
             {
+                
                 cancellationToken.ThrowIfCancellationRequested();
 
                 pokestopList =
@@ -38,7 +39,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 session.Client.CurrentLongitude, i.Latitude, i.Longitude)).ToList();
                 var pokeStop = pokestopList[0];
                 pokestopList.RemoveAt(0);
-
+                if (pokeStop.Used)
+                    break;
                 var fortInfo = await session.Client.Fort.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                 var fortSearch =
@@ -46,6 +48,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                 if (fortSearch.ExperienceAwarded > 0)
                 {
+                    RuntimeSettings.StopsHit++;
                     session.EventDispatcher.Send(new FortUsedEvent
                     {
                         Id = pokeStop.Id,
@@ -56,36 +59,45 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         Latitude = pokeStop.Latitude,
                         Longitude = pokeStop.Longitude
                     });
+                    session.MapCache.UsedPokestop(pokeStop);
+
+                }
+                if (pokeStop.LureInfo != null)
+                {//because we're all fucking idiots for not catching this sooner
+                    await CatchLurePokemonsTask.Execute(session, pokeStop.BaseFortData, cancellationToken);
                 }
 
-                await RecycleItemsTask.Execute(session, cancellationToken);
 
-                if (session.LogicSettings.TransferDuplicatePokemon)
-                {
-                    await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
-                }
+                //await RecycleItemsTask.Execute(session, cancellationToken);
+
+                //if (session.LogicSettings.TransferDuplicatePokemon)
+                //{
+                //    await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                //}
             }
         }
 
 
-        private static async Task<List<FortData>> GetPokeStops(ISession session)
+        private static async Task<List<FortCacheItem>> GetPokeStops(ISession session)
         {
-            var mapObjects = await session.Client.Map.GetMapObjects();
+            List<FortCacheItem> pokeStops = await session.MapCache.FortDatas(session);
+
+            session.EventDispatcher.Send(new PokeStopListEvent { Forts = session.MapCache.baseFortDatas.ToList() });
 
             // Wasn't sure how to make this pretty. Edit as needed.
-            var pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
-                .Where(
-                    i =>
-                        i.Type == FortType.Checkpoint &&
-                        i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
+            pokeStops = pokeStops.Where(
+                i =>
+                    i.Used == false && i.Type == FortType.Checkpoint &&
+                        i.CooldownCompleteTimestampMS < DateTime.UtcNow.ToUnixTime() &&
                         ( // Make sure PokeStop is within 40 meters or else it is pointless to hit it
                             LocationUtils.CalculateDistanceInMeters(
                                 session.Client.CurrentLatitude, session.Client.CurrentLongitude,
                                 i.Latitude, i.Longitude) < 40) ||
                         session.LogicSettings.MaxTravelDistanceInMeters == 0
-                );
+                ).ToList();
 
-            return pokeStops.ToList();
+            return pokeStops;
+
         }
     }
 }

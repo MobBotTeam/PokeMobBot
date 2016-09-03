@@ -54,6 +54,7 @@ namespace PoGo.PokeMobBot.Logic.State
                     session.EventDispatcher.Send(new ErrorEvent {Message = ex.ToString()});
                     state = _initialState;
                 }
+                
             } while (state != null);
         }
     }

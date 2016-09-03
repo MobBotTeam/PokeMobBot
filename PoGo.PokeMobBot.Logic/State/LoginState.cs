@@ -38,9 +38,9 @@ namespace PoGo.PokeMobBot.Logic.State
                 });
                 session.EventDispatcher.Send(new NoticeEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 20)
+                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 45)
                 });
-                await Task.Delay(20000, cancellationToken);
+                await Task.Delay(45000, cancellationToken);
                 return this;
             }
             catch (AccessTokenExpiredException)
@@ -62,6 +62,11 @@ namespace PoGo.PokeMobBot.Logic.State
                 {
                     Message = session.Translation.GetTranslation(TranslationString.NianticServerUnstable)
                 });
+                session.EventDispatcher.Send(new NoticeEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 45)
+                });
+                await Task.Delay(45000, cancellationToken);
                 return this;
             }
             catch (AccountNotVerifiedException)
@@ -106,6 +111,47 @@ namespace PoGo.PokeMobBot.Logic.State
                 await Task.Delay(2000, cancellationToken);
                 Environment.Exit(0);
             }
+            catch (LoginFailedException)
+            {
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.PtcLoginFailed)
+                });
+                session.EventDispatcher.Send(new NoticeEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 45)
+                });
+                await Task.Delay(45000, cancellationToken);
+                Environment.Exit(0);
+            }
+            catch (Exception unhandeled)
+            {
+                session.EventDispatcher.Send(new ErrorEvent
+                {
+                    Message = unhandeled.ToString()
+                });
+                session.EventDispatcher.Send(new NoticeEvent
+                {
+                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 45)
+                });
+                await Task.Delay(45000, cancellationToken);
+                if (session.LogicSettings.StopBotToAvoidBanOnUnknownLoginError)
+                {
+                    session.EventDispatcher.Send(new NoticeEvent
+                    {
+                        Message = session.Translation.GetTranslation(TranslationString.StopBotToAvoidBan)
+                    });
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    session.EventDispatcher.Send(new NoticeEvent
+                    {
+                        Message = session.Translation.GetTranslation(TranslationString.BotNotStoppedRiskOfBan)
+                    });
+                    return this;
+                }
+            }
 
             await DownloadProfile(session);
 
@@ -127,7 +173,7 @@ namespace PoGo.PokeMobBot.Logic.State
                 Environment.Exit(0);
             }
             else if (session.Settings.AuthType == AuthType.Ptc &&
-                     (session.Settings.PtcUsername == null || session.Settings.PtcPassword == null))
+                (session.Settings.PtcUsername == null || session.Settings.PtcPassword == null))
             {
                 session.EventDispatcher.Send(new ErrorEvent
                 {

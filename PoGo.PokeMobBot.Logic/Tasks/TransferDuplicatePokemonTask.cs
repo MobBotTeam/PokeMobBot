@@ -73,10 +73,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     BestPerfection = PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType),
                     FamilyCandies = family.Candy_
                 });
-                if(session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayTransferPokemon);
-                else
-                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 0);
             }
         }
     }

@@ -53,8 +53,7 @@ namespace PoGo.PokeMobBot.CLI
         public void HandleEvent(PlayerLevelUpEvent evt, ISession session)
         {
             Logger.Write(
-                session.Translation.GetTranslation(TranslationString.EventLevelUpRewards, evt.Items),
-                LogLevel.Info);
+                session.Translation.GetTranslation(TranslationString.EventLevelUpRewards, evt.Items));
         }
 
         public void HandleEvent(UseLuckyEggEvent evt, ISession session)
@@ -65,15 +64,18 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(UseLuckyEggMinPokemonEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff, evt.CurrCount, evt.MinPokemon),
-                LogLevel.Info);
+            Logger.Write(
+                session.Translation.GetTranslation(TranslationString.EventUseLuckyEggMinPokemonCheck, evt.Diff,
+                    evt.CurrCount, evt.MinPokemon));
         }
 
         public void HandleEvent(PokemonEvolveEvent evt, ISession session)
         {
             Logger.Write(evt.Result == EvolvePokemonResponse.Types.Result.Success
-                ? session.Translation.GetTranslation(TranslationString.EventPokemonEvolvedSuccess, session.Translation.GetPokemonName(evt.Id), evt.Exp)
-                : session.Translation.GetTranslation(TranslationString.EventPokemonEvolvedFailed, session.Translation.GetPokemonName(evt.Id), evt.Result,
+                ? session.Translation.GetTranslation(TranslationString.EventPokemonEvolvedSuccess,
+                    session.Translation.GetPokemonName(evt.Id), evt.Exp)
+                : session.Translation.GetTranslation(TranslationString.EventPokemonEvolvedFailed,
+                    session.Translation.GetPokemonName(evt.Id), evt.Result,
                     evt.Id),
                 LogLevel.Evolve);
         }
@@ -81,7 +83,8 @@ namespace PoGo.PokeMobBot.CLI
         public void HandleEvent(TransferPokemonEvent evt, ISession session)
         {
             Logger.Write(
-                session.Translation.GetTranslation(TranslationString.EventPokemonTransferred, session.Translation.GetPokemonName(evt.Id), evt.Cp,
+                session.Translation.GetTranslation(TranslationString.EventPokemonTransferred,
+                    session.Translation.GetPokemonName(evt.Id), evt.Cp,
                     evt.Perfection.ToString("0.00"), evt.BestCp, evt.BestPerfection.ToString("0.00"), evt.FamilyCandies),
                 LogLevel.Transfer);
         }
@@ -193,7 +196,8 @@ namespace PoGo.PokeMobBot.CLI
                 : "";
 
             Logger.Write(
-                session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType, session.Translation.GetPokemonName(evt.Id),
+                session.Translation.GetTranslation(TranslationString.EventPokemonCapture, catchStatus, catchType,
+                    session.Translation.GetPokemonName(evt.Id),
                     evt.Level, evt.Cp, evt.MaxCp, evt.Perfection.ToString("0.00"), evt.Probability,
                     evt.Distance.ToString("F2"),
                     returnRealBallName(evt.Pokeball), evt.BallAmount, evt.Exp, familyCandies), caughtEscapeFlee);
@@ -201,7 +205,9 @@ namespace PoGo.PokeMobBot.CLI
 
         public void HandleEvent(NoPokeballEvent evt, ISession session)
         {
-            Logger.Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, session.Translation.GetPokemonName(evt.Id), evt.Cp),
+            Logger.Write(
+                session.Translation.GetTranslation(TranslationString.EventNoPokeballs,
+                    session.Translation.GetPokemonName(evt.Id), evt.Cp),
                 LogLevel.Caught);
         }
 
@@ -216,7 +222,8 @@ namespace PoGo.PokeMobBot.CLI
             Logger.Write(evt.PokemonId == PokemonId.Missingno
                 ? session.Translation.GetTranslation(TranslationString.SnipeScan,
                     $"{evt.Bounds.Latitude},{evt.Bounds.Longitude}")
-                : session.Translation.GetTranslation(TranslationString.SnipeScanEx, session.Translation.GetPokemonName(evt.PokemonId),
+                : session.Translation.GetTranslation(TranslationString.SnipeScanEx,
+                    session.Translation.GetPokemonName(evt.PokemonId),
                     evt.Iv > 0 ? evt.Iv.ToString(CultureInfo.InvariantCulture) : "unknown",
                     $"{evt.Bounds.Latitude},{evt.Bounds.Longitude}"));
         }
@@ -250,10 +257,12 @@ namespace PoGo.PokeMobBot.CLI
             var strName = session.Translation.GetTranslation(TranslationString.CommonWordName).ToUpper();
 
             Logger.Write($"====== {strHeader} ======", LogLevel.Info, ConsoleColor.Yellow);
-            Logger.Write($">  {"CP/BEST".PadLeft(8, ' ')}{(evt.DisplayPokemonMaxPoweredCp ? "/POWERED" : "")} |\t{strPerfect.PadLeft(6, ' ')}\t| LVL | {strName.PadRight(10, ' ')} | {("MOVE1").PadRight(18, ' ')} | {("MOVE2").PadRight(6, ' ')} {(evt.DisplayPokemonMovesetRank ? "| MoveRankVsAveType |" : "")}", LogLevel.Info, ConsoleColor.Yellow);
+            Logger.Write(
+                $">  {"CP/BEST".PadLeft(8, ' ')}{(evt.DisplayPokemonMaxPoweredCp ? "/POWERED" : "")} |\t{strPerfect.PadLeft(6, ' ')}\t| LVL | {strName.PadRight(10, ' ')} | {"MOVE1".PadRight(18, ' ')} | {"MOVE2".PadRight(6, ' ')} {(evt.DisplayPokemonMovesetRank ? "| MoveRankVsAveType |" : "")}",
+                LogLevel.Info, ConsoleColor.Yellow);
             foreach (var pokemon in evt.PokemonList)
                 Logger.Write(
-                  $"# {pokemon.PokeData.Cp.ToString().PadLeft(4, ' ')}/{pokemon.PerfectCp.ToString().PadLeft(4, ' ')}{(evt.DisplayPokemonMaxPoweredCp ? "/" + pokemon.MaximumPoweredCp.ToString().PadLeft(4, ' ') : "")} | {pokemon.Perfection.ToString("0.00")}%\t | {pokemon.Level.ToString("00")} | {pokemon.PokeData.PokemonId.ToString().PadRight(10, ' ')} | {pokemon.Move1.ToString().PadRight(18, ' ')} | {pokemon.Move2.ToString().PadRight(13, ' ')} {(evt.DisplayPokemonMovesetRank ? "| " + pokemon.AverageRankVsTypes : "")}",
+                    $"# {pokemon.PokeData.Cp.ToString().PadLeft(4, ' ')}/{pokemon.PerfectCp.ToString().PadLeft(4, ' ')}{(evt.DisplayPokemonMaxPoweredCp ? "/" + pokemon.MaximumPoweredCp.ToString().PadLeft(4, ' ') : "")} | {pokemon.Perfection.ToString("0.00")}%\t | {pokemon.Level.ToString("00")} | {pokemon.PokeData.PokemonId.ToString().PadRight(10, ' ')} | {pokemon.Move1.ToString().PadRight(18, ' ')} | {pokemon.Move2.ToString().PadRight(13, ' ')} {(evt.DisplayPokemonMovesetRank ? "| " + pokemon.AverageRankVsTypes : "")}",
                     LogLevel.Info, ConsoleColor.Yellow);
         }
 
@@ -261,7 +270,25 @@ namespace PoGo.PokeMobBot.CLI
         {
             Logger.Write(evt.ToString(), LogLevel.Update);
         }
-
+        public void HandleEvent(PokemonFavoriteEvent evt, ISession session)  //added by Lars
+        {
+            string message = string.Format("{0,-13} CP: {1,-4} IV: {2,-4:#.00}% Candies: {3}", evt.Pokemon, evt.Cp, evt.Iv, evt.Candies);
+            Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonFavorite, message), LogLevel.Favorite);
+        }
+        public void HandleEvent(PokemonUnFavoriteEvent evt, ISession session) //added by Lars
+        {
+            string message = string.Format("{0,-13} CP: {1,-4} IV: {2,-4:#.00}% Candies: {3}", evt.Pokemon, evt.Cp, evt.Iv, evt.Candies);
+            Logger.Write(session.Translation.GetTranslation(TranslationString.PokemonUnFavorite, message), LogLevel.UnFavorite);
+        }
+        public void HandleEvent(InvalidKeepAmountEvent evt, ISession session) //added by Lars
+        {
+            Logger.Write(session.Translation.GetTranslation(TranslationString.CheckingForMaximumInventorySize, evt.Count, evt.Max), LogLevel.Warning);
+        }
+        public void HandleEvent(WalkingSpeedRandomizedEvent evt, ISession session) //added by Lars
+        {
+            string formattedMessage = string.Format("Movement Speed in KPH has been Randomized. Old Speed: {0:#.0}KPH New Speed: {1:#.0}KPH", evt.OldSpeed, evt.NewSpeed);
+            Logger.Write(session.Translation.GetTranslation(TranslationString.WalkingSpeedRandomized, formattedMessage), LogLevel.Info, ConsoleColor.Cyan);
+        }
         public void Listen(IEvent evt, ISession session)
         {
             dynamic eve = evt;

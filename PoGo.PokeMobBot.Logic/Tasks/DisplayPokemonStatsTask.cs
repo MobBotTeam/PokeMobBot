@@ -25,13 +25,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
             var trainerLevel = 40;
 
-            var highestsPokemonCp = await session.Inventory.GetHighestsCp(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
+            var highestsPokemonCp = await session.Inventory.GetHighestsCp(session.LogicSettings.AmountOfPokemonToDisplayOnStartCp);
             var pokemonPairedWithStatsCp = highestsPokemonCp.Select(pokemon => new PokemonAnalysis(pokemon, trainerLevel)).ToList();
 
             var highestsPokemonCpForUpgrade = await session.Inventory.GetHighestsCp(50);
             var pokemonPairedWithStatsCpForUpgrade = highestsPokemonCpForUpgrade.Select(pokemon => new PokemonAnalysis(pokemon, trainerLevel)).ToList();
 
-            var highestsPokemonPerfect = await session.Inventory.GetHighestsPerfect(session.LogicSettings.AmountOfPokemonToDisplayOnStart);
+            var highestsPokemonPerfect = await session.Inventory.GetHighestsPerfect(session.LogicSettings.AmountOfPokemonToDisplayOnStartIv);
             var pokemonPairedWithStatsIv = highestsPokemonPerfect.Select(pokemon => new PokemonAnalysis(pokemon, trainerLevel)).ToList();
 
             var highestsPokemonIvForUpgrade = await session.Inventory.GetHighestsPerfect(50);
@@ -45,10 +45,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     DisplayPokemonMaxPoweredCp = session.LogicSettings.DisplayPokemonMaxPoweredCp,
                     DisplayPokemonMovesetRank = session.LogicSettings.DisplayPokemonMovesetRank
                 });
-            if (session.LogicSettings.Teleport)
                 await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
-            else
-                await Task.Delay(500);
 
             session.EventDispatcher.Send(
                 new DisplayHighestsPokemonEvent
@@ -79,10 +76,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 Dumper.Dump(session, toDumpTXT, dumpFileName);
                 Dumper.Dump(session, toDumpCSV, dumpFileName, "csv");
             }
-            if (session.LogicSettings.Teleport)
                 await Task.Delay(session.LogicSettings.DelayDisplayPokemon);
-            else
-                await Task.Delay(500);
         }
     }
 }

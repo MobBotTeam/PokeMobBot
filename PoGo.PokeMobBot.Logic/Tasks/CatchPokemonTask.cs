@@ -22,12 +22,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         private static readonly Random Rng = new Random();
 
-        public static async Task<bool> Execute(ISession session, dynamic encounter, MapPokemon pokemon,
+        public static async Task<bool> Execute(ISession session, dynamic encounter, PokemonCacheItem pokemon,
             FortData currentFortData = null, ulong encounterId = 0)
         {
             if (encounter is EncounterResponse && pokemon == null)
                 throw new ArgumentException("Parameter pokemon must be set, if encounter is of type EncounterResponse",
                     nameof(pokemon));
+            
 
             CatchPokemonResponse caughtPokemonResponse;
             var attemptCounter = 1;
@@ -100,6 +101,37 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     normalizedRecticleSize = 1.95;
                     spinModifier = 1.00;
                 }
+                                Func<ItemId, string> returnRealBallName = a =>
+                {
+                    switch (a)
+                    {
+                        case ItemId.ItemPokeBall:
+                            return session.Translation.GetTranslation(TranslationString.Pokeball);
+                        case ItemId.ItemGreatBall:
+                            return session.Translation.GetTranslation(TranslationString.GreatPokeball);
+                        case ItemId.ItemUltraBall:
+                            return session.Translation.GetTranslation(TranslationString.UltraPokeball);
+                        case ItemId.ItemMasterBall:
+                            return session.Translation.GetTranslation(TranslationString.MasterPokeball);
+                        default:
+                            return session.Translation.GetTranslation(TranslationString.CommonWordUnknown);
+                    }
+                };
+                Func<double, string> getThrowType = a =>
+                 {
+                     if (a < 1.0)
+                         return "Normal ";
+                     else if (a < 1.3)
+                         return "Nice! ";
+                     else if (a < 1.7)
+                         return "Great! ";
+                     else if (a > 1.6)
+                         return "Excellent! ";
+                     else
+                         return "unknown ";
+                 };
+
+                Logging.Logger.Write($"Throwing {(spinModifier==1?"Spinning " : "" )}{getThrowType(normalizedRecticleSize)}{returnRealBallName(pokeball)}", Logging.LogLevel.Caught);
                 caughtPokemonResponse =
                     await session.Client.Encounter.CatchPokemon(
                         encounter is EncounterResponse || encounter is IncenseEncounterResponse
@@ -127,7 +159,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
                 {
                     var totalExp = 0;
-
+                    pokemon.Caught = true;
                     foreach (var xp in caughtPokemonResponse.CaptureAward.Xp)
                     {
                         totalExp += xp;
@@ -136,7 +168,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                     evt.Exp = totalExp;
                     evt.Stardust = profile.PlayerData.Currencies.ToArray()[1].Amount;
-
+                    
                     var pokemonSettings = await session.Inventory.GetPokemonSettings();
                     var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
 
@@ -154,6 +186,10 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     {
                         evt.FamilyCandies = caughtPokemonResponse.CaptureAward.Candy.Sum();
                     }
+                }
+                if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchFlee)
+                {
+                    pokemon.Caught = true;
                 }
 
 
@@ -190,10 +226,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 session.EventDispatcher.Send(evt);
 
                 attemptCounter++;
-                if (session.LogicSettings.Teleport)
                     await Task.Delay(session.LogicSettings.DelayCatchPokemon);
-                else
-                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
             } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed ||
                      caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
 
@@ -231,12 +264,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
             if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
-                probability <= useUltraBallBelowCatchProbability)
+                ultraBallsCount > 0 && probability <= useUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
             if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
-                probability <= useGreatBallBelowCatchProbability)
+                greatBallsCount > 0 && probability <= useGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
-            return pokeBallsCount > 0 ? ItemId.ItemPokeBall : ItemId.ItemUnknown;
+            //so we counted down, now if we don't have pokeballs we need to just use the best one available
+            if (pokeBallsCount > 0)
+                return ItemId.ItemPokeBall;
+            else if (greatBallsCount > 0)
+                return ItemId.ItemGreatBall;
+            else if (ultraBallsCount > 0)
+                return ItemId.ItemUltraBall;
+            else
+                return ItemId.ItemUnknown;
+            //return pokeBallsCount > 0 ? ItemId.ItemPokeBall : ItemId.ItemUnknown;
         }
 
         private static async Task UseBerry(ISession session, ulong encounterId, string spawnPointId)

@@ -11,6 +11,7 @@ using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.WebSocket;
 using System;
+using System.Collections.Generic;
 
 #endregion
 
@@ -28,19 +29,29 @@ namespace PoGo.PokeMobBot.CLI
             _session = session;
             var translations = session.Translation;
             _server = new WebSocketServer();
-            var setupComplete = _server.Setup(new ServerConfig
+            var config = new ServerConfig
             {
                 Name = "MobBotWebSocket",
-                Ip = "Any",
-                Port = port,
                 Mode = SocketMode.Tcp,
-                Security = "tls",
                 Certificate = new CertificateConfig
                 {
                     FilePath = @"cert.pfx",
-                    Password = "necro"
+                    Password = "pokemobbot"
+                },
+            };
+            config.Listeners = new List<ListenerConfig>
+            {
+                new ListenerConfig()
+                {
+                    Ip = "Any", Port = port, Security = "tls"
+                },
+                new ListenerConfig()
+                {
+                    Ip = "Any", Port = port + 1, Security = "none"
                 }
-            });
+            };
+
+            var setupComplete = _server.Setup(config);
 
             if (setupComplete == false)
             {
@@ -83,16 +94,17 @@ namespace PoGo.PokeMobBot.CLI
         {
             Models.SocketMessage msgObj = null;
             var command = message;
+            Console.WriteLine(message);
             try
             {
                 msgObj = JsonConvert.DeserializeObject<Models.SocketMessage>(message);
                 command = msgObj.Command;
             }
-            catch { }
+            catch (Exception ex) {Logger.Write(ex.Message, LogLevel.Error); }
 
             // Action request from UI should not be broadcasted to all client
             Action<IEvent> action = (evt) => session.Send(Serialize(evt));
-
+            
             switch (command)
             {
                 case "PokemonList":
@@ -135,7 +147,7 @@ namespace PoGo.PokeMobBot.CLI
                     Longitude = _session.Client.CurrentLongitude
                 }));
             }
-            catch { }
+            catch (Exception ex) {Logger.Write(ex.Message, LogLevel.Error); }
         }
 
         public void Listen(IEvent evt, Session session)
@@ -175,7 +187,7 @@ namespace PoGo.PokeMobBot.CLI
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(System.Int64).Equals(objectType) || typeof(ulong).Equals(objectType);
+            return typeof(Int64).Equals(objectType) || typeof(ulong).Equals(objectType);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

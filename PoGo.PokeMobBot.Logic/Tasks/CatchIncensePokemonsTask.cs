@@ -18,6 +18,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
     {
         public static async Task Execute(ISession session, CancellationToken cancellationToken)
         {
+            
+            
             cancellationToken.ThrowIfCancellationRequested();
 
             // Refresh inventory so that the player stats are fresh
@@ -31,7 +33,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var incensePokemon = await session.Client.Map.GetIncensePokemons();
             if (incensePokemon.Result == GetIncensePokemonResponse.Types.Result.IncenseEncounterAvailable)
             {
-                var pokemon = new MapPokemon
+
+                var _pokemon = new MapPokemon
                 {
                     EncounterId = incensePokemon.EncounterId,
                     ExpirationTimestampMs = incensePokemon.DisappearTimestampMs,
@@ -40,7 +43,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     PokemonId = incensePokemon.PokemonId,
                     SpawnPointId = incensePokemon.EncounterLocation
                 };
-
+                var pokemon = new PokemonCacheItem(_pokemon);
                 if (session.LogicSettings.UsePokemonToNotCatchFilter &&
                     session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
@@ -53,14 +56,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 {
                     var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
                         session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
-                    if(session.LogicSettings.Teleport)
                         await Task.Delay(session.LogicSettings.DelayCatchIncensePokemon);
-                    else
-                        await Task.Delay(distance > 100 ? 3000 : 500, cancellationToken);
 
                     var encounter =
                         await
-                            session.Client.Encounter.EncounterIncensePokemon((long) pokemon.EncounterId,
+                            session.Client.Encounter.EncounterIncensePokemon(pokemon.EncounterId,
                                 pokemon.SpawnPointId);
 
                     if (encounter.Result == IncenseEncounterResponse.Types.Result.IncenseEncounterSuccess)

@@ -5,7 +5,6 @@ using System.Text;
 using PoGo.PokeMobBot.CLI.Models;
 using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
-using System.Reflection;
 
 #endregion
 
@@ -55,7 +54,7 @@ namespace PoGo.PokeMobBot.CLI
             {
                 case LogLevel.Error:
                     Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Error}) (v{Assembly.GetExecutingAssembly().GetName().Version}) {message}");
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Error}) {message}");
                     break;
                 case LogLevel.Warning:
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -112,6 +111,14 @@ namespace PoGo.PokeMobBot.CLI
                 case LogLevel.Update:
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Update}) {message}");
+                    break;
+                case LogLevel.Favorite:  //added by Lars
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.Favorite}) {message}");
+                    break;
+                case LogLevel.UnFavorite:  //added by Lars
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] ({LoggingStrings.UnFavorite}) {message}");
                     break;
                 default:
                     Console.ForegroundColor = ConsoleColor.White;

@@ -13,6 +13,7 @@ using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
 using PokemonGo.RocketAPI.Extensions;
 using POGOProtos.Map.Fort;
+using GeoCoordinatePortable;
 
 #endregion
 
@@ -61,7 +62,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         }
 
                         var pokestopList = await GetPokeStops(session);
-                        session.EventDispatcher.Send(new PokeStopListEvent {Forts = pokestopList});
+                        session.EventDispatcher.Send(new PokeStopListEvent {Forts = session.MapCache.baseFortDatas.ToList()});
 
                         while (pokestopList.Any())
                             // warning: this is never entered due to ps cooldowns from UseNearbyPokestopsTask 
@@ -81,7 +82,11 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
                             if (pokeStop.LureInfo != null)
                             {
-                                await CatchLurePokemonsTask.Execute(session, pokeStop, cancellationToken);
+                                session.EventDispatcher.Send(new DebugEvent()
+                                {
+                                    Message = "This pokestop has a lure!"
+                                });
+                                await CatchLurePokemonsTask.Execute(session, pokeStop.BaseFortData, cancellationToken);
                             }
 
                             var fortSearch =
@@ -99,6 +104,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                     Latitude = pokeStop.Latitude,
                                     Longitude = pokeStop.Longitude
                                 });
+                                session.MapCache.UsedPokestop(pokeStop);
                             }
                             if (fortSearch.ItemsAwarded.Count > 0)
                             {
@@ -136,17 +142,30 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                             }
                         }
 
-                        await session.Navigation.HumanPathWalking(
-                            trackPoints.ElementAt(curTrkPt),
+                        var targetLocation = new GeoCoordinate(Convert.ToDouble(trackPoints.ElementAt(curTrkPt).Lat, CultureInfo.InvariantCulture),
+                Convert.ToDouble(trackPoints.ElementAt(curTrkPt).Lon, CultureInfo.InvariantCulture));
+
+                        Navigation navi = new Navigation(session.Client);
+                        navi.UpdatePositionEvent += (lat, lng) =>
+                        {
+                            session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
+                        };
+                        await navi.HumanPathWalking(session,
+                            targetLocation,
                             session.LogicSettings.WalkingSpeedInKilometerPerHour,
                             async () =>
                             {
                                 await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
                                 //Catch Incense Pokemon
                                 await CatchIncensePokemonsTask.Execute(session, cancellationToken);
-                                await UseNearbyPokestopsTask.Execute(session, cancellationToken);
+                                
                                 return true;
                             },
+                            async () => 
+                            {
+                                await UseNearbyPokestopsTask.Execute(session, cancellationToken);
+                                return true;
+                            },   
                             cancellationToken
                             );
 
@@ -167,24 +186,26 @@ namespace PoGo.PokeMobBot.Logic.Tasks
         //to only find stops within 40 meters
         //this is for gpx pathing, we are not going to the pokestops,
         //so do not make it more than 40 because it will never get close to those stops.
-        private static async Task<List<FortData>> GetPokeStops(ISession session)
+        private static async Task<List<FortCacheItem>> GetPokeStops(ISession session)
         {
-            var mapObjects = await session.Client.Map.GetMapObjects();
+
+            List<FortCacheItem> pokeStops = await session.MapCache.FortDatas(session);
+
+            session.EventDispatcher.Send(new PokeStopListEvent { Forts = session.MapCache.baseFortDatas.ToList() });
 
             // Wasn't sure how to make this pretty. Edit as needed.
-            var pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
-                .Where(
-                    i =>
-                        i.Type == FortType.Checkpoint &&
-                        i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
-                        ( // Make sure PokeStop is within 40 meters or else it is pointless to hit it
-                            LocationUtils.CalculateDistanceInMeters(
-                                session.Client.CurrentLatitude, session.Client.CurrentLongitude,
-                                i.Latitude, i.Longitude) < 40) ||
-                        session.LogicSettings.MaxTravelDistanceInMeters == 0
-                );
+            pokeStops = pokeStops.Where(
+                i =>
+                    i.Used == false && i.Type == FortType.Checkpoint &&
+                    i.CooldownCompleteTimestampMS < DateTime.UtcNow.ToUnixTime() &&
+                    ( // Make sure PokeStop is within 40 meters or else it is pointless to hit it
+                        LocationUtils.CalculateDistanceInMeters(
+                            session.Client.CurrentLatitude, session.Client.CurrentLongitude,
+                            i.Latitude, i.Longitude) < 40) ||
+                    session.LogicSettings.MaxTravelDistanceInMeters == 0
+                ).ToList();
 
-            return pokeStops.ToList();
+            return pokeStops;
         }
     }
 }

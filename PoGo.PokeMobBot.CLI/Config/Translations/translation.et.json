@@ -268,7 +268,7 @@
       "Value": "Koordinaadid failis \"Coords.ini\" ei ole korrektsed! Kasutage standardseid koordinaate."
     },
     {
-      "Key": "gotUpToDateVersion",
+      "Key": "gotUpToDate",
       "Value": "Fantastiline! Sul on tarkvarast uusim versioon, {0}"
     },
     {

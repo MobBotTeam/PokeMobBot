@@ -91,20 +91,49 @@ namespace PoGo.PokeMobBot.Logic
 
             return rewards;
         }
-
-        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(
-            bool keepPokemonsThatCanEvolve = false, bool prioritizeIVoverCp = false,
-            IEnumerable<PokemonId> filter = null)
+        public List<PokemonData> GetDuplicatePokemonToTransferList(IEnumerable<PokemonData> myPokemon)
         {
-            var myPokemon = await GetPokemons();
-
-            var pokemonList =
+            var pokemonList = new List<PokemonData>();
+            if (_logicSettings.PrioritizeBothIvAndCpForTransfer)
+            {
+                pokemonList =
+                myPokemon.Where(
+                    p => p.DeployedFortId == string.Empty &&
+                         p.Favorite == 0 && (p.Cp < GetPokemonTransferFilter(p.PokemonId).KeepMinCp &&
+                                             PokemonInfo.CalculatePokemonPerfection(p) <
+                                             GetPokemonTransferFilter(p.PokemonId).KeepMinIvPercentage))
+                    .ToList();
+            }
+            else if (!_logicSettings.PrioritizeIvOverCp)
+            {
+                pokemonList =
                 myPokemon.Where(
                     p => p.DeployedFortId == string.Empty &&
                          p.Favorite == 0 && (p.Cp < GetPokemonTransferFilter(p.PokemonId).KeepMinCp ||
                                              PokemonInfo.CalculatePokemonPerfection(p) <
                                              GetPokemonTransferFilter(p.PokemonId).KeepMinIvPercentage))
                     .ToList();
+            }
+            else
+            {
+                pokemonList =
+                myPokemon.Where(
+                    p => p.DeployedFortId == string.Empty &&
+                         p.Favorite == 0 && (PokemonInfo.CalculatePokemonPerfection(p) <
+                                             GetPokemonTransferFilter(p.PokemonId).KeepMinIvPercentage) ||
+                                             p.Cp < GetPokemonTransferFilter(p.PokemonId).KeepMinCp)
+                    .ToList();
+            }
+            return pokemonList;
+        }
+        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(
+            bool keepPokemonsThatCanEvolve = false, bool prioritizeIVoverCp = false,
+            IEnumerable<PokemonId> filter = null)
+        {
+            var myPokemon = await GetPokemons();
+
+            var pokemonList = GetDuplicatePokemonToTransferList(myPokemon);
+
             if (filter != null)
             {
                 pokemonList = pokemonList.Where(p => !filter.Contains(p.PokemonId)).ToList();
@@ -518,6 +547,11 @@ namespace PoGo.PokeMobBot.Logic
         {
             var upgradeResult = await _client.Inventory.UpgradePokemon(pokemonid);
             return upgradeResult;
+        }
+        public async Task<SetFavoritePokemonResponse> SetFavoritePokemon(ulong pokemonid, bool favorite)
+        {
+            var favoriteResult = await _client.Inventory.SetFavoritePokemon(pokemonid, favorite);
+            return favoriteResult;
         }
     }
 }

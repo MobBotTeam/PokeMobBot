@@ -22,6 +22,17 @@ namespace PoGo.PokeMobBot.CLI
 
         private static void Main(string[] args)
         {
+            
+
+
+            if (Console.LargestWindowWidth >= 145)
+            {
+                Console.WindowWidth = 145;
+            } else
+            {
+                Console.WindowWidth = Console.LargestWindowWidth;
+            }
+            
             Console.CancelKeyPress += (sender, eArgs) => {
                 _quitEvent.Set();
                 eArgs.Cancel = true;
@@ -103,7 +114,7 @@ namespace PoGo.PokeMobBot.CLI
             machine.SetFailureState(new LoginState());
 
             Logger.SetLoggerContext(session);
-
+            
             session.Navigation.UpdatePositionEvent +=
                 (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
 
