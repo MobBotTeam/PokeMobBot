@@ -1,32 +1,26 @@
-<h1>Welcome to MobBot</h1>
-<br>
-Temporary repository until we get our old one back. **Erroneous DMCA claims** have shut down the main repo for a week or so. We will preserve commit history when we move back to the main repo so feel free to contribute!
-<br>
-<br>
-Visit our discord to hang out and get updates: https://discord.gg/8msqsWV <br/>
-<br>
-<br>
-<h1>Pokemon Go Bot based on FeroxRevs API</h1>
+<!-- ![](http://i.imgur.com/b2hXaUC.png) -->
 <!-- disclaimer -->
-![alt text][1.1] <strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong> ![alt text][1.1]
-![](https://i.imgur.com/9lLZEau.jpg)
+<strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong>
+<!-- logo -->
+<div style="text-align:center">
+ <a href="http://forum.pokemobbot.com/">
+  <img src ="http://i.imgur.com/b2hXaUC.png" />
+ </a>
+</div>
 <br>
-<h2><a name="donating">Donating</a></h2>
+<!-- shields -->
+[![Twitter Follow](https://img.shields.io/twitter/follow/PokeMobBot.svg?style=social&label=Follow&maxAge=2592000?style=flat-square)](https://twitter.com/PokeMobBot)
+[![Discord](https://img.shields.io/badge/discord-PokeMobBot-blue.svg)](https://discord.gg/8msqsWV)
+[![Github All Releases](https://img.shields.io/github/downloads/MobBotTeam/PokeMobBot/total.svg)](https://github.com/MobBotTeam/PokeMobBot/releases)
+[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/MobBotTeam/PokeMobBot/development/LICENSE)
 <br>
-Wish to donate? Register on our forums :
-
-
-[![](https://i.imgur.com/9al9LSj.gif)](http://forum.pokemobbot.com/)
-
-<h6><em>[ All PayPal donations are used towards expenses and will have full accounting details posted weekly, beginning 8/5/2016 ]</em></h6><br>
-
-Donate Bitcoins to FeroxRev (the original API library developer): <br>
-1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e <br>
-
-
-
-<hr/>
-
+<b>Join our Discord to hang out & Chat: https://discord.gg/8msqsWV </b><br/>
+<br>
+<!-- news -->
+## API Calls changed ( Bot is not working ATM! )
+Niantic has changed some API responses, that means our Bot is currently non-functional. We are working hard on getting it back up & running ASAP. Feel free to check the current status at [our Twitter Page](https://twitter.com/PokeMobBot)
+<br>
+<!-- information -->
 <h2><a name="features">Features</a></h2>
 
  - PTC Login / Google
@@ -48,18 +42,31 @@ Donate Bitcoins to FeroxRev (the original API library developer): <br>
  - Multi bot support
  - Snipe pokemon
  - Power-Up pokemon
- 
-<h2><a name="getting-started">Getting Started</a></h2>
-Make sure you check out our [Wiki](https://github.com/PocketMobsters/MobBotTemp/wiki) to get started. <br>
-MD5 Hash (v1.1.3) : bc0b52fb3d64c6d712820ff31a89ea61 <br>
+</h2>
 <br>
-<h2><a name="credits">Credits</a></h2><br>
+
+<h2><a name="getting-started">Getting Started</a></h2>
+Make sure you check out our [Wiki](https://github.com/PocketMobsters/PokeMobBot/wiki) to get started. <br>
+MD5 Hash (v1.1.3) : <b>bc0b52fb3d64c6d712820ff31a89ea61</b>
+
+<br>
+<h2><a name="donating">Donating</a></h2>
+Wish to donate? Register on our forums and donate there: [![](https://i.imgur.com/9al9LSj.gif)](http://forum.pokemobbot.com/)
+<h6><em>[ All PayPal donations are used towards expenses and will have full accounting details posted weekly, beginning 8/5/2016 ]</em></h6><br>
+
+<br>
+<h2><a name="credits">Credits</a></h2>
 **Ferox** - API and Console, without such contributions, projects like this would never have been possible. <br/>
 **PokeMobTeam Dev & staff** - Their relentless work day after day on adding new features, ironing out bugs and maintaining the ever growing community.<br>
-**Everyone else who submitted Pull Requests** - Big or small, the work from unmentioned contributors are what makes this project community-oriented. <br>
-**Everyone who contributed to NecroBot** before we split off and became our own entitity, including ourselves since aparently we also need to credit ourselves? Commit history has been lost to history since NecroBot shutdown.
+**Everyone else who submitted Pull Requests** - Big or small, the work from unmentioned contributors are what makes this project community-oriented.
+
 <br>
-<h2><a name="copyright">Copyright</a></h2><br>
- Copyright (c) 2016, MobBotTeam  All rights reserved.<br>
- Copyrights licensed under the GNU AGPLv3 License.<br>
- See the accompanying LICENSE file for terms.<br>
+<h2><a name="copyright">Copyright</a></h2>
+Copyright (c) 2016, MobBotTeam  All rights reserved.<br>
+Copyrights licensed under the GNU AGPLv3 License.<br>
+See the accompanying LICENSE file for terms.
+ 
+<br>
+<h2><a name="legal">Legal</a></h2>
+This Website and Project is in no way affiliated with, authorized, maintained, sponsored or endorsed by Niantic, The Pokémon Company, Nintendo or any of its affiliates or subsidiaries. This is an independent and unofficial API proof of concept for educational use ONLY. 
+Using the Project might be against the TOS
