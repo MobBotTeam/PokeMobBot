@@ -180,7 +180,7 @@ namespace PoGo.PokeMobBot.Logic
             var profileConfigPath = Path.Combine(profilePath, "config");
             var configFile = Path.Combine(profileConfigPath, "TeleAI.json");
             EventDispatcher msg = new EventDispatcher();
-            Save(configFile);
+            // TODO: in my opinion this should contain logic, it should be just be a poco Save(configFile);
 
             if (distance > 2000)
             {

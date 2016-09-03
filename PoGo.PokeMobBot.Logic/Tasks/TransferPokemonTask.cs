@@ -1,33 +1,47 @@
-﻿using PoGo.PokeMobBot.Logic.State;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using PoGo.PokeMobBot.Logic.Event;
+using PoGo.PokeMobBot.Logic.PoGoUtils;
+using PokemonGo.RocketAPI;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class TransferPokemonTask
     {
-        public static async Task Execute(ISession session, string pokemonId)
+        private readonly Inventory _inventory;
+        private readonly Client _client;
+        private readonly ILogicSettings _logicSettings;
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly IEventDispatcher _eventDispatcher;
+
+        public TransferPokemonTask(Inventory inventory, Client client, ILogicSettings logicSettings, PokemonInfo pokemonInfo, IEventDispatcher eventDispatcher)
+        {
+            _inventory = inventory;
+            _client = client;
+            _logicSettings = logicSettings;
+            _pokemonInfo = pokemonInfo;
+            _eventDispatcher = eventDispatcher;
+        }
+
+        public async Task Execute(string pokemonId)
         {
             var id = ulong.Parse(pokemonId);
 
-            var all = await session.Inventory.GetPokemons();
+            var all = await _inventory.GetPokemons();
             var pokemons = all.OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax);
             var pokemon = pokemons.FirstOrDefault(p => p.Id == id);
 
             if (pokemon == null) return;
 
-            var pokemonSettings = await session.Inventory.GetPokemonSettings();
-            var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
+            var pokemonSettings = await _inventory.GetPokemonSettings();
+            var pokemonFamilies = await _inventory.GetPokemonFamilies();
 
-            await session.Client.Inventory.TransferPokemon(id);
-            await session.Inventory.DeletePokemonFromInvById(id);
+            await _client.Inventory.TransferPokemon(id);
+            await _inventory.DeletePokemonFromInvById(id);
 
-            var bestPokemonOfType = (session.LogicSettings.PrioritizeIvOverCp
-                ? await session.Inventory.GetHighestPokemonOfTypeByIv(pokemon)
-                : await session.Inventory.GetHighestPokemonOfTypeByCp(pokemon)) ?? pokemon;
+            var bestPokemonOfType = (_logicSettings.PrioritizeIvOverCp
+                ? await _inventory.GetHighestPokemonOfTypeByIv(pokemon)
+                : await _inventory.GetHighestPokemonOfTypeByCp(pokemon)) ?? pokemon;
 
             var setting = pokemonSettings.Single(q => q.PokemonId == pokemon.PokemonId);
             var family = pokemonFamilies.First(q => q.FamilyId == setting.FamilyId);
@@ -35,17 +49,17 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             family.Candy_++;
 
             // Broadcast event as everyone would benefit
-            session.EventDispatcher.Send(new Logic.Event.TransferPokemonEvent
+            _eventDispatcher.Send(new TransferPokemonEvent
             {
                 Id = pokemon.PokemonId,
-                Perfection = Logic.PoGoUtils.PokemonInfo.CalculatePokemonPerfection(pokemon),
+                Perfection = _pokemonInfo.CalculatePokemonPerfection(pokemon),
                 Cp = pokemon.Cp,
                 BestCp = bestPokemonOfType.Cp,
-                BestPerfection = Logic.PoGoUtils.PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType),
+                BestPerfection = _pokemonInfo.CalculatePokemonPerfection(bestPokemonOfType),
                 FamilyCandies = family.Candy_
             });
 
-            await Task.Delay(session.LogicSettings.DelayTransferPokemon);
+            await Task.Delay(_logicSettings.DelayTransferPokemon);
         }
     }
 }

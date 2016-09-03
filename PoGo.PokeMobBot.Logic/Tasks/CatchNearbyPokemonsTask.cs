@@ -5,9 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
-using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
+using PokemonGo.RocketAPI;
 using POGOProtos.Inventory.Item;
 using POGOProtos.Map.Pokemon;
 using POGOProtos.Networking.Responses;
@@ -16,105 +15,123 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class CatchNearbyPokemonsTask
+    public class CatchNearbyPokemonsTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
+        private readonly CatchPokemonTask _catchPokemonTask;
+        private readonly LocationUtils _locationUtils;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly Inventory _inventory;
+        private readonly ILogicSettings _logicSettings;
+        private readonly Client _client;
+
+        public CatchNearbyPokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, LocationUtils locationUtils, IEventDispatcher eventDispatcher, ITranslation translation, Inventory inventory, ILogicSettings logicSettings, Client client)
+        {
+            _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
+            _catchPokemonTask = catchPokemonTask;
+            _locationUtils = locationUtils;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _inventory = inventory;
+            _logicSettings = logicSettings;
+            _client = client;
+        }
+
+        public async Task Execute(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
+            await _inventory.RefreshCachedInventory();
 
-            session.EventDispatcher.Send(new DebugEvent()
+            _eventDispatcher.Send(new DebugEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.LookingForPokemon)
+                Message = _translation.GetTranslation(TranslationString.LookingForPokemon)
             });
 
-            var pokemons = await GetNearbyPokemons(session);
+            var pokemons = await GetNearbyPokemons();
             foreach (var pokemon in pokemons)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
-                var greatBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemGreatBall);
-                var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
-                var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
+                var pokeBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemPokeBall);
+                var greatBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemGreatBall);
+                var ultraBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemUltraBall);
+                var masterBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
                 if (pokeBallsCount + greatBallsCount + ultraBallsCount + masterBallsCount == 0)
                 {
-                    session.EventDispatcher.Send(new NoticeEvent()
+                    _eventDispatcher.Send(new NoticeEvent()
                     {
-                        Message = session.Translation.GetTranslation(TranslationString.ZeroPokeballInv)
+                        Message = _translation.GetTranslation(TranslationString.ZeroPokeballInv)
                     });
                     return;
                 }
 
-                if (session.LogicSettings.UsePokemonToNotCatchFilter &&
-                    session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
+                if (_logicSettings.UsePokemonToNotCatchFilter && _logicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
-                    session.EventDispatcher.Send(new NoticeEvent()
+                    _eventDispatcher.Send(new NoticeEvent()
                     {
-                        Message = session.Translation.GetTranslation(TranslationString.PokemonSkipped, session.Translation.GetPokemonName(pokemon.PokemonId))
+                        Message = _translation.GetTranslation(TranslationString.PokemonSkipped, _translation.GetPokemonName(pokemon.PokemonId))
                     });
                     continue;
                 }
 
-                var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                    session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
+                var distance = _locationUtils.CalculateDistanceInMeters(_client.CurrentLatitude, _client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
                 await Task.Delay(distance > 100 ? 3000 : 500, cancellationToken);
 
-                var encounter =
-                    await session.Client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId);
+                var encounter = await _client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId);
 
                 if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
                 {
-                    await CatchPokemonTask.Execute(session, encounter, pokemon);
+                    await _catchPokemonTask.Execute(encounter, pokemon);
                 }
                 else if (encounter.Status == EncounterResponse.Types.Status.PokemonInventoryFull)
                 {
-                    if (session.LogicSettings.TransferDuplicatePokemon)
+                    if (_logicSettings.TransferDuplicatePokemon)
                     {
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
+                            Message = _translation.GetTranslation(TranslationString.InvFullTransferring)
                         });
-                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                        await _transferDuplicatePokemonTask.Execute(cancellationToken);
                     }
                     else
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
+                            Message = _translation.GetTranslation(TranslationString.InvFullTransferManually)
                         });
                 }
                 else
                 {
-                    session.EventDispatcher.Send(new WarnEvent
+                    _eventDispatcher.Send(new WarnEvent
                     {
                         Message =
-                            session.Translation.GetTranslation(TranslationString.EncounterProblem, encounter.Status)
+                            _translation.GetTranslation(TranslationString.EncounterProblem, encounter.Status)
                     });
                 }
 
                 // If pokemon is not last pokemon in list, create delay between catches, else keep moving.
                 if (!Equals(pokemons.ElementAtOrDefault(pokemons.Count() - 1), pokemon))
                 {
-                    if(session.LogicSettings.Teleport)
-                        await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch);
+                    if (_logicSettings.Teleport)
+                        await Task.Delay(_logicSettings.DelayBetweenPokemonCatch, cancellationToken);
                     else
-                        await Task.Delay(session.LogicSettings.DelayBetweenPokemonCatch, cancellationToken);
+                        await Task.Delay(_logicSettings.DelayBetweenPokemonCatch, cancellationToken);
                 }
             }
         }
 
-        private static async Task<IOrderedEnumerable<MapPokemon>> GetNearbyPokemons(ISession session)
+        private async Task<IOrderedEnumerable<MapPokemon>> GetNearbyPokemons()
         {
-            var mapObjects = await session.Client.Map.GetMapObjects();
+            var mapObjects = await _client.Map.GetMapObjects();
 
             var pokemons = mapObjects.Item1.MapCells.SelectMany(i => i.CatchablePokemons)
                 .OrderBy(
                     i =>
-                        LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                            session.Client.CurrentLongitude,
+                        _locationUtils.CalculateDistanceInMeters(_client.CurrentLatitude,
+                            _client.CurrentLongitude,
                             i.Latitude, i.Longitude));
 
             return pokemons;

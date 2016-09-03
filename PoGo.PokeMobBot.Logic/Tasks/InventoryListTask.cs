@@ -2,9 +2,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-
-using POGOProtos.Inventory.Item;
-using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Event;
 using System;
 
@@ -14,12 +11,21 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class InventoryListTask
     {
-        public static async Task Execute(ISession session, Action<IEvent> action)
+        private readonly Inventory _inventory;
+        private readonly ILogicSettings _logicSettings;
+
+        public InventoryListTask(Inventory inventory, ILogicSettings logicSettings)
+        {
+            _inventory = inventory;
+            _logicSettings = logicSettings;
+        }
+
+        public async Task Execute(Action<IEvent> action)
         {
             // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
+            await _inventory.RefreshCachedInventory();
 
-            var inventory = await session.Inventory.GetItems();
+            var inventory = await _inventory.GetItems();
 
             action(
                 new InventoryListEvent
@@ -27,7 +33,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     Items = inventory.ToList()
                 });
 
-            await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions);
+            await Task.Delay(_logicSettings.DelayBetweenPlayerActions);
         }
     }
 }

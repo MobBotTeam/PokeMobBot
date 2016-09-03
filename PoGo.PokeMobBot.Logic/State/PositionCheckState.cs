@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Utils;
+using PokemonGo.RocketAPI;
 
 #endregion
 
@@ -14,7 +15,26 @@ namespace PoGo.PokeMobBot.Logic.State
 {
     public class PositionCheckState : IState
     {
-        public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
+        private readonly InfoState _infoState;
+        private readonly LocationUtils _locationUtils;
+        private readonly ISettings _settings;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly Client _client;
+        private readonly ILogicSettings _logicSettings;
+
+        public PositionCheckState(InfoState infoState, LocationUtils locationUtils, ISettings settings, IEventDispatcher eventDispatcher, ITranslation translation, Client client, ILogicSettings logicSettings)
+        {
+            _infoState = infoState;
+            _locationUtils = locationUtils;
+            _settings = settings;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _client = client;
+            _logicSettings = logicSettings;
+        }
+
+        public async Task<IState> Execute(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -22,35 +42,34 @@ namespace PoGo.PokeMobBot.Logic.State
                              Path.DirectorySeparatorChar + "Coords.ini";
             if (File.Exists(coordsPath))
             {
-                var latLngFromFile = LoadPositionFromDisk(session);
+                var latLngFromFile = LoadPositionFromDisk();
                 if (latLngFromFile != null)
                 {
-                    var distance = LocationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2,
-                        session.Settings.DefaultLatitude, session.Settings.DefaultLongitude);
-                    var lastModified = File.Exists(coordsPath) ? (DateTime?) File.GetLastWriteTime(coordsPath) : null;
+                    var distance = _locationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2, _settings.DefaultLatitude, _settings.DefaultLongitude);
+                    var lastModified = File.Exists(coordsPath) ? (DateTime?)File.GetLastWriteTime(coordsPath) : null;
                     if (lastModified != null)
                     {
                         var hoursSinceModified = (DateTime.Now - lastModified).HasValue
-                            ? (double?) ((DateTime.Now - lastModified).Value.Minutes/60.0)
+                            ? (double?)((DateTime.Now - lastModified).Value.Minutes / 60.0)
                             : null;
                         if (hoursSinceModified != null && hoursSinceModified != 0)
                         {
-                            var kmph = distance/1000/(double) hoursSinceModified;
+                            var kmph = distance / 1000 / (double)hoursSinceModified;
                             if (kmph < 80) // If speed required to get to the default location is < 80km/hr
                             {
                                 File.Delete(coordsPath);
-                                session.EventDispatcher.Send(new WarnEvent
+                                _eventDispatcher.Send(new WarnEvent
                                 {
                                     Message =
-                                        session.Translation.GetTranslation(TranslationString.RealisticTravelDetected)
+                                        _translation.GetTranslation(TranslationString.RealisticTravelDetected)
                                 });
                             }
                             else
                             {
-                                session.EventDispatcher.Send(new WarnEvent
+                                _eventDispatcher.Send(new WarnEvent
                                 {
                                     Message =
-                                        session.Translation.GetTranslation(TranslationString.NotRealisticTravel, kmph)
+                                        _translation.GetTranslation(TranslationString.NotRealisticTravel, kmph)
                                 });
                             }
                         }
@@ -59,24 +78,22 @@ namespace PoGo.PokeMobBot.Logic.State
                 }
             }
 
-            session.EventDispatcher.Send(new UpdatePositionEvent
+            _eventDispatcher.Send(new UpdatePositionEvent
             {
-                Latitude = session.Client.CurrentLatitude,
-                Longitude = session.Client.CurrentLongitude
+                Latitude = _client.CurrentLatitude,
+                Longitude = _client.CurrentLongitude
             });
 
-            session.EventDispatcher.Send(new WarnEvent
+            _eventDispatcher.Send(new WarnEvent
             {
-                Message =
-                    session.Translation.GetTranslation(TranslationString.WelcomeWarning, session.Client.CurrentLatitude,
-                        session.Client.CurrentLongitude),
-                RequireInput = session.LogicSettings.StartupWelcomeDelay
+                Message = _translation.GetTranslation(TranslationString.WelcomeWarning, _client.CurrentLatitude, _client.CurrentLongitude),
+                RequireInput = _logicSettings.StartupWelcomeDelay
             });
 
-            return new InfoState();
+            return _infoState;
         }
 
-        private static Tuple<double, double> LoadPositionFromDisk(ISession session)
+        private Tuple<double, double> LoadPositionFromDisk()
         {
             if (
                 File.Exists(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "Configs" +
@@ -99,17 +116,17 @@ namespace PoGo.PokeMobBot.Logic.State
                         {
                             return new Tuple<double, double>(latitude, longitude);
                         }
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.CoordinatesAreInvalid)
+                            Message = _translation.GetTranslation(TranslationString.CoordinatesAreInvalid)
                         });
                         return null;
                     }
                     catch (FormatException)
                     {
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.CoordinatesAreInvalid)
+                            Message = _translation.GetTranslation(TranslationString.CoordinatesAreInvalid)
                         });
                         return null;
                     }

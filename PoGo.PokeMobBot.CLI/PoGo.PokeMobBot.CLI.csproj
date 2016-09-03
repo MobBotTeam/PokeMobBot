@@ -73,6 +73,10 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="POGOProtos, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\POGOProtos.1.5.0\lib\net45\POGOProtos.dll</HintPath>
       <Private>True</Private>
@@ -205,13 +209,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\NecroBot\Pokemon-Go-Rocket-API\PokemonGo.RocketAPI\PokemonGo.RocketAPI.csproj">
+      <Project>{05d2da44-1b8e-4cf7-94ed-4d52451cd095}</Project>
+      <Name>PokemonGo.RocketAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoGo.PokeMobBot.Logic\PoGo.PokeMobBot.Logic.csproj">
       <Project>{0739E40D-C589-4AEB-93E5-EE8CD6773C60}</Project>
       <Name>PoGo.PokeMobBot.Logic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Pokemon-Go-Rocket-API\PokemonGo.RocketAPI\PokemonGo.RocketAPI.csproj">
-      <Project>{05d2da44-1b8e-4cf7-94ed-4d52451cd095}</Project>
-      <Name>PokemonGo.RocketAPI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

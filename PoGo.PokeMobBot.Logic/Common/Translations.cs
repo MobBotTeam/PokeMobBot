@@ -570,7 +570,7 @@ namespace PoGo.PokeMobBot.Logic.Common
                 : $"Translation for pokemon name {pkmnId} is missing";
         }
 
-        public static Translation Load(ILogicSettings logicSettings)
+        public Translation Load(ILogicSettings logicSettings)
         {
             var translationsLanguageCode = logicSettings.TranslationLanguageCode;
             var translationPath = Path.Combine(logicSettings.GeneralConfigPath, "translations");

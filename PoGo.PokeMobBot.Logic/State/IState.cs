@@ -9,6 +9,6 @@ namespace PoGo.PokeMobBot.Logic.State
 {
     public interface IState
     {
-        Task<IState> Execute(ISession session, CancellationToken cancellationToken);
+        Task<IState> Execute(CancellationToken cancellationToken);
     }
 }

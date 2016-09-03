@@ -13,18 +13,27 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class PlayerStatsTask
     {
-        public static async Task Execute(ISession session, Action<IEvent> action)
+        private readonly Inventory _inventory;
+        private readonly ILogicSettings _logicSettings;
+
+        public PlayerStatsTask(Inventory inventory, ILogicSettings logicSettings)
         {
-            var PlayersProfile = (await session.Inventory.GetPlayerStats())
+            _inventory = inventory;
+            _logicSettings = logicSettings;
+        }
+
+        public async Task Execute(Action<IEvent> action)
+        {
+            var PlayersProfile = (await _inventory.GetPlayerStats())
                 .ToList();
-            
+
             action(
                 new PlayerStatsEvent
                 {
                     PlayerStats = PlayersProfile,
                 });
 
-            await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions);
+            await Task.Delay(_logicSettings.DelayBetweenPlayerActions);
         }
     }
 }

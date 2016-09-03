@@ -3,11 +3,12 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
-using PoGo.PokeMobBot.Logic.Common;
+using PokemonGo.RocketAPI;
 
 #endregion
 
@@ -15,28 +16,48 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class TransferDuplicatePokemonTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly DelayingUtils _delayingUtils;
+        private readonly Inventory _inventory;
+        private readonly ILogicSettings _logicSettings;
+        private readonly Client _client;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+
+        public TransferDuplicatePokemonTask(PokemonInfo pokemonInfo, DelayingUtils delayingUtils, Inventory inventory, ILogicSettings logicSettings, Client client, IEventDispatcher eventDispatcher, ITranslation translation)
+        {
+            _pokemonInfo = pokemonInfo;
+            _delayingUtils = delayingUtils;
+            _inventory = inventory;
+            _logicSettings = logicSettings;
+            _client = client;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+        }
+
+        public async Task Execute(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
+            await _inventory.RefreshCachedInventory();
 
             var duplicatePokemons =
                 await
-                    session.Inventory.GetDuplicatePokemonToTransfer(session.LogicSettings.KeepPokemonsThatCanEvolve,
-                        session.LogicSettings.PrioritizeIvOverCp,
-                        session.LogicSettings.PokemonsNotToTransfer);
+                    _inventory.GetDuplicatePokemonToTransfer(_logicSettings.KeepPokemonsThatCanEvolve,
+                        _logicSettings.PrioritizeIvOverCp,
+                        _logicSettings.PokemonsNotToTransfer);
 
-            var pokemonSettings = await session.Inventory.GetPokemonSettings();
-            var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
+            var pokemonSettings = await _inventory.GetPokemonSettings();
+            var pokemonFamilies = await _inventory.GetPokemonFamilies();
 
-            var currentPokemonCount = await session.Inventory.GetPokemonsCount();
-            var maxPokemonCount = session.Profile.PlayerData.MaxPokemonStorage;
+            var currentPokemonCount = await _inventory.GetPokemonsCount();
+            var profile = await _client.Player.GetPlayer();
+            var maxPokemonCount = profile.PlayerData.MaxPokemonStorage;
 
-            session.EventDispatcher.Send(new NoticeEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentPokemonUsage,
+                Message = _translation.GetTranslation(TranslationString.CurrentPokemonUsage,
                     currentPokemonCount, maxPokemonCount)
             });
 
@@ -45,38 +66,38 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (duplicatePokemon.Cp >=
-                    session.Inventory.GetPokemonTransferFilter(duplicatePokemon.PokemonId).KeepMinCp ||
-                    PokemonInfo.CalculatePokemonPerfection(duplicatePokemon) >
-                    session.Inventory.GetPokemonTransferFilter(duplicatePokemon.PokemonId).KeepMinIvPercentage)
+                    _inventory.GetPokemonTransferFilter(duplicatePokemon.PokemonId).KeepMinCp ||
+                    _pokemonInfo.CalculatePokemonPerfection(duplicatePokemon) >
+                    _inventory.GetPokemonTransferFilter(duplicatePokemon.PokemonId).KeepMinIvPercentage)
                 {
                     continue;
                 }
 
-                await session.Client.Inventory.TransferPokemon(duplicatePokemon.Id);
-                await session.Inventory.DeletePokemonFromInvById(duplicatePokemon.Id);
+                await _client.Inventory.TransferPokemon(duplicatePokemon.Id);
+                await _inventory.DeletePokemonFromInvById(duplicatePokemon.Id);
 
-                var bestPokemonOfType = (session.LogicSettings.PrioritizeIvOverCp
-                    ? await session.Inventory.GetHighestPokemonOfTypeByIv(duplicatePokemon)
-                    : await session.Inventory.GetHighestPokemonOfTypeByCp(duplicatePokemon)) ?? duplicatePokemon;
+                var bestPokemonOfType = (_logicSettings.PrioritizeIvOverCp
+                    ? await _inventory.GetHighestPokemonOfTypeByIv(duplicatePokemon)
+                    : await _inventory.GetHighestPokemonOfTypeByCp(duplicatePokemon)) ?? duplicatePokemon;
 
                 var setting = pokemonSettings.Single(q => q.PokemonId == duplicatePokemon.PokemonId);
                 var family = pokemonFamilies.First(q => q.FamilyId == setting.FamilyId);
 
                 family.Candy_++;
 
-                session.EventDispatcher.Send(new TransferPokemonEvent
+                _eventDispatcher.Send(new TransferPokemonEvent
                 {
                     Id = duplicatePokemon.PokemonId,
-                    Perfection = PokemonInfo.CalculatePokemonPerfection(duplicatePokemon),
+                    Perfection = _pokemonInfo.CalculatePokemonPerfection(duplicatePokemon),
                     Cp = duplicatePokemon.Cp,
                     BestCp = bestPokemonOfType.Cp,
-                    BestPerfection = PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType),
+                    BestPerfection = _pokemonInfo.CalculatePokemonPerfection(bestPokemonOfType),
                     FamilyCandies = family.Candy_
                 });
-                if(session.LogicSettings.Teleport)
-                    await Task.Delay(session.LogicSettings.DelayTransferPokemon);
+                if(_logicSettings.Teleport)
+                    await Task.Delay(_logicSettings.DelayTransferPokemon, cancellationToken);
                 else
-                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPlayerActions, 0);
+                    await _delayingUtils.Delay(_logicSettings.DelayBetweenPlayerActions, 0);
             }
         }
     }

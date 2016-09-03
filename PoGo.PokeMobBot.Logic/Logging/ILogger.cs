@@ -10,12 +10,6 @@ namespace PoGo.PokeMobBot.Logic.Logging
     public interface ILogger
     {
         /// <summary>
-        ///     Set Context for a logger to be able to use translations and settings
-        /// </summary>
-        /// <param name="session">Context</param>
-        void SetSession(ISession session);
-
-        /// <summary>
         ///     Log a specific message by LogLevel.
         /// </summary>
         /// <param name="message">The message to log.</param>

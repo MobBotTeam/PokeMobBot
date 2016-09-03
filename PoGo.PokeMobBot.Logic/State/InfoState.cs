@@ -10,14 +10,25 @@ namespace PoGo.PokeMobBot.Logic.State
 {
     public class InfoState : IState
     {
-        public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
+        private readonly DisplayPokemonStatsTask _displayPokemonStatsTask;
+        private readonly FarmState _farmState;
+        private readonly ILogicSettings _logicSettings;
+
+        public InfoState(DisplayPokemonStatsTask displayPokemonStatsTask, FarmState farmState, ILogicSettings logicSettings)
+        {
+            _displayPokemonStatsTask = displayPokemonStatsTask;
+            _farmState = farmState;
+            _logicSettings = logicSettings;
+        }
+
+        public async Task<IState> Execute(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (session.LogicSettings.AmountOfPokemonToDisplayOnStart > 0)
-                await DisplayPokemonStatsTask.Execute(session);
+            if (_logicSettings.AmountOfPokemonToDisplayOnStart > 0)
+                await _displayPokemonStatsTask.Execute();
 
-            return new FarmState();
+            return _farmState;
         }
     }
 }

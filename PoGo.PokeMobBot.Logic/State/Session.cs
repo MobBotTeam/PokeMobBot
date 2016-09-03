@@ -9,54 +9,53 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.State
 {
-    public interface ISession
-    {
-        ISettings Settings { get; }
-        Inventory Inventory { get; }
-        Client Client { get; }
-        GetPlayerResponse Profile { get; set; }
-        Navigation Navigation { get; }
-        ILogicSettings LogicSettings { get; }
-        ITranslation Translation { get; }
-        IEventDispatcher EventDispatcher { get; }
-    }
+    //public interface ISession
+    //{
+    //    ISettings Settings { get; }
+    //    Inventory Inventory { get; }
+    //    Client Client { get; }
+    //    GetPlayerResponse Profile { get; set; }
+    //    Navigation Navigation { get; }
+    //    ILogicSettings LogicSettings { get; }
+    //    ITranslation Translation { get; }
+    //    IEventDispatcher EventDispatcher { get; }
+    //}
 
 
-    public class Session : ISession
-    {
-        public Session(ISettings settings, ILogicSettings logicSettings)
-        {
-            Settings = settings;
-            LogicSettings = logicSettings;
-            ApiFailureStrategy = new ApiFailureStrategy(this);
-            EventDispatcher = new EventDispatcher();
-            Translation = Common.Translation.Load(logicSettings);
-            Reset(settings, LogicSettings);
-        }
+    //public class Session : ISession
+    //{
+    //    public Session(ISettings settings, ILogicSettings logicSettings, Translation translation, Inventory inventory, Navigation navigation, Client client)
+    //    {
+    //        Settings = settings;
+    //        LogicSettings = logicSettings;
+    //        EventDispatcher = new EventDispatcher();
+    //        Translation = translation;
+    //        Inventory = inventory;
+    //        Navigation = navigation;
+    //        Client = client;
+    //    }
 
-        public ISettings Settings { get; }
+    //    public ISettings Settings { get; }
 
-        public Inventory Inventory { get; private set; }
+    //    public Inventory Inventory { get; private set; }
 
-        public Client Client { get; private set; }
+    //    public Client Client { get; private set; }
 
-        public GetPlayerResponse Profile { get; set; }
-        public Navigation Navigation { get; private set; }
+    //    public GetPlayerResponse Profile { get; set; }
+    //    public Navigation Navigation { get; private set; }
 
-        public ILogicSettings LogicSettings { get; }
+    //    public ILogicSettings LogicSettings { get; }
 
-        public ITranslation Translation { get; }
+    //    public ITranslation Translation { get; }
 
-        public IEventDispatcher EventDispatcher { get; }
+        //public ApiFailureStrategy ApiFailureStrategy { get; set; }
 
-        public ApiFailureStrategy ApiFailureStrategy { get; set; }
-
-        public void Reset(ISettings settings, ILogicSettings logicSettings)
-        {
-            Client = new Client(Settings, ApiFailureStrategy);
-            // ferox wants us to set this manually
-            Inventory = new Inventory(Client, logicSettings);
-            Navigation = new Navigation(Client);
-        }
-    }
+        //public void Reset(ISettings settings, ILogicSettings logicSettings)
+        //{
+        //    Client = new Client(Settings, ApiFailureStrategy);
+        //    // ferox wants us to set this manually
+        //    Inventory = new Inventory(Client, logicSettings);
+        //    Navigation = new Navigation(Client);
+        //}
+    //}
 }

@@ -4,9 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
-using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
+using PokemonGo.RocketAPI;
 using POGOProtos.Map.Pokemon;
 using POGOProtos.Networking.Responses;
 
@@ -14,21 +13,42 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class CatchIncensePokemonsTask
+    public class CatchIncensePokemonsTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
+        private readonly CatchPokemonTask _catchPokemonTask;
+        private readonly LocationUtils _locationUtils;
+        private readonly Inventory _inventory;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly Client _client;
+        private readonly ILogicSettings _logicSettings;
+
+        public CatchIncensePokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, LocationUtils locationUtils, Inventory inventory, IEventDispatcher eventDispatcher, ITranslation translation, Client client, ILogicSettings logicSettings)
+        {
+            _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
+            _catchPokemonTask = catchPokemonTask;
+            _locationUtils = locationUtils;
+            _inventory = inventory;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _client = client;
+            _logicSettings = logicSettings;
+        }
+
+        public async Task Execute(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
-            
-            session.EventDispatcher.Send(new DebugEvent()
+            await _inventory.RefreshCachedInventory();
+
+            _eventDispatcher.Send(new DebugEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.LookingForIncensePokemon)
+                Message = _translation.GetTranslation(TranslationString.LookingForIncensePokemon)
             });
 
-            var incensePokemon = await session.Client.Map.GetIncensePokemons();
+            var incensePokemon = await _client.Map.GetIncensePokemons();
             if (incensePokemon.Result == GetIncensePokemonResponse.Types.Result.IncenseEncounterAvailable)
             {
                 var pokemon = new MapPokemon
@@ -41,54 +61,48 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     SpawnPointId = incensePokemon.EncounterLocation
                 };
 
-                if (session.LogicSettings.UsePokemonToNotCatchFilter &&
-                    session.LogicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
+                if (_logicSettings.UsePokemonToNotCatchFilter && _logicSettings.PokemonsNotToCatch.Contains(pokemon.PokemonId))
                 {
-                    session.EventDispatcher.Send(new NoticeEvent()
+                    _eventDispatcher.Send(new NoticeEvent()
                     {
-                        Message = session.Translation.GetTranslation(TranslationString.PokemonIgnoreFilter,session.Translation.GetPokemonName(pokemon.PokemonId))
+                        Message = _translation.GetTranslation(TranslationString.PokemonIgnoreFilter, _translation.GetPokemonName(pokemon.PokemonId))
                     });
                 }
                 else
                 {
-                    var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                        session.Client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
-                    if(session.LogicSettings.Teleport)
-                        await Task.Delay(session.LogicSettings.DelayCatchIncensePokemon);
+                    var distance = _locationUtils.CalculateDistanceInMeters(_client.CurrentLatitude, _client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
+                    if (_logicSettings.Teleport)
+                        await Task.Delay(_logicSettings.DelayCatchIncensePokemon, cancellationToken);
                     else
                         await Task.Delay(distance > 100 ? 3000 : 500, cancellationToken);
 
-                    var encounter =
-                        await
-                            session.Client.Encounter.EncounterIncensePokemon((long) pokemon.EncounterId,
-                                pokemon.SpawnPointId);
+                    var encounter = await _client.Encounter.EncounterIncensePokemon((long)pokemon.EncounterId, pokemon.SpawnPointId);
 
                     if (encounter.Result == IncenseEncounterResponse.Types.Result.IncenseEncounterSuccess)
                     {
-                        await CatchPokemonTask.Execute(session, encounter, pokemon);
+                        await _catchPokemonTask.Execute(encounter, pokemon);
                     }
                     else if (encounter.Result == IncenseEncounterResponse.Types.Result.PokemonInventoryFull)
                     {
-                        if (session.LogicSettings.TransferDuplicatePokemon)
+                        if (_logicSettings.TransferDuplicatePokemon)
                         {
-                            session.EventDispatcher.Send(new WarnEvent
+                            _eventDispatcher.Send(new WarnEvent
                             {
-                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
+                                Message = _translation.GetTranslation(TranslationString.InvFullTransferring)
                             });
-                            await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                            await _transferDuplicatePokemonTask.Execute(cancellationToken);
                         }
                         else
-                            session.EventDispatcher.Send(new WarnEvent
+                            _eventDispatcher.Send(new WarnEvent
                             {
-                                Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
+                                Message = _translation.GetTranslation(TranslationString.InvFullTransferManually)
                             });
                     }
                     else
                     {
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message =
-                                session.Translation.GetTranslation(TranslationString.EncounterProblem, encounter.Result)
+                            Message = _translation.GetTranslation(TranslationString.EncounterProblem, encounter.Result)
                         });
                     }
                 }

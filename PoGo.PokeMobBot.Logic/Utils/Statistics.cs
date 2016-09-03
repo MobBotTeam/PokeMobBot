@@ -24,6 +24,9 @@ namespace PoGo.PokeMobBot.Logic.Utils
     public class Statistics
     {
         private readonly DateTime _initSessionDateTime = DateTime.Now;
+        private readonly Inventory _inventory;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly StringUtils _stringUtils;
 
         private StatsExport _exportStats;
         private StatsExport _currentStats;
@@ -34,6 +37,13 @@ namespace PoGo.PokeMobBot.Logic.Utils
         public int TotalPokemonsTransfered;
         public int TotalStardust;
 
+        public Statistics(Inventory inventory, IEventDispatcher eventDispatcher, StringUtils stringUtils)
+        {
+            _inventory = inventory;
+            _eventDispatcher = eventDispatcher;
+            _stringUtils = stringUtils;
+        }
+
         public void Dirty(Inventory inventory)
         {
             if (_exportStats != null)
@@ -43,18 +53,18 @@ namespace PoGo.PokeMobBot.Logic.Utils
             DirtyEvent?.Invoke();
         }
 
-        public void CheckLevelUp(ISession session)
+        public void CheckLevelUp()
         {
             if (_currentStats != null)
             {
                 if (_currentStats.Level < _exportStats.Level)
                 {
-                    var response = session.Inventory.GetLevelUpRewards(_exportStats);
+                    var response = _inventory.GetLevelUpRewards(_exportStats);
                     if (response.Result.ItemsAwarded.Any<ItemAward>())
                     {
-                        session.EventDispatcher.Send(new PlayerLevelUpEvent
+                        _eventDispatcher.Send(new PlayerLevelUpEvent
                         {
-                            Items = StringUtils.GetSummedFriendlyNameOfItemAwardList(response.Result.ItemsAwarded)
+                            Items = _stringUtils.GetSummedFriendlyNameOfItemAwardList(response.Result.ItemsAwarded)
                         });
                     }
                 }

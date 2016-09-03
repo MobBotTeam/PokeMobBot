@@ -1,9 +1,8 @@
 ﻿#region using directives
 
 using System;
-using PoGo.PokeMobBot.Logic.Common;
-using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.State;
+using System.Threading.Tasks;
+using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
 
@@ -13,23 +12,23 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public interface ILogin
     {
-        void DoLogin();
+        Task DoLogin();
     }
 
     public class Login : ILogin
     {
-        private readonly ISession _session;
+        private readonly Client _client;
 
-        public Login(ISession session)
+        public Login(Client client)
         {
-            _session = session;
+            _client = client;
         }
 
-        public void DoLogin()
+        public async Task DoLogin()
         {
             try
             {
-                _session.Client.Login.DoLogin().Wait();
+                await _client.Login.DoLogin();
             }
             catch (AggregateException ae)
             {

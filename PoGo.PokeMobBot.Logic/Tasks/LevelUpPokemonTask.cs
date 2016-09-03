@@ -1,53 +1,70 @@
 ﻿#region using directives
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using POGOProtos.Inventory;
 using POGOProtos.Settings.Master;
 using POGOProtos.Data;
-using PoGo.PokeMobBot.Logic.Logging;
-using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
+using PokemonGo.RocketAPI;
+using POGOProtos.Networking.Responses;
 
 #endregion
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    internal class LevelUpPokemonTask
+    public class LevelUpPokemonTask
     {
-        public static async Task Execute(ISession session, CancellationToken cancellationToken)
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly Inventory _inventory;
+        private readonly ILogicSettings _logicSettings;
+        private readonly Client _client;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+
+        public LevelUpPokemonTask(PokemonInfo pokemonInfo, Inventory inventory, ILogicSettings logicSettings, Client client, IEventDispatcher eventDispatcher, ITranslation translation)
+        {
+            _pokemonInfo = pokemonInfo;
+            _inventory = inventory;
+            _logicSettings = logicSettings;
+            _client = client;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+        }
+
+        public async Task Execute(CancellationToken cancellationToken)
         {
             // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
+            await _inventory.RefreshCachedInventory();
 
             // get the families and the pokemons settings to do some actual smart stuff like checking if you have enough candy in the first place
-            var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
-            var pokemonSettings = await session.Inventory.GetPokemonSettings();
-            var pokemonUpgradeSettings = await session.Inventory.GetPokemonUpgradeSettings();
-            var playerLevel = await session.Inventory.GetPlayerStats();
+            var pokemonFamilies = await _inventory.GetPokemonFamilies();
+            var pokemonSettings = await _inventory.GetPokemonSettings();
+            var pokemonUpgradeSettings = await _inventory.GetPokemonUpgradeSettings();
+            var playerLevel = await _inventory.GetPlayerStats();
 
             List<PokemonData> allPokemon = new List<PokemonData>();
 
+            var playerResponse = await _client.Player.GetPlayer();
+
             // priority for upgrading
-            if (session.LogicSettings.LevelUpByCPorIv?.ToLower() == "iv")
+            if (_logicSettings.LevelUpByCPorIv?.ToLower() == "iv")
             {
-                allPokemon = session.Inventory.GetHighestsPerfect(session.Profile.PlayerData.MaxPokemonStorage).Result.ToList();
+                allPokemon = _inventory.GetHighestsPerfect(playerResponse.PlayerData.MaxPokemonStorage).Result.ToList();
             }
-            else if (session.LogicSettings.LevelUpByCPorIv?.ToLower() == "cp")
+            else if (_logicSettings.LevelUpByCPorIv?.ToLower() == "cp")
             {
-                allPokemon = session.Inventory.GetPokemons().Result.OrderByDescending(p => p.Cp).ToList();
+                allPokemon = _inventory.GetPokemons().Result.OrderByDescending(p => p.Cp).ToList();
             }
 
             // iterate on whatever meets both minimums
             // to disable one or the other, set to 0
-            foreach (var pokemon in allPokemon.Where(p => session.Inventory.GetPerfect(p) >= session.LogicSettings.UpgradePokemonIvMinimum && p.Cp >= session.LogicSettings.UpgradePokemonCpMinimum))
+            foreach (var pokemon in allPokemon.Where(p => _inventory.GetPerfect(p) >= _logicSettings.UpgradePokemonIvMinimum && p.Cp >= _logicSettings.UpgradePokemonCpMinimum))
             {
-                int pokeLevel = (int)PokemonInfo.GetLevel(pokemon);
+                int pokeLevel = (int)_pokemonInfo.GetLevel(pokemon);
                 var currentPokemonSettings = pokemonSettings.FirstOrDefault(q => pokemon != null && q.PokemonId.Equals(pokemon.PokemonId));
                 var family = pokemonFamilies.FirstOrDefault(q => currentPokemonSettings != null && q.FamilyId.Equals(currentPokemonSettings.FamilyId));
                 int candyToEvolveTotal = GetCandyMinToKeep(pokemonSettings, currentPokemonSettings);
@@ -57,14 +74,14 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 if (pokeLevel < playerLevel?.FirstOrDefault().Level + pokemonUpgradeSettings.FirstOrDefault().AllowedLevelsAbovePlayer
                     && family.Candy_ > pokemonUpgradeSettings.FirstOrDefault()?.CandyCost[pokeLevel]
                     && family.Candy_ >= candyToEvolveTotal
-                    && session.Profile.PlayerData.Currencies.FirstOrDefault(c => c.Name.ToLower().Contains("stardust")).Amount >= pokemonUpgradeSettings.FirstOrDefault()?.StardustCost[pokeLevel])
+                    && playerResponse.PlayerData.Currencies.FirstOrDefault(c => c.Name.ToLower().Contains("stardust")).Amount >= pokemonUpgradeSettings.FirstOrDefault()?.StardustCost[pokeLevel])
                 {
-                    await DoUpgrade(session, pokemon);
+                    await DoUpgrade(pokemon);
                 }
             }
         }
 
-        private static int GetCandyMinToKeep(IEnumerable<PokemonSettings> pokemonSettings, PokemonSettings currentPokemonSettings)
+        private int GetCandyMinToKeep(IEnumerable<PokemonSettings> pokemonSettings, PokemonSettings currentPokemonSettings)
         {
             // total up required candy for evolution, for yourself and your ancestors to allow for others to be evolved before upgrading
             // always keeps a minimum amount in reserve, should never have 0 except for cases where a pokemon is in both first and final form (ie onix)
@@ -85,37 +102,37 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             return candyToEvolveTotal;
         }
 
-        private static async Task DoUpgrade(ISession session, PokemonData pokemon)
+        private async Task DoUpgrade(PokemonData pokemon)
         {
-            var upgradeResult = await session.Inventory.UpgradePokemon(pokemon.Id);
+            var upgradeResult = await _inventory.UpgradePokemon(pokemon.Id);
 
-            if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.Success)
+            if (upgradeResult.Result == UpgradePokemonResponse.Types.Result.Success)
             {
-                session.EventDispatcher.Send(new NoticeEvent()
+                _eventDispatcher.Send(new NoticeEvent()
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeSuccess, session.Translation.GetPokemonName(upgradeResult.UpgradedPokemon.PokemonId), upgradeResult.UpgradedPokemon.Cp)
+                    Message = _translation.GetTranslation(TranslationString.PokemonUpgradeSuccess, _translation.GetPokemonName(upgradeResult.UpgradedPokemon.PokemonId), upgradeResult.UpgradedPokemon.Cp)
                 });
             }
-            else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorInsufficientResources)
+            else if (upgradeResult.Result == UpgradePokemonResponse.Types.Result.ErrorInsufficientResources)
             {
-                session.EventDispatcher.Send(new NoticeEvent()
+                _eventDispatcher.Send(new NoticeEvent()
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeFailed)
+                    Message = _translation.GetTranslation(TranslationString.PokemonUpgradeFailed)
                 });
             }
             // pokemon max level
-            else if (upgradeResult.Result == POGOProtos.Networking.Responses.UpgradePokemonResponse.Types.Result.ErrorUpgradeNotAvailable)
+            else if (upgradeResult.Result == UpgradePokemonResponse.Types.Result.ErrorUpgradeNotAvailable)
             {
-                session.EventDispatcher.Send(new NoticeEvent()
+                _eventDispatcher.Send(new NoticeEvent()
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeUnavailable, session.Translation.GetPokemonName(pokemon.PokemonId), pokemon.Cp, PokemonInfo.CalculateMaxCp(pokemon))
+                    Message = _translation.GetTranslation(TranslationString.PokemonUpgradeUnavailable, _translation.GetPokemonName(pokemon.PokemonId), pokemon.Cp, _pokemonInfo.CalculateMaxCp(pokemon))
                 });
             }
             else
             {
-                session.EventDispatcher.Send(new NoticeEvent()
+                _eventDispatcher.Send(new NoticeEvent()
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PokemonUpgradeFailedError, session.Translation.GetPokemonName(pokemon.PokemonId))
+                    Message = _translation.GetTranslation(TranslationString.PokemonUpgradeFailedError, _translation.GetPokemonName(pokemon.PokemonId))
                 });
             }
         }

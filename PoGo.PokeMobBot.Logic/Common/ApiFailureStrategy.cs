@@ -4,6 +4,8 @@ using System;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.State;
+using PoGo.PokeMobBot.Logic.Tasks;
+using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.Extensions;
 using POGOProtos.Networking.Envelopes;
@@ -14,19 +16,26 @@ namespace PoGo.PokeMobBot.Logic.Common
 {
     public class ApiFailureStrategy : IApiFailureStrategy
     {
-        private readonly ISession _session;
+        private readonly ISettings _settings;
+        private readonly Login _login;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+
         private int _retryCount;
 
-        public ApiFailureStrategy(ISession session)
+        public ApiFailureStrategy(ISettings settings, Login login, IEventDispatcher eventDispatcher, ITranslation translation)
         {
-            _session = session;
+            _settings = settings;
+            _login = login;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
         }
 
         private async void DoLogin()
         {
             try
             {
-                await _session.Client.Login.DoLogin();
+                await _login.DoLogin();
             }
             catch (AggregateException ae)
             {
@@ -54,33 +63,33 @@ namespace PoGo.PokeMobBot.Logic.Common
                 }
                 catch (PtcOfflineException)
                 {
-                    _session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = _session.Translation.GetTranslation(TranslationString.PtcOffline)
+                        Message = _translation.GetTranslation(TranslationString.PtcOffline)
                     });
-                    _session.EventDispatcher.Send(new NoticeEvent
+                    _eventDispatcher.Send(new NoticeEvent
                     {
-                        Message = _session.Translation.GetTranslation(TranslationString.TryingAgainIn, 20)
+                        Message = _translation.GetTranslation(TranslationString.TryingAgainIn, 20)
                     });
                     await Task.Delay(20000);
                 }
                 catch (AccessTokenExpiredException)
                 {
-                    _session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = _session.Translation.GetTranslation(TranslationString.AccessTokenExpired)
+                        Message = _translation.GetTranslation(TranslationString.AccessTokenExpired)
                     });
-                    _session.EventDispatcher.Send(new NoticeEvent
+                    _eventDispatcher.Send(new NoticeEvent
                     {
-                        Message = _session.Translation.GetTranslation(TranslationString.TryingAgainIn, 2)
+                        Message = _translation.GetTranslation(TranslationString.TryingAgainIn, 2)
                     });
                     await Task.Delay(2000);
                 }
                 catch (Exception ex) when (ex is InvalidResponseException || ex is TaskCanceledException)
                 {
-                    _session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = _session.Translation.GetTranslation(TranslationString.NianticServerUnstable)
+                        Message = _translation.GetTranslation(TranslationString.NianticServerUnstable)
                     });
                     await Task.Delay(1000);
                 }

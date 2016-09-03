@@ -15,83 +15,110 @@ namespace PoGo.PokeMobBot.Logic.State
 {
     public class FarmState : IState
     {
-        public async Task<IState> Execute(ISession session, CancellationToken cancellationToken)
+        private readonly EvolvePokemonTask _evolvePokemonTask;
+        private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
+        private readonly LevelUpPokemonTask _levelUpPokemonTask;
+        private readonly RenamePokemonTask _renamePokemonTask;
+        private readonly RecycleItemsTask _recycleItemsTask;
+        private readonly UseIncubatorsTask _useIncubatorsTask;
+        private readonly FarmPokestopsGpxTask _farmPokestopsGpxTask;
+        private readonly FarmPokestopsTask _farmPokestopsTask;
+        private readonly ILogicSettings _logicSettings;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+
+        public FarmState(EvolvePokemonTask evolvePokemonTask, TransferDuplicatePokemonTask transferDuplicatePokemonTask, LevelUpPokemonTask levelUpPokemonTask, RenamePokemonTask renamePokemonTask, RecycleItemsTask recycleItemsTask, UseIncubatorsTask useIncubatorsTask, FarmPokestopsGpxTask farmPokestopsGpxTask, FarmPokestopsTask farmPokestopsTask, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, ITranslation translation)
+        {
+            _evolvePokemonTask = evolvePokemonTask;
+            _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
+            _levelUpPokemonTask = levelUpPokemonTask;
+            _renamePokemonTask = renamePokemonTask;
+            _recycleItemsTask = recycleItemsTask;
+            _useIncubatorsTask = useIncubatorsTask;
+            _farmPokestopsGpxTask = farmPokestopsGpxTask;
+            _farmPokestopsTask = farmPokestopsTask;
+            _logicSettings = logicSettings;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+        }
+
+        public async Task<IState> Execute(CancellationToken cancellationToken)
         {
             try
             {
-                if (session.LogicSettings.EvolveAllPokemonAboveIv || session.LogicSettings.EvolveAllPokemonWithEnoughCandy)
+                if (_logicSettings.EvolveAllPokemonAboveIv || _logicSettings.EvolveAllPokemonWithEnoughCandy)
                 {
-                    await EvolvePokemonTask.Execute(session, cancellationToken);
+                    await _evolvePokemonTask.Execute(cancellationToken);
                 }
 
-                if (session.LogicSettings.TransferDuplicatePokemon)
+                if (_logicSettings.TransferDuplicatePokemon)
                 {
-                    await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+                    await _transferDuplicatePokemonTask.Execute(cancellationToken);
                 }
-                if (session.LogicSettings.AutomaticallyLevelUpPokemon)
+                if (_logicSettings.AutomaticallyLevelUpPokemon)
                 {
-                    await LevelUpPokemonTask.Execute(session, cancellationToken);
+                    await _levelUpPokemonTask.Execute(cancellationToken);
                 }
-                if (session.LogicSettings.RenamePokemon)
+                if (_logicSettings.RenamePokemon)
                 {
-                    await RenamePokemonTask.Execute(session, cancellationToken);
-                }
-
-                await RecycleItemsTask.Execute(session, cancellationToken);
-
-                if (session.LogicSettings.UseEggIncubators)
-                {
-                    await UseIncubatorsTask.Execute(session, cancellationToken);
+                    await _renamePokemonTask.Execute(cancellationToken);
                 }
 
-                if (session.LogicSettings.UseGpxPathing)
+                await _recycleItemsTask.Execute(cancellationToken);
+
+                if (_logicSettings.UseEggIncubators)
                 {
-                    await FarmPokestopsGpxTask.Execute(session, cancellationToken);
+                    await _useIncubatorsTask.Execute(cancellationToken);
+                }
+
+                if (_logicSettings.UseGpxPathing)
+                {
+                    await _farmPokestopsGpxTask.Execute(cancellationToken);
                 }
                 else
                 {
-                    await FarmPokestopsTask.Execute(session, cancellationToken);
+                    await _farmPokestopsTask.Execute(cancellationToken);
                 }
             }
             catch (PtcOfflineException)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PtcOffline)
+                    Message = _translation.GetTranslation(TranslationString.PtcOffline)
                 });
-                session.EventDispatcher.Send(new NoticeEvent
+                _eventDispatcher.Send(new NoticeEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 20)
+                    Message = _translation.GetTranslation(TranslationString.TryingAgainIn, 20)
                 });
                 await Task.Delay(20000, cancellationToken);
-                return new LoginState();
+                throw;
             }
             catch (AccessTokenExpiredException)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.AccessTokenExpired)
+                    Message = _translation.GetTranslation(TranslationString.AccessTokenExpired)
                 });
-                session.EventDispatcher.Send(new NoticeEvent
+                _eventDispatcher.Send(new NoticeEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.TryingAgainIn, 2)
+                    Message = _translation.GetTranslation(TranslationString.TryingAgainIn, 2)
                 });
                 await Task.Delay(2000, cancellationToken);
-                return new LoginState();
+                throw;
             }
             catch (InvalidResponseException)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.NianticServerUnstable)
+                    Message = _translation.GetTranslation(TranslationString.NianticServerUnstable)
                 });
                 return this;
             }
             catch (AccountNotVerifiedException)
             {
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.AccountNotVerified)
+                    Message = _translation.GetTranslation(TranslationString.AccountNotVerified)
                 });
                 await Task.Delay(2000, cancellationToken);
                 Environment.Exit(0);
@@ -100,13 +127,13 @@ namespace PoGo.PokeMobBot.Logic.State
             {
                 if (e.Message.Contains("NeedsBrowser"))
                 {
-                    session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = session.Translation.GetTranslation(TranslationString.GoogleTwoFactorAuth)
+                        Message = _translation.GetTranslation(TranslationString.GoogleTwoFactorAuth)
                     });
-                    session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = session.Translation.GetTranslation(TranslationString.GoogleTwoFactorAuthExplanation)
+                        Message = _translation.GetTranslation(TranslationString.GoogleTwoFactorAuthExplanation)
                     });
                     await Task.Delay(7000, cancellationToken);
                     try
@@ -115,16 +142,16 @@ namespace PoGo.PokeMobBot.Logic.State
                     }
                     catch (Exception)
                     {
-                        session.EventDispatcher.Send(new ErrorEvent
+                        _eventDispatcher.Send(new ErrorEvent
                         {
                             Message = "https://security.google.com/settings/security/apppasswords"
                         });
                         throw;
                     }
                 }
-                session.EventDispatcher.Send(new ErrorEvent
+                _eventDispatcher.Send(new ErrorEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.GoogleError)
+                    Message = _translation.GetTranslation(TranslationString.GoogleError)
                 });
                 await Task.Delay(2000, cancellationToken);
                 Environment.Exit(0);

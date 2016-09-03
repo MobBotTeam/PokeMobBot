@@ -7,8 +7,8 @@ using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Extensions;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
-using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Utils;
+using PokemonGo.RocketAPI;
 using POGOProtos.Inventory.Item;
 using POGOProtos.Map.Fort;
 using POGOProtos.Map.Pokemon;
@@ -18,11 +18,31 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class CatchPokemonTask
+    public class CatchPokemonTask
     {
-        private static readonly Random Rng = new Random();
+        private readonly Random _rng = new Random();
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly DelayingUtils _delayingUtils;
+        private readonly LocationUtils _locationUtils;
+        private readonly ILogicSettings _logicSettings;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly Client _client;
+        private readonly Inventory _inventory;
 
-        public static async Task<bool> Execute(ISession session, dynamic encounter, MapPokemon pokemon,
+        public CatchPokemonTask(PokemonInfo pokemonInfo, DelayingUtils delayingUtils, LocationUtils locationUtils, ILogicSettings logicSettings, IEventDispatcher eventDispatcher, ITranslation translation, Client client, Inventory inventory)
+        {
+            _pokemonInfo = pokemonInfo;
+            _delayingUtils = delayingUtils;
+            _locationUtils = locationUtils;
+            _logicSettings = logicSettings;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _client = client;
+            _inventory = inventory;
+        }
+
+        public async Task<bool> Execute(dynamic encounter, MapPokemon pokemon,
             FortData currentFortData = null, ulong encounterId = 0)
         {
             if (encounter is EncounterResponse && pokemon == null)
@@ -33,16 +53,15 @@ namespace PoGo.PokeMobBot.Logic.Tasks
             var attemptCounter = 1;
             do
             {
-                if (session.LogicSettings.MaxPokeballsPerPokemon > 0 &&
-                    attemptCounter > session.LogicSettings.MaxPokeballsPerPokemon)
+                if (_logicSettings.MaxPokeballsPerPokemon > 0 && attemptCounter > _logicSettings.MaxPokeballsPerPokemon)
                     break;
 
                 float probability = encounter?.CaptureProbability?.CaptureProbability_[0];
 
-                var pokeball = await GetBestBall(session, encounter, probability);
+                var pokeball = await GetBestBall(encounter, probability);
                 if (pokeball == ItemId.ItemUnknown)
                 {
-                    session.EventDispatcher.Send(new NoPokeballEvent
+                    _eventDispatcher.Send(new NoPokeballEvent
                     {
                         Id = encounter is EncounterResponse ? pokemon.PokemonId : encounter?.PokemonData.PokemonId,
                         Cp =
@@ -53,24 +72,23 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     return false;
                 }
 
-                var useBerryBelowCatchProbability = session.LogicSettings.UseBerryBelowCatchProbability > 1
-                    ? session.LogicSettings.UseBerryBelowCatchProbability/100
-                    : session.LogicSettings.UseBerryBelowCatchProbability;
+                var useBerryBelowCatchProbability = _logicSettings.UseBerryBelowCatchProbability > 1
+                    ? _logicSettings.UseBerryBelowCatchProbability/100
+                    : _logicSettings.UseBerryBelowCatchProbability;
                 var isLowProbability = probability < useBerryBelowCatchProbability;
                 var isHighCp = encounter != null &&
                                (encounter is EncounterResponse
                                    ? encounter.WildPokemon?.PokemonData?.Cp
-                                   : encounter.PokemonData?.Cp) > session.LogicSettings.UseBerryMinCp;
+                                   : encounter.PokemonData?.Cp) > _logicSettings.UseBerryMinCp;
                 var isHighPerfection =
-                    PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
+                    _pokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
-                        : encounter?.PokemonData) >= session.LogicSettings.UseBerryMinIv;
+                        : encounter?.PokemonData) >= _logicSettings.UseBerryMinIv;
 
-                if (isLowProbability && ((session.LogicSettings.PrioritizeIvOverCp && isHighPerfection) || isHighCp))
+                if (isLowProbability && ((_logicSettings.PrioritizeIvOverCp && isHighPerfection) || isHighCp))
                 {
                     await
-                        UseBerry(session,
-                            encounter is EncounterResponse || encounter is IncenseEncounterResponse
+                        UseBerry(encounter is EncounterResponse || encounter is IncenseEncounterResponse
                                 ? pokemon.EncounterId
                                 : encounterId,
                             encounter is EncounterResponse || encounter is IncenseEncounterResponse
@@ -78,8 +96,8 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                                 : currentFortData?.Id);
                 }
 
-                var distance = LocationUtils.CalculateDistanceInMeters(session.Client.CurrentLatitude,
-                    session.Client.CurrentLongitude,
+                var distance = _locationUtils.CalculateDistanceInMeters(_client.CurrentLatitude,
+                    _client.CurrentLongitude,
                     encounter is EncounterResponse || encounter is IncenseEncounterResponse
                         ? pokemon.Latitude
                         : currentFortData.Latitude,
@@ -88,12 +106,12 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                         : currentFortData.Longitude);
 
                 double normalizedRecticleSize, spinModifier;
-                if (session.LogicSettings.HumanizeThrows)
+                if (_logicSettings.HumanizeThrows)
                 {
                     normalizedRecticleSize =
-                        Rng.NextInRange(session.LogicSettings.ThrowAccuracyMin, session.LogicSettings.ThrowAccuracyMax)*
+                        _rng.NextInRange(_logicSettings.ThrowAccuracyMin, _logicSettings.ThrowAccuracyMax) *
                         1.85 + 0.1; // 0.1..1.95
-                    spinModifier = Rng.NextDouble() > session.LogicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
+                    spinModifier = _rng.NextDouble() > _logicSettings.ThrowSpinFrequency ? 0.0 : 1.0;
                 }
                 else
                 {
@@ -101,7 +119,7 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     spinModifier = 1.00;
                 }
                 caughtPokemonResponse =
-                    await session.Client.Encounter.CatchPokemon(
+                    await _client.Encounter.CatchPokemon(
                         encounter is EncounterResponse || encounter is IncenseEncounterResponse
                             ? pokemon.EncounterId
                             : encounterId,
@@ -132,13 +150,13 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                     {
                         totalExp += xp;
                     }
-                    var profile = await session.Client.Player.GetPlayer();
+                    var profile = await _client.Player.GetPlayer();
 
                     evt.Exp = totalExp;
                     evt.Stardust = profile.PlayerData.Currencies.ToArray()[1].Amount;
 
-                    var pokemonSettings = await session.Inventory.GetPokemonSettings();
-                    var pokemonFamilies = await session.Inventory.GetPokemonFamilies();
+                    var pokemonSettings = await _inventory.GetPokemonSettings();
+                    var pokemonFamilies = await _inventory.GetPokemonFamilies();
 
                     var setting =
                         pokemonSettings.FirstOrDefault(q => pokemon != null && q.PokemonId == pokemon.PokemonId);
@@ -158,49 +176,49 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 
 
                 evt.CatchType = encounter is EncounterResponse
-                    ? session.Translation.GetTranslation(TranslationString.CatchTypeNormal)
+                    ? _translation.GetTranslation(TranslationString.CatchTypeNormal)
                     : encounter is DiskEncounterResponse
-                        ? session.Translation.GetTranslation(TranslationString.CatchTypeLure)
-                        : session.Translation.GetTranslation(TranslationString.CatchTypeIncense);
+                        ? _translation.GetTranslation(TranslationString.CatchTypeLure)
+                        : _translation.GetTranslation(TranslationString.CatchTypeIncense);
                 evt.Id = encounter is EncounterResponse ? pokemon.PokemonId : encounter?.PokemonData.PokemonId;
                 evt.Level =
-                    PokemonInfo.GetLevel(encounter is EncounterResponse
+                    _pokemonInfo.GetLevel(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData);
                 evt.Cp = encounter is EncounterResponse
                     ? encounter.WildPokemon?.PokemonData?.Cp
                     : encounter?.PokemonData?.Cp ?? 0;
                 evt.MaxCp =
-                    PokemonInfo.CalculateMaxCp(encounter is EncounterResponse
+                    _pokemonInfo.CalculateMaxCp(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData);
                 evt.Perfection =
                     Math.Round(
-                        PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
+                        _pokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                             ? encounter.WildPokemon?.PokemonData
                             : encounter?.PokemonData), 2);
                 evt.Probability =
-                    Math.Round(probability*100, 2);
+                    Math.Round(probability * 100, 2);
                 evt.Distance = distance;
                 evt.Pokeball = pokeball;
                 evt.Attempt = attemptCounter;
-                await session.Inventory.RefreshCachedInventory();
-                evt.BallAmount = await session.Inventory.GetItemAmountByType(pokeball);
+                await _inventory.RefreshCachedInventory();
+                evt.BallAmount = await _inventory.GetItemAmountByType(pokeball);
 
-                session.EventDispatcher.Send(evt);
+                _eventDispatcher.Send(evt);
 
                 attemptCounter++;
-                if (session.LogicSettings.Teleport)
-                    await Task.Delay(session.LogicSettings.DelayCatchPokemon);
+                if (_logicSettings.Teleport)
+                    await Task.Delay(_logicSettings.DelayCatchPokemon);
                 else
-                    await DelayingUtils.Delay(session.LogicSettings.DelayBetweenPokemonCatch, 2000);
+                    await _delayingUtils.Delay(_logicSettings.DelayBetweenPokemonCatch, 2000);
             } while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed ||
                      caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
 
             return true;
         }
 
-        private static async Task<ItemId> GetBestBall(ISession session, dynamic encounter, float probability)
+        private async Task<ItemId> GetBestBall(dynamic encounter, float probability)
         {
             /*var pokemonCp = encounter is EncounterResponse //commented for possible future uses
                 ? encounter.WildPokemon?.PokemonData?.Cp
@@ -210,47 +228,47 @@ namespace PoGo.PokeMobBot.Logic.Tasks
                 : encounter?.PokemonData?.PokemonId;
             var iV =
                 Math.Round(
-                    PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
+                    _pokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse
                         ? encounter.WildPokemon?.PokemonData
                         : encounter?.PokemonData));
 
-            var useUltraBallBelowCatchProbability = session.LogicSettings.UseUltraBallBelowCatchProbability > 1
-                ? session.LogicSettings.UseUltraBallBelowCatchProbability/100
-                : session.LogicSettings.UseUltraBallBelowCatchProbability;
-            var useGreatBallBelowCatchProbability = session.LogicSettings.UseGreatBallBelowCatchProbability > 1
-                ? session.LogicSettings.UseGreatBallBelowCatchProbability/100
-                : session.LogicSettings.UseGreatBallBelowCatchProbability;
+            var useUltraBallBelowCatchProbability = _logicSettings.UseUltraBallBelowCatchProbability > 1
+                ? _logicSettings.UseUltraBallBelowCatchProbability/100
+                : _logicSettings.UseUltraBallBelowCatchProbability;
+            var useGreatBallBelowCatchProbability = _logicSettings.UseGreatBallBelowCatchProbability > 1
+                ? _logicSettings.UseGreatBallBelowCatchProbability/100
+                : _logicSettings.UseGreatBallBelowCatchProbability;
 
-            await session.Inventory.RefreshCachedInventory();
-            var pokeBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemPokeBall);
-            var greatBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemGreatBall);
-            var ultraBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemUltraBall);
-            var masterBallsCount = await session.Inventory.GetItemAmountByType(ItemId.ItemMasterBall);
+            await _inventory.RefreshCachedInventory();
+            var pokeBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemPokeBall);
+            var greatBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemGreatBall);
+            var ultraBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemUltraBall);
+            var masterBallsCount = await _inventory.GetItemAmountByType(ItemId.ItemMasterBall);
 
-            if (masterBallsCount > 0 && !session.LogicSettings.PokemonToUseMasterball.Any() ||
-                session.LogicSettings.PokemonToUseMasterball.Contains(pokemonId))
+            if (masterBallsCount > 0 && !_logicSettings.PokemonToUseMasterball.Any() ||
+                _logicSettings.PokemonToUseMasterball.Contains(pokemonId))
                 return ItemId.ItemMasterBall;
-            if (ultraBallsCount > 0 && iV >= session.LogicSettings.UseUltraBallAboveIv ||
+            if (ultraBallsCount > 0 && iV >= _logicSettings.UseUltraBallAboveIv ||
                 probability <= useUltraBallBelowCatchProbability)
                 return ItemId.ItemUltraBall;
-            if (greatBallsCount > 0 && iV >= session.LogicSettings.UseGreatBallAboveIv ||
+            if (greatBallsCount > 0 && iV >= _logicSettings.UseGreatBallAboveIv ||
                 probability <= useGreatBallBelowCatchProbability)
                 return ItemId.ItemGreatBall;
             return pokeBallsCount > 0 ? ItemId.ItemPokeBall : ItemId.ItemUnknown;
         }
 
-        private static async Task UseBerry(ISession session, ulong encounterId, string spawnPointId)
+        private async Task UseBerry(ulong encounterId, string spawnPointId)
         {
-            var inventoryBalls = await session.Inventory.GetItems();
+            var inventoryBalls = await _inventory.GetItems();
             var berries = inventoryBalls.Where(p => p.ItemId == ItemId.ItemRazzBerry);
             var berry = berries.FirstOrDefault();
 
             if (berry == null || berry.Count <= 0)
                 return;
 
-            await session.Client.Encounter.UseCaptureItem(encounterId, ItemId.ItemRazzBerry, spawnPointId);
+            await _client.Encounter.UseCaptureItem(encounterId, ItemId.ItemRazzBerry, spawnPointId);
             berry.Count -= 1;
-            session.EventDispatcher.Send(new UseBerryEvent {Count = berry.Count});
+            _eventDispatcher.Send(new UseBerryEvent { Count = berry.Count });
         }
     }
 }

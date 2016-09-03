@@ -15,7 +15,7 @@ using POGOProtos.Inventory.Item;
 
 namespace PoGo.PokeMobBot.Logic
 {
-    internal class AuthSettings
+    public class AuthSettings
     {
         [JsonIgnore]
         private string _filePath;
@@ -25,73 +25,6 @@ namespace PoGo.PokeMobBot.Logic
         public string GooglePassword;
         public string PtcUsername;
         public string PtcPassword;
-
-        public void Load(string path)
-        {
-            try
-            {
-                _filePath = path;
-
-                if (File.Exists(_filePath))
-                {
-                    //if the file exists, load the settings
-                    var input = File.ReadAllText(_filePath);
-
-                    var settings = new JsonSerializerSettings();
-                    settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
-
-                    JsonConvert.PopulateObject(input, this, settings);
-                }
-                else
-                {
-                    Save(_filePath);
-                }
-            }
-            catch (JsonReaderException exception)
-            {
-                if (exception.Message.Contains("Unexpected character") && exception.Message.Contains("PtcUsername"))
-                    Logger.Write("JSON Exception: You need to properly configure your PtcUsername using quotations.",
-                        LogLevel.Error);
-                else if (exception.Message.Contains("Unexpected character") && exception.Message.Contains("PtcPassword"))
-                    Logger.Write(
-                        "JSON Exception: You need to properly configure your PtcPassword using quotations.",
-                        LogLevel.Error);
-                else if (exception.Message.Contains("Unexpected character") &&
-                         exception.Message.Contains("GoogleUsername"))
-                    Logger.Write(
-                        "JSON Exception: You need to properly configure your GoogleUsername using quotations.",
-                        LogLevel.Error);
-                else if (exception.Message.Contains("Unexpected character") &&
-                         exception.Message.Contains("GooglePassword"))
-                    Logger.Write(
-                        "JSON Exception: You need to properly configure your GooglePassword using quotations.",
-                        LogLevel.Error);
-                else
-                    Logger.Write("JSON Exception: " + exception.Message, LogLevel.Error);
-            }
-        }
-
-        public void Save(string path)
-        {
-            var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter { CamelCaseText = true });
-
-            var folder = Path.GetDirectoryName(path);
-            if (folder != null && !Directory.Exists(folder))
-            {
-                Directory.CreateDirectory(folder);
-            }
-
-            File.WriteAllText(path, output);
-        }
-
-        public void Save()
-        {
-            if (!string.IsNullOrEmpty(_filePath))
-            {
-                Save(_filePath);
-            }
-        }
     }
 
     public class DelaySettings
@@ -250,10 +183,14 @@ namespace PoGo.PokeMobBot.Logic
 
     public class GlobalSettings
     {
-        [JsonIgnore] internal AuthSettings Auth = new AuthSettings();
-        [JsonIgnore] public string GeneralConfigPath;
-        [JsonIgnore] public string ProfilePath;
-        [JsonIgnore] public string ProfileConfigPath;
+        [JsonIgnore]
+        internal AuthSettings Auth = new AuthSettings();
+        [JsonIgnore]
+        public string GeneralConfigPath;
+        [JsonIgnore]
+        public string ProfilePath;
+        [JsonIgnore]
+        public string ProfileConfigPath;
 
         public StartUpSettings StartUpSettings = new StartUpSettings();
 
@@ -269,9 +206,9 @@ namespace PoGo.PokeMobBot.Logic
 
         public SnipeConfig SnipeSettings = new SnipeConfig();
 
-        
 
-       
+
+
 
         public List<KeyValuePair<ItemId, int>> ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>
         {
@@ -558,90 +495,6 @@ namespace PoGo.PokeMobBot.Logic
         public static GlobalSettings Default => new GlobalSettings();
 
         public bool TeleAI { get; internal set; }
-
-        public static GlobalSettings Load(string path)
-        {
-            GlobalSettings settings;
-            var profilePath = Path.Combine(Directory.GetCurrentDirectory(), path);
-            var profileConfigPath = Path.Combine(profilePath, "config");
-            var configFile = Path.Combine(profileConfigPath, "config.json");
-
-            if (File.Exists(configFile))
-            {
-                try
-                {
-                    //if the file exists, load the settings
-                    var input = File.ReadAllText(configFile);
-
-                    var jsonSettings = new JsonSerializerSettings();
-                    jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
-                    jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
-                    jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-
-                    settings = JsonConvert.DeserializeObject<GlobalSettings>(input, jsonSettings);
-                }
-                catch (JsonReaderException exception)
-                {
-                    Logger.Write("JSON Exception: " + exception.Message, LogLevel.Error);
-                    return null;
-                }
-            }
-            else
-            {
-                settings = new GlobalSettings();
-            }
-
-            if (settings.StartUpSettings.WebSocketPort == 0)
-            {
-                settings.StartUpSettings.WebSocketPort = 14251;
-            }
-
-            if (settings.PokemonToSnipe == null)
-            {
-                settings.PokemonToSnipe = Default.PokemonToSnipe;
-            }
-
-            if (settings.PokemonSettings.RenameTemplate == null)
-            {
-                settings.PokemonSettings.RenameTemplate = Default.PokemonSettings.RenameTemplate;
-            }
-
-            if (settings.SnipeSettings.SnipeLocationServer == null)
-            {
-                settings.SnipeSettings.SnipeLocationServer = Default.SnipeSettings.SnipeLocationServer;
-            }
-
-            settings.ProfilePath = profilePath;
-            settings.ProfileConfigPath = profileConfigPath;
-            settings.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
-
-            var firstRun = !File.Exists(configFile);
-
-            settings.Save(configFile);
-            settings.Auth.Load(Path.Combine(profileConfigPath, "auth.json"));
-            TeleSettings.Load(path);
-
-            if (firstRun)
-            {
-                return null;
-            }
-
-            return settings;
-        }
-
-        public void Save(string fullPath)
-        {
-            var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter { CamelCaseText = true });
-
-            var folder = Path.GetDirectoryName(fullPath);
-            if (folder != null && !Directory.Exists(folder))
-            {
-                Directory.CreateDirectory(folder);
-            }
-
-            File.WriteAllText(fullPath, output);
-        }
     }
 
     public class ClientSettings : ISettings
@@ -741,7 +594,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public string ProfilePath => _settings.ProfilePath;
         public string ProfileConfigPath => _settings.ProfileConfigPath;
-        public int SnipeRequestTimeoutSeconds => _settings.SnipeSettings.SnipeRequestTimeoutSeconds*1000;
+        public int SnipeRequestTimeoutSeconds => _settings.SnipeSettings.SnipeRequestTimeoutSeconds * 1000;
         public string GeneralConfigPath => _settings.GeneralConfigPath;
         public bool AutoUpdate => _settings.StartUpSettings.AutoUpdate;
         public bool TransferConfigAndAuthOnUpdate => _settings.StartUpSettings.TransferConfigAndAuthOnUpdate;
@@ -850,7 +703,7 @@ namespace PoGo.PokeMobBot.Logic
         public bool CatchWildPokemon => _settings.CatchSettings.CatchWildPokemon;
 
     }
-	    public class TeleSettings
+    public class TeleSettings
     {
         [JsonIgnore]
         public string GeneralConfigPath;
@@ -874,74 +727,6 @@ namespace PoGo.PokeMobBot.Logic
         public int waitTime1250 = 0;
         public int waitTime1500 = 0;
         public int waitTime2000 = 0;
-
-
-
-
-        public static TeleSettings Load(string path)
-        {
-            TeleSettings settings2;
-            var profilePath = Path.Combine(Directory.GetCurrentDirectory(), path);
-            var profileConfigPath = Path.Combine(profilePath, "config");
-            var configFile = Path.Combine(profileConfigPath, "TeleAI.json");
-
-            if (File.Exists(configFile))
-            {
-                try
-                {
-                    //if the file exists, load the settings
-                    var input = File.ReadAllText(configFile);
-
-                    var jsonSettings = new JsonSerializerSettings();
-                    jsonSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
-                    jsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
-                    jsonSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-
-                    settings2 = JsonConvert.DeserializeObject<TeleSettings>(input, jsonSettings);
-                }
-                catch (JsonReaderException exception)
-                {
-                    Logger.Write("JSON Exception: " + exception.Message, LogLevel.Error);
-                    return null;
-                }
-            }
-            else
-            {
-                settings2 = new TeleSettings();
-            }
-
-
-
-            settings2.ProfilePath = profilePath;
-            settings2.ProfileConfigPath = profileConfigPath;
-            settings2.GeneralConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config");
-
-            var firstRun = !File.Exists(configFile);
-
-            settings2.Save(configFile);
-
-            if (firstRun)
-            {
-                return null;
-            }
-
-            return settings2;
-        }
-
-        public void Save(string path)
-        {
-            var output = JsonConvert.SerializeObject(this, Formatting.Indented,
-                new StringEnumConverter { CamelCaseText = true });
-
-            var folder = Path.GetDirectoryName(path);
-            if (folder != null && !Directory.Exists(folder))
-            {
-                Directory.CreateDirectory(folder);
-            }
-
-            File.WriteAllText(path, output);
-        }
-
     }
     public class TeleLogicSettings
     {

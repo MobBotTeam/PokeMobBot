@@ -13,12 +13,19 @@ namespace PoGo.PokeMobBot.Logic.State
 {
     public class StateMachine
     {
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
         private IState _initialState;
 
-        public Task AsyncStart(IState initialState, Session session,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public StateMachine(IEventDispatcher eventDispatcher, ITranslation translation)
         {
-            return Task.Run(() => Start(initialState, session, cancellationToken), cancellationToken);
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+        }
+
+        public Task AsyncStart(IState initialState, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Task.Run(() => Start(initialState, cancellationToken), cancellationToken);
         }
 
         public void SetFailureState(IState state)
@@ -26,32 +33,31 @@ namespace PoGo.PokeMobBot.Logic.State
             _initialState = state;
         }
 
-        public async Task Start(IState initialState, Session session,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public async Task Start(IState initialState, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = initialState;
             do
             {
                 try
                 {
-                    state = await state.Execute(session, cancellationToken);
+                    state = await state.Execute(cancellationToken);
                 }
                 catch (InvalidResponseException)
                 {
-                    session.EventDispatcher.Send(new ErrorEvent
+                    _eventDispatcher.Send(new ErrorEvent
                     {
-                        Message = session.Translation.GetTranslation(TranslationString.NianticServerUnstable)
+                        Message = _translation.GetTranslation(TranslationString.NianticServerUnstable)
                     });
                     state = _initialState;
                 }
                 catch (OperationCanceledException)
                 {
-                    session.EventDispatcher.Send(new ErrorEvent {Message = session.Translation.GetTranslation(TranslationString.OperationCanceled) });
+                    _eventDispatcher.Send(new ErrorEvent { Message = _translation.GetTranslation(TranslationString.OperationCanceled) });
                     state = _initialState;
                 }
                 catch (Exception ex)
                 {
-                    session.EventDispatcher.Send(new ErrorEvent {Message = ex.ToString()});
+                    _eventDispatcher.Send(new ErrorEvent { Message = ex.ToString() });
                     state = _initialState;
                 }
             } while (state != null);

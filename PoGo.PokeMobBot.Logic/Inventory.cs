@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.PoGoUtils;
 using PoGo.PokeMobBot.Logic.State;
 using PokemonGo.RocketAPI;
@@ -28,6 +27,9 @@ namespace PoGo.PokeMobBot.Logic
     {
         private readonly Client _client;
         private readonly ILogicSettings _logicSettings;
+        private readonly PokemonInfo _pokemonInfo;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
 
         private readonly List<ItemId> _pokeballs = new List<ItemId>
         {
@@ -58,10 +60,13 @@ namespace PoGo.PokeMobBot.Logic
         private GetInventoryResponse _cachedInventory;
         private DateTime _lastRefresh;
 
-        public Inventory(Client client, ILogicSettings logicSettings)
+        public Inventory(Client client, ILogicSettings logicSettings, PokemonInfo pokemonInfo, IEventDispatcher eventDispatcher, ITranslation translation)
         {
             _client = client;
             _logicSettings = logicSettings;
+            _pokemonInfo = pokemonInfo;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
         }
 
         public async Task DeletePokemonFromInvById(ulong id)
@@ -102,7 +107,7 @@ namespace PoGo.PokeMobBot.Logic
                 myPokemon.Where(
                     p => p.DeployedFortId == string.Empty &&
                          p.Favorite == 0 && (p.Cp < GetPokemonTransferFilter(p.PokemonId).KeepMinCp ||
-                                             PokemonInfo.CalculatePokemonPerfection(p) <
+                                             _pokemonInfo.CalculatePokemonPerfection(p) <
                                              GetPokemonTransferFilter(p.PokemonId).KeepMinIvPercentage))
                     .ToList();
             if (filter != null)
@@ -129,7 +134,7 @@ namespace PoGo.PokeMobBot.Logic
 
                     if (settings.CandyToEvolve > 0 && _logicSettings.PokemonsToEvolve.Contains(pokemon.Key))
                     {
-                        var amountPossible = (familyCandy.Candy_ - 1)/(settings.CandyToEvolve - 1);
+                        var amountPossible = (familyCandy.Candy_ - 1) / (settings.CandyToEvolve - 1);
 
                         if (amountPossible > amountToSkip)
                             amountToSkip = amountPossible;
@@ -138,7 +143,7 @@ namespace PoGo.PokeMobBot.Logic
                     if (prioritizeIVoverCp)
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
-                            .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                            .OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
                             .ThenByDescending(n => n.Cp)
                             .Skip(amountToSkip)
                             .ToList());
@@ -147,7 +152,7 @@ namespace PoGo.PokeMobBot.Logic
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
                             .OrderByDescending(x => x.Cp)
-                            .ThenByDescending(n => PokemonInfo.CalculatePokemonPerfection(n))
+                            .ThenByDescending(n => _pokemonInfo.CalculatePokemonPerfection(n))
                             .Skip(amountToSkip)
                             .ToList());
                     }
@@ -162,7 +167,7 @@ namespace PoGo.PokeMobBot.Logic
                     .Where(x => x.Any())
                     .SelectMany(
                         p =>
-                            p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                            p.OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
                                 .ThenByDescending(n => n.Cp)
                                 .Skip(GetPokemonTransferFilter(p.Key).KeepMinDuplicatePokemon)
                                 .ToList());
@@ -173,7 +178,7 @@ namespace PoGo.PokeMobBot.Logic
                 .SelectMany(
                     p =>
                         p.OrderByDescending(x => x.Cp)
-                            .ThenByDescending(n => PokemonInfo.CalculatePokemonPerfection(n))
+                            .ThenByDescending(n => _pokemonInfo.CalculatePokemonPerfection(n))
                             .Skip(GetPokemonTransferFilter(p.Key).KeepMinDuplicatePokemon)
                             .ToList());
         }
@@ -202,7 +207,7 @@ namespace PoGo.PokeMobBot.Logic
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                 .OrderByDescending(x => x.Cp)
-                .ThenByDescending(PokemonInfo.CalculatePokemonPerfection)
+                .ThenByDescending(_pokemonInfo.CalculatePokemonPerfection)
                 .FirstOrDefault();
         }
 
@@ -211,7 +216,7 @@ namespace PoGo.PokeMobBot.Logic
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
-                .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                .OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
                 .ThenByDescending(x => x.Cp)
                 .FirstOrDefault();
         }
@@ -221,7 +226,7 @@ namespace PoGo.PokeMobBot.Logic
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
             return pokemons.OrderByDescending(x => x.Cp)
-                .ThenByDescending(PokemonInfo.CalculatePokemonPerfection)
+                .ThenByDescending(_pokemonInfo.CalculatePokemonPerfection)
                 .Take(limit);
         }
 
@@ -229,7 +234,7 @@ namespace PoGo.PokeMobBot.Logic
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+            return pokemons.OrderByDescending(_pokemonInfo.CalculatePokemonPerfection)
                 .ThenByDescending(x => x.Cp)
                 .Take(limit);
         }
@@ -257,9 +262,9 @@ namespace PoGo.PokeMobBot.Logic
             return myItemCount;
         }
 
-        public async Task<IEnumerable<ItemData>> GetItemsToRecycle(ISession session)
+        public async Task<IEnumerable<ItemData>> GetItemsToRecycle()
         {
-            await session.Inventory.RefreshCachedInventory();
+            await RefreshCachedInventory();
             var itemsToRecycle = new List<ItemData>();
             var myItems = (await GetItems()).ToList();
 
@@ -270,9 +275,9 @@ namespace PoGo.PokeMobBot.Logic
             var totalBalls = currentAmountOfPokeballs + currentAmountOfGreatballs
                 + currentAmountOfUltraballs + currentAmountOfMasterballs;
 
-            session.EventDispatcher.Send(new NoticeEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentPokeballInv,
+                Message = _translation.GetTranslation(TranslationString.CurrentPokeballInv,
                     currentAmountOfPokeballs, currentAmountOfGreatballs, currentAmountOfUltraballs,
                     currentAmountOfMasterballs, totalBalls)
             });
@@ -284,9 +289,9 @@ namespace PoGo.PokeMobBot.Logic
             var totalPotions = currentAmountOfPotions + currentAmountOfSuperPotions
                 + currentAmountOfHyperPotions + currentAmountOfMaxPotions;
 
-            session.EventDispatcher.Send(new NoticeEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentPotionInv,
+                Message = _translation.GetTranslation(TranslationString.CurrentPotionInv,
                     currentAmountOfPotions, currentAmountOfSuperPotions, currentAmountOfHyperPotions,
                     currentAmountOfMaxPotions, totalPotions)
             });
@@ -299,9 +304,9 @@ namespace PoGo.PokeMobBot.Logic
             var totalBerries = currentAmountofRazz + currentAmountofBluk
                 + currentAmountofNanab + currentAmountofPinap + currentAmountofWepar;
 
-            session.EventDispatcher.Send(new NoticeEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentBerryInv,
+                Message = _translation.GetTranslation(TranslationString.CurrentBerryInv,
                     currentAmountofRazz, currentAmountofBluk, currentAmountofNanab,
                     currentAmountofPinap, currentAmountofWepar, totalBerries)
             });
@@ -310,9 +315,9 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountofMaxRevive = await GetItemAmountByType(ItemId.ItemMaxRevive);
             var totalRevives = currentAmountofRevive + currentAmountofMaxRevive;
 
-            session.EventDispatcher.Send(new NoticeEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentReviveInv,
+                Message = _translation.GetTranslation(TranslationString.CurrentReviveInv,
                     currentAmountofRevive, currentAmountofMaxRevive, totalRevives)
             });
 
@@ -323,9 +328,9 @@ namespace PoGo.PokeMobBot.Logic
             var totalIncense = currentAmountofIncense + currentAmountofIncenseCool
                 + currentAmountofIncenseFloral + currentAmountofIncenseSpicy;
 
-            session.EventDispatcher.Send(new NoticeEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentIncenseInv,
+                Message = _translation.GetTranslation(TranslationString.CurrentIncenseInv,
                     currentAmountofIncense, currentAmountofIncenseCool, currentAmountofIncenseFloral, 
                     currentAmountofIncenseSpicy, totalIncense)
             });
@@ -335,18 +340,19 @@ namespace PoGo.PokeMobBot.Logic
             var currentAmountofIncubators = await GetItemAmountByType(ItemId.ItemIncubatorBasic);
             var currentMisc = currentAmountofLures + currentAmountofLuckyEggs + currentAmountofIncubators;
 
-            session.EventDispatcher.Send(new NoticeEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentMiscInv,
+                Message = _translation.GetTranslation(TranslationString.CurrentMiscInv,
                     currentAmountofLures, currentAmountofLuckyEggs, currentAmountofIncubators, currentMisc)
             });
 
-            var currentInvUsage = await session.Inventory.GetTotalItemCount();
-            var maxInvUsage = session.Profile.PlayerData.MaxItemStorage;
+            var currentInvUsage = await GetTotalItemCount();
+            var profile = await _client.Player.GetPlayer();
+            var maxInvUsage = profile.PlayerData.MaxItemStorage;
 
-            session.EventDispatcher.Send(new NoticeEvent()
+            _eventDispatcher.Send(new NoticeEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.CurrentInvUsage, currentInvUsage, maxInvUsage)
+                Message = _translation.GetTranslation(TranslationString.CurrentInvUsage, currentInvUsage, maxInvUsage)
             });
 
             var otherItemsToRecycle = myItems
@@ -365,7 +371,7 @@ namespace PoGo.PokeMobBot.Logic
 
         public double GetPerfect(PokemonData poke)
         {
-            var result = PokemonInfo.CalculatePokemonPerfection(poke);
+            var result = _pokemonInfo.CalculatePokemonPerfection(poke);
             return result;
         }
 
@@ -445,13 +451,13 @@ namespace PoGo.PokeMobBot.Logic
                     myPokemons.Where(
                         p => (_logicSettings.EvolveAllPokemonWithEnoughCandy && pokemonIds.Contains(p.PokemonId)) ||
                              (_logicSettings.EvolveAllPokemonAboveIv &&
-                              (PokemonInfo.CalculatePokemonPerfection(p) >= _logicSettings.EvolveAboveIvValue)));
+                              (_pokemonInfo.CalculatePokemonPerfection(p) >= _logicSettings.EvolveAboveIvValue)));
             }
             else if (_logicSettings.EvolveAllPokemonAboveIv)
             {
                 myPokemons =
                     myPokemons.Where(
-                        p => PokemonInfo.CalculatePokemonPerfection(p) >= _logicSettings.EvolveAboveIvValue);
+                        p => _pokemonInfo.CalculatePokemonPerfection(p) >= _logicSettings.EvolveAboveIvValue);
             }
             var pokemons = myPokemons.ToList();
 

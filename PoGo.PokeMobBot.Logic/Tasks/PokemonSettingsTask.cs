@@ -4,8 +4,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.PoGoUtils;
-using PoGo.PokeMobBot.Logic.State;
 
 #endregion
 
@@ -13,16 +11,25 @@ namespace PoGo.PokeMobBot.Logic.Tasks
 {
     public class PokemonSettingsTask
     {
-        public static async Task Execute(ISession session, Action<IEvent> action)
+        private readonly Inventory _inventory;
+        private readonly ILogicSettings _logicSettings;
+
+        public PokemonSettingsTask(Inventory inventory, ILogicSettings logicSettings)
         {
-            var settings = await session.Inventory.GetPokemonSettings();
+            _inventory = inventory;
+            _logicSettings = logicSettings;
+        }
+
+        public async Task Execute(Action<IEvent> action)
+        {
+            var settings = await _inventory.GetPokemonSettings();
 
             action(new PokemonSettingsEvent
             {
                 Data = settings.ToList()
             });
 
-            await Task.Delay(session.LogicSettings.DelayBetweenPlayerActions);
+            await Task.Delay(_logicSettings.DelayBetweenPlayerActions);
         }
     }
 }

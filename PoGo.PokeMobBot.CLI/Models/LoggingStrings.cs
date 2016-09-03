@@ -1,88 +1,94 @@
 using PoGo.PokeMobBot.Logic.Common;
-using PoGo.PokeMobBot.Logic.State;
 
 namespace PoGo.PokeMobBot.CLI.Models
 {
-    internal class LoggingStrings
+    public class LoggingStrings
     {
-        internal static string Attention;
+        private readonly ITranslation _translation;
 
-        internal static string Berry;
+        internal string Attention;
 
-        internal static string Debug;
+        internal string Berry;
 
-        internal static string Egg;
+        internal string Debug;
 
-        internal static string Error;
+        internal string Egg;
 
-        internal static string Evolved;
+        internal string Error;
 
-        internal static string Farming;
+        internal string Evolved;
 
-        internal static string Info;
+        internal string Farming;
 
-        internal static string Pkmn;
+        internal string Info;
 
-        internal static string Pokestop;
+        internal string Pkmn;
 
-        internal static string Recycling;
+        internal string Pokestop;
 
-        internal static string Transfered;
+        internal string Recycling;
 
-        internal static string Update;
+        internal string Transfered;
 
-        internal static void SetStrings(ISession session)
+        internal string Update;
+
+        public LoggingStrings(ITranslation translation)
+        {
+            _translation = translation;
+        }
+
+        internal void SetStrings()
         {
             Attention =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryAttention) ?? "ATTENTION";
 
             Berry =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryBerry) ?? "BERRY";
 
             Debug =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryDebug) ?? "DEBUG";
 
             Egg =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryEgg) ?? "EGG";
 
             Error =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryError) ?? "ERROR";
 
             Evolved =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryEvolved) ?? "EVOLVED";
 
             Farming =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryFarming) ?? "FARMING";
 
             Info =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryInfo) ?? "INFO";
 
             Pkmn =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryPkmn) ?? "PKMN";
 
             Pokestop =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryPokestop) ?? "POKESTOP";
 
             Recycling =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryRecycling) ?? "RECYCLING";
 
             Transfered =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryTransfered) ?? "TRANSFERED";
 
             Update =
-                session?.Translation.GetTranslation(
+                _translation?.GetTranslation(
                     TranslationString.LogEntryUpdate) ?? "UPDATE";
         }
     }

@@ -1,12 +1,13 @@
 ﻿#region using directives
 
 using Newtonsoft.Json;
+using PoGo.PokeMobBot.Logic;
 using Newtonsoft.Json.Linq;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
-using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
+using PokemonGo.RocketAPI;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.WebSocket;
@@ -19,20 +20,38 @@ namespace PoGo.PokeMobBot.CLI
     public class WebSocketInterface
     {
         private readonly WebSocketServer _server;
-        private readonly Session _session;
+        private readonly PokemonListTask _pokemonListTask;
+        private readonly EggsListTask _eggsListTask;
+        private readonly InventoryListTask _inventoryListTask;
+        private readonly PlayerStatsTask _playerStatsTask;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly Client _client;
+        private readonly PokemonSettingsTask _pokemonSettingsTask;
+        private readonly TransferPokemonTask _transferPokemonTask;
+        private readonly EvolveSpecificPokemonTask _evolveSpecificPokemonTask;
         private PokeStopListEvent _lastPokeStopList;
         private ProfileEvent _lastProfile;
 
-        public WebSocketInterface(int port, Session session)
+        public WebSocketInterface(GlobalSettings settings, PokemonListTask pokemonListTask, EggsListTask eggsListTask, InventoryListTask inventoryListTask, ILogger logger, PlayerStatsTask playerStatsTask, IEventDispatcher eventDispatcher, ITranslation translation, Client client, PokemonSettingsTask pokemonSettingsTask, TransferPokemonTask transferPokemonTask, EvolveSpecificPokemonTask evolveSpecificPokemonTask)
         {
-            _session = session;
-            var translations = session.Translation;
+            _pokemonListTask = pokemonListTask;
+            _eggsListTask = eggsListTask;
+            _inventoryListTask = inventoryListTask;
+            _playerStatsTask = playerStatsTask;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _client = client;
+            _pokemonSettingsTask = pokemonSettingsTask;
+            _transferPokemonTask = transferPokemonTask;
+            _evolveSpecificPokemonTask = evolveSpecificPokemonTask;
+
             _server = new WebSocketServer();
             var setupComplete = _server.Setup(new ServerConfig
             {
                 Name = "MobBotWebSocket",
                 Ip = "Any",
-                Port = port,
+                Port = settings.StartUpSettings.WebSocketPort,
                 Mode = SocketMode.Tcp,
                 Security = "tls",
                 Certificate = new CertificateConfig
@@ -44,7 +63,7 @@ namespace PoGo.PokeMobBot.CLI
 
             if (setupComplete == false)
             {
-                session.EventDispatcher.Send(new ErrorEvent() { Message = translations.GetTranslation(TranslationString.WebSocketFailStart, port) });
+                _eventDispatcher.Send(new ErrorEvent() { Message = _translation.GetTranslation(TranslationString.WebSocketFailStart, settings.StartUpSettings.WebSocketPort) });
                 return;
             }
 
@@ -96,25 +115,25 @@ namespace PoGo.PokeMobBot.CLI
             switch (command)
             {
                 case "PokemonList":
-                    await PokemonListTask.Execute(_session, action);
+                    await _pokemonListTask.Execute(action);
                     break;
                 case "EggsList":
-                    await EggsListTask.Execute(_session, action);
+                    await _eggsListTask.Execute(action);
                     break;
                 case "InventoryList":
-                    await InventoryListTask.Execute(_session, action);
+                    await _inventoryListTask.Execute(action);
                     break;
                 case "PlayerStats":
-                    await PlayerStatsTask.Execute(_session, action);
+                    await _playerStatsTask.Execute(action);
                     break;
                 case "GetPokemonSettings":
-                    await PokemonSettingsTask.Execute(_session, action);
+                    await _pokemonSettingsTask.Execute(action);
                     break;
                 case "TransferPokemon":
-                    await TransferPokemonTask.Execute(_session, msgObj?.Data);
+                    await _transferPokemonTask.Execute(msgObj?.Data);
                     break;
                 case "EvolvePokemon":
-                    await EvolveSpecificPokemonTask.Execute(_session, msgObj?.Data);
+                    await _evolveSpecificPokemonTask.Execute(msgObj?.Data);
                     break;
             }
         }
@@ -131,14 +150,14 @@ namespace PoGo.PokeMobBot.CLI
             {
                 session.Send(Serialize(new UpdatePositionEvent()
                 {
-                    Latitude = _session.Client.CurrentLatitude,
-                    Longitude = _session.Client.CurrentLongitude
+                    Latitude = _client.CurrentLatitude,
+                    Longitude = _client.CurrentLongitude
                 }));
             }
             catch { }
         }
 
-        public void Listen(IEvent evt, Session session)
+        public void Listen(IEvent evt)
         {
             dynamic eve = evt;
 

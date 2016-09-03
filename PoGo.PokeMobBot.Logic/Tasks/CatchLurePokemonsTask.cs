@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
-using PoGo.PokeMobBot.Logic.Logging;
 using PoGo.PokeMobBot.Logic.State;
+using PokemonGo.RocketAPI;
 using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
 
@@ -13,65 +13,82 @@ using POGOProtos.Networking.Responses;
 
 namespace PoGo.PokeMobBot.Logic.Tasks
 {
-    public static class CatchLurePokemonsTask
+    public class CatchLurePokemonsTask
     {
-        public static async Task Execute(ISession session, FortData currentFortData, CancellationToken cancellationToken)
+        private readonly TransferDuplicatePokemonTask _transferDuplicatePokemonTask;
+        private readonly CatchPokemonTask _catchPokemonTask;
+        private readonly Inventory _inventory;
+        private readonly IEventDispatcher _eventDispatcher;
+        private readonly ITranslation _translation;
+        private readonly ILogicSettings _logicSettings;
+        private readonly Client _client;
+
+        public CatchLurePokemonsTask(TransferDuplicatePokemonTask transferDuplicatePokemonTask, CatchPokemonTask catchPokemonTask, Inventory inventory, IEventDispatcher eventDispatcher, ITranslation translation, ILogicSettings logicSettings, Client client)
+        {
+            _transferDuplicatePokemonTask = transferDuplicatePokemonTask;
+            _catchPokemonTask = catchPokemonTask;
+            _inventory = inventory;
+            _eventDispatcher = eventDispatcher;
+            _translation = translation;
+            _logicSettings = logicSettings;
+            _client = client;
+        }
+
+        public async Task Execute(FortData currentFortData, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             // Refresh inventory so that the player stats are fresh
-            await session.Inventory.RefreshCachedInventory();
+            await _inventory.RefreshCachedInventory();
 
-            session.EventDispatcher.Send(new DebugEvent()
+            _eventDispatcher.Send(new DebugEvent()
             {
-                Message = session.Translation.GetTranslation(TranslationString.LookingForLurePokemon)
+                Message = _translation.GetTranslation(TranslationString.LookingForLurePokemon)
             });
 
             var fortId = currentFortData.Id;
 
             var pokemonId = currentFortData.LureInfo.ActivePokemonId;
 
-            if (session.LogicSettings.UsePokemonToNotCatchFilter &&
-                session.LogicSettings.PokemonsNotToCatch.Contains(pokemonId))
+            if (_logicSettings.UsePokemonToNotCatchFilter && _logicSettings.PokemonsNotToCatch.Contains(pokemonId))
             {
-                session.EventDispatcher.Send(new NoticeEvent
+                _eventDispatcher.Send(new NoticeEvent
                 {
-                    Message = session.Translation.GetTranslation(TranslationString.PokemonSkipped, session.Translation.GetPokemonName(pokemonId))
+                    Message = _translation.GetTranslation(TranslationString.PokemonSkipped, _translation.GetPokemonName(pokemonId))
                 });
             }
             else
             {
                 var encounterId = currentFortData.LureInfo.EncounterId;
-                var encounter = await session.Client.Encounter.EncounterLurePokemon(encounterId, fortId);
+                var encounter = await _client.Encounter.EncounterLurePokemon(encounterId, fortId);
 
                 if (encounter.Result == DiskEncounterResponse.Types.Result.Success)
                 {
-                    await CatchPokemonTask.Execute(session, encounter, null, currentFortData, encounterId);
+                    await _catchPokemonTask.Execute(encounter, null, currentFortData, encounterId);
                 }
                 else if (encounter.Result == DiskEncounterResponse.Types.Result.PokemonInventoryFull)
                 {
-                    if (session.LogicSettings.TransferDuplicatePokemon)
+                    if (_logicSettings.TransferDuplicatePokemon)
                     {
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.InvFullTransferring)
+                            Message = _translation.GetTranslation(TranslationString.InvFullTransferring)
                         });
-                        await TransferDuplicatePokemonTask.Execute(session, cancellationToken);
+
+                        await _transferDuplicatePokemonTask.Execute(cancellationToken);
                     }
                     else
-                        session.EventDispatcher.Send(new WarnEvent
+                        _eventDispatcher.Send(new WarnEvent
                         {
-                            Message = session.Translation.GetTranslation(TranslationString.InvFullTransferManually)
+                            Message = _translation.GetTranslation(TranslationString.InvFullTransferManually)
                         });
                 }
                 else
                 {
                     if (encounter.Result.ToString().Contains("NotAvailable")) return;
-                    session.EventDispatcher.Send(new WarnEvent
+                    _eventDispatcher.Send(new WarnEvent
                     {
-                        Message =
-                            session.Translation.GetTranslation(TranslationString.EncounterProblemLurePokemon,
-                                encounter.Result)
+                        Message = _translation.GetTranslation(TranslationString.EncounterProblemLurePokemon, encounter.Result)
                     });
                 }
             }

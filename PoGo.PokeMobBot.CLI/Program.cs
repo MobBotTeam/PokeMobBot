@@ -2,14 +2,20 @@
 
 using System;
 using System.Globalization;
+using System.Reflection;
 using System.Threading;
+using Ninject;
 using PoGo.PokeMobBot.Logic;
 using PoGo.PokeMobBot.Logic.Common;
 using PoGo.PokeMobBot.Logic.Event;
 using PoGo.PokeMobBot.Logic.Logging;
+using PoGo.PokeMobBot.Logic.Repository;
 using PoGo.PokeMobBot.Logic.State;
 using PoGo.PokeMobBot.Logic.Tasks;
 using PoGo.PokeMobBot.Logic.Utils;
+using PokemonGo.RocketAPI;
+using PokemonGo.RocketAPI.Extensions;
+using POGOProtos.Networking.Responses;
 
 #endregion
 
@@ -22,7 +28,8 @@ namespace PoGo.PokeMobBot.CLI
 
         private static void Main(string[] args)
         {
-            Console.CancelKeyPress += (sender, eArgs) => {
+            Console.CancelKeyPress += (sender, eArgs) =>
+            {
                 _quitEvent.Set();
                 eArgs.Cancel = true;
             };
@@ -41,15 +48,31 @@ namespace PoGo.PokeMobBot.CLI
 #else
             LogLevel logLevel = LogLevel.Info;
 #endif
-            Logger.SetLogger(new ConsoleLogger(logLevel), subPath);
 
-            var settings = GlobalSettings.Load(subPath);
+            IKernel kernel = new StandardKernel();
+            kernel.Bind<ISettings>().To<ClientSettings>().InSingletonScope();
+            kernel.Bind<IApiFailureStrategy>().To<ApiFailureStrategy>().InSingletonScope();
+            kernel.Bind<Inventory>().To<Inventory>().InSingletonScope();
+            kernel.Bind<GetPlayerResponse>().To<GetPlayerResponse>().InSingletonScope();
+            kernel.Bind<ILogicSettings>().To<LogicSettings>().InSingletonScope();
+            kernel.Bind<Navigation>().To<Navigation>().InSingletonScope();
+            kernel.Bind<ITranslation>().To<Translation>().InSingletonScope();
+            kernel.Bind<IEventDispatcher>().To<EventDispatcher>().InSingletonScope();
+            kernel.Bind<ILogger>().To<ConsoleLogger>().WithConstructorArgument(logLevel);
+            kernel.Bind<FarmPokestopsTask>().To<FarmPokestopsTask>().InSingletonScope();
+
+            var logger = kernel.Get<ILogger>();
+
+            var globalSettingsRepository = kernel.Get<GlobalSettingsRepository>();
+
+            var settings = globalSettingsRepository.Load(subPath);
+            kernel.Bind<GlobalSettings>().ToConstant(settings);
 
 
             if (settings == null)
             {
-                Logger.Write("This is your first start and the bot has generated the default config!", LogLevel.Warning);
-                Logger.Write("After pressing a key the config folder will open and this commandline will close", LogLevel.Warning);
+                logger.Write("This is your first start and the bot has generated the default config!", LogLevel.Warning);
+                logger.Write("After pressing a key the config folder will open and this commandline will close", LogLevel.Warning);
 
                 //pauses console until keyinput
                 Console.ReadKey();
@@ -63,10 +86,15 @@ namespace PoGo.PokeMobBot.CLI
                 });
                 Environment.Exit(0);
             }
-            var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
-            session.Client.ApiFailure = new ApiFailureStrategy(session);
+            //var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
+
+            // very very dirty hacks...
+            var client = new Client(kernel.Get<ISettings>(), null);
+            kernel.Bind<Client>().ToConstant(client);
+            client.ApiFailure = kernel.Get<IApiFailureStrategy>();
 
 
+            var translation = kernel.Get<ITranslation>();
             /*SimpleSession session = new SimpleSession
             {
                 _client = new PokemonGo.RocketAPI.Client(new ClientSettings(settings)),
@@ -83,37 +111,38 @@ namespace PoGo.PokeMobBot.CLI
             service.Run();
             */
 
-            var machine = new StateMachine();
-            var stats = new Statistics();
+            var machine = kernel.Get<StateMachine>();
+            var stats = kernel.Get<Statistics>();
             stats.DirtyEvent +=
                 () =>
                     Console.Title =
                         stats.GetTemplatedStats(
-                            session.Translation.GetTranslation(TranslationString.StatsTemplateString),
-                            session.Translation.GetTranslation(TranslationString.StatsXpTemplateString));
+                            translation.GetTranslation(TranslationString.StatsTemplateString),
+                            translation.GetTranslation(TranslationString.StatsXpTemplateString));
 
-            var aggregator = new StatisticsAggregator(stats);
-            var listener = new ConsoleEventListener();
-            var websocket = new WebSocketInterface(settings.StartUpSettings.WebSocketPort, session);
+            var aggregator = kernel.Get<StatisticsAggregator>();
+            var listener = kernel.Get<ConsoleEventListener>();
+            var websocket = kernel.Get<WebSocketInterface>();
+            var eventDispatcher = kernel.Get<IEventDispatcher>();
+            var navigation = kernel.Get<Navigation>();
+            var logicSettings = kernel.Get<ILogicSettings>();
 
-            session.EventDispatcher.EventReceived += evt => listener.Listen(evt, session);
-            session.EventDispatcher.EventReceived += evt => aggregator.Listen(evt, session);
-            session.EventDispatcher.EventReceived += evt => websocket.Listen(evt, session);
+            eventDispatcher.EventReceived += evt => listener.Listen(evt);
+            eventDispatcher.EventReceived += evt => aggregator.Listen(evt);
+            eventDispatcher.EventReceived += evt => websocket.Listen(evt);
 
-            machine.SetFailureState(new LoginState());
+            machine.SetFailureState(kernel.Get<LoginState>());
 
-            Logger.SetLoggerContext(session);
+            navigation.UpdatePositionEvent +=
+                (lat, lng) => eventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
 
-            session.Navigation.UpdatePositionEvent +=
-                (lat, lng) => session.EventDispatcher.Send(new UpdatePositionEvent {Latitude = lat, Longitude = lng});
+            machine.AsyncStart(kernel.Get<VersionCheckState>());
 
-#if DEBUG
-            machine.AsyncStart(new LoginState(), session);
-#else
-            machine.AsyncStart(new VersionCheckState(), session);
-#endif
-            if (session.LogicSettings.UseSnipeLocationServer)
-                SnipePokemonTask.AsyncStart(session);
+            if (logicSettings.UseSnipeLocationServer)
+            {
+                var snipePokemonTask = kernel.Get<SnipePokemonTask>();
+                snipePokemonTask.AsyncStart();
+            }
 
             _quitEvent.WaitOne();
         }
