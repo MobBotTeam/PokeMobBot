@@ -4,7 +4,7 @@
 <!-- logo -->
 <div style="text-align:center">
  <a href="http://forum.pokemobbot.com/">
-  <img src ="http://i.imgur.com/b2hXaUC.png" />
+  <img src ="http://i.imgur.com/YuqGTGq.png" />
  </a>
 </div>
 <br>
