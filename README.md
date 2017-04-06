@@ -9,12 +9,11 @@
 </div>
 <br>
 <!-- shields -->
-[![PoGo Version](https://img.shields.io/badge/Pokemon_Go-0.33.0-blue.svg)](#)
-[![Twitter Follow](https://img.shields.io/twitter/follow/PokeMobBot.svg?style=social&label=Follow&maxAge=2592000?style=flat-square)](https://twitter.com/PokeMobBot)
-[![Discord](https://img.shields.io/badge/discord-PokeMobBot-blue.svg)](https://discord.gg/8msqsWV)
-[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/MobBotTeam/PokeMobBot/development/LICENSE)
-[![Github All Releases](https://img.shields.io/github/downloads/MobBotTeam/PokeMobBot/total.svg)](https://github.com/MobBotTeam/PokeMobBot/releases)
-
+<a href="#"><img alt="Supported PoGo Version" src="https://img.shields.io/badge/Pokemon_Go-0.33.0-blue.svg"></a><br>
+<a href="https://twitter.com/PokeMobBot"><img alt="Twitter" src="https://img.shields.io/twitter/follow/PokeMobBot.svg?style=social&label=Follow&maxAge=2592000?style=flat-square"></a><br>
+<a href="https://discord.gg/8msqsWV"><img alt="Discord" src="https://img.shields.io/badge/discord-PokeMobBot-blue.svg"></a><br>
+<a href="https://raw.githubusercontent.com/MobBotTeam/PokeMobBot/development/LICENSE"><img alt="GitHub license" src="https://img.shields.io/badge/license-AGPL-blue.svg"></a><br>
+<a href="https://github.com/MobBotTeam/PokeMobBot/releases"><img alt="Github All Releases" src="https://img.shields.io/github/downloads/MobBotTeam/PokeMobBot/total.svg"></a><br>
 <br>
 <div style="text-align:center">
  <b>Join our Discord to hang out & Chat:</b> <br>
